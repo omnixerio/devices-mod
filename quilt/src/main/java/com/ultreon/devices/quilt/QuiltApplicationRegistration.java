@@ -1,4 +1,4 @@
-package com.ultreon.devices.quilt;
+package dev.ultreon.devices.quilt;
 
 @FunctionalInterface
 public interface QuiltApplicationRegistration {

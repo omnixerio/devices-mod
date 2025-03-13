@@ -1,6 +1,5 @@
-import com.ultreon.devices.core.Ext2FS;
-import com.ultreon.devices.core.FS;
-import org.jnode.fs.FileSystem;
+import dev.ultreon.devices.core.Ext2FS;
+import dev.ultreon.devices.core.FS;
 import org.jnode.fs.ext2.Ext2Constants;
 import org.jnode.fs.ext2.Ext2FileSystem;
 

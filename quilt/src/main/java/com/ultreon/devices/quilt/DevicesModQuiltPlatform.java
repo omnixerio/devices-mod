@@ -1,6 +1,6 @@
-package com.ultreon.devices.quilt;
+package dev.ultreon.devices.quilt;
 
-import com.ultreon.devices.DevicesModPlatform;
+import dev.ultreon.devices.DevicesModPlatform;
 import org.quiltmc.loader.api.QuiltLoader;
 
 public class DevicesModQuiltPlatform implements DevicesModPlatform {

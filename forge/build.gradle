@@ -85,10 +85,10 @@ dependencies {
 
     jarJar minecraftLibrary(group: 'io.projectreactor', name: 'reactor-core', version: '3.5.5')
 
-    implementation fg.deobf("dev.ultreon.mods:xinexlib-forge-1.21.1:1.21.1-SNAPSHOT")
+    implementation fg.deobf("dev.ultreon.mods:xinexlib-forge-1.21.1:$xinexlib_version")
     implementation fg.deobf("fuzs.forgeconfigapiport:forgeconfigapiport-forge:21.1.0")
 
-    implementation "dev.ultreon.mods:xinexlib-neoforge-1.21.1:1.21.1-SNAPSHOT"
+    implementation "dev.ultreon.mods:xinexlib-neoforge-1.21.1:$xinexlib_version"
 
     jarJar minecraftLibrary('com.github.Nuix:jnode-fs:v1.0.1')
 }

@@ -1,8 +1,8 @@
 package com.jab125.testmod;
 
-import com.ultreon.devices.api.ApplicationManager;
-import com.ultreon.devices.fabric.BuiltinAppsRegistration;
-import com.ultreon.devices.fabric.FabricApplicationRegistration;
+import dev.ultreon.devices.api.ApplicationManager;
+import dev.ultreon.devices.fabric.BuiltinAppsRegistration;
+import dev.ultreon.devices.fabric.FabricApplicationRegistration;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.resources.ResourceLocation;
 

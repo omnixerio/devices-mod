@@ -1,12 +1,12 @@
-package com.ultreon.devices.quilt;
+package dev.ultreon.devices.quilt;
 
-import com.ultreon.devices.DeviceConfig;
-import com.ultreon.devices.Devices;
-import com.ultreon.devices.api.app.Application;
-import com.ultreon.devices.api.print.IPrint;
-import com.ultreon.devices.api.print.PrintingManager;
-import com.ultreon.devices.core.ComputerScreen;
-import com.ultreon.devices.init.RegistrationHandler;
+import dev.ultreon.devices.DeviceConfig;
+import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.api.app.Application;
+import dev.ultreon.devices.api.print.IPrint;
+import dev.ultreon.devices.api.print.PrintingManager;
+import dev.ultreon.devices.core.ComputerScreen;
+import dev.ultreon.devices.init.RegistrationHandler;
 import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;

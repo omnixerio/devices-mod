@@ -1,4 +1,4 @@
-Copyright (c) 2022 XyperCode (https://github.com/XyperCode)
+Copyright (c) 2022 Qubilux (https://github.com/XyperCode)
 
 Ultreon API License (v1.0)
 ---------------------------

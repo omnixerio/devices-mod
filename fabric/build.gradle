@@ -18,7 +18,7 @@ dependencies {
 
     modImplementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:21.1.0"
 
-    modApi "dev.ultreon.mods:xinexlib-fabric-1.21.1:1.21.1-SNAPSHOT"
+    modApi "dev.ultreon.mods:xinexlib-fabric-1.21.1:$xinexlib_version"
 
     include implementation('com.github.Nuix:jnode-fs:v1.0.1')
     include "org.apache.commons:commons-lang3:3.14.0" // Possibly fix reference error in 1.20.1+

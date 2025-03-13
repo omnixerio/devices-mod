@@ -5,10 +5,10 @@
   "name": "Ultreon Devices Mod",
   "description": "${description}",
   "authors": [
-    "Ultreon Team"
+    "Ultreon Studios"
   ],
   "contributors": [
-    "XyperCode",
+    "Qubilux",
     "Jab125",
     "MrCrayfish",
     "MinecraftDoodler",
@@ -36,13 +36,13 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.ultreon.devices.fabric.DevicesFabricMod"
+      "dev.ultreon.devices.fabric.DevicesFabricMod"
     ],
     "devices:application_registration": [
-      "com.ultreon.devices.fabric.BuiltinAppsRegistration"
+      "dev.ultreon.devices.fabric.BuiltinAppsRegistration"
     ],
     "fabric-datagen": [
-      "com.ultreon.devices.datagen.DevicesDataGenerator"
+      "dev.ultreon.devices.fabric.datagen.DevicesDataGenerator"
     ]
   },
   "mixins": [

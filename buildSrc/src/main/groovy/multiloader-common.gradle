@@ -17,13 +17,8 @@ repositories {
     flatDir {
         dir rootProject.file("libs")
     }
-    maven {
-        url = uri("https://maven.pkg.github.com/Ultreon/XinexLib")
-        credentials {
-            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-            password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-        }
-    }
+    maven { url = uri("https://maven.ultreon.dev/snapshots") }
+    maven { url = uri("https://maven.ultreon.dev/releases") }
     maven {
         name = 'MinecraftForge'
         url = 'https://maven.minecraftforge.net'

@@ -1,6 +1,6 @@
-package com.ultreon.devices.quilt;
+package dev.ultreon.devices.quilt;
 
-import com.ultreon.devices.BuiltinApps;
+import dev.ultreon.devices.BuiltinApps;
 
 public class BuiltinAppsRegistration implements QuiltApplicationRegistration {
     @Override

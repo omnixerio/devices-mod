@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.ultreon.devices.mixin.fabric",
+  "package": "dev.ultreon.devices.mixin.fabric",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
   ],

@@ -1,6 +1,6 @@
-package com.ultreon.devices.quilt.client;
+package dev.ultreon.devices.quilt.client;
 
-import com.ultreon.devices.client.RenderRegistry;
+import dev.ultreon.devices.client.RenderRegistry;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.block.Block;
