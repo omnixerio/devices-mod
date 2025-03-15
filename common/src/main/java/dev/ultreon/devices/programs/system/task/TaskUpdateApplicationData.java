@@ -1,7 +1,7 @@
 package dev.ultreon.devices.programs.system.task;
 
 import dev.ultreon.devices.api.task.Task;
-import dev.ultreon.devices.block.entity.ComputerBlockEntity;
+import dev.ultreon.devices.block.entity.computer.ComputerBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;

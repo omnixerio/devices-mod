@@ -3,7 +3,7 @@ package dev.ultreon.devices.init;
 import dev.ultreon.devices.Devices;
 import dev.ultreon.devices.item.ColoredDeviceItem;
 import dev.ultreon.devices.item.FlashDriveItem;
-import dev.ultreon.mods.xinexlib.platform.Services;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import dev.ultreon.mods.xinexlib.registrar.Registrar;
 import dev.ultreon.mods.xinexlib.registrar.RegistrySupplier;
 import net.minecraft.core.registries.Registries;
@@ -20,7 +20,7 @@ public class DeviceCreativeTabs {
         REGISTER.load();
     }
 
-    public static final RegistrySupplier<CreativeModeTab, CreativeModeTab> TAB = REGISTER.register("devices_tab_device", () -> Services.creativeTabBuilder()
+    public static final RegistrySupplier<CreativeModeTab, CreativeModeTab> TAB = REGISTER.register("devices_tab_device", () -> XinexPlatform.creativeTabBuilder()
             .title(Component.translatable("itemGroup.devices.devices_tab_device"))
             .icon(() -> new ItemStack(DeviceBlocks.LAPTOPS.of(DyeColor.RED).get()))
             .displayItems((flags, output) -> {

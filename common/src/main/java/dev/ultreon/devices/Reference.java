@@ -1,6 +1,6 @@
 package dev.ultreon.devices;
 
-import dev.ultreon.mods.xinexlib.platform.Services;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 
 public class Reference {
     public static final String MOD_ID = "devices";

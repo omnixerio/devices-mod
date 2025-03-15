@@ -1,6 +1,8 @@
-package dev.ultreon.devices.block.entity;
+package dev.ultreon.devices.block.entity.computer;
 
-import dev.ultreon.devices.block.LaptopBlock;
+import dev.ultreon.devices.block.computer.LaptopBlock;
+import dev.ultreon.devices.block.entity.DriveInfo;
+import dev.ultreon.devices.block.entity.NetworkDeviceBlockEntity;
 import dev.ultreon.devices.core.Bios;
 import dev.ultreon.devices.core.io.FileSystem;
 import dev.ultreon.devices.util.BlockEntityUtil;

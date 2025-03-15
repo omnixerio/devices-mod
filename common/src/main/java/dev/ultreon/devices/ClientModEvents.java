@@ -3,7 +3,6 @@ package dev.ultreon.devices;
 import com.mojang.blaze3d.platform.NativeImage;
 import dev.ultreon.devices.api.ApplicationManager;
 import dev.ultreon.devices.block.entity.renderer.*;
-import dev.ultreon.devices.client.RenderRegistry;
 import dev.ultreon.devices.core.ComputerScreen;
 import dev.ultreon.devices.debug.DebugFlags;
 import dev.ultreon.devices.debug.DebugUtils;
@@ -12,10 +11,9 @@ import dev.ultreon.devices.init.DeviceBlockEntities;
 import dev.ultreon.devices.object.AppInfo;
 import dev.ultreon.devices.programs.system.object.ColorSchemePresets;
 import dev.ultreon.mods.xinexlib.ModPlatform;
-import dev.ultreon.mods.xinexlib.platform.Services;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import dev.ultreon.mods.xinexlib.platform.services.EntityRendererRegistry;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -23,7 +21,6 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -67,7 +64,7 @@ public class ClientModEvents {
         registerRenderLayers();
         registerRenderers();
         registerLayerDefinitions();
-        if (Services.getPlatformName() == ModPlatform.Forge || Services.getPlatformName() == ModPlatform.NeoForge) { // Note: Forge requires the icon atlas to be generator beforehand.
+        if (XinexPlatform.getPlatformName() == ModPlatform.Forge || XinexPlatform.getPlatformName() == ModPlatform.NeoForge) { // Note: Forge requires the icon atlas to be generator beforehand.
             generateIconAtlas();
         }
 
@@ -233,21 +230,11 @@ public class ClientModEvents {
         imageWriter.finish();
     }
 
-//    @ExpectPlatform
-//    private static void.json updateIcon(AppInfo info, int iconU, int iconV) {
-//        throw new AssertionError();
-////        ObfuscationReflectionHelper.setPrivateValue(AppInfo.class, info, iconU, "iconU");
-////        ObfuscationReflectionHelper.setPrivateValue(AppInfo.class, info, iconV, "iconV");
-//    }
-
-    public static void setRenderLayer(Block block, RenderType type) {
-        RenderRegistry.register(block, type);
-    }
-
+    @SuppressWarnings({"unchecked", "rawtypes"}) // We don't care
     public static void registerRenderers() {
         LOGGER.info("Registering renderers.");
 
-        EntityRendererRegistry entityRendererRegistry = Services.PLATFORM.client().entityRenderers();
+        EntityRendererRegistry entityRendererRegistry = XinexPlatform.client().entityRenderers();
 
         entityRendererRegistry.register((Holder) DeviceBlockEntities.LAPTOP, LaptopRenderer::new);
         entityRendererRegistry.register((Holder) DeviceBlockEntities.PRINTER, PrinterRenderer::new);

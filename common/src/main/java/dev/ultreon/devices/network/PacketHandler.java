@@ -7,7 +7,7 @@ import dev.ultreon.devices.network.task.*;
 import dev.ultreon.mods.xinexlib.network.Networker;
 import dev.ultreon.mods.xinexlib.network.packet.PacketToClient;
 import dev.ultreon.mods.xinexlib.network.packet.PacketToServer;
-import dev.ultreon.mods.xinexlib.platform.Services;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -70,7 +70,7 @@ public class PacketHandler {
 //        s2cUpdatePacket = registerS2C(S2CUpdatePacket.class, Packet::toBytes, S2CUpdatePacket::new, (T info, Supplier<NetworkManager.PacketContext> info2) -> S2CUpdatePacket.onMessage(networker, info));
 //        c2sUpdatePacket = registerC2S(C2SUpdatePacket.class, Packet::toBytes, C2SUpdatePacket::new, (T info, Supplier<NetworkManager.PacketContext> info2) -> C2SUpdatePacket.onMessage(networker, info));
 
-        networker = Services.createNetworker(Devices.MOD_ID, networkRegistry -> {
+        networker = XinexPlatform.createNetworker(Devices.MOD_ID, networkRegistry -> {
             networkRegistry.registerServer("request", RequestPacket.class, RequestPacket::new);
             networkRegistry.registerClient("response", ResponsePacket.class, ResponsePacket::new);
             networkRegistry.registerClient("sync_application", SyncApplicationPacket.class, SyncApplicationPacket::new);

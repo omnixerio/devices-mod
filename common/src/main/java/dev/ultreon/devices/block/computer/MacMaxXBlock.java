@@ -1,9 +1,10 @@
-package dev.ultreon.devices.block;
+package dev.ultreon.devices.block.computer;
 
 import com.mojang.serialization.MapCodec;
-import dev.ultreon.devices.block.entity.MacMaxXBlockEntity;
+import dev.ultreon.devices.block.ComputerBlock;
+import dev.ultreon.devices.block.entity.computer.MacMaxXBlockEntity;
 import dev.ultreon.devices.init.DeviceBlocks;
-import dev.ultreon.mods.xinexlib.platform.Services;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -231,7 +232,7 @@ public class MacMaxXBlock extends ComputerBlock {
     @Override
     public @NotNull MutableComponent getName() {
         MutableComponent normalName = Component.translatable("block.devices.mac_max_x");
-        if (Services.isModLoaded("emojiful")) {
+        if (XinexPlatform.isModLoaded("emojiful")) {
             return Component.translatable("block.devices.mac_max_x_emoji");
         }
         return normalName;

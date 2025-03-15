@@ -15,7 +15,7 @@ import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.api.task.TaskManager;
 import dev.ultreon.devices.api.video.CustomResolution;
 import dev.ultreon.devices.api.video.VideoInfo;
-import dev.ultreon.devices.block.entity.ComputerBlockEntity;
+import dev.ultreon.devices.block.entity.computer.ComputerBlockEntity;
 import dev.ultreon.devices.core.io.task.TaskGetMainDrive;
 import dev.ultreon.devices.core.task.TaskInstallApp;
 import dev.ultreon.devices.object.AppInfo;

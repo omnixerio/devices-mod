@@ -1,6 +1,6 @@
 package dev.ultreon.devices.api.event;
 
-import dev.ultreon.devices.block.entity.ComputerBlockEntity;
+import dev.ultreon.devices.block.entity.computer.ComputerBlockEntity;
 import dev.ultreon.devices.block.entity.DeviceBlockEntity;
 import org.jetbrains.annotations.NotNull;
 

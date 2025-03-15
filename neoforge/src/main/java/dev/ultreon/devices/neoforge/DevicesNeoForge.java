@@ -10,7 +10,7 @@ import dev.ultreon.devices.api.print.IPrint;
 import dev.ultreon.devices.api.print.PrintingManager;
 import dev.ultreon.devices.init.RegistrationHandler;
 import dev.ultreon.mods.xinexlib.platform.NeoForgePlatformHelper;
-import dev.ultreon.mods.xinexlib.platform.Services;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.api.distmarker.Dist;
@@ -48,7 +48,7 @@ public final class DevicesNeoForge {
         this.modEventBus = modEventBus;
         this.modEventBus.register(BuiltinAppsRegistration.class);
 
-        ((NeoForgePlatformHelper) Services.PLATFORM).registerMod(Reference.MOD_ID, modEventBus);
+        ((NeoForgePlatformHelper) XinexPlatform.PLATFORM).registerMod(Reference.MOD_ID, modEventBus);
 
         instance = new Devices() {
             private ArrayList<Application> apps;

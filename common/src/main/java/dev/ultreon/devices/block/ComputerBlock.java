@@ -1,7 +1,7 @@
 package dev.ultreon.devices.block;
 
 import dev.ultreon.devices.ModDeviceTypes;
-import dev.ultreon.devices.block.entity.LaptopBlockEntity;
+import dev.ultreon.devices.block.entity.computer.LaptopBlockEntity;
 import dev.ultreon.devices.debug.DebugLog;
 import dev.ultreon.devices.item.FlashDriveItem;
 import dev.ultreon.devices.util.BlockEntityUtil;
@@ -38,7 +38,8 @@ public abstract class ComputerBlock extends DeviceBlock {
     }
 
     @Override
-    protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hitResult) {
+    @NotNull
+    public InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hitResult) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof LaptopBlockEntity laptop) {
             if (player.isCrouching()) {

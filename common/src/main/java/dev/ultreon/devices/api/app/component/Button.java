@@ -21,8 +21,6 @@ import java.util.Arrays;
 
 @SuppressWarnings("unused")
 public class Button extends Component {
-    protected static final ResourceLocation BUTTON_TEXTURES = ResourceLocation.parse("textures/gui/widgets.png");
-
     protected static final int TOOLTIP_DELAY = 20;
 
     protected String text;

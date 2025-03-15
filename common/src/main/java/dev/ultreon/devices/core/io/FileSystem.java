@@ -7,7 +7,7 @@ import dev.ultreon.devices.api.io.FSResponse;
 import dev.ultreon.devices.api.task.Callback;
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.api.task.TaskManager;
-import dev.ultreon.devices.block.entity.ComputerBlockEntity;
+import dev.ultreon.devices.block.entity.computer.ComputerBlockEntity;
 import dev.ultreon.devices.block.entity.DriveInfo;
 import dev.ultreon.devices.core.DeviceFSException;
 import dev.ultreon.devices.core.DriveManager;

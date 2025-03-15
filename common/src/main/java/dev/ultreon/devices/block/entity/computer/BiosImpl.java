@@ -1,4 +1,4 @@
-package dev.ultreon.devices.block.entity;
+package dev.ultreon.devices.block.entity.computer;
 
 import dev.ultreon.devices.core.Bios;
 import dev.ultreon.devices.core.ComputerScreen;

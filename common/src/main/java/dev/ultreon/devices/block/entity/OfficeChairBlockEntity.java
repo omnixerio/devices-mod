@@ -1,6 +1,6 @@
 package dev.ultreon.devices.block.entity;
 
-import dev.ultreon.devices.block.LaptopBlock;
+import dev.ultreon.devices.block.computer.LaptopBlock;
 import dev.ultreon.devices.entity.Seat;
 import dev.ultreon.devices.init.DeviceBlockEntities;
 import dev.ultreon.devices.util.Colorable;

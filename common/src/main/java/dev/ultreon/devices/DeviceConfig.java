@@ -1,6 +1,6 @@
 package dev.ultreon.devices;
 
-import dev.ultreon.mods.xinexlib.platform.Services;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.neoforged.fml.config.IConfigSpec;
@@ -54,7 +54,7 @@ public class DeviceConfig {
                 .define(CATEGORY_PIXEL_PAINTER + ".renderPrintedIn3d", false);
 
         DEBUG_BUTTON = builder.comment("Display a button to access a worldless laptop")
-                .define(CATEGORY_DEBUG + ".debugButton", Services.isDevelopmentEnvironment());
+                .define(CATEGORY_DEBUG + ".debugButton", XinexPlatform.isDevelopmentEnvironment());
 
         CONFIG = builder.build();
     }

@@ -1,6 +1,6 @@
 package dev.ultreon.devices.debug;
 
-import dev.ultreon.mods.xinexlib.platform.Services;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ public class DebugLog {
     ///
     /// @param message The message to log
     public static void log(String message) {
-        if (Services.isDevelopmentEnvironment()) {
+        if (XinexPlatform.isDevelopmentEnvironment()) {
             LOGGER.info(message);
         }
     }
@@ -37,7 +37,7 @@ public class DebugLog {
     ///
     /// @param message The message to log
     public static void logTime(long ticks, String message) {
-        if (Services.isDevelopmentEnvironment()) {
+        if (XinexPlatform.isDevelopmentEnvironment()) {
             LOGGER.info("(@{} ticks) {}", ticks, message);
         }
     }

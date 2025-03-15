@@ -1,7 +1,7 @@
 package dev.ultreon.devices;
 
 import dev.ultreon.mods.xinexlib.ModPlatform;
-import dev.ultreon.mods.xinexlib.platform.Services;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 
 public class LaunchException extends RuntimeException {
     @Override
@@ -11,7 +11,7 @@ public class LaunchException extends RuntimeException {
     }
 
     private static String getPlatform() {
-        var target = Services.getPlatformName();
+        var target = XinexPlatform.getPlatformName();
         if (target.equals(ModPlatform.Forge)) return "Minecraft Forge";
         if (target.equals(ModPlatform.Fabric)) return "FabricMC";
         if (target.equals(ModPlatform.NeoForge)) return "NeoForge";

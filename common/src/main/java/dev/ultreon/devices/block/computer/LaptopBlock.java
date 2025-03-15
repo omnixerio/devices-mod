@@ -1,8 +1,9 @@
-package dev.ultreon.devices.block;
+package dev.ultreon.devices.block.computer;
 
 import com.mojang.serialization.MapCodec;
 import dev.ultreon.devices.ModDeviceTypes;
-import dev.ultreon.devices.block.entity.LaptopBlockEntity;
+import dev.ultreon.devices.block.ComputerBlock;
+import dev.ultreon.devices.block.entity.computer.LaptopBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;

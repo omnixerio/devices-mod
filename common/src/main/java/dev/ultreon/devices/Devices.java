@@ -50,7 +50,7 @@ import dev.ultreon.mods.xinexlib.event.server.ServerPlayerJoinEvent;
 import dev.ultreon.mods.xinexlib.event.server.ServerStartingEvent;
 import dev.ultreon.mods.xinexlib.event.server.ServerStoppedEvent;
 import dev.ultreon.mods.xinexlib.event.system.EventSystem;
-import dev.ultreon.mods.xinexlib.platform.Services;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import dev.ultreon.mods.xinexlib.registrar.RegistrarManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.MappedRegistry;
@@ -82,11 +82,11 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 public abstract class Devices {
-    public static final boolean DEVELOPER_MODE = Services.isDevelopmentEnvironment();
+    public static final boolean DEVELOPER_MODE = XinexPlatform.isDevelopmentEnvironment();
     public static final String MOD_ID = "devices";
     public static final Logger LOGGER = LoggerFactory.getLogger("Ultreon Devices Mod");
 
-    public static final Supplier<RegistrarManager> REGISTRIES = Suppliers.memoize(() -> Services.getRegistrarManager(MOD_ID));
+    public static final Supplier<RegistrarManager> REGISTRIES = Suppliers.memoize(() -> XinexPlatform.getRegistrarManager(MOD_ID));
     public static final List<SiteRegistration> SITE_REGISTRATIONS = new ProtectedArrayList<>();
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static final DevicesEarlyConfig EARLY_CONFIG = new DevicesEarlyConfig();
@@ -94,7 +94,6 @@ public abstract class Devices {
     private static final boolean IS_DEV_PREVIEW = DEV_PREVIEW_PATTERN.matcher(Reference.VERSION).matches();
     private static final String GITWEB_REGISTER_URL = "https://ultreon.gitlab.io/gitweb/site_register.json";
     public static final String VULNERABILITIES_URL = "https://jab125.com/gitweb/vulnerabilities.php";
-    //    private static final Logger ULTRAN_LANG_LOGGER = LoggerFactory.getLogger("UltranLang");
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private static final SiteRegisterStack SITE_REGISTER_STACK = new SiteRegisterStack();
 
@@ -122,7 +121,7 @@ public abstract class Devices {
     }
 
     public void init() {
-        if (Services.getPlatformName().equals(ModPlatform.Fabric)) {
+        if (XinexPlatform.getPlatformName().equals(ModPlatform.Fabric)) {
             preInit();
             serverSetup();
         }
@@ -156,13 +155,13 @@ public abstract class Devices {
         setupEvents();
 
         EnvExecutor.runInEnv(Env.CLIENT, () -> Devices::setupClientEvents); //todo
-        if (Services.getPlatformName() != ModPlatform.Forge) {
+        if (XinexPlatform.getPlatformName() != ModPlatform.Forge) {
             loadComplete();
         }
     }
 
     public static void preInit() {
-        if (DEVELOPER_MODE && !Services.isDevelopmentEnvironment()) {
+        if (DEVELOPER_MODE && !XinexPlatform.isDevelopmentEnvironment()) {
             throw new LaunchException();
         }
 
@@ -221,7 +220,7 @@ public abstract class Devices {
         TaskManager.registerTask(TaskDeleteEmail::new);
         TaskManager.registerTask(TaskViewEmail::new);
 
-        if (Services.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableBetaApps) {
+        if (XinexPlatform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableBetaApps) {
             // Auction
             TaskManager.registerTask(TaskAddAuction::new);
             TaskManager.registerTask(TaskGetAuctions::new);
@@ -236,7 +235,7 @@ public abstract class Devices {
             TaskManager.registerTask(TaskRemove::new);
         }
 
-        if (Services.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableDebugApps) {
+        if (XinexPlatform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableDebugApps) {
             // Applications (Developers)
             ApplicationManager.registerApplication(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "example"), () -> ExampleApp::new, false);
             ApplicationManager.registerApplication(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "icons"), () -> IconsApp::new, false);

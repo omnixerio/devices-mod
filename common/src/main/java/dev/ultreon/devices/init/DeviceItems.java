@@ -5,7 +5,7 @@ import dev.ultreon.devices.Devices;
 import dev.ultreon.devices.ModDeviceTypes;
 import dev.ultreon.devices.item.*;
 import dev.ultreon.devices.util.DyeableRegistration;
-import dev.ultreon.mods.xinexlib.platform.Services;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import dev.ultreon.mods.xinexlib.registrar.Registrar;
 import dev.ultreon.mods.xinexlib.registrar.RegistrySupplier;
 import net.minecraft.core.registries.Registries;
@@ -44,7 +44,7 @@ public class DeviceItems {
         @Override
         public Component getDescription() {
             MutableComponent normalName = Component.translatable("block.devices.mac_max_x");
-            if (Services.isModLoaded("emojiful")) {
+            if (XinexPlatform.isModLoaded("emojiful")) {
                 return Component.translatable("block.devices.mac_max_x_emoji");
             }
             return normalName;

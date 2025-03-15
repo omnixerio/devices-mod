@@ -2,7 +2,7 @@ package dev.ultreon.devices.core.task;
 
 import dev.ultreon.devices.Devices;
 import dev.ultreon.devices.api.task.Task;
-import dev.ultreon.devices.block.entity.ComputerBlockEntity;
+import dev.ultreon.devices.block.entity.computer.ComputerBlockEntity;
 import dev.ultreon.devices.debug.DebugLog;
 import dev.ultreon.devices.object.AppInfo;
 import net.minecraft.core.BlockPos;

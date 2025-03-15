@@ -2,6 +2,8 @@ package dev.ultreon.devices.init;
 
 import dev.ultreon.devices.Devices;
 import dev.ultreon.devices.block.entity.*;
+import dev.ultreon.devices.block.entity.computer.LaptopBlockEntity;
+import dev.ultreon.devices.block.entity.computer.MacMaxXBlockEntity;
 import dev.ultreon.mods.xinexlib.registrar.Registrar;
 import dev.ultreon.mods.xinexlib.registrar.RegistrySupplier;
 import net.minecraft.core.registries.Registries;
