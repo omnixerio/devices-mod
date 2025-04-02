@@ -34,6 +34,8 @@ import com.ultreon.devices.util.GLHelper;
 import dev.architectury.injectables.annotations.PlatformOnly;
 import dev.architectury.platform.Mod;
 import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -49,14 +51,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.LoggedPrintStream;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Unit;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.apache.commons.io.input.NullInputStream;
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.io.FileSystem;
 import org.graalvm.polyglot.io.IOAccess;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
@@ -76,6 +82,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 import static java.lang.System.currentTimeMillis;
 
@@ -87,6 +96,7 @@ public class Laptop extends Screen implements System {
     public static final ResourceLocation ICON_TEXTURES = ResourceLocation.fromNamespaceAndPath(Devices.MOD_ID, "textures/atlas/app_icons.png");
     public static final int ICON_SIZE = 14;
     private static final ResourceLocation LAPTOP_FONT = Devices.res("laptop");
+    private static final Logger log = LoggerFactory.getLogger(Laptop.class);
     private static Font font;
     private static final ResourceLocation LAPTOP_GUI = ResourceLocation.fromNamespaceAndPath(Devices.MOD_ID, "textures/gui/laptop.png");
     private static final List<Application> APPLICATIONS = new ArrayList<>();
@@ -109,6 +119,8 @@ public class Laptop extends Screen implements System {
     private static boolean loaded;
     private Bios bios;
     private final BiosApi biosApi = new BiosApi(this);
+    private int pid = 0;
+    private final Int2ObjectMap<PyProcess> processes = new Int2ObjectArrayMap<>();
 
     @PlatformOnly("fabric")
     public static List<Application> getApplicationsForFabric() {
@@ -219,7 +231,37 @@ public class Laptop extends Screen implements System {
         // World-less flag.
         Laptop.worldLess = worldLess;
 
-        Context.Builder js = Context.newBuilder("python")
+        this.fileSystem = new LaptopFileSystem();
+        Engine engine = Engine.newBuilder().logHandler(new Handler() {
+            @Override
+            public void publish(LogRecord record) {
+                Level level = record.getLevel();
+                Logger logger = LoggerFactory.getLogger(record.getLoggerName());
+                if (level.intValue() < Level.FINER.intValue()) {
+                    logger.trace("{}: {}", record.getLevel().getName(), record.getMessage());
+                } else if (level.intValue() < Level.FINE.intValue()) {
+                    logger.debug("{}: {}", record.getLevel().getName(), record.getMessage());
+                } else if (level.intValue() < Level.INFO.intValue()) {
+                    logger.info("{}: {}", record.getLevel().getName(), record.getMessage());
+                } else if (level.intValue() < Level.WARNING.intValue()) {
+                    logger.warn("{}: {}", record.getLevel().getName(), record.getMessage());
+                } else {
+                    logger.error("{}: {}", record.getLevel().getName(), record.getMessage());
+                }
+            }
+
+            @Override
+            public void flush() {
+
+            }
+
+            @Override
+            public void close() throws SecurityException {
+
+            }
+        }).build();
+
+        codeContext = Context.newBuilder("python")
                 .environment("OSTYPE", "MineOS")
                 .environment("PROCESSOR_ARCHITECTURE", "AMD64")
                 .environment("PYTHON_PLATFORM", "unix")
@@ -227,22 +269,21 @@ public class Laptop extends Screen implements System {
                 .environment("SHELL", "/bin/shell.py")
                 .environment("LANG", "en_US.UTF-8")
                 .environment("HOME", "/root")
-                .environment("TERM", "shell");
-        this.fileSystem = new LaptopFileSystem();
-        js.allowIO(IOAccess.newBuilder().fileSystem(fileSystem).build());
-        js.out(java.lang.System.out);
-        js.in(java.lang.System.in);
-        js.err(java.lang.System.err);
-        js.allowCreateThread(false);
-        js.allowCreateProcess(false);
-        js.allowNativeAccess(false);
-        js.allowEnvironmentAccess(EnvironmentAccess.NONE);
-        js.allowHostAccess(HostAccess.ISOLATED);
-        js.allowHostClassLoading(false);
-        js.allowValueSharing(false);
-        js.useSystemExit(false);
-        js.allowPolyglotAccess(PolyglotAccess.NONE);
-        codeContext = js.build();
+                .environment("TERM", "shell")
+                .option("python.PythonPath", "/Library:/User/Library:/User/Local/Library:/VariableData/Library:/System/Library:/Boot")
+                .allowIO(IOAccess.newBuilder().fileSystem(fileSystem).build())
+                .out(new LoggedPrintStream("Laptop", java.lang.System.out))
+                .in(NullInputStream.INSTANCE)
+                .err(new LoggedPrintStream("LaptopErr", java.lang.System.err))
+                .allowCreateThread(false)
+                .allowCreateProcess(false)
+                .allowNativeAccess(false)
+                .allowEnvironmentAccess(EnvironmentAccess.NONE)
+                .allowHostAccess(HostAccess.ISOLATED)
+                .allowHostClassLoading(false)
+                .allowValueSharing(false)
+                .useSystemExit(false)
+                .allowPolyglotAccess(PolyglotAccess.NONE).build();
 
         codeThread = createCodeThread();
     }
@@ -803,26 +844,37 @@ public class Laptop extends Screen implements System {
 
         codeContext.getBindings("python").putMember("Laptop", biosApi);
 
-        codeContext.eval("python", """
-        if __name__ == "__main__":
-            try:
-                with open("/boot/main.py", "r") as f:
-                    data = f.read()
-                    print(data)
-                    exec(data)
-        
-                print("Shut down!")
-            except Exception as e:
-                import traceback
-                traceback.print_exception(e)
-        """);
+        try {
+            codeContext.eval(Source.newBuilder("python", """
+            if __name__ == "__main__":
+                try:
+                    with open("/Boot/main.py", "r") as f:
+                        data = f.read()
+                        print(data)
+                        exec(data)
+            
+                    print("Shut down!")
+                except Exception as e:
+                    import traceback
+                    traceback.print_exception(e)
+            """, "<<bios>>").internal(true).build());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public PyProcess spawnProcess(Value modules, String[] command, Map<String, String> env) throws IOException {
+    public PyProcess spawnProcess(Value modules, String init, String[] command, Map<String, String> env) throws IOException {
         String s = command[0];
         String[] args = new String[command.length - 1];
         java.lang.System.arraycopy(command, 1, args, 0, command.length - 1);
-        return new PyProcess(fileSystem, modules, s, args, env);
+        int outPid = ++pid;
+        PyProcess pyProcess = new PyProcess(fileSystem, outPid, modules, init, s, args, env);
+        this.processes.put(pid, pyProcess);
+        return pyProcess;
+    }
+
+    public @Nullable PyProcess getProcess(int pid) {
+        return this.processes.get(pid);
     }
 
     private static final class BSOD {
@@ -1685,7 +1737,7 @@ public class Laptop extends Screen implements System {
             }))) {
                 return true;
             }
-            return path.toString().equals("/lib") || path.toString().matches("^/lib/(python|graalpy)\\d+(\\.\\d+)+(/.*|$)") || path.toString().matches("<.*>");
+            return path.toString().matches("<.*>");
         }
 
         @Override
@@ -1794,17 +1846,7 @@ public class Laptop extends Screen implements System {
                 throw new IOException("Cannot copy internal files");
             }
 
-            boolean overwrite = false;
-            for (CopyOption option : options) {
-                switch (option) {
-                    case StandardCopyOption.REPLACE_EXISTING -> overwrite = true;
-                    case StandardCopyOption.COPY_ATTRIBUTES -> {
-                        // Ignore
-                    }
-                    case StandardCopyOption.ATOMIC_MOVE -> throw new IOException("Atomic move not supported");
-                    case null, default -> throw new IOException("Option not supported: " + option);
-                }
-            }
+            boolean overwrite = isOverwrite(options);
 
             CompletableFuture<FSResponse<FileInfo>> future = new CompletableFuture<>();
             source = source.isAbsolute() ? source : currentWorkingDirectory.resolve(source);
@@ -1822,12 +1864,7 @@ public class Laptop extends Screen implements System {
             }
         }
 
-        @Override
-        public void move(Path source, Path target, CopyOption... options) throws IOException {
-            if (isInternal(source) || isInternal(target)) {
-                throw new IOException("Cannot move internal files");
-            }
-
+        private static boolean isOverwrite(CopyOption[] options) throws IOException {
             boolean overwrite = false;
             for (CopyOption option : options) {
                 switch (option) {
@@ -1839,6 +1876,16 @@ public class Laptop extends Screen implements System {
                     case null, default -> throw new IOException("Option not supported: " + option);
                 }
             }
+            return overwrite;
+        }
+
+        @Override
+        public void move(Path source, Path target, CopyOption... options) throws IOException {
+            if (isInternal(source) || isInternal(target)) {
+                throw new IOException("Cannot move internal files");
+            }
+
+            boolean overwrite = isOverwrite(options);
 
             CompletableFuture<FSResponse<Unit>> future = new CompletableFuture<>();
             source = source.isAbsolute() ? source : currentWorkingDirectory.resolve(source);

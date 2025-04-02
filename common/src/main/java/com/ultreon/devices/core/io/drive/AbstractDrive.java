@@ -21,10 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -482,6 +479,11 @@ public abstract class AbstractDrive implements FS {
 
     @Override
     public void createDirectory(Path path) throws IOException {
+        Ext2Entry fsEntry = getFS().getFsEntry(path);
+        if (fsEntry != null) {
+            if (fsEntry.isDirectory()) return;
+            else throw new FileAlreadyExistsException(path.toString());
+        }
         getFs().createDirectory(path);
     }
 

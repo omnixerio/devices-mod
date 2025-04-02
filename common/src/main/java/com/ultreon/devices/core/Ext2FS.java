@@ -227,9 +227,15 @@ public class Ext2FS implements FS {
         if (!path.toString().startsWith("/")) path = Path.of("/" + path);
         Ext2Directory parentDir = path.getParent() == null ? (Ext2Directory) fs.getRootEntry().getDirectory() : getDirectoryAt(path.getParent());
         if (path.getParent() != null && parentDir != null) {
+            if (parentDir.getEntry(path.getFileName().toString()) != null) {
+                throw new FileAlreadyExistsException(path.toString());
+            }
             parentDir.addDirectory(path.getFileName().toString());
             parentDir.flush();
         } else {
+            if (fs.getRootEntry().getDirectory().getEntry(path.getFileName().toString()) != null) {
+                throw new FileAlreadyExistsException(path.toString());
+            }
             FSDirectory directory = fs.getRootEntry().getDirectory();
             directory.addDirectory(path.getFileName().toString());
             directory.flush();

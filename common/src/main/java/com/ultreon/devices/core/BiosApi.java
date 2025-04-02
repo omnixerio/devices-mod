@@ -29,7 +29,13 @@ public class BiosApi {
         return uiApi;
     }
 
-    public PyProcess spawnProcess(Value modules, String[] command, Map<String, String> env) throws IOException {
-        return laptop.spawnProcess(modules, command, env);
+    public ProcessApi spawnProcess(Value modules, String init, String[] command, Map<String, String> env) throws IOException {
+        return laptop.spawnProcess(modules, init, command, env).api();
+    }
+
+    public ProcessApi getProcess(int pid) {
+        PyProcess process = laptop.getProcess(pid);
+        if (process == null) return null;
+        return process.api();
     }
 }
