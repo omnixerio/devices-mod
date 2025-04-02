@@ -133,3 +133,20 @@ run/
 
 # Ignore datagen cache.
 /common/src/main/generated/resources/.cache/
+
+/fabric/run
+/fabric/runs
+/forge/run
+/forge/runs
+/neoforge/run
+/neoforge/runs
+/common/run
+/common/runs
+/quilt/run
+/quilt/runs
+/bootimage/logs
+/logs
+*.log.gz
+*.log
+*.ext2
+/bootimage/src/fs/.idea/

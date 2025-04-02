@@ -1,0 +1,10 @@
+{
+    "schemaVersion": 2,
+    "name": "Terminal",
+    "authors": ["Qubilux"],
+    "description": "Essential terminal app",
+    "version": "1.0",
+    "screenshots": [
+        "https://i.imgur.com/7CzbiA7.png"
+    ]
+}

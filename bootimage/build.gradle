@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+}
+
+group = 'dev.ultreon.mods'
+version = '0.9.0'
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    fs {
+        resources {
+            srcDirs = ['src/fs']
+        }
+        java {
+            srcDirs.clear()
+            srcDirs = ['src/main/java']
+        }
+    }
+}
+
+processFsResources {
+    exclude ".idea"
+    exclude ".gradle"
+    exclude "build"
+    exclude "out"
+    exclude "**/__pycache__"
+    exclude "**/*.pyc"
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    implementation 'com.github.Nuix:jnode-fs:v1.0.1'
+}
+
+test {
+    useJUnitPlatform()
+}

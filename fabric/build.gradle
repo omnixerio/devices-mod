@@ -48,6 +48,8 @@ dependencies {
     modImplementation 'com.electronwill.night-config:core:3.6.5'
     modImplementation 'com.electronwill.night-config:toml:3.6.5'
 
+    include implementation("org.graalvm.polyglot:polyglot:24.1.1")
+    include implementation("org.graalvm.python:python-community:24.1.1")
 //    include(implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.10"))
 //    include(implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10"))
 //    include(implementation("com.ultreon:ultranlang:0.1.0+6"))

@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 import static com.ultreon.devices.core.io.FileSystem.request;
 
 public class Drive {
+    public static final int BUFFER_SIZE = 1024;
     private final String name;
     private final UUID uuid;
     private final Type type;
@@ -169,7 +170,7 @@ public class Drive {
     }
 
     public void write(Path path, byte[] data, Consumer<FSResponse<FileInfo>> callback) {
-        if (data.length < 1024) request(uuid, FileAction.Factory.makeWrite(path, -1, data), callback);
+        if (data.length < BUFFER_SIZE) request(uuid, FileAction.Factory.makeWrite(path, -1, data), callback);
         else if (data.length < 4 * 1024 * 1024) writeLarge(path, data, callback);
         else callback.accept(new FSResponse<>(false, FileSystem.Status.TOO_LARGE, null, "File too large"));
     }
@@ -181,7 +182,7 @@ public class Drive {
                 return;
             }
 
-            if (info.data().getSize() >= 1024) {
+            if (info.data().getSize() >= BUFFER_SIZE) {
                 readLarge(path, info.data().getSize(), callback);
             } else {
                 request(uuid, FileAction.Factory.makeRead(path), callback);
@@ -191,27 +192,10 @@ public class Drive {
 
     private void readLarge(Path path, long size, Consumer<FSResponse<byte[]>> callback) {
         byte[] output = new byte[(int) size];
-        AtomicInteger offset = new AtomicInteger(0);
-        int length = (int) Math.min(1024, size - offset.get());
-        var ref = new Object() {
-            void fsResponseConsumer(FSResponse<byte[]> r) {
-                if (!r.success()) {
-                    callback.accept(r);
-                    return;
-                }
-
-                int len = r.data().length;
-                System.arraycopy(r.data(), 0, output, offset.get(), len);
-
-                if (offset.get() == length) {
-                    callback.accept(new FSResponse<>(true, FileSystem.Status.SUCCESSFUL, output, ""));
-                    return;
-                }
-
-                request(uuid, FileAction.Factory.makeRead(path, offset.getAndSet(offset.get() + r.data().length) + r.data().length, (int) Math.min(1024, size - offset.get())), this::fsResponseConsumer);
-            }
-        };
-        request(uuid, FileAction.Factory.makeRead(path, offset.get(), length), ref::fsResponseConsumer);
+        int offset = 0;
+        int length = (int) Math.min(BUFFER_SIZE, size - offset);
+        var ref = new ReaderCallback(callback, output, offset, length, path, size);
+        ref.requestRead(0, BUFFER_SIZE);
     }
 
     public DataPath getRootDirectory() {
@@ -230,9 +214,9 @@ public class Drive {
     }
 
     private void writeLarge(Path path, byte[] data, Consumer<FSResponse<FileInfo>> callback) {
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[BUFFER_SIZE];
         AtomicInteger offset = new AtomicInteger(0);
-        int length = Math.min(1024, data.length - offset.get());
+        int length = Math.min(BUFFER_SIZE, data.length - offset.get());
         System.arraycopy(data, 0, buffer, 0, length);
         var ref = new Object() {
             void fsResponseConsumer(FSResponse<FileInfo> r) {
@@ -255,7 +239,7 @@ public class Drive {
     }
 
     private boolean writeNext(Path path, byte[] data, int offset, Consumer<FSResponse<FileInfo>> callback) {
-        int length = Math.min(1024, data.length - offset);
+        int length = Math.min(BUFFER_SIZE, data.length - offset);
         if (length <= 0) {
             return false;
         }
@@ -275,6 +259,46 @@ public class Drive {
                 }
             }
             return UNKNOWN;
+        }
+    }
+
+    private class ReaderCallback {
+        private final Consumer<FSResponse<byte[]>> callback;
+        private final byte[] output;
+        private final int length;
+        private final Path path;
+        private final long size;
+        private int offset;
+
+        public ReaderCallback(Consumer<FSResponse<byte[]>> callback, byte[] output, int offset, int length, Path path, long size) {
+            this.callback = callback;
+            this.output = output;
+            this.offset = offset;
+            this.length = length;
+            this.path = path;
+            this.size = size;
+        }
+
+        void fsResponseConsumer(FSResponse<byte[]> r) {
+            if (!r.success()) {
+                callback.accept(r);
+                return;
+            }
+
+            int len = r.data().length;
+            System.arraycopy(r.data(), 0, output, offset, len);
+
+            if (offset + len == size) {
+                callback.accept(new FSResponse<>(true, FileSystem.Status.SUCCESSFUL, output, ""));
+                return;
+            }
+
+            requestRead(offset + len, BUFFER_SIZE);
+        }
+
+        private void requestRead(long offset, int length) {
+            this.offset = (int) offset;
+            request(uuid, FileAction.Factory.makeRead(path, offset, (int) Math.min(length, size - offset)), this::fsResponseConsumer);
         }
     }
 }

@@ -1,11 +1,6 @@
-package com.ultreon.devices.core;
+package dev.ultreon.bootimager;
 
 import com.google.common.base.Preconditions;
-import com.ultreon.devices.Reference;
-import com.ultreon.devices.core.io.drive.AbstractDrive;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,12 +21,9 @@ import java.nio.ByteBuffer;
 import java.nio.file.*;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-@SuppressWarnings("t")
 public class Ext2FS implements FS {
     private final FileSystem<?> fs;
     private final ConcurrentMap<Path, Unit> locks = new ConcurrentHashMap<>();
@@ -47,17 +39,6 @@ public class Ext2FS implements FS {
                 LoggerFactory.getLogger(Ext2FS.class).error("Failed to close filesystem", e);
             }
         });
-    }
-
-    public static Ext2FS loadBootImage(ResourceManager manager, String name, UUID uuid) throws FileSystemException {
-        Optional<Resource> resource = manager.getResource(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "filesystems/" + name + ".ext2"));
-        if (resource.isEmpty()) return null;
-        try (var opened = resource.get().open()) {
-            Files.copy(opened, AbstractDrive.getDrivePath(uuid));
-            return Ext2FS.open(AbstractDrive.getDrivePath(uuid));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static Ext2FS open(Path filePath) throws IOException, FileSystemException {
@@ -90,6 +71,10 @@ public class Ext2FS implements FS {
 
     public static Ext2FS format(Path filePath, long diskSize) throws IOException, FileSystemException {
         if (diskSize <= 16384) throw new IllegalArgumentException("Disk size must be greater than 16 KiB");
+
+        if (!Files.exists(filePath)) {
+            Files.createFile(filePath);
+        }
 
         var device = new VirtualDevice("MineDisk");
         device.registerAPI(BlockDeviceAPI.class, new VirtualBlockDevice(filePath.toFile().getAbsolutePath(), diskSize));
@@ -179,8 +164,7 @@ public class Ext2FS implements FS {
         return (Ext2Directory) fsEntry.getDirectory();
     }
 
-    @Nullable
-    public Ext2Entry getFsEntry(Path path) throws IOException {
+    private @Nullable Ext2Entry getFsEntry(Path path) throws IOException {
         if (!path.toString().startsWith("/")) path = Path.of("/" + path);
         if (!path.toString().startsWith("/")) path = Path.of("/" + path);
         if (path.getParent() == null) return (Ext2Entry) fs.getRootEntry();
@@ -212,11 +196,11 @@ public class Ext2FS implements FS {
         FSFile file = parentDir.addFile(path.getFileName().toString()).getFile();
         file.flush();
         ByteBuffer buffer = ByteBuffer.allocate(1024);
-        for (int i = 0; i < Math.ceil((double) data.length / 1024); i++) {
+        for (int i = 0; i < data.length; i += 1024) {
             buffer.clear();
-            buffer.put(data, i * 1024, Math.min(1024, data.length - i * 1024));
+            buffer.put(data, i, Math.min(1024, data.length - i));
             buffer.flip();
-            file.write(0, buffer);
+            file.write(i, buffer);
             file.flush();
         }
         if (fs instanceof AbstractFileSystem<?> absFs) absFs.flush();

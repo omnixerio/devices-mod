@@ -38,6 +38,8 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
 
+    include implementation("org.graalvm.polyglot:polyglot:24.1.1")
+    include implementation("org.graalvm.python:python-community:24.1.1")
 //    forgeRuntimeLibrary "com.ultreon:ultranlang:0.1.0+6"
 //    implementation include("com.ultreon:ultranlang:0.1.0+6")
 

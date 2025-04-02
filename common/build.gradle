@@ -18,6 +18,8 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury:$architectury_version"
 
+    implementation "org.graalvm.polyglot:polyglot:24.1.1"
+    implementation "org.graalvm.python:python-community:24.1.1"
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.10"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10"
 //    modApi "com.ultreon:ultranlang:0.1.0+6"

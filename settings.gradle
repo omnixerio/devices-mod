@@ -15,3 +15,5 @@ include("neoforge")
 include("quilt")
 include("fabric-datagen-helper")
 include("fabric-testmod")
+include 'bootimage'
+

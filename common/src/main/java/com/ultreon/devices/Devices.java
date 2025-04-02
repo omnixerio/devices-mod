@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import com.mojang.serialization.Lifecycle;
 import com.ultreon.devices.api.ApplicationManager;
+import com.ultreon.devices.api.DeviceAPI;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.print.IPrint;
 import com.ultreon.devices.api.print.PrintingManager;
@@ -30,6 +31,7 @@ import com.ultreon.devices.object.TrayItem;
 import com.ultreon.devices.programs.IconsApp;
 import com.ultreon.devices.programs.PixelPainterApp;
 import com.ultreon.devices.programs.TestApp;
+import com.ultreon.devices.programs.activation.TaskActivateMineOS;
 import com.ultreon.devices.programs.auction.task.TaskAddAuction;
 import com.ultreon.devices.programs.auction.task.TaskBuyItem;
 import com.ultreon.devices.programs.auction.task.TaskGetAuctions;
@@ -64,13 +66,24 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Engine;
+import org.graalvm.polyglot.Language;
+import org.graalvm.polyglot.Value;
+import org.graalvm.polyglot.io.FileSystem;
+import org.graalvm.polyglot.io.IOAccess;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.net.URI;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.*;
+import java.nio.file.attribute.FileAttribute;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -218,6 +231,9 @@ public abstract class Devices {
         TaskManager.registerTask(TaskRegisterEmailAccount::new);
         TaskManager.registerTask(TaskDeleteEmail::new);
         TaskManager.registerTask(TaskViewEmail::new);
+
+        // Activation Stuff
+        TaskManager.registerTask(TaskActivateMineOS::new);
 
         if (Platform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableBetaApps) {
             // Auction

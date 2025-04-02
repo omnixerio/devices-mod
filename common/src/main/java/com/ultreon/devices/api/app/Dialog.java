@@ -43,8 +43,8 @@ public abstract class Dialog extends Wrappable {
     protected final ColorScheme colorScheme = Laptop.getInstance().getSettings().getColorScheme();
     protected final Layout defaultLayout;
     private String title = "Message";
-    private int width;
-    private int height;
+    protected int width;
+    protected int height;
     private Layout customLayout;
 
     private boolean pendingLayoutUpdate = true;
@@ -172,6 +172,7 @@ public abstract class Dialog extends Wrappable {
 
     public void close() {
         this.pendingClose = true;
+        this.getWindow().close();
     }
 
     /// The response listener interface. Used for handling responses
