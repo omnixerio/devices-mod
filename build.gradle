@@ -22,6 +22,16 @@ Object getModDescription() {
     return mod_description
 }
 
+tasks.register("runBootImager", JavaExec) {
+    classpath(files(rootProject.project("bootimage").sourceSets.main.output + project(":bootimage").sourceSets.main.runtimeClasspath))
+    mainClass = "dev.ultreon.bootimager.BootImager"
+}
+
+project("common").tasks.withType(ProcessResources).configureEach {
+    dependsOn ":runBootImager"
+}
+
+
 subprojects {
     apply plugin: "dev.architectury.loom"
 

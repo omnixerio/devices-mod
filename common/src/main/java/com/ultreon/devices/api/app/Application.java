@@ -131,8 +131,11 @@ public abstract class Application extends Wrappable implements DataHandler {
 //        GL11.glEnable(GL11.GL_SCISSOR_TEST);
 
         GLHelper.pushScissor(x, y, width, height);
-        currentLayout.render(graphics, laptop, mc, x, y, mouseX, mouseY, active, partialTicks);
-        GLHelper.popScissor();
+        try {
+            currentLayout.render(graphics, laptop, mc, x, y, mouseX, mouseY, active, partialTicks);
+        } finally {
+            GLHelper.popScissor();
+        }
 
         // TODO Port this to 1.18.2 if possible
 //        if (!GLHelper.isScissorStackEmpty()) {

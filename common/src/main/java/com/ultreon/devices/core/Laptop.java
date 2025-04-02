@@ -5,11 +5,13 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.ApplicationManager;
+import com.ultreon.devices.api.DeviceAPI;
+import com.ultreon.devices.api.app.*;
 import com.ultreon.devices.api.app.Dialog;
 import com.ultreon.devices.api.app.System;
-import com.ultreon.devices.api.app.*;
 import com.ultreon.devices.api.app.component.Image;
 import com.ultreon.devices.api.io.Drive;
+import com.ultreon.devices.api.io.FSResponse;
 import com.ultreon.devices.api.task.Callback;
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.api.task.TaskManager;
@@ -19,6 +21,7 @@ import com.ultreon.devices.block.entity.ComputerBlockEntity;
 import com.ultreon.devices.core.io.task.TaskGetMainDrive;
 import com.ultreon.devices.core.task.TaskInstallApp;
 import com.ultreon.devices.object.AppInfo;
+import com.ultreon.devices.programs.activation.ActivationApp;
 import com.ultreon.devices.programs.system.DiagnosticsApp;
 import com.ultreon.devices.programs.system.DisplayResolution;
 import com.ultreon.devices.programs.system.PredefinedResolution;
@@ -47,18 +50,34 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Unit;
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.graalvm.polyglot.*;
+import org.graalvm.polyglot.io.FileSystem;
+import org.graalvm.polyglot.io.IOAccess;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.AccessDeniedException;
-import java.nio.file.Path;
-import java.util.List;
+import java.net.URI;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.FileTime;
+import java.nio.file.attribute.UserPrincipal;
 import java.util.*;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+
+import static java.lang.System.currentTimeMillis;
 
 /// Laptop GUI class.
 ///
@@ -71,8 +90,16 @@ public class Laptop extends Screen implements System {
     private static Font font;
     private static final ResourceLocation LAPTOP_GUI = ResourceLocation.fromNamespaceAndPath(Devices.MOD_ID, "textures/gui/laptop.png");
     private static final List<Application> APPLICATIONS = new ArrayList<>();
+    private static final int ACTIVATE_RETRY = 60;
     private static boolean worldLess;
     private static Laptop instance;
+    private final Context codeContext;
+    private final CompletableFuture<Thread> codeThread;
+    private final LaptopFileSystem fileSystem;
+    private boolean registered;
+    private UUID license = null;
+    private int retryActivate = seconds2ticks(ACTIVATE_RETRY);
+    private ActivationApp registerApp;
     private Double dragWindowFromX;
     private Double dragWindowFromY;
     private final VideoInfo videoInfo;
@@ -81,6 +108,7 @@ public class Laptop extends Screen implements System {
     private Window<Dialog> systemDialogWindow = null;
     private static boolean loaded;
     private Bios bios;
+    private final BiosApi biosApi = new BiosApi(this);
 
     @PlatformOnly("fabric")
     public static List<Application> getApplicationsForFabric() {
@@ -140,6 +168,10 @@ public class Laptop extends Screen implements System {
         this.appData = laptop.getApplicationData();
         this.systemData = laptop.getSystemData();
 
+        if (this.systemData.contains("License")) {
+            license = this.systemData.getUUID("License");
+        }
+
         CompoundTag videoInfoData = this.systemData.getCompound("videoInfo");
         this.videoInfo = new VideoInfo(videoInfoData);
 
@@ -186,6 +218,57 @@ public class Laptop extends Screen implements System {
 
         // World-less flag.
         Laptop.worldLess = worldLess;
+
+        Context.Builder js = Context.newBuilder("python")
+                .environment("OSTYPE", "MineOS")
+                .environment("PROCESSOR_ARCHITECTURE", "AMD64")
+                .environment("PYTHON_PLATFORM", "unix")
+                .environment("USER", "root")
+                .environment("SHELL", "/bin/shell.py")
+                .environment("LANG", "en_US.UTF-8")
+                .environment("HOME", "/root")
+                .environment("TERM", "shell");
+        this.fileSystem = new LaptopFileSystem();
+        js.allowIO(IOAccess.newBuilder().fileSystem(fileSystem).build());
+        js.out(java.lang.System.out);
+        js.in(java.lang.System.in);
+        js.err(java.lang.System.err);
+        js.allowCreateThread(false);
+        js.allowCreateProcess(false);
+        js.allowNativeAccess(false);
+        js.allowEnvironmentAccess(EnvironmentAccess.NONE);
+        js.allowHostAccess(HostAccess.ISOLATED);
+        js.allowHostClassLoading(false);
+        js.allowValueSharing(false);
+        js.useSystemExit(false);
+        js.allowPolyglotAccess(PolyglotAccess.NONE);
+        codeContext = js.build();
+
+        codeThread = createCodeThread();
+    }
+
+    private CompletableFuture<Thread> createCodeThread() {
+        CompletableFuture<Drive> future = new CompletableFuture<>();
+        getOrLoadMainDrive((drive, success) -> {
+            if (!success) {
+                future.completeExceptionally(new IOException("Failed to load main drive"));
+                return;
+            }
+            future.complete(drive);
+        });
+
+        return future.thenApply((drive) -> {
+            if (drive == null) {
+                future.completeExceptionally(new IOException("Failed to load main drive"));
+                return null;
+            }
+
+            Thread codeThread = new Thread(this::initialize);
+
+            codeThread.setDaemon(false);
+            codeThread.start();
+            return codeThread;
+        });
     }
 
     private Bios determineBios(ComputerBlockEntity laptop) {
@@ -326,6 +409,12 @@ public class Laptop extends Screen implements System {
 
     @Override
     public void removed() {
+        try {
+            codeContext.close(true);
+        } catch (Exception e) {
+            // Ignore
+        }
+
         /* Close all windows and sendTask application data */
         for (int i = 0; i < windows.size(); i++) {
             Window<?> window = windows.get(i);
@@ -398,10 +487,29 @@ public class Laptop extends Screen implements System {
                 }
             }
 
+            if (!isActivated()) {
+                if (retryActivate >= seconds2ticks(ACTIVATE_RETRY)) {
+                    retryActivate = 0;
+                    Devices.LOGGER.info("System isn't activated, showing activate window.");
+                    setSystemDialog(new ActivationApp());
+                } else {
+                    retryActivate++;
+                }
+            }
+
             FileBrowser.refreshList = false;
         } catch (Exception e) {
             bsod(e);
         }
+    }
+
+    public void showActivateWindow() {
+        Devices.LOGGER.info("System isn't activated, showing activate window.");
+        setSystemDialog(new ActivationApp());
+    }
+
+    private int seconds2ticks(int seconds) {
+        return seconds * 20;
     }
 
     @Override
@@ -667,6 +775,54 @@ public class Laptop extends Screen implements System {
                 callback.accept(result);
             });
         }, reason));
+    }
+
+    public boolean isActivated() {
+        return license != null && isValidLicense(license);
+    }
+
+    private boolean isValidLicense(UUID license) {
+        return (license.getMostSignificantBits() % 4_01) == 0 && (license.getLeastSignificantBits() % 2025) == 0;
+    }
+
+    public boolean activate(UUID license) {
+        if (!isValidLicense(license)) {
+            return false;
+        }
+        this.license = license;
+        return true;
+    }
+
+    private void initialize() {
+        codeContext.enter();
+        try {
+            codeContext.getBindings("python").putMember("DeviceAPI", new DeviceAPI(Laptop.getInstance()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        codeContext.getBindings("python").putMember("Laptop", biosApi);
+
+        codeContext.eval("python", """
+        if __name__ == "__main__":
+            try:
+                with open("/boot/main.py", "r") as f:
+                    data = f.read()
+                    print(data)
+                    exec(data)
+        
+                print("Shut down!")
+            except Exception as e:
+                import traceback
+                traceback.print_exception(e)
+        """);
+    }
+
+    public PyProcess spawnProcess(Value modules, String[] command, Map<String, String> env) throws IOException {
+        String s = command[0];
+        String[] args = new String[command.length - 1];
+        java.lang.System.arraycopy(command, 1, args, 0, command.length - 1);
+        return new PyProcess(fileSystem, modules, s, args, env);
     }
 
     private static final class BSOD {
@@ -1374,6 +1530,370 @@ public class Laptop extends Screen implements System {
                 a.putString("path", this.locationPath.toString());
             }
             return a;
+        }
+    }
+
+    private record FileInfoDirectoryStream(FSResponse<List<FileInfo>> voidFSResponse) implements DirectoryStream<Path> {
+        @Override
+        public void close() throws IOException {
+
+        }
+
+        @Override
+        public @NotNull Iterator<Path> iterator() {
+            return new Iterator<>() {
+                int index = 0;
+
+                @Override
+                public boolean hasNext() {
+                    return index < voidFSResponse.data().size();
+                }
+
+                @Override
+                public Path next() {
+                    FileInfo info = voidFSResponse.data().get(index);
+                    index++;
+                    return info.getPath();
+                }
+            };
+        }
+    }
+
+    public static class LaptopFileSystem implements FileSystem {
+        private final FileSystem delegate = FileSystem.newDefaultFileSystem();
+        private Path currentWorkingDirectory = Path.of("/");
+
+        @Override
+        public Path parsePath(URI uri) {
+            return delegate.parsePath(uri);
+        }
+
+        @Override
+        public Path parsePath(String path) {
+            return delegate.parsePath(path);
+        }
+
+        @Override
+        public void checkAccess(Path path, Set<? extends AccessMode> modes, LinkOption... linkOptions) throws IOException {
+            if (isInternal(path)) {
+                try {
+                    delegate.checkAccess(path, modes, linkOptions);
+                } catch (IOException e) {
+                    throw e;
+                }
+                return;
+            }
+            CompletableFuture<FSResponse<Boolean>> future = new CompletableFuture<>();
+            mainDrive.exists(path, future::complete);
+            try {
+                FSResponse<Boolean> booleanFSResponse = future.get();
+                if (!booleanFSResponse.success()) {
+                    throw new IOException(booleanFSResponse.message());
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                throw new IOException(e);
+            } catch (IOException e) {
+                throw e;
+            }
+
+        }
+
+        @Override
+        public void createDirectory(Path path, FileAttribute<?>... attrs) throws IOException {
+            if (isInternal(path)) {
+                delegate.createDirectory(path, attrs);
+                return;
+            } CompletableFuture<FSResponse<FileInfo>> future = new CompletableFuture<>();
+
+            path = path.isAbsolute() ? path : currentWorkingDirectory.resolve(path);
+
+            if (path.equals(Path.of("/"))) {
+                throw new FileAlreadyExistsException("Cannot create root directory");
+            }
+            Path fileName = path.getFileName();
+            if (fileName == null) {
+                throw new IOException("Failed to create directory");
+            }
+            mainDrive.createDirectory(path.getParent(), fileName.toString(), future::complete);
+            try {
+                FSResponse<FileInfo> voidFSResponse = future.get();
+                if (!voidFSResponse.success()) {
+                    throw new IOException(voidFSResponse.message());
+                }
+
+                if (voidFSResponse.data() == null) {
+                    throw new IOException("Failed to create directory");
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                throw new IOException(e);
+            } catch (IOException e) {
+                throw e;
+            }
+        }
+
+        @Override
+        public void delete(Path path) throws IOException {
+            if (isInternal(path)) {
+                delegate.delete(path);
+                return;
+            }
+            path = path.isAbsolute() ? path : currentWorkingDirectory.resolve(path);
+
+            CompletableFuture<FSResponse<Unit>> future = new CompletableFuture<>();
+            mainDrive.delete(path, future::complete);
+            try {
+                FSResponse<Unit> voidFSResponse = future.get();
+                if (!voidFSResponse.success()) {
+                    throw new IOException(voidFSResponse.message());
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                throw new IOException(e);
+            } catch (IOException e) {
+                throw e;
+            }
+        }
+
+        @Override
+        public SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options, FileAttribute<?>... attrs) throws IOException {
+            if (isInternal(path)) {
+                return delegate.newByteChannel(path, options, attrs);
+            }
+
+            path = path.isAbsolute() ? path : currentWorkingDirectory.resolve(path);
+            CompletableFuture<FSResponse<byte[]>> future = new CompletableFuture<>();
+            mainDrive.read(path, future::complete);
+            try {
+                FSResponse<byte[]> voidFSResponse = future.get();
+                if (!voidFSResponse.success()) {
+                    throw new IOException(voidFSResponse.message());
+                }
+
+                return new SeekableInMemoryByteChannel(voidFSResponse.data());
+            } catch (InterruptedException | ExecutionException e) {
+                throw new IOException(e);
+            } catch (IOException e) {
+                throw e;
+            }
+        }
+
+        private static boolean isInternal(Path path) {
+            if (path.startsWith(Path.of(switch (java.lang.System.getProperty("os.name")) {
+                case "Linux" -> "/home/" + java.lang.System.getProperty("user.name") + "/.cache/org.graalvm.polyglot";
+                case "Mac OS X" -> "/Users/" + java.lang.System.getProperty("user.name") + "/Library/Caches/org.graalvm.polyglot";
+                case "Windows" -> "/Users/" + java.lang.System.getProperty("user.name") + "/AppData/Local/org.graalvm.polyglot";
+                default -> throw new IllegalStateException();
+            }))) {
+                return true;
+            }
+            return path.toString().equals("/lib") || path.toString().matches("^/lib/(python|graalpy)\\d+(\\.\\d+)+(/.*|$)") || path.toString().matches("<.*>");
+        }
+
+        @Override
+        public DirectoryStream<Path> newDirectoryStream(Path path, DirectoryStream.Filter<? super Path> filter) throws IOException {
+            if (isInternal(path)) {
+                return delegate.newDirectoryStream(path, filter);
+            }
+            path = path.isAbsolute() ? path : currentWorkingDirectory.resolve(path);
+            CompletableFuture<FSResponse<List<FileInfo>>> future = new CompletableFuture<>();
+            mainDrive.list(path, future::complete);
+            try {
+                FSResponse<List<FileInfo>> voidFSResponse = future.get();
+                if (!voidFSResponse.success()) {
+                    throw new IOException(voidFSResponse.message());
+                }
+
+                return new FileInfoDirectoryStream(voidFSResponse);
+            } catch (InterruptedException | ExecutionException e) {
+                throw new IOException(e);
+            } catch (IOException e) {
+                throw e;
+            }
+        }
+
+        @Override
+        public Path toAbsolutePath(Path path) {
+            return path.toAbsolutePath();
+        }
+
+        @Override
+        public Path toRealPath(Path path, LinkOption... linkOptions) throws IOException {
+            return path.toRealPath(linkOptions);
+        }
+
+        @Override
+        public Map<String, Object> readAttributes(Path path, String attributes, LinkOption... options) throws IOException {
+            if (isInternal(path)) {
+                Map<String, Object> stringObjectMap = delegate.readAttributes(path, attributes, options);
+                return stringObjectMap;
+            }
+
+            path = path.isAbsolute() ? path : currentWorkingDirectory.resolve(path);
+            CompletableFuture<FSResponse<FileInfo>> future = new CompletableFuture<>();
+            mainDrive.info(path, future::complete);
+            try {
+                FSResponse<FileInfo> voidFSResponse = future.get();
+                if (!voidFSResponse.success()) {
+                    throw new IOException(voidFSResponse.message());
+                }
+
+                FileInfo info = voidFSResponse.data();
+                if (info == null) {
+                    throw new IOException("Failed to get file info");
+                }
+
+                Map<String, Object> map = new HashMap<>();
+                if (attributes.startsWith("unix:")) {
+                    attributes = attributes.substring("unix:".length());
+                } else if (attributes.startsWith("basic:")) {
+                    attributes = attributes.substring("basic:".length());
+                } else {
+                    throw new IllegalArgumentException("Unsupported attributes: " + attributes);
+                }
+                for (@NotNull String entry : attributes.split(",")) {
+                    switch (entry) {
+                        case "size" -> map.put("size", info.getSize());
+                        case "isDirectory" -> map.put("isDirectory", info.isFolder());
+                        case "isRegularFile" -> map.put("isRegularFile", info.isFile());
+                        case "isSymbolicLink" -> map.put("isSymbolicLink", info.isSymbolicLink());
+                        case "uid" -> map.put("uid", info.getUid());
+                        case "gid" -> map.put("gid", info.getGid());
+                        case "owner" -> map.put("owner", (UserPrincipal) () -> "user");
+                        case "permissions" -> map.put("permissions", info.getMode());
+                        case "creationTime" -> map.put("creationTime", FileTime.fromMillis(info.getCreationTime()));
+                        case "lastAccessed" -> map.put("lastAccessed", FileTime.fromMillis(info.getLastAccessed()));
+                        case "lastAccessedTime" -> map.put("lastAccessedTime", FileTime.fromMillis(info.getLastAccessed()));
+                        case "lastAccessTime" -> map.put("lastAccessTime", FileTime.fromMillis(info.getLastAccessed()));
+                        case "lastModified" -> map.put("lastModified", FileTime.fromMillis(info.getLastModified()));
+                        case "lastModifiedTime" -> map.put("lastModifiedTime", FileTime.fromMillis(info.getLastModified()));
+                        case "createdTime" -> map.put("createdTime", FileTime.fromMillis(info.getCreationTime()));
+                        case "inode" -> map.put("inode", info.getInode());
+                        case "fileKey" -> map.put("fileKey", info.getFileKey());
+                        case "ino" -> map.put("ino", info.getIno());
+                        case "rdev" -> map.put("rdev", info.getDev());
+                        case "atime" -> map.put("atime", FileTime.fromMillis(currentTimeMillis()));
+                        case "mtime" -> map.put("mtime", FileTime.fromMillis(currentTimeMillis()));
+                        case "ctime" -> map.put("ctime", FileTime.fromMillis(currentTimeMillis()));
+                        case "dev" -> map.put("dev", info.getDev());
+                        case "nlink" -> map.put("nlink", info.getNlink());
+                        case "mode" -> map.put("mode", info.getMode());
+                        default ->
+                                throw new IOException("Unknown attribute: " + entry);
+                    }
+                }
+                return map;
+            } catch (InterruptedException | ExecutionException e) {
+                throw new IOException(e);
+            } catch (IOException e) {
+                throw e;
+            }
+        }
+
+        @Override
+        public void copy(Path source, Path target, CopyOption... options) throws IOException {
+            if (isInternal(source) || isInternal(target)) {
+                throw new IOException("Cannot copy internal files");
+            }
+
+            boolean overwrite = false;
+            for (CopyOption option : options) {
+                switch (option) {
+                    case StandardCopyOption.REPLACE_EXISTING -> overwrite = true;
+                    case StandardCopyOption.COPY_ATTRIBUTES -> {
+                        // Ignore
+                    }
+                    case StandardCopyOption.ATOMIC_MOVE -> throw new IOException("Atomic move not supported");
+                    case null, default -> throw new IOException("Option not supported: " + option);
+                }
+            }
+
+            CompletableFuture<FSResponse<FileInfo>> future = new CompletableFuture<>();
+            source = source.isAbsolute() ? source : currentWorkingDirectory.resolve(source);
+            target = target.isAbsolute() ? target : currentWorkingDirectory.resolve(target);
+            mainDrive.copy(source, target, overwrite, future::complete);
+            try {
+                FSResponse<FileInfo> voidFSResponse = future.get();
+                if (!voidFSResponse.success()) {
+                    throw new IOException(voidFSResponse.message());
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                throw new IOException(e);
+            } catch (IOException e) {
+                throw e;
+            }
+        }
+
+        @Override
+        public void move(Path source, Path target, CopyOption... options) throws IOException {
+            if (isInternal(source) || isInternal(target)) {
+                throw new IOException("Cannot move internal files");
+            }
+
+            boolean overwrite = false;
+            for (CopyOption option : options) {
+                switch (option) {
+                    case StandardCopyOption.REPLACE_EXISTING -> overwrite = true;
+                    case StandardCopyOption.COPY_ATTRIBUTES -> {
+                        // Ignore
+                    }
+                    case StandardCopyOption.ATOMIC_MOVE -> throw new IOException("Atomic move not supported");
+                    case null, default -> throw new IOException("Option not supported: " + option);
+                }
+            }
+
+            CompletableFuture<FSResponse<Unit>> future = new CompletableFuture<>();
+            source = source.isAbsolute() ? source : currentWorkingDirectory.resolve(source);
+            target = target.isAbsolute() ? target : currentWorkingDirectory.resolve(target);
+            mainDrive.move(source, target, overwrite, future::complete);
+            try {
+                FSResponse<Unit> voidFSResponse = future.get();
+                if (!voidFSResponse.success()) {
+                    throw new IOException(voidFSResponse.message());
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                throw new IOException(e);
+            }
+        }
+
+        @Override
+        public void createSymbolicLink(Path link, Path target, FileAttribute<?>... attrs) throws IOException {
+            throw new IOException("Symbolic links not supported");
+        }
+
+        @Override
+        public void createLink(Path link, Path existing) throws IOException {
+            throw new IOException("Hard links not supported");
+        }
+
+        @Override
+        public void setCurrentWorkingDirectory(Path currentWorkingDirectory) {
+            this.delegate.setCurrentWorkingDirectory(currentWorkingDirectory);
+
+            this.currentWorkingDirectory = currentWorkingDirectory;
+        }
+
+        @Override
+        public String getSeparator() {
+            return "/";
+        }
+
+        @Override
+        public String getPathSeparator() {
+            return ":";
+        }
+
+        @Override
+        public Path getTempDirectory() {
+            return Path.of("/tmp");
+        }
+
+        @Override
+        public Charset getEncoding(Path path) {
+            return StandardCharsets.UTF_8;
+        }
+
+        @Override
+        public Path readSymbolicLink(Path link) throws IOException {
+            throw new IOException("Symbolic links not supported");
         }
     }
 }

@@ -25,6 +25,11 @@ import static com.ultreon.devices.core.io.FileSystem.request;
 public final class FileInfo {
     public static final Comparator<FileInfo> SORT_BY_NAME = Comparator.comparing(a -> a.path.getFileName().toString());
     public static final Comparator<FileInfo> SORT_BY_TYPE = Comparator.comparing(a -> a.type);
+    private final long dev;
+    private final int nlink;
+    private final int uid;
+    private final int gid;
+    private final short mode;
     private Path path;
     private final DataPath dataPath;
     private final FSEntryType type;
@@ -32,15 +37,31 @@ public final class FileInfo {
     private Drive drive;
     private boolean invalid;
     private long size;
+    private long inode;
+    private long ino;
     private long lastModified;
     private long lastAccessed;
     private long creationTime;
+    private int fileKey;
+    private boolean isSymbolicLink;
 
     /// Creates a new file info object
-    public FileInfo(Drive drive, Path path, FSEntryType type, long size, boolean protectedFile) {
+    public FileInfo(Drive drive, Path path, FSEntryType type, long size, long ino, long lastModified, long lastAccessed, long creationTime, long inode, long dev, int nlink, int uid, int gid, boolean protectedFile, short mode, boolean isSymbolicLink) {
         this.path = path;
         this.type = type;
         this.size = size;
+        this.ino = ino;
+        this.inode = inode;
+        this.lastModified = lastModified;
+        this.lastAccessed = lastAccessed;
+        this.creationTime = creationTime;
+        this.drive = drive;
+        this.dev = dev;
+        this.nlink = nlink;
+        this.uid = uid;
+        this.gid = gid;
+        this.mode = mode;
+        this.isSymbolicLink = isSymbolicLink;
         this.dataPath = new DataPath(drive, path);
         this.protectedFile = protectedFile;
     }
@@ -52,7 +73,18 @@ public final class FileInfo {
                 Path.of(compoundTag.getString("path")),
                 compoundTag.getBoolean("folder") ? FSEntryType.FOLDER : FSEntryType.FILE,
                 compoundTag.getLong("size"),
-                compoundTag.getBoolean("protected")
+                compoundTag.getLong("ino"),
+                compoundTag.getLong("lastModified"),
+                compoundTag.getLong("lastAccessed"),
+                compoundTag.getLong("creationTime"),
+                compoundTag.getLong("inode"),
+                compoundTag.getLong("dev"),
+                compoundTag.getByte("nlink"),
+                compoundTag.getInt("uid"),
+                compoundTag.getInt("gid"),
+                compoundTag.getBoolean("protected"),
+                compoundTag.getShort("mode"),
+                compoundTag.getBoolean("isSymbolicLink")
         );
     }
 
@@ -225,7 +257,7 @@ public final class FileInfo {
     }
 
     public FileInfo withExtension(String name) {
-        FileInfo fileInfo = new FileInfo(drive, path.toString().endsWith(name) ? path : path.resolveSibling(getName() + "." + name), type, size, protectedFile);
+        FileInfo fileInfo = new FileInfo(drive, path.toString().endsWith(name) ? path : path.resolveSibling(getName() + "." + name), type, size, ino, lastModified, lastAccessed, creationTime, inode, dev, nlink, uid, gid, protectedFile, mode, isSymbolicLink);
         fileInfo.size = size;
         fileInfo.lastAccessed = lastAccessed;
         fileInfo.lastModified = lastModified;
@@ -235,5 +267,53 @@ public final class FileInfo {
 
     public long getSize() {
         return size;
+    }
+
+    public long getIno() {
+        return ino;
+    }
+
+    public long getCreationTime() {
+        return creationTime;
+    }
+
+    public long getLastAccessed() {
+        return lastAccessed;
+    }
+
+    public long getLastModified() {
+        return lastModified;
+    }
+
+    public long getDev() {
+        return dev;
+    }
+
+    public long getInode() {
+        return inode;
+    }
+
+    public int getFileKey() {
+        return fileKey;
+    }
+
+    public int getNlink() {
+        return nlink;
+    }
+
+    public boolean isSymbolicLink() {
+        return isSymbolicLink;
+    }
+
+    public int getGid() {
+        return gid;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public int getMode() {
+        return mode;
     }
 }

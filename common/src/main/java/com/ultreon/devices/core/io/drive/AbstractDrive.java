@@ -15,6 +15,7 @@ import net.minecraft.world.level.storage.LevelResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jnode.fs.FileSystemException;
+import org.jnode.fs.ext2.Ext2Entry;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,7 +56,7 @@ public abstract class AbstractDrive implements FS {
             Path resolve = Devices.getServer().getWorldPath(LevelResource.ROOT).resolve("data/devices/drives/" + uuid + ".ext2");
             if (Files.notExists(resolve)) {
                 if (Files.notExists(resolve.getParent())) Files.createDirectories(resolve.getParent());
-                this.setFs(Ext2FS.format(resolve, 1L));
+                this.setFs(Ext2FS.loadBootImage(Devices.getServer().getResourceManager(), "main", uuid));
                 this.setup();
             } else this.setFs(Ext2FS.open(resolve));
         } catch (IOException | FileSystemException e) {
@@ -91,7 +92,7 @@ public abstract class AbstractDrive implements FS {
             Path resolve = Devices.getServer().getWorldPath(LevelResource.ROOT).resolve("data/devices/drives/" + uuid + ".ext2");
             if (Files.notExists(resolve)) {
                 if (Files.notExists(resolve.getParent())) Files.createDirectories(resolve.getParent());
-                this.setFs(Ext2FS.format(resolve, 16 * 1024 * 1024));
+                this.setFs(Ext2FS.loadBootImage(Devices.getServer().getResourceManager(), "main", uuid));
                 this.setup();
             } else this.setFs(Ext2FS.open(resolve));
         } catch (IOException | FileSystemException e) {
@@ -224,6 +225,20 @@ public abstract class AbstractDrive implements FS {
         data.putString("path", path.toString());
         data.putBoolean("protected", getFs().isReadOnly(path));
         data.putBoolean("folder", getFs().isFolder(path));
+        Ext2Entry fsEntry = getFs().getFsEntry(path);
+        data.putLong("ino", fsEntry == null ? 0 : fsEntry.getINode().getINodeNr());
+        data.putLong("inode", fsEntry == null ? 0 : fsEntry.getINode().getINodeNr());
+        data.putLong("lastModified", fsEntry == null ? 0L : fsEntry.getINode().getMtime());
+        data.putLong("lastAccessed", fsEntry == null ? 0L : fsEntry.getINode().getAtime());
+        data.putLong("creationTime", fsEntry == null ? 0L : fsEntry.getINode().getCtime());
+        data.putBoolean("exists", fsEntry != null);
+        data.putShort("mode", fsEntry == null ? 0 : (short) fsEntry.getINode().getMode());
+        data.putLong("dev", fsEntry == null ? 0L : uuid.hashCode());
+        data.putByte("nlink", (byte) (fsEntry == null ? 0 : 1));
+        data.putInt("uid", fsEntry == null ? 0 : fsEntry.getINode().getUid());
+        data.putInt("gid", fsEntry == null ? 0 : fsEntry.getINode().getGid());
+        data.putLong("rdev", fsEntry == null ? 0L : uuid.hashCode());
+        data.putBoolean("isSymlink", false);
         data.putLong("size", getFs().size(path));
         return data;
     }

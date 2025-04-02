@@ -18,10 +18,13 @@ import com.ultreon.devices.api.utils.OnlineRequest;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.object.TrayItem;
+import com.ultreon.devices.programs.activation.LicenseManager;
 import com.ultreon.devices.programs.system.component.Palette;
 import com.ultreon.devices.programs.system.object.ColorScheme;
 import com.ultreon.devices.programs.system.object.ColorSchemePresetRegistry;
 import com.ultreon.devices.programs.system.object.Preset;
+import dev.architectury.utils.Env;
+import dev.architectury.utils.EnvExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
@@ -95,28 +98,45 @@ public class SettingsApp extends SystemApp {
         this.layoutColorSchemes = createColorSchemesLayout();
         this.layoutGeneral = createGeneralLayout();
 
-        Button buttonColorScheme = new Button(5, 26 + 20 + 4, "Personalise", Icons.EDIT);
+        if (!LicenseManager.isActivated()) {
+            Button buttonActivate = new Button(5, 26 + 20 + 4, "Activate", Icons.UNLOCK);
+            buttonActivate.setSize(90, 20);
+            buttonActivate.setToolTip("Activate", "Activate your license");
+            buttonActivate.setClickListener((mouseX, mouseY, mouseButton) -> {
+                EnvExecutor.runInEnv(Env.CLIENT, () -> () -> {
+                    Laptop laptop = getLaptop();
+                    if (laptop != null) {
+                        laptop.showActivateWindow();
+                    }
+                });
+            });
+            layoutMain.addComponent(buttonActivate);
+        }
+
+        Button buttonColorScheme = new Button(5, 26 + 26 + 20 + 4, "Personalise", Icons.EDIT);
         buttonColorScheme.setSize(90, 20);
         buttonColorScheme.setToolTip("Personalise", "Change the wallpaper, UI colors, and more!");
         buttonColorScheme.setClickListener((mouseX, mouseY, mouseButton) -> {
             if (mouseButton == 0) {
+                if (checkLicense()) return;
                 showMenu(layoutPersonalise);
+
             }
         });
-
         layoutMain.addComponent(buttonColorScheme);
 
-        Button buttonColorSchemes = new Button(5, 26 + 26 + 20 + 4, "Themes", Icons.WRENCH);
+        Button buttonColorSchemes = new Button(5, 26 + 26 + 26 + 20 + 4, "Themes", Icons.WRENCH);
         buttonColorSchemes.setSize(90, 20);
         buttonColorSchemes.setToolTip("Color Schemes", "Change the color scheme using presets or choose a custom one.");
         buttonColorSchemes.setClickListener((mouseX, mouseY, mouseButton) -> {
             if (mouseButton == 0) {
+                if (checkLicense()) return;
                 showMenu(layoutColorSchemes);
             }
         });
         layoutMain.addComponent(buttonColorSchemes);
 
-        Button buttonGeneral = new Button(5, 26 + 26 + 26 + 20 + 4, "Advanced", Icons.WRENCH);
+        Button buttonGeneral = new Button(5, 26 + 26 + 26 + 26 + 20 + 4, "Advanced", Icons.WRENCH);
         buttonGeneral.setSize(90, 20);
         buttonGeneral.setToolTip("General", "General settings.");
         buttonGeneral.setClickListener((mouseX, mouseY, mouseButton) -> {
@@ -127,6 +147,24 @@ public class SettingsApp extends SystemApp {
         layoutMain.addComponent(buttonGeneral);
 
         return layoutMain;
+    }
+
+    private boolean checkLicense() {
+        if (!LicenseManager.isActivated()) {
+            Dialog.Confirmation confirmation = new Dialog.Confirmation("You need to buy a license before using this.\nDo you want to activate now?");
+            openDialog(confirmation);
+            confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
+                EnvExecutor.runInEnv(Env.CLIENT, () -> () -> {
+                    Laptop laptop = getLaptop();
+                    if (laptop != null) {
+                        laptop.showActivateWindow();
+                    }
+                });
+            });
+
+            return true;
+        }
+        return false;
     }
 
     @NotNull
