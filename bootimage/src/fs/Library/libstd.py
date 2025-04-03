@@ -67,47 +67,11 @@ class Gpu:
 def syscall(syscall: str, *args) -> Any:
     raise NotImplemented  # The kernel overrides this
 
-def get_gl() -> 'GL':
-    return syscall("gl", "call")
+def gl_context(funcname: str, *args) -> Any:
+    syscall("gl", "call", funcname, *args)
 
 class GL:
-    def __init__(self):
-        self.gl11: Any
-        self.gl12: Any
-        self.gl13: Any
-        self.gl14: Any
-        self.gl15: Any
-        self.gl20: Any
-        self.gl21: Any
-        self.gl30: Any
-        self.gl31: Any
-        self.gl32: Any
-        self.gl33: Any
-        self.gl40: Any
-        self.gl41: Any
-
-        raise NotImplemented
-
-    def getWidth(self) -> int:
-        raise NotImplemented
-
-    def getHeight(self) -> int:
-        raise NotImplemented
-
-    def createTexture(self, data: bytes) -> int:
-        raise NotImplemented
-
-    def drawTexture(self, texture: int, x: int, y: int, width: int, height: int):
-        raise NotImplemented
-
-    def deleteTexture(self, texture: int):
-        raise NotImplemented
-
-    def fill(self, x: int, y: int, width: int, height: int, color: int):
-        raise NotImplemented
-
-    def rect(self, x: int, y: int, width: int, height: int, color: int):
-        raise NotImplemented
-
-    def clear(self, color: int):
-        raise NotImplemented
+    def __getattr__(self, name: str) -> Callable:
+        def wrapper(*args, **kwargs):
+            return gl_context(name, *args)
+        return wrapper

@@ -4,7 +4,9 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.ultreon.devices.Reference;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.AbstractTexture;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.*;
 
 import java.io.IOException;
@@ -12,13 +14,13 @@ import java.util.WeakHashMap;
 
 @SuppressWarnings("unused")
 public class Gpu {
-    private static final WeakHashMap<Laptop, Gpu> instances = new WeakHashMap<>();
+    private static final WeakHashMap<GuiGraphics, Gpu> instances = new WeakHashMap<>();
     public static final int ERRNO_EIO = 1;
     public static final int ERRNO_TEXTURE_LIMIT = 2;
     public static final int ERRNO_NOT_FOUND = 3;
     public static final int ERRNO_ILLEGAL_ARGUMENT = 4;
 
-    private final Laptop laptop;
+    private final GuiGraphics graphics;
     public final Class<GL11> gl11 = GL11.class;
     public final Class<GL12> gl12 = GL12.class;
     public final Class<GL13> gl13 = GL13.class;
@@ -35,10 +37,10 @@ public class Gpu {
     public int errno;
     private final Int2ObjectMap<GpuTexture> textures = new Int2ObjectArrayMap<>();
 
-    public Gpu(Laptop laptop) {
-        this.laptop = laptop;
+    public Gpu(@NotNull GuiGraphics graphics) {
+        this.graphics = graphics;
 
-        Reference.CLEANER.register(laptop, () -> {
+        Reference.CLEANER.register(graphics, () -> {
             for (AbstractTexture texture : this.textures.values()) {
                 texture.releaseId();
             }
@@ -53,7 +55,7 @@ public class Gpu {
         return this.error;
     }
 
-    public Object createTexture(byte[] pixelData) {
+    public int createTexture(byte[] pixelData) {
         if (this.textures.size() >= 64) {
             this.errno = ERRNO_TEXTURE_LIMIT;
             this.error = "Texture limit reached";
@@ -92,31 +94,25 @@ public class Gpu {
     }
 
     public void drawTexture(int id, int x, int y, int width, int height) {
-        laptop.taskGpu(guiGraphics -> {
-            GpuTexture texture = this.textures.get(id);
-            if (texture == null) {
-                this.errno = ERRNO_NOT_FOUND;
-                this.error = "Texture does not exist";
-                return;
-            }
+        GpuTexture texture = this.textures.get(id);
+        if (texture == null) {
+            this.errno = ERRNO_NOT_FOUND;
+            this.error = "Texture does not exist";
+            return;
+        }
 
-            guiGraphics.blit(texture.getTextureLocation(), x, y, 0, 0, width, height);
-        });
+        graphics.blit(texture.getTextureLocation(), x, y, 0, 0, width, height);
     }
 
     public void fill(int x, int y, int width, int height, int color) {
-        laptop.taskGpu(guiGraphics -> {
-            guiGraphics.fill(x, y, x + width, y + height, color);
-        });
+        graphics.fill(x, y, x + width, y + height, color);
     }
 
     public void rect(int x, int y, int width, int height, int color) {
-        laptop.taskGpu(guiGraphics -> {
-            guiGraphics.renderOutline(x, y, x + width, y + height, color);
-        });
+        graphics.renderOutline(x, y, x + width, y + height, color);
     }
 
-    public static Gpu of(Laptop laptop) {
-        return instances.computeIfAbsent(laptop, Gpu::new);
+    public static Gpu of(@NotNull GuiGraphics graphics) {
+        return instances.computeIfAbsent(graphics, Gpu::new);
     }
 }

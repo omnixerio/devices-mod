@@ -301,7 +301,7 @@ class __BiosApi:
         # Native API
         raise NotImplemented()
 
-    def getGpu(self) -> Gpu:
+    def gpuCall(self, funcname: str, args: list[str]) -> Any:
         # Native API
         raise NotImplemented()
 
@@ -655,7 +655,7 @@ def _bootinit(bios: __BiosApi):
     def handle_syscall(name: str, *args) -> Any:
         if name == "gl":
             if args[0] == "call":
-                return bios.getGpu()
+                return bios.gpuCall(args[1], args[2:])
             else:
                 raise NotImplementedError(f"GL command '{args[0]}' not implemented")
         elif name == "filesystem":

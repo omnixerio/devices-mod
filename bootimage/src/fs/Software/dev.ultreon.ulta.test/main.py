@@ -1,6 +1,6 @@
-import os
-
 import libstd
+import os
+import sys
 
 
 class Main:
@@ -11,19 +11,13 @@ class Main:
         pass
 
     def mainloop(self):
-        gpu = libstd.get_gl()
-        print(str(gpu))
-        try:
-            print(gpu.toString())
-        except Exception as e:
-            print(f"Failed to convert GPU to string: {e}")
-            print(gpu)
+        gpu = libstd.GL()
         while True:
             if self.texture == -1:
                 try:
                     with open("test.png", "rb") as f:
                         data = f.read()
-                        self.texture = gpu.createTexture(bytes(data))
+                        self.texture = gpu.createTexture(data)
                 except Exception as e:
                     raise Exception(f"Failed to load texture: {e}")
 

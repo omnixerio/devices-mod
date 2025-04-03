@@ -1,9 +1,13 @@
 package com.ultreon.devices.core;
 
+import net.minecraft.util.Unit;
 import org.graalvm.polyglot.Value;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @SuppressWarnings("unused")
 @Api
@@ -47,7 +51,8 @@ public class BiosApi {
     }
 
     @Api
-    public Gpu getGpu() {
-        return laptop.getGpu();
+    public Object gpuCall(String name, List<Object> args) throws ExecutionException, InterruptedException {
+        Future<Object> objectFuture = laptop.taskGpu(name, args);
+        return objectFuture.get();
     }
 }

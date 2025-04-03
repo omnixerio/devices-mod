@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.ApplicationManager;
+import com.ultreon.devices.api.DeviceAPI;
 import com.ultreon.devices.api.app.*;
 import com.ultreon.devices.api.app.Dialog;
 import com.ultreon.devices.api.app.System;
@@ -26,6 +27,7 @@ import com.ultreon.devices.programs.system.DiagnosticsApp;
 import com.ultreon.devices.programs.system.DisplayResolution;
 import com.ultreon.devices.programs.system.PredefinedResolution;
 import com.ultreon.devices.programs.system.SystemApp;
+import com.ultreon.devices.programs.system.component.FileBrowser;
 import com.ultreon.devices.programs.system.component.FileInfo;
 import com.ultreon.devices.programs.system.task.TaskUpdateApplicationData;
 import com.ultreon.devices.programs.system.task.TaskUpdateSystemData;
@@ -50,11 +52,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.LoggedPrintStream;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Unit;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.input.NullInputStream;
-import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.io.FileSystem;
 import org.graalvm.polyglot.io.IOAccess;
@@ -82,7 +84,6 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -126,7 +127,6 @@ public class Laptop extends Screen implements System {
     private final Int2ObjectMap<PyProcess> processes = new Int2ObjectArrayMap<>();
     private GLFramebuffer framebuffer;
     private final Object gpuLock = new Object();
-    private Gpu gpu = new Gpu(this);
 
     @PlatformOnly("fabric")
     public static List<Application> getApplicationsForFabric() {
@@ -167,7 +167,7 @@ public class Laptop extends Screen implements System {
     }
 
     private CompletableFuture<Object> gpuReply;
-    private Function<GuiGraphics, Object> gpuTask;
+    private GpuTask gpuTask;
 
 
     /// Creates a new laptop GUI.
@@ -620,23 +620,9 @@ public class Laptop extends Screen implements System {
         }
     }
 
-    public Future<Object> taskGpu(Function<GuiGraphics, Object> runnable) {
+    public Future<Object> taskGpu(String name, List<Object> args) {
         synchronized (this.gpuLock) {
-            this.gpuTask = runnable;
-
-            CompletableFuture<Object> future = new CompletableFuture<>();
-            this.gpuReply = future;
-
-            return future;
-        }
-    }
-
-    public Future<Object> taskGpu(Consumer<GuiGraphics> runnable) {
-        synchronized (this.gpuLock) {
-            this.gpuTask = (graphics) -> {
-                runnable.accept(graphics);
-                return null;
-            };
+            this.gpuTask = new GpuTask(name, args);
 
             CompletableFuture<Object> future = new CompletableFuture<>();
             this.gpuReply = future;
@@ -754,7 +740,7 @@ public class Laptop extends Screen implements System {
         if (gpuTask != null) {
             framebuffer.begin();
             try {
-                gpuReply.complete(gpuTask.apply(graphics));
+                gpuReply.complete(gpuTask.run(Gpu.of(graphics)));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -969,10 +955,6 @@ public class Laptop extends Screen implements System {
 
     public @Nullable PyProcess getProcess(int pid) {
         return this.processes.get(pid);
-    }
-
-    public Gpu getGpu() {
-        return gpu;
     }
 
     private static final class BSOD {
