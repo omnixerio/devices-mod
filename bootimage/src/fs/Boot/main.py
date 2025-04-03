@@ -50,23 +50,37 @@ def boot():
     sys.path.append("/System/Library")
     sys.path.append("/VariableData/Library")
 
-    if "/Library" not in sys.path:
-        raise Exception("Failed to add /Library to sys.path")
-
     print(sys.path)
 
+    boot_path = "/System/Library/libsystem.py"
+
     import os
-    if not os.path.exists("/Library/libsystem.py"):
-        raise Exception("Failed to find /Library/libsystem.py")
+    if not os.path.exists(boot_path):
+        raise Exception(f"Failed to find {boot_path}")
 
     import importlib
-
+    from importlib import util as importutil
+    from importlib.machinery import ModuleSpec
+    from importlib.abc import MetaPathFinder
     importlib.invalidate_caches()
-    libsystem = importlib.import_module("libsystem")
+
+    class UltaOSPathFinder(MetaPathFinder):
+        def find_spec(self, fullname, path=None, target=None) -> ModuleSpec | None:
+            for p in sys.path:
+                if os.path.exists(os.path.join(p, fullname.replace(".", "/") + ".py")):
+                    return importutil.spec_from_file_location(fullname, os.path.join(p, fullname.replace(".", "/") + ".py"))
+            return None
+
+        def invalidate_caches(self):
+            super().invalidate_caches()
+
+    sys.meta_path.insert(0, UltaOSPathFinder())
+
+    import libsystem
 
     # noinspection PyUnresolvedReferences
     try:
-        libsystem._bootinit(bios)
+        libsystem._bootinit(__bios)
     except Exception as e:
         print(e)
 
@@ -74,4 +88,25 @@ def boot():
             pass
 
 
-boot()
+class SLF4JLogger:
+    def __init__(self):
+        pass
+
+    def error(self, message):
+        raise NotImplemented
+
+    def info(self, message):
+        raise NotImplemented
+
+    def debug(self, message):
+        raise NotImplemented
+
+
+logger: SLF4JLogger
+
+
+try:
+    boot()
+except Exception as e:
+    import traceback
+    traceback.print_exception(e)

@@ -1,8 +1,6 @@
 package com.ultreon.devices.core;
 
 import com.ultreon.devices.Devices;
-import org.apache.commons.io.input.NullInputStream;
-import org.apache.commons.io.output.NullOutputStream;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotAccess;
 import org.graalvm.polyglot.Source;
@@ -29,8 +27,10 @@ public class PyProcess extends Thread {
     private IntConsumer onExit;
     private Context processContext;
     private final ProcessApi api = ProcessApi.of(this);
+    private Context parent;
 
     public PyProcess(Laptop.LaptopFileSystem fs, int pid, Value modules, String init, String path, String[] args, Map<String, String> env) throws IOException {
+        this.setName("Process: " + path);
         this.fs = fs;
         this.pid = pid;
         this.modules = modules;
@@ -38,6 +38,14 @@ public class PyProcess extends Thread {
         this.path = path;
         this.args = args;
         this.env = env;
+    }
+
+    @Override
+    public void start() {
+        parent = Context.getCurrent();
+        ProcessManagement.add(parent, this);
+
+        super.start();
     }
 
     public void setOnExit(IntConsumer handler) {
@@ -53,9 +61,14 @@ public class PyProcess extends Thread {
         try {
             this.join();
         } catch (InterruptedException e) {
-            this.onExit.accept(code);
+            onExit(code);
             Thread.currentThread().interrupt();
         }
+    }
+
+    private void onExit(int code) {
+        ProcessManagement.remove(parent, this);
+        if (onExit != null) onExit.accept(code);
     }
 
     @Override
@@ -68,9 +81,6 @@ public class PyProcess extends Thread {
                 .allowValueSharing(true)
                 .allowNativeAccess(false)
                 .allowPolyglotAccess(PolyglotAccess.NONE)
-                .in(NullInputStream.INSTANCE)
-                .out(NullOutputStream.INSTANCE)
-                .err(NullOutputStream.INSTANCE)
                 .allowHostClassLoading(false)
                 .useSystemExit(false)
                 .build()) {
@@ -78,10 +88,11 @@ public class PyProcess extends Thread {
             context.enter();
 
             Value bindings = context.getBindings("python");
-            bindings.putMember("_moduleImport", this.modules);
+            bindings.putMember("shared", this.modules);
+            context.eval(Source.newBuilder("python", init, "__main__").build());
+            bindings.removeMember("shared");
 
-            context.eval(Source.newBuilder("python", init, "<<process-init>>").internal(true).build());
-
+            bindings.putMember("__file__", path);
             this.processContext = context;
 
             try (SeekableByteChannel seekableByteChannel = fs.newByteChannel(Path.of(path), Collections.emptySet())) {
@@ -89,14 +100,15 @@ public class PyProcess extends Thread {
                 ByteBuffer buffer = ByteBuffer.allocate((int) size);
                 seekableByteChannel.read(buffer);
                 buffer.flip();
-                Value python = context.eval(Source.newBuilder("python", new String(buffer.array(), StandardCharsets.UTF_8), path).encoding(StandardCharsets.UTF_8).build());
+                Value python = context.eval(Source.newBuilder("python", new String(buffer.array(), StandardCharsets.UTF_8), "__main__").encoding(StandardCharsets.UTF_8).build());
                 Value execute = python.getMember("main").execute("main", args);
                 int anInt = execute.asInt();
                 if (anInt != 0) {
-                    onExit.accept(anInt);
+                    onExit(anInt);
                 }
             } catch (IOException e) {
-                onExit.accept(1);
+                Devices.LOGGER.error("ERROR:", e);
+                onExit(1);
             }
 
             context.leave();

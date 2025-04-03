@@ -201,12 +201,55 @@ class ProcessApi:
 
 # noinspection PyPep8Naming
 @readonly
-class __BiosApi:
+class Gpu:
     def __init__(self):
+        self.gl11: Any
+        self.gl12: Any
+        self.gl13: Any
+        self.gl14: Any
+        self.gl15: Any
+        self.gl20: Any
+        self.gl21: Any
+        self.gl30: Any
+        self.gl31: Any
+        self.gl32: Any
+        self.gl33: Any
+        self.gl40: Any
+        self.gl41: Any
+
+    def getWidth(self) -> int:
         # Native API
         raise NotImplemented()
 
-    def getInventoryApi(self) -> InventoryApi:
+    def getHeight(self) -> int:
+        # Native API
+        raise NotImplemented()
+
+    def createTexture(self, data: bytes) -> int:
+        # Native API
+        raise NotImplemented()
+
+    def drawTexture(self, texture: int, x: int, y: int, width: int, height: int):
+        # Native API
+        raise NotImplemented()
+
+    def deleteTexture(self, texture: int):
+        # Native API
+        raise NotImplemented()
+
+    def fill(self, x: int, y: int, width: int, height: int, color: int):
+        # Native API
+        raise NotImplemented()
+
+    def rect(self, x: int, y: int, width: int, height: int, color: int):
+        # Native API
+        raise NotImplemented()
+
+
+# noinspection PyPep8Naming
+@readonly
+class __BiosApi:
+    def __init__(self):
         # Native API
         raise NotImplemented()
 
@@ -219,6 +262,46 @@ class __BiosApi:
         raise NotImplemented()
 
     def getProcess(self, pid: int) -> ProcessApi:
+        # Native API
+        raise NotImplemented()
+
+    def fsCreateDir(self, path: str, mode: int):
+        # Native API
+        raise NotImplemented()
+
+    def fsDelete(self, path: str):
+        # Native API
+        raise NotImplemented()
+
+    def fsExists(self, path: str) -> bool:
+        # Native API
+        raise NotImplemented()
+
+    def fsIsDir(self, path: str) -> bool:
+        # Native API
+        raise NotImplemented()
+
+    def fsIsFile(self, path: str) -> bool:
+        # Native API
+        raise NotImplemented()
+
+    def fsRead(self, path: str) -> bytes:
+        # Native API
+        raise NotImplemented()
+
+    def fsWrite(self, path: str, data: bytes):
+        # Native API
+        raise NotImplemented()
+
+    def fsRename(self, old_path: str, new_path: str):
+        # Native API
+        raise NotImplemented()
+
+    def fsCopy(self, src: str, dest: str):
+        # Native API
+        raise NotImplemented()
+
+    def getGpu(self) -> Gpu:
         # Native API
         raise NotImplemented()
 
@@ -453,6 +536,13 @@ def reboot():
 def is_allowed(privilege: str) -> bool:
     return system.syscall("privilege", "check", privilege)
 
+def glContext(func: Callable[[Gpu], Any], *args, **kwargs) -> Any:
+    """
+    Get the OpenGL context
+    :return: The OpenGL context
+    """
+    return system.syscall("gl", "context", func, args, kwargs)
+
 def run_privileged(privilege: str, func: Callable[[Any], Any], *args, **kwargs) -> Any:
     """
     Run a function with the given privilege.
@@ -475,7 +565,6 @@ def _bootinit(bios: __BiosApi):
 
     print("Booting...")
 
-    globals()['get_inventory'] = bios.getInventoryApi
     globals()['get_ui'] = bios.getUiApi
     globals()['bootinit'] = None
     globals()['__shutdown_requested'] = False
@@ -519,7 +608,7 @@ def _bootinit(bios: __BiosApi):
 
     print("Launching processes...")
 
-    processes: list[Process] = []
+    processes: list[ProcessApi] = []
 
     def filesystem_handler(*args) -> Any:
         if len(args) == 0:
@@ -558,64 +647,27 @@ def _bootinit(bios: __BiosApi):
     def process_handler(*args):
         if len(args) == 0:
             raise ValueError("No command provided")
-        if args[0] == "spawn":
-            if len(args) != 2:
-                raise ValueError("create requires 1 argument")
-            modules = deepcopy(sys.modules)
-            del modules['sys']
-            del modules['os']
-            del modules['os.path']
-            del modules['boot']
-            del modules['main']
-            del modules['boot.main']
-            modules._data = {
-                "path": args[1],
-                "args": args[2],
-                "env": args[3],
-                "syscall": handle_syscall
-                "syspath": [
-                    "/Library",
-                    "/User/Library",
-                    "/User/local/Library",
-                    "/VariableData/Library"
-                ]
-            }
-            modules.__setitem__ = do_not_allow_setitem
-            modules.__setattr__ = do_not_allow_setattr
-
-            # noinspection PyUnboundLocalVariable,PyProtectedMember
-            preinit = """
-from types import ModuleType
-import sys
-
-_moduleImport: dict[str, ModuleType]
-
-for key, value in _moduleImport:
-    if 'libsystem' == key:
-        continue
-    sys.modules[key] = value
-    
-sys.path = _moduleImport._data["syspath"]
-
-import importlib
-importlib.invalidate_caches()
-
-import libstd
-libstd.syscall = _moduleImport._data["syscall"]
-    
-del sys, ModuleType, _moduleImport, libsystem         
-"""
-            return bios.spawnProcess(modules, preinit, args[2], args[3])
+        elif args[0] == "spawn":
+            if len(args) < 2:
+                raise ValueError("spawn command requires at least 1 argument")
+            spawn(args[1], args[2], args[3])
 
     def handle_syscall(name: str, *args) -> Any:
-        if name == "filesystem":
+        if name == "gl":
+            if args[0] == "call":
+                return bios.getGpu()
+            else:
+                raise NotImplementedError(f"GL command '{args[0]}' not implemented")
+        elif name == "filesystem":
             return filesystem_handler(*args)
         elif name == "process":
             return process_handler(*args)
         elif name == "power_state":
-            return power_state_handler(*args)
+            pass
+            # return power_state_handler(*args)
         elif name == "os":
-            return os_handler(*args)
+            pass
+            # return os_handler(*args)
         else:
             raise NotImplementedError(f"Syscall '{name}' not implemented")
 
@@ -627,18 +679,112 @@ del sys, ModuleType, _moduleImport, libsystem
         def __setattr__(self, key, value):
             raise AttributeError(f"Cannot set attribute {key}, class '{type(self).__name__}' is read-only")
 
+    def spawn(path: str, args: list[str], env: dict[str, str]) -> ProcessApi:
+        """
+        Spawn a new process
+
+        :param path: The path to the executable
+        :param args: The arguments to pass to the executable
+        :param env: The environment variables to set for the new process
+        :return: The new process
+        :raises OSError: If the process could not be spawned
+        """
+
+        print("Spawning process:", path)
+
+        exposed_modules = [
+            "libsystem",
+        ]
+
+        modules = {
+            "path": path,
+            "args": args,
+            "env": env,
+            "syscall": handle_syscall,
+            "modules": {name: module for name, module in sys.modules.items() if name in exposed_modules},
+            "syspath": [
+                "/Library",
+                "/User/Library",
+                "/User/local/Library",
+                "/VariableData/Library"
+            ]
+        }
+
+        # noinspection PyUnboundLocalVariable,PyProtectedMember,PyUnresolvedReferences
+        preinit = """
+try:
+    from typing import Any
+    import sys
+
+    sys.argv = shared["args"]
+    sys.argv.insert(0, shared["path"])
+    sys.env = shared["env"]
+    
+    path_index = 0
+    for path in shared["syspath"]:
+        sys.path.insert(path_index, path)
+        path_index += 1
+    
+    import importlib
+    importlib.invalidate_caches()
+    
+    from importlib.abc import MetaPathFinder
+    from importlib.machinery import ModuleSpec
+    from importlib import util as importutil
+    import os
+            
+    class UltaOSPathFinder(MetaPathFinder):
+        def find_spec(self, fullname, path=None, target=None) -> ModuleSpec | None:
+        
+            for p in sys.path:
+                if os.path.exists(os.path.join(p, fullname.replace(".", "/") + ".py")):
+                    return importutil.spec_from_file_location(fullname, os.path.join(p, fullname.replace(".", "/") + ".py"))
+            return None
+    
+        def invalidate_caches(self):
+            super().invalidate_caches()
+            
+        def __setattr__(self, key, value):
+            raise AttributeError(f"Cannot set attribute {key}, class '{type(self).__name__}' is read-only")
+    
+    sys.meta_path.insert(0, UltaOSPathFinder())
+    
+    import libstd
+    libstd.syscall = shared["syscall"]
+    
+    try:
+        import tkinter
+    except Exception as e:
+        import traceback
+        traceback.print_exception(e)
+        # Ignore the error, as it's literally not be needed at all LMAO
+    
+    print("Starting process:", shared["path"])
+    del sys, libstd, shared, importlib, importutil, MetaPathFinder, ModuleSpec, os
+except Exception as e:
+    raise e
+"""
+
+        print("Spawning process:", path)
+
+        args.insert(0, path)
+
+        process = bios.spawnProcess(modules, preinit, args, env)
+        processes.append(process)
+
+        print("Process spawned:", process.pid())
+        return process
+
+    spawn("/Software/dev.ultreon.ulta.test/main.py", [], {"MEOW": "true"})
+
     while True:
         if globals()['__shutdown_requested']:
             print("Shutting down...")
             for p in processes:
-                p.kill()
+                p.kill(-1)
             break
 
         for p in processes:
             p.update()
 
     print("Shutting down...")
-
-
-if __name__ == "__bootinit__":
-    _bootinit(__bios)

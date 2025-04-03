@@ -3,9 +3,12 @@ package com.ultreon.devices;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.platform.Platform;
 
+import java.lang.ref.Cleaner;
+
 public class Reference {
     public static final String MOD_ID = "devices";
     public static final String VERSION;
+    public static final Cleaner CLEANER = Cleaner.create();
     private static String[] verInfo;
     static {
         VERSION = getVersion();
