@@ -1,14 +1,1 @@
-pluginManagement {
-    repositories {
-        maven { url "https://maven.fabricmc.net/" }
-        maven { url "https://maven.architectury.dev/" }
-        maven { url "https://maven.minecraftforge.net/" }
-        gradlePluginPortal()
-    }
-}
-
-include("common")
-include("fabric")
-include("forge")
-include("fabric-datagen-helper")
-include("fabric-testmod")
+rootProject.name = 'DevicesMod'
