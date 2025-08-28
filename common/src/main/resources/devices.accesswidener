@@ -3,4 +3,6 @@ accessible method net/minecraft/client/gui/Font getFontSet (Lnet/minecraft/resou
 accessible field net/minecraft/client/Minecraft fontManager Lnet/minecraft/client/gui/font/FontManager;
 accessible method net/minecraft/client/renderer/LevelRenderer renderEntity (Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;)V
 mutable field net/minecraft/world/entity/item/ItemEntity bobOffs F
-# accessible method net/minecraft/client/gui/components/Button <init> (IIIILnet/minecraft/network/chat/Component;Lnet/minecraft/client/gui/components/Button$OnPress;Lnet/minecraft/client/gui/components/Button$OnTooltip;Lnet/minecraft/client/gui/components/Button$CreateNarration;)V
+accessible method com/mojang/blaze3d/platform/NativeImage <init> (Lcom/mojang/blaze3d/platform/NativeImage$Format;IIZJ)V
+accessible class net/minecraft/world/level/block/entity/BlockEntityType$BlockEntitySupplier
+accessible method net/minecraft/world/level/storage/LevelResource <init> (Ljava/lang/String;)V

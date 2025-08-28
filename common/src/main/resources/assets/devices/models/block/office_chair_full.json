@@ -8,6 +8,7 @@
         "3": "block/gray_concrete",
         "chair_color": "block/red_wool"
     },
+    "render_type": "cutout",
     "display": {
         "gui": {
             "rotation": [

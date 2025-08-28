@@ -1,55 +1,48 @@
-//file:noinspection GradlePackageUpdate
-architectury {
-    common platforms.split(",")
+plugins {
+    id 'multiloader-common'
+    id 'net.neoforged.moddev'
 }
 
-loom {
-    accessWidenerPath = file "src/main/resources/devices.accesswidener"
-}
-
-repositories {
-    maven { url = "https://cursemaven.com" }
+neoForge {
+    neoFormVersion = neo_form_version
+    // Automatically enable AccessTransformers if the file exists
+    def at = file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (at.exists()) {
+        accessTransformers.add(at.absolutePath)
+    }
+    parchment {
+        minecraftVersion = parchment_minecraft
+        mappingsVersion = parchment_version
+    }
 }
 
 dependencies {
-    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
-    // Do NOT use other classes from fabric loader
-    modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
-    // Remove the next line if you don't want to depend on the API
-    modApi "dev.architectury:architectury:$architectury_version"
+    compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
+    // fabric and neoforge both bundle mixinextras, so it is safe to use it in common
+    compileOnly group: 'io.github.llamalad7', name: 'mixinextras-common', version: '0.4.1'
+    annotationProcessor group: 'io.github.llamalad7', name: 'mixinextras-common', version: '0.4.1'
 
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.10"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10"
-//    modApi "com.ultreon:ultranlang:0.1.0+6"
+    // Project Reactor
+    implementation group: 'io.projectreactor', name: 'reactor-core', version: '3.5.5'
+    implementation "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:21.1.0"
 
-    modCompileOnly "fuzs.forgeconfigapiport:forgeconfigapiport-common:8.0.0"
-    modCompileOnly 'com.electronwill.night-config:core:3.6.3'
-    modCompileOnly 'com.electronwill.night-config:toml:3.6.3'
-
+    implementation "dev.ultreon.mods:xinexlib-common-1.21.1:$xinexlib_version"
+    implementation 'com.github.Nuix:jnode-fs:v1.0.1'
 }
 
-sourceSets {
-    main {
-        resources {
-            srcDirs += [
-                    "src/main/generated/resources"
-            ]
-            System.out.println(srcDirs)
-        }
+configurations {
+    commonJava {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+    commonResources {
+        canBeResolved = false
+        canBeConsumed = true
     }
 }
 
-publishing {
-    publications {
-        mavenCommon(MavenPublication) {
-            artifactId = rootProject.archives_base_name
-            from components.java
-        }
-    }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-    }
-    rootProject.setupRepositories(repositories)
+artifacts {
+    commonJava sourceSets.main.java.sourceDirectories.singleFile
+    commonResources sourceSets.main.resources.sourceDirectories.singleFile
 }
+

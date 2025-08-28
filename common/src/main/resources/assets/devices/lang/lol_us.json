@@ -127,7 +127,7 @@
   "item.devices.wifi": "WiFi Module",
   "item.devices.yellow_flash_drive": "Yello Short Sticc",
   "itemGroup.devices.devices_tab_device": "Devices",
-  "itemGroup.devices_tab_device": "Devices Mod",
+  "itemGroup.devices_tab_device": "Ultreon Devices Mod",
   "message.devices.device_already_connected": "The selected device is already connected to this router.",
   "message.devices.invalid_cable": "Please select a device first before adding it to this router.",
   "message.devices.router_max_devices": "The maximum amount of devices has been reached for this router.",

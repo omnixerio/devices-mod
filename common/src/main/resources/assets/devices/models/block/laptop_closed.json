@@ -6,6 +6,7 @@
         "2": "devices:block/red_wool",
         "particle": "devices:block/laptop1"
     },
+    "render_type": "cutout",
     "elements": [
         {
             "name": "screen_3",

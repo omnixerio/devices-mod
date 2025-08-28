@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "id": "devices",
   "version": "${version}",
-  "name": "Devices Mod",
+  "name": "Ultreon Devices Mod",
   "description": "${description}",
   "authors": [
-    "Ultreon Team"
+    "Ultreon Studios"
   ],
   "contributors": [
-    "Qboi123",
+    "Qubilux",
     "Jab125",
     "MrCrayfish",
     "MinecraftDoodler",
@@ -36,23 +36,23 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.ultreon.devices.fabric.DevicesFabric"
+      "dev.ultreon.devices.fabric.DevicesFabricMod"
     ],
     "devices:application_registration": [
-      "com.ultreon.devices.fabric.BuiltinAppsRegistration"
+      "dev.ultreon.devices.fabric.BuiltinAppsRegistration"
     ],
     "fabric-datagen": [
-      "com.ultreon.devices.datagen.DevicesDataGenerator"
+      "dev.ultreon.devices.fabric.datagen.DevicesDataGenerator"
     ]
   },
   "mixins": [
-    "devices.mixins.json",
-    "devices-common.mixins.json"
+    "devices.fabric.mixins.json",
+    "devices.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=${loaderVersion}",
-    "minecraft": [">=1.20 <=1.20.1"],
-    "architectury": ">=9.1 <10"
+    "fabricloader": ">=${fabric_loader_version}",
+    "minecraft": [">=1.21"],
+    "xinexlib": "*"
   },
   "custom": {
     "modmenu": {

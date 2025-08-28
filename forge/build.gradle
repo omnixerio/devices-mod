@@ -1,112 +1,112 @@
-//file:noinspection GrDeprecatedAPIUsage
-//file:noinspection GroovyAssignabilityCheck
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id 'multiloader-loader'
+    id 'net.minecraftforge.gradle' version '[6.0.24,6.2)'
+    id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
+}
+base {
+    archivesName = "${mod_name}-forge-${minecraft_version}"
+}
+mixin {
+    config("${mod_id}.mixins.json")
+    config("${mod_id}.forge.mixins.json")
 }
 
-version rootProject.version
+minecraft {
+    mappings channel: 'official', version: minecraft_version
 
-architectury {
-    platformSetupLoomIde()
-    forge()
-}
+    copyIdeResources = true //Calls processResources when in dev
 
-loom {
-    accessWidenerPath = project(":common").loom.accessWidenerPath
+    reobf = false // Forge 1.20.6+ uses official mappings at runtime, so we shouldn't reobf from official to SRG
 
-    forge {
-        convertAccessWideners = true
-        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+    // Automatically enable forge AccessTransformers if the file exists
+    // This location is hardcoded in Forge and can not be changed.
+    // https://github.com/MinecraftForge/MinecraftForge/blob/be1698bb1554f9c8fa2f58e32b9ab70bc4385e60/fmlloader/src/main/java/net/minecraftforge/fml/loading/moddiscovery/ModFile.java#L123
+    // Forge still uses SRG names during compile time, so we cannot use the common AT's
+    def at = file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (at.exists()) {
+        accessTransformer = at
+    }
+
+    runs {
+        client {
+            workingDirectory file('runs/client')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Client'
+            mods {
+                modClientRun {
+                    source sourceSets.main
+                }
+            }
+
+            property("xinexlib.dev", "true")
+        }
+
+        server {
+            workingDirectory file('runs/server')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Server'
+            mods {
+                modServerRun {
+                    source sourceSets.main
+                }
+            }
+
+            property("xinexlib.dev", "true")
+        }
+
+        data {
+            workingDirectory file('runs/data')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            taskName 'Data'
+            mods {
+                modDataRun {
+                    source sourceSets.main
+                }
+            }
+
+            property("xinexlib.dev", "true")
+        }
     }
 }
 
-configurations {
-    common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentForge.extendsFrom common
-}
+sourceSets.main.resources.srcDir 'src/generated/resources'
 
 dependencies {
-    forge "net.minecraftforge:forge:$minecraft_version-$forge_version"
-    // Remove the next line if you don't want to depend on the API
-    modApi "dev.architectury:architectury-forge:$architectury_version"
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
 
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+    // Forge's hack fix
+    implementation('net.sf.jopt-simple:jopt-simple:5.0.4') { version { strictly '5.0.4' } }
+    compileOnly('io.github.llamalad7:mixinextras-common:0.4.1') { version { strictly '0.4.1' } }
+    annotationProcessor(group: 'io.github.llamalad7', name: 'mixinextras-common', version: '0.4.1') { version { strictly '0.4.1' } }
+    implementation(fg.deobf('io.github.llamalad7:mixinextras-forge:0.4.1') { version { strictly '0.4.1' } })
+    annotationProcessor(group: 'io.github.llamalad7', name: 'mixinextras-forge', version: '0.4.1') { version { strictly '0.4.1' } }
 
-//    forgeRuntimeLibrary "com.ultreon:ultranlang:0.1.0+6"
-//    implementation include("com.ultreon:ultranlang:0.1.0+6")
-}
+    jarJar minecraftLibrary(group: 'io.projectreactor', name: 'reactor-core', version: '3.5.5')
 
-processResources {
-    inputs.property "version", rootProject.getIngameVersion()
-    inputs.property "description", rootProject.getModDescription()
-    System.out.println(inputs.getProperties())
+    implementation fg.deobf("dev.ultreon.mods:xinexlib-forge-1.21.1:$xinexlib_version")
+    implementation fg.deobf("fuzs.forgeconfigapiport:forgeconfigapiport-forge:21.1.0")
 
-    filesMatching("META-INF/mods.toml") {
-        HashMap<String, ?> p = new HashMap<>()
-        p.put("version", rootProject.getIngameVersion())
-        p.put("description", rootProject.getModDescription())
-        //noinspection GroovyAssignabilityCheck
-        p.put("loaderVersion", rootProject.forge_version.split("\\.")[0])
-        p.put("forgeVersion", rootProject.forge_version)
-        p.put("minecraftVersion", rootProject.architectury.minecraft)
-        expand(p)
-    }
-}
+    implementation "dev.ultreon.mods:xinexlib-neoforge-1.21.1:$xinexlib_version"
 
-shadowJar {
-    exclude "fabric.mod.json"
-    exclude "architectury.common.json"
-
-    configurations = [project.configurations.shadowCommon]
-    archiveClassifier = "dev-shadow"
-
-//    relocate 'org.jetbrains.kotlin', "com.ultreon.devices.shadow.org.jetbrains.kotlin"
-//    relocate 'org.jetbrains.kotlinx', "com.ultreon.devices.shadow.org.jetbrains.kotlinx"
-//
-//    relocate 'kotlin', "com.ultreon.devices.shadow.kotlin"
-//    relocate 'kotlinx', "com.ultreon.devices.shadow.kotlinx"
-}
-
-remapJar {
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    archiveClassifier = null
-}
-
-jar {
-    archiveClassifier = "dev"
-}
-
-sourcesJar {
-    def commonSources = project(":common").sourcesJar
-    dependsOn commonSources
-    from commonSources.archiveFile.map { zipTree(it) }
-}
-
-components.java {
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-        skip()
-    }
+    jarJar minecraftLibrary('com.github.Nuix:jnode-fs:v1.0.1')
 }
 
 publishing {
     publications {
-        mavenForge(MavenPublication) {
-            System.out.println(artifactId)
-            artifactId = rootProject.archivesBaseName + "-forge"
-            //artifactId = rootProject.archivesBaseName + "-forge" + //project.name
-            from components.java
+        mavenJava(MavenPublication) {
+            fg.component(it)
         }
     }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-    }
-    rootProject.setupRepositories(repositories)
 }
 
+sourceSets.each {
+    def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
+    it.output.resourcesDir = dir
+    it.java.destinationDirectory = dir
+}
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

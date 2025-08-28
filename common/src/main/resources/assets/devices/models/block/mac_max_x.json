@@ -5,6 +5,7 @@
 	"textures": {
 		"0": "devices:block/mac_max_x"
 	},
+	"render_type": "cutout",
 	"elements": [
 		{
 			"from": [-16, 31, 5],

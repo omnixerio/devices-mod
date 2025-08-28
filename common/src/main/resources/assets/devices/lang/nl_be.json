@@ -124,7 +124,7 @@
   "item.devices.wifi": "WiFi module",
   "item.devices.yellow_flash_drive": "Gele USB-stick",
   "itemGroup.devices.devices_tab_device": "Apparaten",
-  "itemGroup.devices_tab_device": "Devices Mod",
+  "itemGroup.devices_tab_device": "Ultreon Devices Mod",
   "message.devices.device_already_connected": "Het geselecteerde apparaat is al verbonden met deze router.",
   "message.devices.invalid_cable": "Selecteer het apparaat eerst voor dat je het toevoegd aan deze router.",
   "message.devices.router_max_devices": "Je hebt de maximale aantal apparaten bereikt voor deze router.",

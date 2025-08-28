@@ -1,8 +1,8 @@
 # Mods.toml for the devices mod by ultreon (originally created my MrCrayfish)
-# Copyright (c) 2022 - Ultreon Team, GPLv3 License. See the license at https://www.gnu.org/licenses/gpl-3.0-standalone.html
+# Copyright (c) 2022 - Ultreon Studios, GPLv3 License. See the license at https://www.gnu.org/licenses/gpl-3.0-standalone.html
 
 modLoader = "javafml"
-loaderVersion = "[${loaderVersion},)"
+loaderVersion = "${forge_loader_version_range}"
 license = "GPL-3.0"
 issueTrackerURL = "https://github.com/Ultreon/devices-mod/issues"
 
@@ -10,12 +10,12 @@ issueTrackerURL = "https://github.com/Ultreon/devices-mod/issues"
 [[mods]]
 modId = "devices"
 version = "${version}"
-displayName = "Devices Mod"
+displayName = "Ultreon Devices Mod"
 #updateJSONURL="http://myurl.me/"
 displayURL = "https://github.com/Ultreon/devices-mod"
 logoFile="devices_mod.png"
 credits = "Thanks to MrCrayfish for the idea and the original mod that was made in 1.12.2. Thank you to MinecraftDoodler for helping with textures. Thank you to lizterzapzap for the Devices Mod icon. Cheers to these people for donating during the development: Mastef Chief, Haunted Corpse, Jake Crowley, fabbe50, PlayDashGaming, jack jook, Hunstagamez, Techyy YT, MinecraftDoodler, Norge100YT, Cyberman2208, CreepergamingsMC"
-authors = "Qboi123, Jab125"
+authors = "Qubilux, Jab125"
 description = "${description}"
 itemIcon = "devices:red_laptop"
 
@@ -23,20 +23,20 @@ itemIcon = "devices:red_laptop"
 [[dependencies.devices]]
 modId = "forge"
 mandatory = true
-versionRange = "[${forgeVersion},)"
+versionRange = "[${forge_version},)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.devices]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.20,1.20.1]"
+versionRange = "[1.21.1,1.21.2)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.devices]]
-modId = "architectury"
+modId = "xinexlib"
 mandatory = true
-versionRange = "[9.1,10)"
+versionRange = "[0,)"
 ordering = "NONE"
 side = "BOTH"

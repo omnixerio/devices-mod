@@ -1,0 +1,46 @@
+# Mods.toml for the devices mod by ultreon (originally created my MrCrayfish)
+# Copyright (c) 2022 - Ultreon Studios, GPLv3 License. See the license at https://www.gnu.org/licenses/gpl-3.0-standalone.html
+
+modLoader = "javafml"
+loaderVersion = "${neoforge_loader_version_range}"
+license = "GPL-3.0"
+issueTrackerURL = "https://github.com/Ultreon/devices-mod/issues"
+
+# The main mod, and all sub-mods.
+[[mods]]
+modId = "${mod_id}"
+version = "${version}"
+displayName = "Ultreon Devices Mod"
+#updateJSONURL="http://myurl.me/"
+displayURL = "https://github.com/Ultreon/devices-mod"
+logoFile="devices_mod.png"
+credits = "Thanks to MrCrayfish for the idea and the original mod that was made in 1.12.2. Thank you to MinecraftDoodler for helping with textures. Thank you to lizterzapzap for the Devices Mod icon. Cheers to these people for donating during the development: Mastef Chief, Haunted Corpse, Jake Crowley, fabbe50, PlayDashGaming, jack jook, Hunstagamez, Techyy YT, MinecraftDoodler, Norge100YT, Cyberman2208, CreepergamingsMC"
+authors = "Qubilux, Jab125"
+description = "${description}"
+itemIcon = "devices:red_laptop"
+[[mixins]]
+config = "${mod_id}.mixins.json"
+[[mixins]]
+config = "${mod_id}.neoforge.mixins.json"
+
+# Dependencies for the main mod.
+[[dependencies.devices]]
+modId = "neoforge"
+mandatory = true
+versionRange = "[${neoforge_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.devices]]
+modId = "minecraft"
+mandatory = true
+versionRange = "1.21.1"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.devices]]
+modId = "xinexlib"
+mandatory = true
+versionRange = "[0,)"
+ordering = "NONE"
+side = "BOTH"

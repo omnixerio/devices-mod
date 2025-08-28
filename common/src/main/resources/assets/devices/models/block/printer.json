@@ -7,6 +7,7 @@
         "2": "block/red_wool",
         "3": "block/stone"
     },
+    "render_type": "cutout",
     "display": {
         "gui": {
             "rotation": [

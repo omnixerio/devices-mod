@@ -133,3 +133,8 @@ run/
 
 # Ignore datagen cache.
 /common/src/main/generated/resources/.cache/
+/quilt/runs/
+/forge/runs/
+/fabric/runs/
+/logs/
+/.idea/discord.xml

@@ -6,6 +6,7 @@
         "1": "block/anvil",
         "2": "block/stone"
     },
+    "render_type": "cutout",
     "elements": [
         {
             "name": "wheel_1",

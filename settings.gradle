@@ -1,14 +1,34 @@
 pluginManagement {
     repositories {
-        maven { url "https://maven.fabricmc.net/" }
-        maven { url "https://maven.architectury.dev/" }
-        maven { url "https://maven.minecraftforge.net/" }
         gradlePluginPortal()
+        mavenCentral()
+        maven {
+            name = 'Fabric'
+            url = uri('https://maven.fabricmc.net')
+        }
+        maven {
+            name = 'Quilt'
+            url = uri('https://maven.quiltmc.org/repository/release')
+        }
+        maven {
+            name = 'Sponge'
+            url = uri('https://repo.spongepowered.org/repository/maven-public')
+        }
+        maven {
+            name = 'Forge'
+            url = uri('https://maven.minecraftforge.net')
+        }
     }
 }
 
-include("common")
-include("fabric")
-include("forge")
-include("fabric-datagen-helper")
-include("fabric-testmod")
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+}
+
+// This should match the folder name of the project, or else IDEA may complain (see https://youtrack.jetbrains.com/issue/IDEA-317606)
+rootProject.name = 'devices-mod'
+include('common')
+include('fabric')
+include('neoforge')
+include('forge')
+//include('quilt') // TODO Add Quilt support

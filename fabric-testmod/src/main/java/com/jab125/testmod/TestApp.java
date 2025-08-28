@@ -1,7 +1,7 @@
 package com.jab125.testmod;
 
-import com.ultreon.devices.api.app.Application;
-import com.ultreon.devices.api.app.component.Text;
+import dev.ultreon.devices.api.app.Application;
+import dev.ultreon.devices.api.app.component.Text;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 

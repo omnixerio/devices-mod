@@ -1,5 +1,5 @@
 # Mods.toml for the devices mod by ultreon (originally created my MrCrayfish)
-# Copyright (c) 2022 - Ultreon Team, GPLv3 License. See the license at https://www.gnu.org/licenses/gpl-3.0-standalone.html
+# Copyright (c) 2022 - Ultreon Studios, GPLv3 License. See the license at https://www.gnu.org/licenses/gpl-3.0-standalone.html
 
 modLoader = "javafml"
 loaderVersion = "*"
