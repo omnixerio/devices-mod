@@ -5,7 +5,9 @@ import com.ultreon.devices.api.app.listener.ClickListener;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class TrayItem {
     private IIcon icon;
     private ClickListener listener;

@@ -24,7 +24,9 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class AppGrid extends Component {
     private final int padding = 5;
     private final int horizontalItems;
@@ -122,7 +124,7 @@ public class AppGrid extends Component {
          //   com.ultreon.devices.api.app.component.Image image = new com.ultreon.devices.api.app.component.Image(iconOffset, padding, 14 * 3, 14 * 3, localEntry.info().getIconU(), localEntry.info().getIconV(), 14, 14, 224, 224, Laptop.ICON_TEXTURES);
             layout.addComponent(appImage);
         } else if (entry instanceof RemoteEntry remoteEntry) {
-            ResourceLocation resource = ResourceLocation.parse(remoteEntry.id);
+            ResourceLocation resource = new ResourceLocation(remoteEntry.id);
             com.ultreon.devices.api.app.component.Image image = new com.ultreon.devices.api.app.component.Image(iconOffset, padding, 14 * 3, 14 * 3, AppStore.CERTIFICATES_BASE_URL + "/assets/" + resource.getNamespace() + "/" + resource.getPath() + "/icon.png");
             layout.addComponent(image);
         }
@@ -132,7 +134,7 @@ public class AppGrid extends Component {
         labelName.setAlignment(Component.ALIGN_CENTER);
         layout.addComponent(labelName);
 
-        String clippedAuthor = RenderUtil.clipStringToWidth(entry.authors() != null ? String.join(", ", entry.authors()) : entry.author(), itemWidth - padding * 2);
+        String clippedAuthor = RenderUtil.clipStringToWidth(entry.author(), itemWidth - padding * 2);
         Label labelAuthor = new Label(clippedAuthor, itemWidth / 2, 62);
         labelAuthor.setAlignment(Component.ALIGN_CENTER);
         labelAuthor.setShadow(false);

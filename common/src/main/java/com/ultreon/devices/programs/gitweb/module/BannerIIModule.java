@@ -70,9 +70,7 @@ public class BannerIIModule extends Module {
             this.flag = Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.BANNER).getChild("flag");
 
             if (!banner.isEmpty())
-                // TODO: Port to 1.21.1+
-//                this.resultBannerPatterns = BannerPattern.CODEC(((BannerItem)this.banner.getItem()).getColor(), BannerBlockEntity.getItemPatterns(this.banner));
-                this.resultBannerPatterns = new ArrayList<>();
+                this.resultBannerPatterns = BannerBlockEntity.createPatterns(((BannerItem)this.banner.getItem()).getColor(), BannerBlockEntity.getItemPatterns(this.banner));
             else
                 this.resultBannerPatterns = new ArrayList<>();
         }
@@ -101,7 +99,7 @@ public class BannerIIModule extends Module {
             this.flag.xRot = (-0.0125f + 0.01f * Mth.cos((float)Math.PI * 2 * h)) * (float)Math.PI;
            // this.flag.xRot = 0.0F;
             this.flag.y = -32.0F;
-//            BannerRenderer.renderPatterns(graphics.pose(), bufferSource, 15728880, OverlayTexture.NO_OVERLAY, this.flag, ModelBakery.BANNER_BASE, true, this.resultBannerPatterns);
+            BannerRenderer.renderPatterns(graphics.pose(), bufferSource, 15728880, OverlayTexture.NO_OVERLAY, this.flag, ModelBakery.BANNER_BASE, true, this.resultBannerPatterns);
             graphics.pose().popPose();
             bufferSource.endBatch();
 

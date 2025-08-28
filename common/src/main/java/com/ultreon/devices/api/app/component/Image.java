@@ -3,9 +3,9 @@ package com.ultreon.devices.api.app.component;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.app.Component;
-import com.ultreon.devices.api.app.Dialog;
 import com.ultreon.devices.api.app.IIcon;
 import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.api.utils.OnlineRequest;
@@ -21,39 +21,29 @@ import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.stb.STBImage;
-import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.file.Path;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
-
-import static com.mojang.blaze3d.platform.NativeImage.Format.*;
 
 @SuppressWarnings("unused")
 public class Image extends Component {
     public static class AppImage extends Layout {
         private final AppInfo appInfo;
         private AppInfo.Icon.Glyph[] glyphs;
-        private final int componentWidth;
-        private final int componentHeight;
-
+        private int componentWidth;
+        private int componentHeight;
         public AppImage(int left, int top, AppInfo resource) {
             this(left, top, 14, 14, resource);
             this.glyphs = new AppInfo.Icon.Glyph[]{resource.getIcon().getBase(), resource.getIcon().getOverlay0(), resource.getIcon().getOverlay1()};
@@ -122,7 +112,7 @@ public class Image extends Component {
         this.setTint(() -> cs);
     }
 
-    public static class ColorSupplier {
+    private static class ColorSupplier {
         int r;
         int g;
         int b;
@@ -142,33 +132,37 @@ public class Image extends Component {
         this.componentHeight = height;
     }
 
-    /// Creates a new Image using a ResourceLocation. This automatically sets the width and height of
-    /// the component according to the width and height of the image.
-    ///
-    /// @param left        the amount of pixels to be offset from the left
-    /// @param top         the amount of pixels to be offset from the top
-    /// @param imageU      the u position on the image resource
-    /// @param imageV      the v position on the image resource
-    /// @param imageWidth  the image width
-    /// @param imageHeight the image height
-    /// @param resource    the resource location of the image
+    /**
+     * Creates a new Image using a ResourceLocation. This automatically sets the width and height of
+     * the component according to the width and height of the image.
+     *
+     * @param left        the amount of pixels to be offset from the left
+     * @param top         the amount of pixels to be offset from the top
+     * @param imageU      the u position on the image resource
+     * @param imageV      the v position on the image resource
+     * @param imageWidth  the image width
+     * @param imageHeight the image height
+     * @param resource    the resource location of the image
+     */
     public Image(int left, int top, int imageU, int imageV, int imageWidth, int imageHeight, ResourceLocation resource) {
         this(left, top, imageWidth, imageHeight, imageU, imageV, imageWidth, imageHeight, resource);
     }
 
-    /// Creates a new Image using a ResourceLocation. This constructor allows the specification of
-    /// the width and height of the component instead of automatically unlike
-    /// [#Image(int,int,int,int,int,int,ResourceLocation)]
-    ///
-    /// @param left            the amount of pixels to be offset from the left
-    /// @param top             the amount of pixels to be offset from the top
-    /// @param componentWidth  the width of the component
-    /// @param componentHeight the height of the component
-    /// @param imageU          the u position on the image resource
-    /// @param imageV          the v position on the image resource
-    /// @param imageWidth      the image width
-    /// @param imageHeight     the image height
-    /// @param resource        the resource location of the image
+    /**
+     * Creates a new Image using a ResourceLocation. This constructor allows the specification of
+     * the width and height of the component instead of automatically unlike
+     * {@link Image#Image(int, int, int, int, int, int, ResourceLocation)}
+     *
+     * @param left            the amount of pixels to be offset from the left
+     * @param top             the amount of pixels to be offset from the top
+     * @param componentWidth  the width of the component
+     * @param componentHeight the height of the component
+     * @param imageU          the u position on the image resource
+     * @param imageV          the v position on the image resource
+     * @param imageWidth      the image width
+     * @param imageHeight     the image height
+     * @param resource        the resource location of the image
+     */
     public Image(int left, int top, int componentWidth, int componentHeight, int imageU, int imageV, int imageWidth, int imageHeight, ResourceLocation resource) {
         this(left, top, componentWidth, componentHeight, imageU, imageV, imageWidth, imageHeight, 256, 256, resource);
     }
@@ -186,19 +180,21 @@ public class Image extends Component {
         this.sourceHeight = sourceHeight;
     }
 
-    /// Creates a new Image from an url. This allows a resource to be downloaded from the internet
-    /// and be used as the Image. In the case that the resource could not be downloaded or the player
-    /// is playing the game in an offline state, the Image will default to a missing texture.
-    ///
-    /// It should be noted that the remote resource is cached, so updating it may not result in an
-    /// instant change. Caching has a default limit of 10 resources but this can be changed by the
-    /// player in the configuration.
-    ///
-    /// @param left            the amount of pixels to be offset from the left
-    /// @param top             the amount of pixels to be offset from the top
-    /// @param componentWidth  the width of the component
-    /// @param componentHeight the height of the component
-    /// @param url             the url of the resource
+    /**
+     * Creates a new Image from an url. This allows a resource to be downloaded from the internet
+     * and be used as the Image. In the case that the resource could not be downloaded or the player
+     * is playing the game in an offline state, the Image will default to a missing texture.
+     * <p>
+     * It should be noted that the remote resource is cached, so updating it may not result in an
+     * instant change. Caching has a default limit of 10 resources but this can be changed by the
+     * player in the configuration.
+     *
+     * @param left            the amount of pixels to be offset from the left
+     * @param top             the amount of pixels to be offset from the top
+     * @param componentWidth  the width of the component
+     * @param componentHeight the height of the component
+     * @param url             the url of the resource
+     */
     public Image(int left, int top, int componentWidth, int componentHeight, String url) {
         super(left, top);
         this.loader = new DynamicLoader(url);
@@ -265,12 +261,12 @@ public class Image extends Component {
                 graphics.fill(x, y, x + componentWidth, y + componentHeight, borderColor);
             }
 
-            RenderSystem.setShaderColor(tint.get().r / 255f, tint.get().g / 255f, tint.get().b / 255f, alpha);
+            RenderSystem.setShaderColor(tint.get().r/255f, tint.get().g/255f, tint.get().b/255f, alpha);
 
             if (image != null && image.textureId != -1) {
                 image.restore();
 
-                RenderSystem.setShaderColor(tint.get().r / 255f, tint.get().g / 255f, tint.get().b / 255f, alpha);
+                RenderSystem.setShaderColor(tint.get().r/255f, tint.get().g/255f, tint.get().b/255f, alpha);
                 RenderSystem.enableBlend();
                 RenderSystem.setShaderTexture(0, image.textureId);
 
@@ -321,17 +317,12 @@ public class Image extends Component {
         if (wallpaper.isBuiltIn()) {
             setImage(Laptop.getWallpapers().get(wallpaper.getLocation()));
         } else {
-            setImage(wallpaper.getPath());
+            setImage(wallpaper.getUrl());
         }
     }
 
     public void setImage(String url) {
         setLoader(new DynamicLoader(url));
-        this.drawFull = true;
-    }
-
-    public void setImage(Path path) {
-        setLoader(new DynamicLoader(path));
         this.drawFull = true;
     }
 
@@ -343,10 +334,12 @@ public class Image extends Component {
         }
     }
 
-    /// Sets the alpha for this image. Must be in the range
-    /// of 0f to 1f
-    ///
-    /// @param alpha how transparent you want it to be.
+    /**
+     * Sets the alpha for this image. Must be in the range
+     * of 0f to 1f
+     *
+     * @param alpha how transparent you want it to be.
+     */
     public void setAlpha(float alpha) {
         if (alpha < 0f) {
             this.alpha = 0f;
@@ -361,24 +354,30 @@ public class Image extends Component {
 
     private int _pBorderThickness = 1;
 
-    /// Makes it so the border shows
-    ///
-    /// @param show should the border show
+    /**
+     * Makes it so the border shows
+     *
+     * @param show should the border show
+     */
     public void setBorderVisible(boolean show) {
         this.hasBorder = show;
         this.borderThickness = show ? _pBorderThickness : 0;
     }
 
-    /// Sets the border color for this component
-    ///
-    /// @param color the border color
+    /**
+     * Sets the border color for this component
+     *
+     * @param color the border color
+     */
     private void setBorderColor(Color color) {
         this.borderColor = color.getRGB();
     }
 
-    /// Sets the thickness of the border
-    ///
-    /// @param thickness how thick in pixels
+    /**
+     * Sets the thickness of the border
+     *
+     * @param thickness how thick in pixels
+     */
     public void setBorderThickness(int thickness) {
         this._pBorderThickness = thickness;
         this.borderThickness = thickness;
@@ -388,8 +387,10 @@ public class Image extends Component {
         this.drawFull = drawFull;
     }
 
-    /// Image Loader
-    protected static abstract class ImageLoader {
+    /**
+     * Image Loader
+     */
+    private static abstract class ImageLoader {
         protected boolean setup = false;
 
         public final boolean isSetup() {
@@ -435,69 +436,12 @@ public class Image extends Component {
         }
     }
 
-    public static NativeImage read(InputStream textureStream) throws IOException {
-        return read(NativeImage.Format.RGBA, textureStream);
-    }
-
-    public static NativeImage read(@Nullable NativeImage.Format format, InputStream textureStream) throws IOException {
-        ByteBuffer loadBuffer = null;
-
-        NativeImage loaded;
-        try {
-            loadBuffer = TextureUtil.readResource(textureStream);
-            loadBuffer.rewind();
-            loaded = read(format, loadBuffer);
-        } finally {
-            MemoryUtil.memFree(loadBuffer);
-            IOUtils.closeQuietly(textureStream);
-        }
-
-        return loaded;
-    }
-
-    public static NativeImage read(@Nullable NativeImage.Format format, ByteBuffer textureData) throws IOException {
-        if (format != null && !format.supportedByStb()) {
-            throw new UnsupportedOperationException("Don't know how to read format " + format);
-        } else if (MemoryUtil.memAddress(textureData) == 0L) {
-            throw new IllegalArgumentException("Invalid buffer");
-        } else {
-            NativeImage nativeImage;
-            try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-                IntBuffer xBuf = memoryStack.mallocInt(1);
-                IntBuffer yBuf = memoryStack.mallocInt(1);
-                IntBuffer channelBuf = memoryStack.mallocInt(1);
-                ByteBuffer imageBuf = STBImage.stbi_load_from_memory(textureData, xBuf, yBuf, channelBuf, format == null ? 0 : format.components());
-                if (imageBuf == null) {
-                    throw new IOException("Could not load image: " + STBImage.stbi_failure_reason());
-                }
-
-                return new NativeImage(
-                        format == null ? getStbFormat(channelBuf.get(0)) : format, xBuf.get(0), yBuf.get(0), true, MemoryUtil.memAddress(imageBuf)
-                );
-            }
-        }
-    }
-
-    static NativeImage.Format getStbFormat(int channels) {
-        return switch (channels) {
-            case 1 -> LUMINANCE;
-            case 2 -> LUMINANCE_ALPHA;
-            case 3 -> RGB;
-            default -> RGBA;
-        };
-    }
-
     private static class DynamicLoader extends ImageLoader {
-        private String url;
-        private Path path;
+        private final String url;
         private AbstractTexture texture;
 
         public DynamicLoader(String url) {
             this.url = url;
-        }
-
-        public DynamicLoader(Path path) {
-            this.path = path;
         }
 
         @Override
@@ -507,46 +451,10 @@ public class Image extends Component {
                 return;
             }
             Runnable r = () -> {
-                if (path != null) {
-                    Laptop.getOrLoadMainDrive(((drive, success) -> {
-                        if (!success) {
-                            texture = MissingTextureAtlasSprite.getTexture();
-                            setup = true;
-                            return;
-                        }
-
-                        if (drive != null) {
-                            drive.read(path, response -> {
-                                if (!response.success()) {
-                                    Dialog.Message dialog = new Dialog.Message("Failed to load image: " + response.message());
-                                    Laptop.getInstance().setSystemDialog(dialog);
-                                    texture = MissingTextureAtlasSprite.getTexture();
-                                    setup = true;
-                                    return;
-                                }
-
-                                ByteArrayInputStream in = new ByteArrayInputStream(response.data());
-
-                                try (NativeImage nativeImage = Image.read(in)) {
-                                    Laptop.runLater(() -> {
-                                        Devices.LOGGER.debug("Loaded image: {}", path);
-                                        texture = new DynamicTexture(nativeImage);
-                                        setup = true;
-                                    });
-                                } catch (IOException e) {
-                                    texture = MissingTextureAtlasSprite.getTexture();
-                                    setup = true;
-                                    Devices.LOGGER.error("Failed to load image: {}", path, e);
-                                }
-                            });
-                        }
-                    }));
-                    return;
-                }
                 try {
-                    URI url = new URI(this.url);
+                    URL url = new URL(this.url);
                     OnlineRequest.checkURLForSuspicions(url);
-                    HttpURLConnection conn = (HttpURLConnection) url.toURL().openConnection();
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestProperty("User-Agent", "Mozilla/5.0");
                     conn.setRequestProperty("Accept", "image/png");
                     InputStream connIn = conn.getInputStream();
@@ -556,18 +464,19 @@ public class Image extends Component {
 
                     ByteArrayInputStream in = new ByteArrayInputStream(bytes);
                     ByteArrayInputStream imageIn = new ByteArrayInputStream(bytes);
+                    BufferedImage img = ImageIO.read(imageIn);
 
-                    NativeImage nativeImage = Image.read(in);
+                    NativeImage nativeImage = NativeImage.read(in);
 
                     Laptop.runLater(() -> {
-                        Devices.LOGGER.debug("Loaded image: {}", url);
+                        Devices.LOGGER.debug("Loaded image: " + url);
                         texture = new DynamicTexture(nativeImage);
                         setup = true;
                     });
-                } catch (IOException | URISyntaxException e) {
+                } catch (IOException e) {
                     texture = MissingTextureAtlasSprite.getTexture();
                     setup = true;
-                    Devices.LOGGER.error("Failed to load image: {}", url, e);
+                    e.printStackTrace();
                 }
             };
             Thread thread = new Thread(r, "Image Loader");
@@ -608,7 +517,7 @@ public class Image extends Component {
 
         @Override
         public void load(@NotNull ResourceManager resourceManager) throws IOException {
-            NativeImage nativeImage = Image.read(in);
+            NativeImage nativeImage = NativeImage.read(in);
             Minecraft.getInstance().getTextureManager().register(Devices.id("dynamic_loaded/" + getId()), this);
             this.upload(nativeImage);
         }

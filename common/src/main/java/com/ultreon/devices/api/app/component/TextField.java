@@ -13,11 +13,13 @@ import java.awt.*;
 public class TextField extends TextArea {
     private IIcon icon;
 
-    /// Default text field constructor
-    ///
-    /// @param left  how many pixels from the left
-    /// @param top   how many pixels from the top
-    /// @param width the width of the text field
+    /**
+     * Default text field constructor
+     *
+     * @param left  how many pixels from the left
+     * @param top   how many pixels from the top
+     * @param width the width of the text field
+     */
     public TextField(int left, int top, int width) {
         super(left, top, width, 16);
         this.setScrollBarVisible(false);

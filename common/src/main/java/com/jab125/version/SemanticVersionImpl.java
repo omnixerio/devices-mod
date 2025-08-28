@@ -16,21 +16,21 @@
 
 package com.jab125.version;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-/// Parser for a superset of the semantic version format described at <a href="https://semver.org">semver.org</a>.
-///
-/// This superset allows additionally
-///   - Arbitrary number of `<version core>` components, but at least 1
-///   - `x`, `X` or `*` for the last `<version core>` component with `storeX` if not the first
-///   - Arbitrary `<build>` contents
-///
+/**
+ * Parser for a superset of the semantic version format described at <a href="https://semver.org">semver.org</a>.
+ *
+ * <p>This superset allows additionally
+ * <ul><li>Arbitrary number of {@code <version core>} components, but at least 1
+ * <li>{@code x}, {@code X} or {@code *} for the last {@code <version core>} component with {@code storeX} if not the first
+ * <li>Arbitrary {@code <build>} contents
+ * </ul>
+ */
 @SuppressWarnings("deprecation")
 public class SemanticVersionImpl implements SemanticVersion {
 	private static final Pattern DOT_SEPARATED_ID = Pattern.compile("|[-0-9A-Za-z]+(\\.[-0-9A-Za-z]+)*");
@@ -246,7 +246,7 @@ public class SemanticVersionImpl implements SemanticVersion {
 	}
 
 	@Override
-	public int compareTo(@NotNull Version other) {
+	public int compareTo(Version other) {
 		if (!(other instanceof SemanticVersion)) {
 			return getFriendlyString().compareTo(other.getFriendlyString());
 		}

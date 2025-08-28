@@ -2,7 +2,9 @@ package com.ultreon.devices.programs.system.object;
 
 import net.minecraft.resources.ResourceLocation;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class ImageEntry {
     private final Type type;
     private ResourceLocation resource;

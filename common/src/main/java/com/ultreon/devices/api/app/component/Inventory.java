@@ -1,6 +1,7 @@
 package com.ultreon.devices.api.app.component;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.listener.ClickListener;
 import com.ultreon.devices.api.task.Task;
@@ -8,21 +9,23 @@ import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
 
-/// A component that allows you "access" to the player's inventory.
-/// Now why access is in quotes is because it's client side only.
-/// If you want to process anything,
-/// you'll have to sendTask the selected item slot to the server and process it there.
-/// You can use a [Task] to perform this.
-///
-/// @author MrCrayfish
+/**
+ * A component that allows you "access" to the players inventory. Now why access
+ * is in quotes is because it's client side only. If you want to process anything,
+ * you'll have to sendTask the selected item slot to the server and process it there.
+ * You can use a {@link Task} to perform this.
+ *
+ * @author MrCrayfish
+ */
 public class Inventory extends Component {
-    protected static final ResourceLocation CHEST_GUI_TEXTURE = ResourceLocation.parse("textures/gui/container/generic_54.png");
+    protected static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
 
     protected int selectedColor = new Color(1f, 1f, 0f, 0.15f).getRGB();
     protected int hoverColor = new Color(1f, 1f, 1f, 0.15f).getRGB();
@@ -72,11 +75,9 @@ public class Inventory extends Component {
                     int x = xPosition + (j * 18) - 1;
                     int y = yPosition + (i * 18) - 1;
                     if (GuiHelper.isMouseInside(mouseX, mouseY, x, y, x + 18, y + 18)) {
-                        if (mc.player != null) {
-                            ItemStack stack = mc.player.getInventory().getItem((i * 9) + j + 9);
-                            if (!stack.isEmpty()) {
-                                graphics.renderTooltip(mc.font, stack, mouseX, mouseY);
-                            }
+                        ItemStack stack = mc.player.getInventory().getItem((i * 9) + j + 9);
+                        if (!stack.isEmpty()) {
+                            graphics.renderTooltip(mc.font, stack, mouseX, mouseY);
                         }
                         return;
                     }
@@ -105,30 +106,38 @@ public class Inventory extends Component {
         }
     }
 
-    /// Gets the selected slot index
-    ///
-    /// @return the slot index
+    /**
+     * Gets the selected slot index
+     *
+     * @return the slot index
+     */
     public int getSelectedSlotIndex() {
         return selected;
     }
 
-    /// Sets the click listener for when an item is clicked
-    ///
-    /// @param clickListener the click listener
+    /**
+     * Sets the click listener for when an item is clicked
+     *
+     * @param clickListener the click listener
+     */
     public void setClickListener(ClickListener clickListener) {
         this.clickListener = clickListener;
     }
 
-    /// Sets the color displayed when an item is selected
-    ///
-    /// @param selectedColor the selected color
+    /**
+     * Sets the color displayed when an item is selected
+     *
+     * @param selectedColor the selected color
+     */
     public void setSelectedColor(int selectedColor) {
         this.selectedColor = selectedColor;
     }
 
-    /// Sets the color displayed when a mouse is hovering an item
-    ///
-    /// @param hoverColor the hover color
+    /**
+     * Sets the color displayed when a mouse is hovering an item
+     *
+     * @param hoverColor the hover color
+     */
     public void setHoverColor(int hoverColor) {
         this.hoverColor = hoverColor;
     }

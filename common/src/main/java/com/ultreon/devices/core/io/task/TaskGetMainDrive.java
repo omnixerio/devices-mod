@@ -10,12 +10,13 @@ import com.ultreon.devices.core.io.drive.AbstractDrive;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class TaskGetMainDrive extends Task {
     private BlockPos pos;
 
@@ -50,9 +51,10 @@ public class TaskGetMainDrive extends Task {
         if (this.isSucessful()) {
             CompoundTag mainDriveTag = new CompoundTag();
             mainDriveTag.putString("name", mainDrive.getName());
-            mainDriveTag.put("uuid", NbtUtils.createUUID(mainDrive.getUuid()));
+            mainDriveTag.putString("uuid", mainDrive.getUuid().toString());
             mainDriveTag.putString("type", mainDrive.getType().toString());
             tag.put("main_drive", mainDriveTag);
+            tag.put("structure", mainDrive.getDriveStructure().toTag());
         }
     }
 
@@ -60,7 +62,10 @@ public class TaskGetMainDrive extends Task {
     public void processResponse(CompoundTag tag) {
         if (this.isSucessful()) {
             if (Minecraft.getInstance().screen instanceof Laptop) {
+                CompoundTag structureTag = tag.getCompound("structure");
                 Drive drive = new Drive(tag.getCompound("main_drive"));
+                drive.syncRoot(Folder.fromTag(FileSystem.LAPTOP_DRIVE_NAME, structureTag));
+                drive.getRoot().validate();
 
                 if (Laptop.getMainDrive() == null) {
                     Laptop.setMainDrive(drive);

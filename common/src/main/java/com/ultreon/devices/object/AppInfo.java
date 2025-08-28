@@ -5,20 +5,24 @@ import com.google.gson.reflect.TypeToken;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.Reference;
 import com.ultreon.devices.core.Laptop;
-import com.ultreon.devices.core.Permission;
-import com.ultreon.devices.core.PermissionManager;
+import dev.architectury.injectables.annotations.PlatformOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.awt.*;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,7 +51,6 @@ public class AppInfo {
         }
 
     };
-    private Set<String> extensions = new HashSet<>();
 
     public static TintProvider getDefaultTintProvider() {
         return DEFAULT_TINT_PROVIDER;
@@ -73,34 +76,29 @@ public class AppInfo {
         this.systemApp = isSystemApp;
     }
 
-    public AppInfo(ResourceLocation identifier, boolean isSystemApp, TintProvider tintProvider) {
-        this.APP_ID = identifier;
-        this.systemApp = isSystemApp;
-        this.tintProvider = tintProvider;
-    }
-
-    public void registerExtension(String extension) {
-        if (PermissionManager.hasPermission(Permission.APP_EXTENSION_REGISTER)) throw new IllegalArgumentException("No permission to register extension " + extension);
-        extensions.add(extension);
-    }
-
-    /// Gets the id of the application
-    ///
-    /// @return the app resource location
+    /**
+     * Gets the id of the application
+     *
+     * @return the app resource location
+     */
     public ResourceLocation getId() {
         return APP_ID;
     }
 
-    /// Gets the formatted version of the application's id
-    ///
-    /// @return a formatted id
+    /**
+     * Gets the formatted version of the application's id
+     *
+     * @return a formatted id
+     */
     public String getFormattedId() {
         return getId().toString();
     }
 
-    /// Gets the name of the application
-    ///
-    /// @return the application name
+    /**
+     * Gets the name of the application
+     *
+     * @return the application name
+     */
     public String getName() {
         return name;
     }
@@ -109,15 +107,16 @@ public class AppInfo {
         return authors;
     }
 
-    /// `contributors` should include all authors, plus extra contributors
-    ///
-    /// <code>
-    ///     {
-    ///         "authors": ["Me!"],
-    ///         "contributors": ["You!"]
-    ///     }
-    /// </code>
-    /// should return ["Me!", "You!"] with this method.
+    /**
+     * {@code contributors} should include all authors, plus extra contributors
+     * <p><code>
+     *     {
+     *         "authors": ["Me!"],
+     *         "contributors": ["You!"]
+     *     }
+     * </code><br/>
+     * should return ["Me!", "You!"] with this method.</p>
+     */
     public String[] getContributors() {
         return contributors;
     }
@@ -151,10 +150,6 @@ public class AppInfo {
 
     public void setTintProvider(TintProvider tintProvider) {
         this.tintProvider = tintProvider;
-    }
-
-    public Collection<String> getExtensions() {
-        return this.extensions;
     }
 
     public static class Icon {
@@ -199,15 +194,17 @@ public class AppInfo {
         }
 
         private Icon(AppInfo info) {
-            this.base = Glyph.of(ResourceLocation.fromNamespaceAndPath(info.APP_ID.getNamespace(), "textures/app/icon/base/" + info.APP_ID.getPath() + ".png"));
+            this.base = Glyph.of(new ResourceLocation(info.APP_ID.getNamespace(), "textures/app/icon/base/" + info.APP_ID.getPath() + ".png"));
             this.base.type = 0;
-            this.overlay0 = Glyph.of(ResourceLocation.fromNamespaceAndPath(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/" + info.APP_ID.getPath() + ".png"));
+            this.overlay0 = Glyph.of(new ResourceLocation(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/" + info.APP_ID.getPath() + ".png"));
             this.overlay0.type = 1;
-            this.overlay1 = Glyph.of(ResourceLocation.fromNamespaceAndPath(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/" + info.APP_ID.getPath() + ".png"));
+            this.overlay1 = Glyph.of(new ResourceLocation(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/" + info.APP_ID.getPath() + ".png"));
             this.overlay1.type = 2;
         }
 
-        /// @deprecated Used in legacy <code>icon</code> in schema version 0
+        /**
+         * @deprecated Used in legacy <code>icon</code> in schema version 0
+         */
         @Deprecated
         private Icon() {
         }
@@ -248,7 +245,7 @@ public class AppInfo {
         resetInfo();
         if (Minecraft.getInstance().getResourceManager() == null) return;
         // TODO "Check if the resource manager can be used on client side."
-        Resource resource = Minecraft.getInstance().getResourceManager().getResource(ResourceLocation.fromNamespaceAndPath(APP_ID.getNamespace(), "/apps/" + APP_ID.getPath() + ".json")).orElse(null);
+        Resource resource = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(APP_ID.getNamespace(), "/apps/" + APP_ID.getPath() + ".json")).orElse(null);
 
         if (resource == null)
             throw new RuntimeException("Missing app info json for '" + APP_ID + "'");
@@ -322,15 +319,15 @@ public class AppInfo {
 
             if (json.getAsJsonObject().has("icon") && json.getAsJsonObject().get("icon").isJsonPrimitive()) {
                 info.icon = new Icon();
-                info.icon.base = Icon.Glyph.of(ResourceLocation.parse(json.getAsJsonObject().get("icon").getAsString()));
+                info.icon.base = Icon.Glyph.of(new ResourceLocation(json.getAsJsonObject().get("icon").getAsString()));
                 info.icon.base.type = 0;
-                info.icon.overlay0 = Icon.Glyph.of(ResourceLocation.fromNamespaceAndPath(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/empty.png"));
+                info.icon.overlay0 = Icon.Glyph.of(new ResourceLocation(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/empty.png"));
                 info.icon.overlay0.type = 1;
-                info.icon.overlay1 = Icon.Glyph.of(ResourceLocation.fromNamespaceAndPath(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/empty.png"));
+                info.icon.overlay1 = Icon.Glyph.of(new ResourceLocation(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/empty.png"));
                 info.icon.overlay1.type = 2;
             }
 
-            if (json.getAsJsonObject().has("support") && !json.getAsJsonObject().get("support").getAsJsonObject().isEmpty()) {
+            if (json.getAsJsonObject().has("support") && json.getAsJsonObject().get("support").getAsJsonObject().size() > 0) {
                 JsonObject supportObj = json.getAsJsonObject().get("support").getAsJsonObject();
                 Support support = new Support();
 
@@ -365,7 +362,7 @@ public class AppInfo {
                 Devices.LOGGER.warn("{} uses removed \"icon\"! Please advise {} to fix the icon!", info.name, info.authors[0]);
             }
 
-            if (json.getAsJsonObject().has("support") && !json.getAsJsonObject().get("support").getAsJsonObject().isEmpty()) {
+            if (json.getAsJsonObject().has("support") && json.getAsJsonObject().get("support").getAsJsonObject().size() > 0) {
                 JsonObject supportObj = json.getAsJsonObject().get("support").getAsJsonObject();
                 Support support = new Support();
 
@@ -426,10 +423,10 @@ public class AppInfo {
             }
 
             if (d) info.authors = new String[0];
-            var l = new ArrayList<>(List.of(info.authors));l.addAll(contributors);
+            var l = new ArrayList<String>(List.of(info.authors));l.addAll(contributors);
             info.contributors = l.toArray(new String[0]);
 
-            if (json.getAsJsonObject().has("support") && !json.getAsJsonObject().get("support").getAsJsonObject().isEmpty()) {
+            if (json.getAsJsonObject().has("support") && json.getAsJsonObject().get("support").getAsJsonObject().size() > 0) {
                 JsonObject supportObj = json.getAsJsonObject().get("support").getAsJsonObject();
                 Support support = new Support();
 
@@ -476,10 +473,10 @@ public class AppInfo {
                 }.getType());
             }
 
-            var l = new ArrayList<>(List.of(info.authors));l.addAll(contributors);
+            var l = new ArrayList<String>(List.of(info.authors));l.addAll(contributors);
             info.contributors = l.toArray(new String[0]);
 
-            if (json.getAsJsonObject().has("support") && !json.getAsJsonObject().get("support").getAsJsonObject().isEmpty()) {
+            if (json.getAsJsonObject().has("support") && json.getAsJsonObject().get("support").getAsJsonObject().size() > 0) {
                 JsonObject supportObj = json.getAsJsonObject().get("support").getAsJsonObject();
                 Support support = new Support();
 

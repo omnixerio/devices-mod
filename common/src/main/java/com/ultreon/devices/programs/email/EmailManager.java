@@ -18,7 +18,9 @@ import java.util.*;
 
 ;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class EmailManager implements WorldSavedData {
     public static final EmailManager INSTANCE = new EmailManager();
     private final HashBiMap<UUID, String> uuidToName = HashBiMap.create();

@@ -47,7 +47,7 @@ public class FileBrowserApp extends SystemApp {
         public void handleClick(int mouseX, int mouseY, int mouseButton) {
             AppInfo info = ApplicationManager.getApplication(Devices.id("file_browser"));
             if (info != null) {
-                Laptop.getSystem().launchApp(info);
+                Laptop.getSystem().openApplication(info);
             }
         }
     }

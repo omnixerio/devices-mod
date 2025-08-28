@@ -1,6 +1,7 @@
 package com.ultreon.devices.block.entity.renderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -22,7 +23,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.SignRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
@@ -31,7 +34,9 @@ import org.joml.Vector3f;
 import java.awt.*;
 import java.util.Objects;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public record PrinterRenderer(
         BlockEntityRendererProvider.Context context) implements BlockEntityRenderer<PrinterBlockEntity> {
     @Override
@@ -143,25 +148,27 @@ public record PrinterRenderer(
         }
         pose.popPose();
 
-        /*
-        pose.pushPose();
-        {
-            pose.translate(0, -0.5, 0);
-            Minecraft.getInstance().getBlockRenderer().renderSingleBlock(state, pose, bufferSource, packedLight, packedOverlay, EmptyModelData.INSTANCE);
-                super.render(blockEntity, x, y, z, partialTicks, destroyStage, alpha);
-        }
-        pose.popPose();
-         */
+//        pose.pushPose();
+//        {
+//            pose.translate(0, -0.5, 0);
+//            Minecraft.getInstance().getBlockRenderer().renderSingleBlock(state, pose, bufferSource, packedLight, packedOverlay, EmptyModelData.INSTANCE);
+//                super.render(blockEntity, x, y, z, partialTicks, destroyStage, alpha);
+//        }
+//        pose.popPose();
     }
 
     public static class PaperModel extends Model {
-        public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/model/paper.png");
+        public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/model/paper.png");
         public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Devices.id("paper_model"), "main");
         private final ModelPart root;
+//        private final ModelPart main;
+
+//            private final ModelRenderer box = new ModelRenderer(this, 0, 0).addBox(0, 0, 0, 22, 30, 1);
 
         public PaperModel(ModelPart pRoot) {
             super(RenderType::entitySolid);
             this.root = pRoot;
+//            this.main = pRoot.getChild("main");
         }
 
         public static LayerDefinition createBodyLayer() {
@@ -171,14 +178,18 @@ public record PrinterRenderer(
             return LayerDefinition.create(meshdefinition, 64, 32);
         }
 
-        private void render(PoseStack poseStack, VertexConsumer pbuffer, int packedLight, int packedOverlay, int color) {
-            RenderSystem.setShaderTexture(0, TEXTURE);
-            this.root.render(poseStack, pbuffer, packedLight, packedOverlay, color);
+        @Override
+        public void renderToBuffer(@NotNull PoseStack pPoseStack, @NotNull VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
+            this.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
         }
 
-        @Override
-        public void renderToBuffer(@NotNull PoseStack poseStack, @NotNull VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-            this.render(poseStack, buffer, packedLight, packedOverlay, color);
+        private void render(PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
+            RenderSystem.setShaderTexture(0, TEXTURE);
+            this.root.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
         }
+
+//        public ModelPart getMain() {
+//            return main;
+//        }
     }
 }

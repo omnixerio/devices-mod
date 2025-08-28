@@ -15,7 +15,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import java.awt.*;
 import java.util.ArrayList;
 
-/// layout shoult be 15x15, background green 0x0A7A0A
+/**
+ * layout shoult be 15x15, background green 0x0A7A0A
+ */
 public class SnakeLayout extends Layout {
     public SnakeLayout(SnakeApp app) {
         super(150, 150);
@@ -57,14 +59,16 @@ public class SnakeLayout extends Layout {
         private int tick = 0;
         private Pos2d applePos;
 
-        /// The default constructor for a component.
-        ///
-        /// Laying out components is simply relative positioning. So for left (x position),
-        /// specific how many pixels from the left of the application window you want
-        /// it to be positioned at. The top is the same, but instead from the top (y position).
-        ///
-        /// @param left how many pixels from the left
-        /// @param top  how many pixels from the top
+        /**
+         * The default constructor for a component.
+         * <p>
+         * Laying out components is simply relative positioning. So for left (x position),
+         * specific how many pixels from the left of the application window you want
+         * it to be positioned at. The top is the same, but instead from the top (y position).
+         *
+         * @param left how many pixels from the left
+         * @param top  how many pixels from the top
+         */
         public Grid(int left, int top) {
             super(left, top);
             var initialPos = new Pos2d(5, 5);

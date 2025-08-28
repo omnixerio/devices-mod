@@ -1,17 +1,20 @@
 package com.ultreon.devices.api.app;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 
 import java.awt.*;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public enum Alphabet implements IIcon {
     EXCLAMATION_MARK, QUOTATION_MARK, NUMBER_SIGN, DOLLAR_SIGN, PERCENT_SIGN, AMPERSAND, APOSTROPHE, LEFT_PARENTHESIS, RIGHT_PARENTHESIS, ASTERISK, PLUS_SIGN, COMMA, HYPHEN_MINUS, FULL_STOP, SLASH, ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, COLON, SEMI_COLON, LESS_THAN, EQUALS, MORE_THAN, QUESTION_MARK, COMMERCIAL_AT, UPPERCASE_A, UPPERCASE_B, UPPERCASE_C, UPPERCASE_D, UPPERCASE_E, UPPERCASE_F, UPPERCASE_G, UPPERCASE_H, UPPERCASE_I, UPPERCASE_J, UPPERCASE_K, UPPERCASE_L, UPPERCASE_M, UPPERCASE_N, UPPERCASE_O, UPPERCASE_P, UPPERCASE_Q, UPPERCASE_R, UPPERCASE_S, UPPERCASE_T, UPPERCASE_U, UPPERCASE_V, UPPERCASE_W, UPPERCASE_X, UPPERCASE_Y, UPPERCASE_Z, LEFT_SQUARE_BRACKET, SLASH_REVERSE, RIGHT_SQUARE_BRACKET, CARET, UNDERSCORE, GRAVE_ACCENT, LEFT_CURLY_BRACKET, VERTICAL_LINE, RIGHT_CURLY_BRACKET, TILDE;
 
-    private static final ResourceLocation ALPHABET_ASSET = ResourceLocation.parse("devices:textures/gui/alphabet.png");
+    private static final ResourceLocation ALPHABET_ASSET = new ResourceLocation("devices:textures/gui/alphabet.png");
 
     private static final int ICON_SIZE = 10;
     private static final int GRID_SIZE = 20;
@@ -36,13 +39,17 @@ public enum Alphabet implements IIcon {
         return GRID_SIZE;
     }
 
-    /// {@inheritDoc}
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getSourceHeight() {
         return ICON_SIZE * GRID_SIZE;
     }
 
-    /// {@inheritDoc}
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getSourceWidth() {
         return ICON_SIZE * GRID_SIZE;

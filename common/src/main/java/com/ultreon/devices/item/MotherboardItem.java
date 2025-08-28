@@ -1,47 +1,41 @@
 package com.ultreon.devices.item;
 
-import com.ultreon.devices.init.HardwareComponents;
-import com.ultreon.devices.init.DeviceDataComponents;
 import com.ultreon.devices.util.KeyboardHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class MotherboardItem extends ComponentItem {
     public MotherboardItem(Properties properties) {
         super(properties);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @NotNull TooltipContext context, @NotNull List<net.minecraft.network.chat.Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
-        HardwareComponents tag = stack.get(DeviceDataComponents.HARDWARE_COMPONENTS.get());
-        if (tag == null) {
-            tooltipComponents.add(net.minecraft.network.chat.Component.literal("Invalid Motherboard").withStyle(ChatFormatting.RED));
-            return;
-        }
+    public void appendHoverText(ItemStack stack, @Nullable Level level, @NotNull List<net.minecraft.network.chat.Component> tooltip, @NotNull TooltipFlag isAdvanced) {
+        CompoundTag tag = stack.getTag();
         if (!KeyboardHelper.isShiftDown()) {
-            tooltipComponents.add(net.minecraft.network.chat.Component.literal(ChatFormatting.GRAY + "CPU: " + getComponentStatus(tag.cpu())));
-            tooltipComponents.add(net.minecraft.network.chat.Component.literal(ChatFormatting.GRAY + "RAM: " + getComponentStatus(tag.ram())));
-            tooltipComponents.add(net.minecraft.network.chat.Component.literal(ChatFormatting.GRAY + "GPU: " + getComponentStatus(tag.gpu())));
-            tooltipComponents.add(net.minecraft.network.chat.Component.literal(ChatFormatting.GRAY + "WIFI: " + getComponentStatus(tag.wifi())));
-            tooltipComponents.add(net.minecraft.network.chat.Component.literal(ChatFormatting.YELLOW + "Hold shift for help"));
+            tooltip.add(net.minecraft.network.chat.Component.literal("CPU: " + getComponentStatus(tag, "cpu")));
+            tooltip.add(net.minecraft.network.chat.Component.literal("RAM: " + getComponentStatus(tag, "ram")));
+            tooltip.add(net.minecraft.network.chat.Component.literal("GPU: " + getComponentStatus(tag, "gpu")));
+            tooltip.add(net.minecraft.network.chat.Component.literal("WIFI: " + getComponentStatus(tag, "wifi")));
+            tooltip.add(net.minecraft.network.chat.Component.literal(ChatFormatting.YELLOW + "Hold shift for help"));
         } else {
-            tooltipComponents.add(net.minecraft.network.chat.Component.literal("To add the required components"));
-            tooltipComponents.add(net.minecraft.network.chat.Component.literal("place the motherboard and the"));
-            tooltipComponents.add(net.minecraft.network.chat.Component.literal("corresponding component into a"));
-            tooltipComponents.add(net.minecraft.network.chat.Component.literal("crafting table to combine them."));
+            tooltip.add(net.minecraft.network.chat.Component.literal("To add the required components"));
+            tooltip.add(net.minecraft.network.chat.Component.literal("place the motherboard and the"));
+            tooltip.add(net.minecraft.network.chat.Component.literal("corresponding component into a"));
+            tooltip.add(net.minecraft.network.chat.Component.literal("crafting table to combine them."));
         }
-    }
-
-    private String getComponentStatus(ItemStack cpu) {
-        if (cpu != null) return ChatFormatting.GREEN + "Added";
-        return ChatFormatting.RED + "Missing";
     }
 
     private String getComponentStatus(CompoundTag tag, String component) {

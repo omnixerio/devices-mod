@@ -1,108 +1,136 @@
 package com.ultreon.devices.network;
 
+import com.ultreon.devices.Devices;
 import com.ultreon.devices.core.laptop.common.C2SUpdatePacket;
 import com.ultreon.devices.core.laptop.common.S2CUpdatePacket;
 import com.ultreon.devices.network.task.*;
+import dev.architectury.networking.NetworkChannel;
 import dev.architectury.networking.NetworkManager;
+import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import net.minecraft.world.level.Level;
 
 public class PacketHandler {
+    public static final NetworkChannel INSTANCE = NetworkChannel.create(Devices.id("main_channel"));
     private static int id = 0;
-    private static CustomPacketPayload.Type<RequestPacket> requestPacket;
-    private static CustomPacketPayload.Type<ResponsePacket> responsePacket;
-    private static CustomPacketPayload.Type<SyncApplicationPacket> syncApplicationPacket;
-    private static CustomPacketPayload.Type<SyncConfigPacket> syncConfigPacket;
-    private static CustomPacketPayload.Type<SyncBlockPacket> syncBlockPacket;
-    private static CustomPacketPayload.Type<NotificationPacket> notificationPacket;
-    private static CustomPacketPayload.Type<S2CUpdatePacket> s2cUpdatePacket;
-    private static CustomPacketPayload.Type<C2SUpdatePacket> c2sUpdatePacket;
-
-    public static CustomPacketPayload.Type<RequestPacket> getRequestPacket() {
-        return requestPacket;
-    }
-
-    public static CustomPacketPayload.Type<ResponsePacket> getResponsePacket() {
-        return responsePacket;
-    }
-
-    public static CustomPacketPayload.Type<SyncApplicationPacket> getSyncApplicationPacket() {
-        return syncApplicationPacket;
-    }
-
-    public static CustomPacketPayload.Type<SyncConfigPacket> getSyncConfigPacket() {
-        return syncConfigPacket;
-    }
-
-    public static CustomPacketPayload.Type<SyncBlockPacket> getSyncBlockPacket() {
-        return syncBlockPacket;
-    }
-
-    public static CustomPacketPayload.Type<NotificationPacket> getNotificationPacket() {
-        return notificationPacket;
-    }
-
-    public static CustomPacketPayload.Type<S2CUpdatePacket> getS2CUpdatePacket() {
-        return s2cUpdatePacket;
-    }
-
-    public static CustomPacketPayload.Type<C2SUpdatePacket> getC2SUpdatePacket() {
-        return c2sUpdatePacket;
-    }
 
     public static void init() {
-        requestPacket = registerC2S(RequestPacket.class, Packet::toBytes, RequestPacket::new, RequestPacket::onMessage);
-        responsePacket = registerS2C(ResponsePacket.class, Packet::toBytes, ResponsePacket::new, ResponsePacket::onMessage);
-        syncApplicationPacket = registerS2C(SyncApplicationPacket.class, Packet::toBytes, SyncApplicationPacket::new, SyncApplicationPacket::onMessage);
-        syncConfigPacket = registerS2C(SyncConfigPacket.class, Packet::toBytes, SyncConfigPacket::new, SyncConfigPacket::onMessage);
-        syncBlockPacket = registerS2C(SyncBlockPacket.class, Packet::toBytes, SyncBlockPacket::new, SyncBlockPacket::onMessage);
-        notificationPacket = registerS2C(NotificationPacket.class, Packet::toBytes, NotificationPacket::new, NotificationPacket::onMessage);
-        s2cUpdatePacket = registerS2C(S2CUpdatePacket.class, Packet::toBytes, S2CUpdatePacket::new, S2CUpdatePacket::onMessage);
-        c2sUpdatePacket = registerC2S(C2SUpdatePacket.class, Packet::toBytes, C2SUpdatePacket::new, C2SUpdatePacket::onMessage);
+        INSTANCE.register(RequestPacket.class, RequestPacket::toBytes, RequestPacket::new, RequestPacket::onMessage);
+        INSTANCE.register(ResponsePacket.class, Packet::toBytes, ResponsePacket::new, ResponsePacket::onMessage);
+        INSTANCE.register(SyncApplicationPacket.class, Packet::toBytes, SyncApplicationPacket::new, SyncApplicationPacket::onMessage);
+        INSTANCE.register(SyncConfigPacket.class, Packet::toBytes, SyncConfigPacket::new, SyncConfigPacket::onMessage);
+        INSTANCE.register(SyncBlockPacket.class, Packet::toBytes, SyncBlockPacket::new, SyncBlockPacket::onMessage);
+        INSTANCE.register(NotificationPacket.class, Packet::toBytes, NotificationPacket::new, NotificationPacket::onMessage);
+        INSTANCE.register(S2CUpdatePacket.class, Packet::toBytes, S2CUpdatePacket::new, S2CUpdatePacket::onMessage);
+        INSTANCE.register(C2SUpdatePacket.class, Packet::toBytes, C2SUpdatePacket::new, C2SUpdatePacket::onMessage);
     }
 
-    public static <T extends Packet<T>> CustomPacketPayload.Type<T> registerC2S(Class<T> packetClass, BiConsumer<T, RegistryFriendlyByteBuf> toBytes, Function<RegistryFriendlyByteBuf, T> fromBytes, BiConsumer<T, Supplier<NetworkManager.PacketContext>> onMessage) {
-        CustomPacketPayload.Type<T> id1 = nextId();
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, id1, StreamCodec.of((buf, v) -> toBytes.accept(v, buf), fromBytes::apply), (T value, NetworkManager.PacketContext context) -> onMessage.accept(value, () -> context));
-        return id1;
-    }
-
-    public static <T extends Packet<T>> CustomPacketPayload.Type<T> registerS2C(Class<T> packetClass, BiConsumer<T, RegistryFriendlyByteBuf> toBytes, Function<RegistryFriendlyByteBuf, T> fromBytes, BiConsumer<T, Supplier<NetworkManager.PacketContext>> onMessage) {
-        CustomPacketPayload.Type<T> id1 = nextId();
-        NetworkManager.registerReceiver(NetworkManager.Side.S2C, id1, StreamCodec.of((buf, v) -> toBytes.accept(v, buf), fromBytes::apply), (T value, NetworkManager.PacketContext context) -> onMessage.accept(value, () -> context));
-        return id1;
-    }
-
-    private static <T extends Packet<T>> CustomPacketPayload.Type<T> nextId() {
-        return new CustomPacketPayload.Type<>(ResourceLocation.parse("devices:generated/id" + id++));
+    private static int nextId() {
+        return id++;
     }
 
     @Environment(EnvType.CLIENT)
     public static <T extends Packet<T>> void sendToServer(T message) {
         if (Minecraft.getInstance().getConnection() != null) {
-            NetworkManager.sendToServer(message);
+            INSTANCE.sendToServer(message);
         } else {
-            throw new IllegalArgumentException("Connection is null");
+            Minecraft.getInstance().doRunTask(() ->
+            message.onMessage(() -> new NetworkManager.PacketContext() {
+
+                @Override
+                public Player getPlayer() {
+                    return Minecraft.getInstance().player;
+                }
+
+                @Override
+                public void queue(Runnable runnable) {
+
+                }
+
+                @Override
+                public Env getEnvironment() {
+                    return Env.SERVER;
+                }
+            }));
         }
     }
 
     public static <T extends Packet<T>> void sendToClient(Packet<T> messageNotification, Player player) { // has to be ServerPlayer if world is not null
-        if (player == null) {
-            throw new IllegalArgumentException("Player is null");
-        } else {
-            player.level();
+        if (player == null || player.level() == null) {
+            messageNotification.onMessage(() -> new NetworkManager.PacketContext() {
+                @Override
+                public Player getPlayer() {
+                    return player;
+                }
+
+                @Override
+                public void queue(Runnable runnable) {
+
+                }
+
+                @Override
+                public Env getEnvironment() {
+                    return Env.CLIENT;
+                }
+            });
+            return;
         }
-        NetworkManager.sendToPlayer((ServerPlayer) player, messageNotification);
+        INSTANCE.sendToPlayer((ServerPlayer) player, messageNotification);
+        //INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), messageNotification);
     }
+
+    // seems to be unused
+    public static <T extends Packet<T>> void sendToDimension(Packet<T> messageNotification, ResourceKey<Level> level) {
+        //INSTANCE.sendToServer();
+        //INSTANCE.send(PacketDistributor.DIMENSION.with(() -> level), messageNotification);
+    }
+
+//    public static <T extends Packet<T>> void.json sendToDimension(Packet<T> messageNotification, Level level) {
+//        INSTANCE.send(PacketDistributor.DIMENSION.with(level::dimension), messageNotification);
+//    }
+//
+//    public static <T extends Packet<T>> void.json sendToServer(Packet<T> messageNotification) {
+//        INSTANCE.send(PacketDistributor.SERVER.noArg(), messageNotification);
+//    }
+//
+//    public static <T extends Packet<T>> void.json sendToAll(Packet<T> messageNotification) {
+//        INSTANCE.send(PacketDistributor.ALL.noArg(), messageNotification);
+//    }
+//
+//    public static <T extends Packet<T>> void.json sendToAllAround(Packet<T> messageNotification, ResourceKey<Level> level, double x, double y, double z, double radius) {
+//        INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(x, y, z, radius, level)), messageNotification);
+//    }
+//
+//    public static <T extends Packet<T>> void.json sendToAllAround(Packet<T> messageNotification, Level level, double x, double y, double z, double radius) {
+//        INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(x, y, z, radius, level.dimension())), messageNotification);
+//    }
+//
+//    public static <T extends Packet<T>> void.json sendToTrackingChunk(Packet<T> messageNotification, LevelChunk chunk) {
+//        INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), messageNotification);
+//    }
+//
+//    public static <T extends Packet<T>> void.json sendToTrackingChunk(Packet<T> messageNotification, Level level, int x, int z) {
+//        INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunk(x, z)), messageNotification);
+//    }
+//
+//    public static <T extends Packet<T>> void.json sendToTrackingEntity(Packet<T> messageNotification, Entity entity) {
+//        INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), messageNotification);
+//    }
+//
+//    public static <T extends Packet<T>> void.json sendToTrackingEntity(Packet<T> messageNotification, Level level, int entityId) {
+//        INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> level.getEntity(entityId)), messageNotification);
+//    }
+//
+//    public static <T extends Packet<T>> void.json sendToTrackingEntityAndSelf(Packet<T> messageNotification, Entity entity) {
+//        INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), messageNotification);
+//    }
+//
+//    public static <T extends Packet<T>> void.json sendToTrackingEntityAndSelf(Packet<T> messageNotification, Level level, int entityId) {
+//        INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> level.getEntity(entityId)), messageNotification);
+//    }
 }

@@ -9,7 +9,9 @@ import com.ultreon.devices.programs.gitweb.layout.ModuleLayout;
 
 import java.util.Map;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class ParagraphModule extends Module {
     @Override
     public String[] getRequiredData() {

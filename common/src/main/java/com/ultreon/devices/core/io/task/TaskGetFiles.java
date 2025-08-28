@@ -1,88 +1,94 @@
 package com.ultreon.devices.core.io.task;
 
+import com.ultreon.devices.api.io.Folder;
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.block.entity.ComputerBlockEntity;
-import com.ultreon.devices.core.DataPath;
 import com.ultreon.devices.core.io.FileSystem;
+import com.ultreon.devices.core.io.ServerFile;
+import com.ultreon.devices.core.io.ServerFolder;
 import com.ultreon.devices.core.io.drive.AbstractDrive;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class TaskGetFiles extends Task {
     private String uuid;
-    private Path path;
+    private String path;
     private BlockPos pos;
 
-    private List<String> files;
-    private String error;
+    private List<ServerFile> files;
 
     public TaskGetFiles() {
         super("get_files");
     }
 
-    public TaskGetFiles(DataPath path, BlockPos pos) {
+    public TaskGetFiles(Folder folder, BlockPos pos) {
         this();
-        this.uuid = path.drive().toString();
-        this.path = path.path();
+        this.uuid = folder.getDrive().getUUID().toString();
+        this.path = folder.getPath();
         this.pos = pos;
+    }
+
+    protected static String compileDirectory(ServerFile file) {
+        if (file.getParent() == null || file.getParent().getParent() == null) return "/";
+
+        StringBuilder builder = new StringBuilder();
+        ServerFolder parent = file.getParent();
+        while (parent != null) {
+            builder.insert(0, "/" + parent.getName());
+            if (parent.getParent() != null) {
+                return builder.toString();
+            }
+            parent = parent.getParent();
+        }
+        return builder.toString();
     }
 
     @Override
     public void prepareRequest(CompoundTag tag) {
         tag.putString("uuid", uuid);
-        tag.putString("path", path.toString());
+        tag.putString("path", path);
         tag.putLong("pos", pos.asLong());
     }
 
     @Override
     public void processRequest(CompoundTag tag, Level level, Player player) {
         BlockEntity tileEntity = level.getChunkAt(BlockPos.of(tag.getLong("pos"))).getBlockEntity(BlockPos.of(tag.getLong("pos")), LevelChunk.EntityCreationType.IMMEDIATE);
-        if (!(tileEntity instanceof ComputerBlockEntity laptop)) {
-            return;
-        }
-        FileSystem fileSystem = laptop.getFileSystem();
-        UUID uuid = UUID.fromString(tag.getString("uuid"));
-        AbstractDrive serverDrive = fileSystem.getAvailableDrives(level, true).get(uuid);
-        if (serverDrive == null) {
-            return;
-        }
-        String path = tag.getString("path");
-        try {
-            Iterator<String> stringIterator = serverDrive.listDirectory(Path.of(path));
-            this.files = new ArrayList<>();
-            while (stringIterator.hasNext()) {
-                String name = stringIterator.next();
-                this.files.add(name);
+        if (tileEntity instanceof ComputerBlockEntity laptop) {
+            FileSystem fileSystem = laptop.getFileSystem();
+            UUID uuid = UUID.fromString(tag.getString("uuid"));
+            AbstractDrive serverDrive = fileSystem.getAvailableDrives(level, true).get(uuid);
+            if (serverDrive != null) {
+                ServerFolder found = serverDrive.getFolder(tag.getString("path"));
+                if (found != null) {
+                    this.files = found.getFiles().stream().filter(f -> !f.isFolder()).collect(Collectors.toList());
+                    this.setSuccessful();
+                }
             }
-            this.setSuccessful();
-        } catch (IOException e) {
-            this.error = e.getMessage();
         }
     }
 
     @Override
     public void prepareResponse(CompoundTag tag) {
-        if (this.error != null) {
-            tag.putString("error", error);
-            return;
-        }
         if (this.files != null) {
             ListTag list = new ListTag();
-            list.addAll(this.files.stream().map(StringTag::valueOf).toList());
+            this.files.forEach(f -> {
+                CompoundTag fileTag = new CompoundTag();
+                fileTag.putString("file_name", f.getName());
+                fileTag.put("data", f.toTag());
+                list.add(fileTag);
+            });
             tag.put("files", list);
         }
     }

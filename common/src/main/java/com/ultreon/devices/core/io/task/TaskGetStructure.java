@@ -7,6 +7,7 @@ import com.ultreon.devices.block.entity.ComputerBlockEntity;
 import com.ultreon.devices.core.io.FileSystem;
 import com.ultreon.devices.core.io.ServerFolder;
 import com.ultreon.devices.core.io.drive.AbstractDrive;
+import com.ultreon.devices.debug.DebugLog;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -15,20 +16,19 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.UUID;
 
-/// @author MrCrayfish
-@Deprecated
+/**
+ * @author MrCrayfish
+ */
 public class TaskGetStructure extends Task {
     private String uuid;
     private BlockPos pos;
 
     private ServerFolder folder;
 
-    @Deprecated
     public TaskGetStructure() {
         super("get_folder_structure");
     }
 
-    @Deprecated
     public TaskGetStructure(Drive drive, BlockPos pos) {
         this();
         this.uuid = drive.getUUID().toString();
@@ -36,14 +36,12 @@ public class TaskGetStructure extends Task {
     }
 
     @Override
-    @Deprecated
     public void prepareRequest(CompoundTag tag) {
         tag.putString("uuid", uuid);
         tag.putLong("pos", pos.asLong());
     }
 
     @Override
-    @Deprecated
     public void processRequest(CompoundTag tag, Level level, Player player) {
         BlockPos pos1 = BlockPos.of(tag.getLong("pos"));
 
@@ -62,7 +60,6 @@ public class TaskGetStructure extends Task {
     }
 
     @Override
-    @Deprecated
     public void prepareResponse(CompoundTag tag) {
         if (folder != null) {
             tag.putString("file_name", folder.getName());
@@ -71,7 +68,6 @@ public class TaskGetStructure extends Task {
     }
 
     @Override
-    @Deprecated
     public void processResponse(CompoundTag tag) {
 
     }

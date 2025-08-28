@@ -12,14 +12,14 @@ public class ColorSchemePresets {
 
     public static final Preset DARK = createPreset("dark", new ColorScheme(), scheme -> {
         scheme.buttonColor = 0x303030;
-        scheme.backgroundColor = 0x80202020;
+        scheme.backgroundColor = 0x202020;
         scheme.textColor = 0xffffff;
-        scheme.backgroundSecondaryColor = 0x80303030;
+        scheme.backgroundSecondaryColor = 0x303030;
         scheme.textSecondaryColor = 0xa0a0a0;
-        scheme.itemBackgroundColor = 0x80404040;
+        scheme.itemBackgroundColor = 0x404040;
         scheme.itemHighlightColor = 0x505050;
         scheme.headerColor = 0x303030;
-        scheme.windowBackgroundColor = 0x80202020;
+        scheme.windowBackgroundColor = 0x202020;
     });
 
     public static final Preset LIGHT = createPreset("light", new ColorScheme(), scheme -> {

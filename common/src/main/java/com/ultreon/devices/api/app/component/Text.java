@@ -25,14 +25,15 @@ public class Text extends Component {
     protected int textColor = Color.WHITE.getRGB();
 
     private WordListener wordListener = null;
-    private boolean loading;
 
-    /// Default text constructor
-    ///
-    /// @param text  the text to display
-    /// @param left  how many pixels from the left
-    /// @param top   how many pixels from the top
-    /// @param width the max width
+    /**
+     * Default text constructor
+     *
+     * @param text  the text to display
+     * @param left  how many pixels from the left
+     * @param top   how many pixels from the top
+     * @param width the max width
+     */
     public Text(String text, int left, int top, int width) {
         super(left, top);
         this.width = width;
@@ -42,11 +43,6 @@ public class Text extends Component {
     @Override
     public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
 //        DebugLog.log(lines.size() + ", " + rawText + ", " + lines);
-        if (loading) {
-
-            return;
-        }
-
         if (this.visible) {
             for (int i = 0; i < lines.size(); i++) {
                 String text = lines.get(i);
@@ -60,9 +56,11 @@ public class Text extends Component {
         }
     }
 
-    /// Sets the text for this component
-    ///
-    /// @param text the text
+    /**
+     * Sets the text for this component
+     *
+     * @param text the text
+     */
     public void setText(String text) {
         rawText = text;
         text = text.replace("\\n", "\n");
@@ -71,21 +69,27 @@ public class Text extends Component {
         this.lines = a;
     }
 
-    /// Sets the text color for this component
-    ///
-    /// @param color the text color
+    /**
+     * Sets the text color for this component
+     *
+     * @param color the text color
+     */
     public void setTextColor(Color color) {
         this.textColor = color.getRGB();
     }
 
-    /// Sets the whether shadow should show under the text
-    ///
-    /// @param shadow the text color
+    /**
+     * Sets the whether shadow should show under the text
+     *
+     * @param shadow the text color
+     */
     public void setShadow(boolean shadow) {
         this.shadow = shadow;
     }
 
-    /// @param padding the padding between the text and the edges of the component
+    /**
+     * @param padding the padding between the text and the edges of the component
+     */
     public void setPadding(int padding) {
         this.padding = padding;
         this.updateLines();
@@ -141,14 +145,6 @@ public class Text extends Component {
 
     public boolean hasWordListener() {
         return this.wordListener != null;
-    }
-
-    public void setLoading(boolean b) {
-        this.loading = b;
-    }
-
-    public boolean isLoading() {
-        return loading;
     }
 
     public interface WordListener {

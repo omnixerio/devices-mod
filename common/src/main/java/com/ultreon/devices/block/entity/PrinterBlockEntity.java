@@ -5,7 +5,6 @@ import com.ultreon.devices.api.print.IPrint;
 import com.ultreon.devices.init.DeviceBlockEntities;
 import com.ultreon.devices.init.DeviceSounds;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -23,7 +22,9 @@ import java.util.Deque;
 
 import static com.ultreon.devices.block.entity.PrinterBlockEntity.State.*;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class PrinterBlockEntity extends NetworkDeviceBlockEntity.Colored {
     private State state = IDLE;
 
@@ -78,8 +79,8 @@ public class PrinterBlockEntity extends NetworkDeviceBlockEntity.Colored {
     }
 
     @Override
-    public void loadAdditional(@NotNull CompoundTag compound, HolderLookup.@NotNull Provider registries) {
-        super.loadAdditional(compound, registries);
+    public void load(@NotNull CompoundTag compound) {
+        super.load(compound);
         if (compound.contains("currentPrint", Tag.TAG_COMPOUND)) {
             currentPrint = IPrint.load(compound.getCompound("currentPrint"));
         }
@@ -106,8 +107,8 @@ public class PrinterBlockEntity extends NetworkDeviceBlockEntity.Colored {
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
-        super.saveAdditional(tag, registries);
+    public void saveAdditional(@NotNull CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.putInt("totalPrintTime", totalPrintTime);
         tag.putInt("remainingPrintTime", remainingPrintTime);
         tag.putInt("state", state.ordinal());

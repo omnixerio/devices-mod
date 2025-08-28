@@ -9,7 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class CraftingModule extends ContainerModule {
     @Override
     public String[] getOptionalData() {

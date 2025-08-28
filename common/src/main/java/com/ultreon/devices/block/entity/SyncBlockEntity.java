@@ -1,18 +1,22 @@
 package com.ultreon.devices.block.entity;
 
+import com.ultreon.devices.annotations.PlatformOverride;
 import com.ultreon.devices.util.BlockEntityUtil;
+import dev.architectury.injectables.annotations.PlatformOnly;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.DebugStickItem;
+import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public abstract class SyncBlockEntity extends BlockEntity {
     protected CompoundTag pipeline = new CompoundTag();
@@ -29,22 +33,25 @@ public abstract class SyncBlockEntity extends BlockEntity {
     // from SignBlockEntity
     protected void markUpdated() {
         this.setChanged();
-        Level lvl = this.level;
-        if (lvl != null) {
-            lvl.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 3);
-        }
+        this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 3);
+    }
+
+    @PlatformOnly("forge")
+    @PlatformOverride("forge")
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        this.load(Objects.requireNonNull(pkt.getTag(), "The data packet for the block entity contained no data"));
     }
 
     @Override
-    public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registries) {
+    public CompoundTag getUpdateTag() {
         if (!pipeline.isEmpty()) {
             CompoundTag updateTag = pipeline;
-            saveAdditional(updateTag, registries);
+            saveAdditional(updateTag);
             pipeline = new CompoundTag();
             return updateTag;
         }
         CompoundTag updateTag = saveSyncTag();
-        super.saveAdditional(updateTag, registries);
+        super.saveAdditional(updateTag);
         return updateTag;
     }
 

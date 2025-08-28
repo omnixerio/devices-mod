@@ -8,7 +8,6 @@ import com.ultreon.devices.debug.DebugLog;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -17,7 +16,9 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import java.util.Map;
 import java.util.UUID;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class TaskSetupFileBrowser extends Task {
     private BlockPos pos;
     private boolean includeMain;
@@ -60,9 +61,10 @@ public class TaskSetupFileBrowser extends Task {
             if (mainDrive != null) {
                 CompoundTag mainDriveTag = new CompoundTag();
                 mainDriveTag.putString("name", mainDrive.getName());
-                mainDriveTag.put("uuid", NbtUtils.createUUID(mainDrive.getUuid()));
+                mainDriveTag.putString("uuid", mainDrive.getUuid().toString());
                 mainDriveTag.putString("type", mainDrive.getType().toString());
                 tag.put("main_drive", mainDriveTag);
+                tag.put("structure", mainDrive.getDriveStructure().toTag());
             }
 
             ListTag driveList = new ListTag();
@@ -71,7 +73,7 @@ public class TaskSetupFileBrowser extends Task {
                 DebugLog.log("v.getUuid() = " + v.getUuid());
                 CompoundTag driveTag = new CompoundTag();
                 driveTag.putString("name", v.getName());
-                driveTag.put("uuid", NbtUtils.createUUID(v.getUuid()));
+                driveTag.putString("uuid", v.getUuid().toString());
                 driveTag.putString("type", v.getType().toString());
                 driveList.add(driveTag);
             });

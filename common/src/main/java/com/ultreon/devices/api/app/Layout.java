@@ -15,27 +15,35 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-/// The Layout class is the main implementation for displaying
-/// components in your application. You can have multiple layouts
-/// in your application to switch interfaces during runtime.
-///
-/// Use [#setCurrentLayout(Layout)]
-/// inside of [#init(CompoundTag)]
-/// to set the current layout for your application.
-///
-/// Check out the example applications to get a better understand of
-/// how this works.
-///
-/// @author MrCrayfish
+/**
+ * The Layout class is the main implementation for displaying
+ * components in your application. You can have multiple layouts
+ * in your application to switch interfaces during runtime.
+ * <p>
+ * Use {@link Application#setCurrentLayout(Layout)}
+ * inside of {@link Wrappable#init(CompoundTag)}
+ * to set the current layout for your application.
+ * <p>
+ * Check out the example applications to get a better understand of
+ * how this works.
+ *
+ * @author MrCrayfish
+ */
 @SuppressWarnings("unused")
 public class Layout extends com.ultreon.devices.api.app.Component {
-    /// The list of components in the layout
+    /**
+     * The list of components in the layout
+     */
     public List<com.ultreon.devices.api.app.Component> components;
 
-    /// The width of the layout
+    /**
+     * The width of the layout
+     */
     public int width;
 
-    /// The height of the layout
+    /**
+     * The height of the layout
+     */
     public int height;
 
     private String title;
@@ -44,9 +52,11 @@ public class Layout extends com.ultreon.devices.api.app.Component {
     private InitListener initListener;
     private Background background;
 
-    /// Default constructor. Initializes a layout with a width of
-    /// 200 and a height of 100. Use the alternate constructor to
-    /// set a custom width and height.
+    /**
+     * Default constructor. Initializes a layout with a width of
+     * 200 and a height of 100. Use the alternate constructor to
+     * set a custom width and height.
+     */
     public Layout() {
         this(200, 100);
     }
@@ -65,12 +75,14 @@ public class Layout extends com.ultreon.devices.api.app.Component {
         this.height = height;
     }
 
-    /// Constructor to set a custom width and height. It should be
-    /// noted that the width must be in the range of 20 to 362 and
-    /// the height 20 to 164.
-    ///
-    /// @param width
-    /// @param height
+    /**
+     * Constructor to set a custom width and height. It should be
+     * noted that the width must be in the range of 20 to 362 and
+     * the height 20 to 164.
+     *
+     * @param width
+     * @param height
+     */
     public Layout(int left, int top, int width, int height) {
         super(left, top);
 
@@ -85,17 +97,21 @@ public class Layout extends com.ultreon.devices.api.app.Component {
         this.height = height;
     }
 
-    /// Called on the initialization of the layout. Caused by
-    /// [#setCurrentLayout(Layout)]. Will
-    /// trigger on initialization listener if set.
-    /// See [#setInitListener(InitListener)]
-    /// TODO: Fix docs
+    /**
+     * Called on the initialization of the layout. Caused by
+     * {@link Application#setCurrentLayout(Layout)}. Will
+     * trigger on initialization listener if set.
+     * See {@link #setInitListener(InitListener)}
+     * TODO: Fix docs
+     */
     public void init() {
     }
 
-    /// Adds a component to this layout and initializes it.
-    ///
-    /// @param c the component
+    /**
+     * Adds a component to this layout and initializes it.
+     *
+     * @param c the component
+     */
     public void addComponent(Component c) {
         if (c != null) {
             this.components.add(c);
@@ -137,14 +153,16 @@ public class Layout extends com.ultreon.devices.api.app.Component {
         }
     }
 
-    /// Renders the background of this layout if a [Background]
-    /// has be set. See [#setBackground(Background)].
-    ///
-    /// @param graphics gui graphics helper
-    /// @param laptop a Gui instance
-    /// @param mc     a Minecraft instance
-    /// @param x      the starting x rendering position (left most)
-    /// @param y      the starting y rendering position (top most)
+    /**
+     * Renders the background of this layout if a {@link Background}
+     * has be set. See {@link #setBackground(Background)}.
+     *
+     * @param graphics gui graphics helper
+     * @param laptop a Gui instance
+     * @param mc     a Minecraft instance
+     * @param x      the starting x rendering position (left most)
+     * @param y      the starting y rendering position (top most)
+     */
     @Override
     public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (!this.visible)
@@ -289,23 +307,29 @@ public class Layout extends com.ultreon.devices.api.app.Component {
         }
     }
 
-    /// Sets the initialization listener for this layout.
-    /// See [InitListener].
-    ///
-    /// @param initListener the listener
+    /**
+     * Sets the initialization listener for this layout.
+     * See {@link InitListener}.
+     *
+     * @param initListener the listener
+     */
     public void setInitListener(InitListener initListener) {
         this.initListener = initListener;
     }
 
-    /// Sets the background for this layout.
-    /// See [Background].
-    ///
-    /// @param background the background
+    /**
+     * Sets the background for this layout.
+     * See {@link Background}.
+     *
+     * @param background the background
+     */
     public void setBackground(Background background) {
         this.background = background;
     }
 
-    /// Clears all components in this layout
+    /**
+     * Clears all components in this layout
+     */
     public void clear() {
         this.components.clear();
     }
@@ -330,18 +354,22 @@ public class Layout extends com.ultreon.devices.api.app.Component {
         this.initialized = initialized;
     }
 
-    /// The background interface
-    ///
-    /// @author MrCrayfish
+    /**
+     * The background interface
+     *
+     * @author MrCrayfish
+     */
     public interface Background {
-        /// The render method
-        ///
-        /// @param graphics
-        /// @param mc     A Minecraft instance
-        /// @param x      the starting x rendering position (left most)
-        /// @param y      the starting y rendering position (top most)
-        /// @param width  the width of the layout
-        /// @param height the height of the layout
+        /**
+         * The render method
+         *
+         * @param graphics
+         * @param mc     A Minecraft instance
+         * @param x      the starting x rendering position (left most)
+         * @param y      the starting y rendering position (top most)
+         * @param width  the width of the layout
+         * @param height the height of the layout
+         */
         void render(GuiGraphics graphics, Minecraft mc, int x, int y, int width, int height, int mouseX, int mouseY, boolean windowActive);
     }
 

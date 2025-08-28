@@ -6,7 +6,9 @@ import net.minecraft.client.gui.Gui;
 
 import java.util.Map;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class DividerModule extends Module {
     @Override
     public String[] getRequiredData() {

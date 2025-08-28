@@ -9,14 +9,18 @@ import com.ultreon.devices.debug.DebugFlags;
 import com.ultreon.devices.debug.DebugUtils;
 import com.ultreon.devices.debug.DumpType;
 import com.ultreon.devices.init.DeviceBlockEntities;
+import com.ultreon.devices.init.DeviceBlocks;
 import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.programs.system.object.ColorSchemePresets;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.ReloadListenerRegistry;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
+import dev.architectury.registry.client.rendering.RenderTypeRegistry;
+import dev.architectury.registry.registries.RegistrarManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -47,19 +51,19 @@ public class ClientModEvents {
 
         if (Devices.DEVELOPER_MODE) {
             LOGGER.info(SETUP, "Adding developer wallpaper.");
-            Laptop.addWallpaper(ResourceLocation.parse("devices:textures/gui/developer_wallpaper.png"));
+            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/developer_wallpaper.png"));
         } else {
             LOGGER.info(SETUP, "Adding default wallpapers.");
-            Laptop.addWallpaper(ResourceLocation.parse("devices:textures/gui/laptop_wallpaper_1.png"));
-            Laptop.addWallpaper(ResourceLocation.parse("devices:textures/gui/laptop_wallpaper_2.png"));
-            Laptop.addWallpaper(ResourceLocation.parse("devices:textures/gui/laptop_wallpaper_3.png"));
-            Laptop.addWallpaper(ResourceLocation.parse("devices:textures/gui/laptop_wallpaper_4.png"));
-            Laptop.addWallpaper(ResourceLocation.parse("devices:textures/gui/laptop_wallpaper_5.png"));
-            Laptop.addWallpaper(ResourceLocation.parse("devices:textures/gui/laptop_wallpaper_6.png"));
-            Laptop.addWallpaper(ResourceLocation.parse("devices:textures/gui/laptop_wallpaper_7.png"));
-            Laptop.addWallpaper(ResourceLocation.parse("devices:textures/gui/laptop_wallpaper_8.png"));
-            Laptop.addWallpaper(ResourceLocation.parse("devices:textures/gui/laptop_wallpaper_9.png"));
-            Laptop.addWallpaper(ResourceLocation.parse("devices:textures/gui/laptop_wallpaper_10.png"));
+            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_1.png"));
+            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_2.png"));
+            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_3.png"));
+            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_4.png"));
+            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_5.png"));
+            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_6.png"));
+            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_7.png"));
+            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_8.png"));
+            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_9.png"));
+            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_10.png"));
         }
 
 
@@ -67,7 +71,7 @@ public class ClientModEvents {
         registerRenderLayers();
         registerRenderers();
         registerLayerDefinitions();
-        if (Platform.isForgeLike()) { // Note: Forge requires the icon atlas to be generator beforehand.
+        if (Platform.isForge()) { // Note: Forge requires the icon atlas to be generator beforehand.
             generateIconAtlas();
         }
 
@@ -89,7 +93,7 @@ public class ClientModEvents {
             LOGGER.debug("Reloading resources from the Device Mod.");
 
             return CompletableFuture.runAsync(() -> {
-                if (!ApplicationManager.getAllApplications().isEmpty()) {
+                if (ApplicationManager.getAllApplications().size() > 0) {
                     ApplicationManager.getAllApplications().forEach(AppInfo::reload);
                     generateIconAtlas(resourceManager); // FIXME: Broken resource reloading, can't find image resource while definitely exists.
                 }
@@ -99,7 +103,7 @@ public class ClientModEvents {
     }
 
     private static void registerRenderLayers() {
-        /*
+        if (true) return;
         DeviceBlocks.getAllLaptops().forEach(block -> {
             LOGGER.debug(SETUP, "Setting render layer for laptop {}", RegistrarManager.getId(block, Registries.BLOCK));
             RenderTypeRegistry.register(RenderType.cutout(), block);
@@ -117,7 +121,6 @@ public class ClientModEvents {
 
         LOGGER.debug(SETUP, "Setting render layer for paper {}", RegistrarManager.getId(DeviceBlocks.PAPER.get(), Registries.BLOCK));
         RenderTypeRegistry.register(RenderType.cutout(), DeviceBlocks.PAPER.get());
-         */
     }
 
     public static void generateIconAtlas() {
@@ -133,7 +136,7 @@ public class ClientModEvents {
             int mode = 0;
             ResourceManager rm = resourceManager;
 
-            public void writeImage(AppInfo info, ResourceLocation location) {
+            public boolean writeImage(AppInfo info, ResourceLocation location) {
                 String path = "/assets/" + location.getNamespace() + "/" + location.getPath();
                 try {
                     if (rm == null) {
@@ -152,7 +155,7 @@ public class ClientModEvents {
                     BufferedImage icon = ImageIO.read(input);
                     if (icon.getWidth() != ICON_SIZE || icon.getHeight() != ICON_SIZE) {
                         Devices.LOGGER.error("Incorrect icon size for " + (info == null ? null : info.getId()) + " (Must be 14 by 14 pixels)");
-                        return;
+                        return false;
                     }
                     int iconU = (index % 16) * ICON_SIZE;
                     int iconV = (index / 16) * ICON_SIZE;
@@ -171,17 +174,19 @@ public class ClientModEvents {
                     if (DebugFlags.LOG_APP_ICON_STITCHES) {
                         Devices.LOGGER.info("Stitching texture: " + location);
                     }
+                    return true;
                 } catch (FileNotFoundException e) {
                     Devices.LOGGER.error("Unable to load icon for '" + (info == null ? null : info.getId()) + "': " + e.getMessage());
                     if (DebugFlags.PRINT_MISSING_APP_ICONS_STACK_TRACES) {
-                        LOGGER.error("Unable to load icon for " + (info == null ? null : info.getId()), e);
+                        e.printStackTrace();
                     }
                 } catch (Exception e) {
                     Devices.LOGGER.error("Unable to load icon for " + (info == null ? null : info.getId()));
                     if (DebugFlags.PRINT_APP_ICONS_STACK_TRACES) {
-                        LOGGER.error("Unable to load icon for " + (info == null ? null : info.getId()), e);
+                        e.printStackTrace();
                     }
                 }
+                return false;
             }
 
             public void finish() {
@@ -200,7 +205,7 @@ public class ClientModEvents {
                     ImageIO.write(atlas, "png", output);
                     byte[] bytes = output.toByteArray();
                     ByteArrayInputStream input = new ByteArrayInputStream(bytes);
-                    CompletableFuture<Void> submit = Minecraft.getInstance().submit(() -> {
+                    Minecraft.getInstance().submit(() -> {
                         try {
                             Minecraft.getInstance().getTextureManager().register(Laptop.ICON_TEXTURES, new DynamicTexture(NativeImage.read(input)));
                         } catch (IOException e) {
@@ -213,7 +218,7 @@ public class ClientModEvents {
             }
         };
 
-        imageWriter.writeImage(null, ResourceLocation.fromNamespaceAndPath("devices", "textures/app/icon/base/missing.png"));
+        imageWriter.writeImage(null, new ResourceLocation("devices", "textures/app/icon/base/missing.png"));
 
 
         for (AppInfo info : ApplicationManager.getAllApplications()) {

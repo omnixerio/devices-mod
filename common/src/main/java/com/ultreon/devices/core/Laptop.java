@@ -10,13 +10,14 @@ import com.ultreon.devices.api.app.System;
 import com.ultreon.devices.api.app.*;
 import com.ultreon.devices.api.app.component.Image;
 import com.ultreon.devices.api.io.Drive;
+import com.ultreon.devices.api.io.File;
 import com.ultreon.devices.api.task.Callback;
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.api.task.TaskManager;
+import com.ultreon.devices.api.utils.OnlineRequest;
 import com.ultreon.devices.api.video.CustomResolution;
 import com.ultreon.devices.api.video.VideoInfo;
 import com.ultreon.devices.block.entity.ComputerBlockEntity;
-import com.ultreon.devices.core.io.task.TaskGetMainDrive;
 import com.ultreon.devices.core.task.TaskInstallApp;
 import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.programs.system.DiagnosticsApp;
@@ -24,7 +25,6 @@ import com.ultreon.devices.programs.system.DisplayResolution;
 import com.ultreon.devices.programs.system.PredefinedResolution;
 import com.ultreon.devices.programs.system.SystemApp;
 import com.ultreon.devices.programs.system.component.FileBrowser;
-import com.ultreon.devices.programs.system.component.FileInfo;
 import com.ultreon.devices.programs.system.task.TaskUpdateApplicationData;
 import com.ultreon.devices.programs.system.task.TaskUpdateSystemData;
 import com.ultreon.devices.util.GLHelper;
@@ -53,34 +53,32 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.nio.file.AccessDeniedException;
-import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.*;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
 
-/// Laptop GUI class.
-///
-/// @author MrCrayfish, Qboi123
+//TODO Intro message (created by mrcrayfish, donate here)
+
+/**
+ * Laptop GUI class.
+ *
+ * @author MrCrayfish, Qboi123
+ */
 public class Laptop extends Screen implements System {
     public static final int ID = 1;
-    public static final ResourceLocation ICON_TEXTURES = ResourceLocation.fromNamespaceAndPath(Devices.MOD_ID, "textures/atlas/app_icons.png");
+    public static final ResourceLocation ICON_TEXTURES = new ResourceLocation(Devices.MOD_ID, "textures/atlas/app_icons.png");
     public static final int ICON_SIZE = 14;
     private static final ResourceLocation LAPTOP_FONT = Devices.res("laptop");
     private static Font font;
-    private static final ResourceLocation LAPTOP_GUI = ResourceLocation.fromNamespaceAndPath(Devices.MOD_ID, "textures/gui/laptop.png");
+    private static final ResourceLocation LAPTOP_GUI = new ResourceLocation(Devices.MOD_ID, "textures/gui/laptop.png");
     private static final List<Application> APPLICATIONS = new ArrayList<>();
     private static boolean worldLess;
     private static Laptop instance;
     private Double dragWindowFromX;
     private Double dragWindowFromY;
-    private final VideoInfo videoInfo;
-    private final Map<UUID, Drive> drives = new HashMap<>();
-    private Dialog systemDialog = null;
-    private Window<Dialog> systemDialogWindow = null;
-    private static boolean loaded;
-    private Bios bios;
+    private VideoInfo videoInfo;
 
     @PlatformOnly("fabric")
     public static List<Application> getApplicationsForFabric() {
@@ -120,21 +118,24 @@ public class Laptop extends Screen implements System {
         return font;
     }
 
-    /// Creates a new laptop GUI.
-    ///
-    /// @param laptop the block entity of the laptop in-game, if the laptop is not in-game, the level passed to it should be null.
+    /**
+     * Creates a new laptop GUI.
+     *
+     * @param laptop the block entity of the laptop in-game, if the laptop is not in-game, the level passed to it should be null.
+     */
     public Laptop(ComputerBlockEntity laptop) {
         this(laptop, false);
     }
 
-    /// Creates a new laptop GUI.
-    ///
-    /// @param laptop the block entity of the laptop in-game, if the laptop is not in-game, the level passed to it should be null.
+    /**
+     * Creates a new laptop GUI.
+     *
+     * @param laptop the block entity of the laptop in-game, if the laptop is not in-game, the level passed to it should be null.
+     */
     public Laptop(ComputerBlockEntity laptop, boolean worldLess) {
         super(Component.literal("Laptop"));
 
         instance = this;
-        this.bios = determineBios(laptop);
 
         // Laptop data.
         this.appData = laptop.getApplicationData();
@@ -179,18 +180,13 @@ public class Laptop extends Screen implements System {
         if (currentWallpaper.isBuiltIn()) {
             wallpaper.setImage(WALLPAPERS.get(currentWallpaper.location));
         } else {
-            wallpaper.setImage(currentWallpaper.locationPath);
+            wallpaper.setImage(currentWallpaper.url);
         }
         this.wallpaperLayout.addComponent(this.wallpaper);
         this.wallpaperLayout.handleLoad();
 
         // World-less flag.
         Laptop.worldLess = worldLess;
-    }
-
-    private Bios determineBios(ComputerBlockEntity laptop) {
-        if (laptop == null) return WorldLessBios.INSTANCE;
-        return laptop.getBios();
     }
 
     public static Laptop getInstance() {
@@ -209,11 +205,6 @@ public class Laptop extends Screen implements System {
         return instance.videoInfo.getResolution();
     }
 
-    public static @Nullable Drive getDrive(UUID drive) {
-        if (drive == null) return null;
-        return instance.drives.get(drive);
-    }
-
     public CompoundTag getModSystemTag(Mod mod) {
         return getModSystemTag(mod.getModId());
     }
@@ -230,18 +221,22 @@ public class Laptop extends Screen implements System {
         return worldLess;
     }
 
-    /// Returns the position of the laptop the player is currently using.
-    /// This method can ONLY be called when the laptop GUI is open, otherwise it will return a null position.
-    ///
-    /// @return the position of the laptop currently in use
+    /**
+     * Returns the position of the laptop the player is currently using. This method can ONLY be
+     * called when the laptop GUI is open, otherwise it will return a null position.
+     *
+     * @return the position of the laptop currently in use
+     */
     @Nullable
     public static BlockPos getPos() {
         return pos;
     }
 
-    /// Add a wallpaper to the list of available wallpapers.
-    ///
-    /// @param wallpaper location to the wallpaper texture, if null, the wallpaper will not be added.
+    /**
+     * Add a wallpaper to the list of available wallpapers.
+     *
+     * @param wallpaper location to the wallpaper texture, if null the wallpaper will not be added.
+     */
     public static void addWallpaper(ResourceLocation wallpaper) {
         if (wallpaper != null) {
             WALLPAPERS.add(wallpaper);
@@ -257,45 +252,24 @@ public class Laptop extends Screen implements System {
         return mainDrive;
     }
 
-    public static void getOrLoadMainDrive(Callback<@NotNull Drive> callback) {
-        if (Laptop.mainDrive != null) {
-            callback.execute(Laptop.mainDrive, true);
-            return;
-        }
-
-        TaskGetMainDrive task = new TaskGetMainDrive(pos);
-        task.setCallback((tag, success) -> {
-            if (!success) {
-                callback.execute(null, false);
-                return;
-            }
-
-            if (tag != null) {
-                Laptop.mainDrive = new Drive(tag.getCompound("main_drive"));
-                callback.execute(Laptop.mainDrive, true);
-                return;
-            }
-
-            callback.execute(null, false);
-        });
-
-        TaskManager.sendTask(task);
-    }
-
     public static void setMainDrive(Drive mainDrive) {
         if (Laptop.mainDrive == null) {
             Laptop.mainDrive = mainDrive;
         }
     }
 
-    /// Run a task later in render thread.
-    ///
-    /// @param task the task to run.
+    /**
+     * Run a task later in render thread.
+     *
+     * @param task the task to run.
+     */
     public static void runLater(Runnable task) {
         tasks.add(task);
     }
 
-    /// Initialize the Laptop GUI.
+    /**
+     * Initialize the Laptop GUI.
+     */
     @Override
     public void init() {
         int posX = (width - getDeviceWidth()) / 2;
@@ -355,11 +329,13 @@ public class Laptop extends Screen implements System {
         TaskManager.sendTask(new TaskUpdateSystemData(pos, systemData));
     }
 
-    /// Handles Minecraft GUI resizing.
-    ///
-    /// @param minecraft the Minecraft instance
-    /// @param width     the new width
-    /// @param height    the new height
+    /**
+     * Handles Minecraft GUI resizing.
+     *
+     * @param minecraft the Minecraft instance
+     * @param width     the new width
+     * @param height    the new height
+     */
     @Override
     public void resize(@NotNull Minecraft minecraft, int width, int height) {
         super.resize(minecraft, width, height);
@@ -385,16 +361,22 @@ public class Laptop extends Screen implements System {
         }
     }
 
-    /// Ticking the laptop.
+    /**
+     * Ticking the laptop.
+     */
     @Override
     public void tick() {
         try {
             bar.onTick();
 
-            for (Window<?> window : List.copyOf(windows)) {
-                window.onTick();
-                if (window.removed) {
-                    windows.remove(window);
+            for (Window<?> window : windows) {
+                if (window != null) {
+                    window.onTick();
+//                    if (window.removed) {
+//                        java.lang.DebugLog.log("REMOVED " + window);
+//                        windows.remove(window);
+//                        i--;
+//                    }
                 }
             }
 
@@ -406,14 +388,11 @@ public class Laptop extends Screen implements System {
 
     @Override
     public void render(final @NotNull GuiGraphics graphics, final int mouseX, final int mouseY, float partialTicks) {
-        super.renderBackground(graphics, mouseX, mouseY, partialTicks);
-
         if (bsod != null) {
             renderBsod(graphics, mouseX, mouseY, partialTicks);
             return;
         }
 
-        RenderSystem.disableDepthTest();
         PoseStack.Pose last = graphics.pose().last();
 
         try {
@@ -437,7 +416,7 @@ public class Laptop extends Screen implements System {
         renderBezels(graphics, mouseX, mouseY, partialTicks);
         int posX = (width - getDeviceWidth()) / 2;
         int posY = (height - getDeviceHeight()) / 2;
-        graphics.fill(posX + 10, posY + 10, posX + getDeviceWidth() - 10, posY + getDeviceHeight() - 10, new Color(0, 0, 255).getRGB());
+        graphics.fill(posX+10, posY+10, posX + getDeviceWidth()-10, posY + getDeviceHeight()-10, new Color(0, 0, 255).getRGB());
         var bo = new ByteArrayOutputStream();
 
         double scale = Minecraft.getInstance().getWindow().getGuiScale();
@@ -445,10 +424,10 @@ public class Laptop extends Screen implements System {
         var b = new PrintStream(bo);
         bsod.throwable.printStackTrace(b);
         var str = bo.toString();
-        drawLines(graphics, Laptop.getFont(), str, posX + 10, posY + 10 + getFont().lineHeight * 2, (int) ((getDeviceWidth() - 10) * scale), new Color(255, 255, 255).getRGB());
+        drawLines(graphics, Laptop.getFont(), str, posX+10, posY+10+getFont().lineHeight*2, (int) ((getDeviceWidth() - 10) * scale), new Color(255, 255, 255).getRGB());
         graphics.pose().pushPose();
         graphics.pose().scale(2, 2, 0);
-        graphics.pose().translate((posX + 10) / 2f, (posY + 10) / 2f, 0);
+        graphics.pose().translate((posX+10)/2f,(posY+10)/2f,0);
         graphics.drawString(getFont(), "System has crashed!", 0, 0, new Color(255, 255, 255).getRGB());
         graphics.pose().popPose();
     }
@@ -456,13 +435,13 @@ public class Laptop extends Screen implements System {
     public static void drawLines(GuiGraphics graphics, Font font, String text, int x, int y, int width, int color) {
         var lines = new ArrayList<String>();
         font.getSplitter().splitLines(FormattedText.of(text.replaceAll("\r\n", "\n").replaceAll("\r", "\n")), width, Style.EMPTY).forEach(b -> lines.add(b.getString()));
-        var totalTextHeight = font.lineHeight * lines.size();
-        var textScale = (instance.videoInfo.getResolution().height() - 20 - (getFont().lineHeight * 2)) / (float) totalTextHeight;
+        var totalTextHeight = font.lineHeight*lines.size();
+        var textScale = (instance.videoInfo.getResolution().height()-20-(getFont().lineHeight*2))/(float)totalTextHeight;
         textScale = (float) (1f / Minecraft.getInstance().getWindow().getGuiScale());
         textScale = Math.max(0.5f, textScale);
         graphics.pose().pushPose();
         graphics.pose().scale(textScale, textScale, 1);
-        graphics.pose().translate(x / textScale, (y + 3) / textScale, 0);
+        graphics.pose().translate(x / textScale, (y+3)/textScale, 0);
         //poseStack.translate();
         var lineNr = 0;
         for (String s : lines) {
@@ -474,6 +453,8 @@ public class Laptop extends Screen implements System {
 
     public void renderBezels(final @NotNull GuiGraphics graphics, final int mouseX, final int mouseY, float partialTicks) {
         tasks.clear();
+
+        this.renderBackground(graphics);
 
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, LAPTOP_GUI);
@@ -503,29 +484,33 @@ public class Laptop extends Screen implements System {
 
     }
 
-    /// Render the laptop screen.
-    ///
-    /// @param graphics     gui graphics helper
-    /// @param mouseX       the current mouse X position.
-    /// @param mouseY       the current mouse Y position.
-    /// @param partialTicks the rendering partial ticks that forge give use (which is useless here).
+    /**
+     * Render the laptop screen.
+     *
+     * @param graphics     gui graphics helper
+     * @param mouseX       the current mouse X position.
+     * @param mouseY       the current mouse Y position.
+     * @param partialTicks the rendering partial ticks that forge give use (which is useless here).
+     */
     public void renderLaptop(final @NotNull GuiGraphics graphics, final int mouseX, final int mouseY, float partialTicks) {
         int posX = (width - getDeviceWidth()) / 2;
         int posY = (height - getDeviceHeight()) / 2;
         // Fixes the strange partialTicks that Forge decided to give us
-        final float frameTime = Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
+        final float frameTime = Minecraft.getInstance().getFrameTime();
         for (Runnable task : tasks) {
             task.run();
         }
-
+        
         renderBezels(graphics, mouseX, mouseY, partialTicks);
 
         GLHelper.pushScissor(posX, posY, videoInfo.getResolution().width() + BORDER, videoInfo.getResolution().height() + BORDER);
         //*******************//
         //     Wallpaper     //
         //*******************//
+        //RenderSystem.setShaderTexture(0, WALLPAPERS.get(currentWallpaper));
+        //RenderUtil.drawRectWithTexture(pose, posX + 10, posY + 10, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 512, 288);
         Image.CACHE.forEach((s, cachedImage) -> cachedImage.delete());
-        this.wallpaperLayout.render(graphics, this, this.minecraft, posX + 10, posY + 10, mouseX, mouseY, true, partialTicks);
+        this.wallpaperLayout.render(graphics, this, this.minecraft, posX+10, posY+10, mouseX, mouseY, true, partialTicks);
         boolean insideContext = false;
         if (context != null) {
             insideContext = isMouseInside(mouseX, mouseY, context.xPosition, context.yPosition, context.xPosition + context.width, context.yPosition + context.height);
@@ -536,28 +521,23 @@ public class Laptop extends Screen implements System {
         //****************//
         graphics.pose().pushPose();
         {
-            //   Window<?>[] windows1 = Arrays.stream(windows.toArray()).filter(Objects::nonNull).toArray(Window<?>[]::new);
+         //   Window<?>[] windows1 = Arrays.stream(windows.toArray()).filter(Objects::nonNull).toArray(Window<?>[]::new);
             for (int i = windows.size() - 1; i >= 0; i--) {
                 var window = windows.get(i);
                 if (window != null) {
                     PoseStack.Pose last = graphics.pose().last();
                     try {
-                        if (i == 0 && systemDialogWindow == null) {
-                            window.render(graphics, this, minecraft, posX + BORDER, posY + BORDER, mouseX, mouseY, !insideContext && systemDialogWindow == null, partialTicks);
+                        if (i == 0) {
+                            window.render(graphics, this, minecraft, posX + BORDER, posY + BORDER, mouseX, mouseY, !insideContext, partialTicks);
                         } else {
                             window.render(graphics, this, minecraft, posX + BORDER, posY + BORDER, Integer.MAX_VALUE, Integer.MAX_VALUE, false, partialTicks);
-                        }
-                        if (i == 0 && systemDialogWindow == null) {
-                            window.renderOverlay(graphics, this, minecraft, posX + BORDER, posY + BORDER, mouseX, mouseY, !insideContext && systemDialogWindow == null, partialTicks);
-                        } else {
-                            window.renderOverlay(graphics, this, minecraft, posX + BORDER, posY + BORDER, Integer.MAX_VALUE, Integer.MAX_VALUE, false, partialTicks);
                         }
                     } catch (Exception e) {
                         while (graphics.pose().last() != last) {
                             graphics.pose().popPose();
                         }
                         RenderSystem.disableScissor();
-                        Devices.LOGGER.error("An error has occurred.", e);
+                        e.printStackTrace();
                         Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
                         message.setTitle("Error");
                         CompoundTag intent = new CompoundTag();
@@ -566,7 +546,7 @@ public class Laptop extends Screen implements System {
                             if (info != null) {
                                 intent.putString("name", info.getName());
                             }
-                            launchApp(ApplicationManager.getApplication(Devices.id("diagnostics")), intent);
+                            openApplication(ApplicationManager.getApplication(Devices.id("diagnostics")), intent);
                             closeApplication(app);
                         }
                     }
@@ -579,19 +559,6 @@ public class Laptop extends Screen implements System {
         graphics.pose().translate(0, 0, 100);
         if (context != null) {
             context.render(graphics, this, minecraft, context.xPosition, context.yPosition, mouseX, mouseY, true, frameTime);
-        }
-
-        graphics.pose().translate(0, 0, 200);
-        if (systemDialogWindow != null && systemDialogWindow.removed) {
-            systemDialog = null;
-            systemDialogWindow = null;
-        }
-
-        if (systemDialogWindow != null) {
-            graphics.fill(posX + 10, posY + 10, posX + getDeviceWidth() - 10, posY + getDeviceHeight() - 10, 0x60000000);
-            int w = getScreenWidth() / 2 - systemDialog.getWidth() / 2;
-            int h = getScreenHeight() / 2 - systemDialog.getHeight() / 2;
-            systemDialogWindow.render(graphics, this, minecraft, posX + BORDER, posY + BORDER, mouseX, mouseY, true, partialTicks);
         }
 
         graphics.pose().popPose();
@@ -611,6 +578,7 @@ public class Laptop extends Screen implements System {
             return false;
         });
 
+        super.render(graphics, mouseX, mouseY, frameTime);
         GLHelper.popScissor();
 
         GLHelper.clearScissorStack();
@@ -631,10 +599,9 @@ public class Laptop extends Screen implements System {
         }
         return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
-
     private void bsod(Throwable e) {
         this.bsod = new BSOD(e);
-        Devices.LOGGER.error("A fatal error has occurred.", e);
+        e.printStackTrace();
     }
 
     public VideoInfo getVideoInfo() {
@@ -651,46 +618,14 @@ public class Laptop extends Screen implements System {
 
     }
 
-    public void requestPermission(PermissionRequest permissionRequest, Consumer<PermissionResult> callback) {
-        Permission permission = permissionRequest.permission();
-        if (permission == null) {
-            callback.accept(PermissionResult.DENIED);
-        }
-
-        String reason = permissionRequest.reason();
-        if (reason == null) {
-            reason = "App did not specify a reason.";
-        }
-
-        setSystemDialog(new Dialog.Permission(permissionRequest, result -> {
-            PermissionManager.grant(permission, () -> {
-                callback.accept(result);
-            });
-        }, reason));
-    }
-
     private static final class BSOD {
         private final Throwable throwable;
-
         public BSOD(Throwable e) {
             this.throwable = e;
         }
     }
-
     @SuppressWarnings("unchecked")
     public boolean mouseClickedInternal(double mouseX, double mouseY, int mouseButton) {
-        if (bsod != null) {
-            return true;
-        }
-
-        if (systemDialogWindow != null) {
-            int posX = (width - getScreenWidth()) / 2;
-            int posY = (height - getScreenHeight()) / 2;
-
-            systemDialogWindow.handleMouseClick(this, posX, posY, (int) mouseX, (int) mouseY, mouseButton);
-            return true;
-        }
-
         this.lastMouseX = (int) mouseX;
         this.lastMouseY = (int) mouseY;
 
@@ -702,7 +637,7 @@ public class Laptop extends Screen implements System {
             int dropdownY = context.yPosition;
             if (isMouseInside((int) mouseX, (int) mouseY, dropdownX, dropdownY, dropdownX + context.width, dropdownY + context.height)) {
                 this.context.handleMouseClick((int) mouseX, (int) mouseY, mouseButton);
-                return true;
+                return false;
             } else {
                 this.context = null;
             }
@@ -719,9 +654,9 @@ public class Laptop extends Screen implements System {
                         windows.remove(i);
                         i--;
                         updateWindowStack();
-                        windows.addFirst(window);
+                        windows.add(0, window);
 
-                        windows.getFirst().handleMouseClick(this, posX, posY, (int) mouseX, (int) mouseY, mouseButton);
+                        windows.get(0).handleMouseClick(this, posX, posY, (int) mouseX, (int) mouseY, mouseButton);
 
                         if (isMouseWithinWindowBar((int) mouseX, (int) mouseY, dialogWindow)) {
                             dragWindowFromX = mouseX - dialogWindow.offsetX;
@@ -739,18 +674,18 @@ public class Laptop extends Screen implements System {
                         break;
                     }
                 } catch (Exception e) {
-                    Devices.LOGGER.error("An error has occurred.", e);
+                    e.printStackTrace();
                     Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
                     message.setTitle("Error");
-                    if (windows.isEmpty() || windows.getFirst() == null) {
+                    if (windows.size() == 0 || windows.get(0) == null) {
                         CompoundTag intent = new CompoundTag();
                         AppInfo info = window.content.getInfo();
                         if (info != null) {
                             intent.putString("name", info.getName());
                         }
-                        launchApp(ApplicationManager.getApplication(Devices.id("diagnostics")), intent);
+                        openApplication(ApplicationManager.getApplication(Devices.id("diagnostics")), intent);
                     } else {
-                        setSystemDialog(message);
+                        windows.get(0).openDialog(message);
                     }
                 }
             }
@@ -759,24 +694,8 @@ public class Laptop extends Screen implements System {
         return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
-    public void setSystemDialog(Dialog message) {
-        systemDialog = message;
-
-        systemDialogWindow = new Window<>(systemDialog, null);
-        systemDialogWindow.init(width / 2 - systemDialog.getWidth() / 2, height / 2 - systemDialog.getHeight() / 2, null);
-    }
-
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int state) {
-        if (bsod != null) {
-            return true;
-        }
-
-        if (systemDialogWindow != null) {
-            systemDialogWindow.handleMouseRelease((int) mouseX, (int) mouseY, state);
-            return true;
-        }
-
         super.mouseReleased(mouseX, mouseY, state);
         this.dragging = false;
         dragWindowFromX = null;
@@ -788,71 +707,67 @@ public class Laptop extends Screen implements System {
                 if (isMouseInside((int) mouseX, (int) mouseY, dropdownX, dropdownY, dropdownX + context.width, dropdownY + context.height)) {
                     this.context.handleMouseRelease((int) mouseX, (int) mouseY, state);
                 }
-            } else if (!windows.isEmpty()) {
-                windows.getFirst().handleMouseRelease((int) mouseX, (int) mouseY, state);
+            } else if (windows.get(0) != null) {
+                windows.get(0).handleMouseRelease((int) mouseX, (int) mouseY, state);
             }
         } catch (Exception e) {
-            Devices.LOGGER.error("An error has occurred.", e);
+            e.printStackTrace();
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
-            setSystemDialog(message);
+            windows.get(0).openDialog(message);
         }
         return true;
     }
 
     @Override
+    public void afterKeyboardAction() {
+//        if (Keyboard.getEventKeyState()) {
+//            char pressed = Keyboard.getEventCharacter();
+//            int code = Keyboard.getEventKey();
+//
+//            if (windows[0] != null) {
+//                windows[0].handleKeyTyped(pressed, code);
+//            }
+//
+////            super.charTyped(pressed, code);
+//        } else {
+//        }
+
+        // Todo - handle key presses
+//        this.minecraft.dispatchKeypresses();
+    }
+
+    @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        if (bsod != null) {
-            return false;
-        }
-
-        if (systemDialogWindow != null) {
-            systemDialogWindow.handleCharTyped(codePoint, modifiers);
-            return true;
-        }
-
         boolean override = super.charTyped(codePoint, modifiers);
         try {
-            if (!override && !windows.isEmpty())
-                windows.getFirst().handleCharTyped(codePoint, modifiers);
+            if (!override && windows.get(0) != null)
+                windows.get(0).handleCharTyped(codePoint, modifiers);
         } catch (Exception e) {
-            Devices.LOGGER.error("An error has occurred.", e);
+            e.printStackTrace();
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
-            setSystemDialog(message);
+            windows.get(0).openDialog(message);
         }
         return override;
     }
 
     @Override
     public boolean keyPressed(final int keyCode, final int scanCode, final int modifiers) {
-        if (super.keyPressed(keyCode, scanCode, modifiers)) return true;
-
-        if (bsod != null) {
-            this.bios.systemExit(PowerMode.REBOOT);
-            return true;
-        }
-
-        if (systemDialogWindow != null) {
-            systemDialogWindow.handleKeyPressed(keyCode, scanCode, modifiers);
-            return true;
-        }
-
         final boolean override = super.keyPressed(keyCode, scanCode, modifiers);
 
         try {
-            if (!pressed.contains(keyCode) && !override && !windows.isEmpty()) {
-                windows.getFirst().handleKeyPressed(keyCode, scanCode, modifiers);
+            if (!pressed.contains(keyCode) && !override && windows.get(0) != null) {
+                windows.get(0).handleKeyPressed(keyCode, scanCode, modifiers);
             }
         } catch (Exception e) {
-            Devices.LOGGER.error("An error has occurred.", e);
+            e.printStackTrace();
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
-            setSystemDialog(message);
-            return true;
+            windows.get(0).openDialog(message);
         }
         pressed.add(keyCode);
-        return false;
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
@@ -862,15 +777,15 @@ public class Laptop extends Screen implements System {
         boolean b = super.keyReleased(keyCode, scanCode, modifiers);
 
         try {
-            if (keyCode >= 32 && keyCode < 256 && !windows.isEmpty()) {
-                windows.getFirst().handleKeyReleased(keyCode, scanCode, modifiers);
+            if (keyCode >= 32 && keyCode < 256 && windows.get(0) != null) {
+                windows.get(0).handleKeyReleased(keyCode, scanCode, modifiers);
                 return true;
             }
         } catch (Exception e) {
-            Devices.LOGGER.error("An error has occurred.", e);
+            e.printStackTrace();
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
-            setSystemDialog(message);
+            windows.get(0).openDialog(message);
         }
         return b;
     }
@@ -878,15 +793,6 @@ public class Laptop extends Screen implements System {
     @SuppressWarnings("unchecked")
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (bsod != null) {
-            return true;
-        }
-
-        if (systemDialogWindow != null) {
-            systemDialogWindow.handleMouseDrag((int) mouseX, (int) mouseY, button);
-            return true;
-        }
-
         int posX = (width - getScreenWidth()) / 2;
         int posY = (height - getScreenHeight()) / 2;
 
@@ -900,8 +806,8 @@ public class Laptop extends Screen implements System {
                 return true;
             }
 
-            if (!windows.isEmpty()) {
-                Window<Application> window = (Window<Application>) windows.getFirst();
+            if (windows.get(0) != null) {
+                Window<Application> window = (Window<Application>) windows.get(0);
                 Window<Dialog> dialogWindow = window.getContent().getActiveDialog();
                 if (dragging) {
                     if (isMouseOnScreen((int) mouseX, (int) mouseY) && dragWindowFromX != null && dragWindowFromY != null) {
@@ -916,10 +822,10 @@ public class Laptop extends Screen implements System {
                 }
             }
         } catch (Exception e) {
-            Devices.LOGGER.error("An error has occurred.", e);
+            e.printStackTrace();
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
-            setSystemDialog(message);
+            windows.get(0).openDialog(message);
         }
         this.lastMouseX = (int) mouseX;
         this.lastMouseY = (int) mouseY;
@@ -928,40 +834,28 @@ public class Laptop extends Screen implements System {
 
     @Override
     public void mouseMoved(double pMouseX, double pMouseY) {
-        this.lastMouseX = (int) pMouseX;
-        this.lastMouseY = (int) pMouseY;
+
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
-        if (bsod != null) {
-            return true;
-        }
-
-        if (systemDialogWindow != null) {
-            systemDialogWindow.handleMouseScroll((int) mouseX, (int) mouseY, deltaY, deltaY >= 0);
-            return true;
-        }
-
-        if (deltaY != 0) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        if (delta != 0) {
             try {
-                if (!windows.isEmpty()) {
-                    windows.getFirst().handleMouseScroll((int) mouseX, (int) mouseY, deltaY, deltaY >= 0);
+                if (windows.get(0) != null) {
+                    windows.get(0).handleMouseScroll((int) mouseX, (int) mouseY, delta, delta >= 0);
                 }
             } catch (Exception e) {
-                Devices.LOGGER.error("An error has occurred.", e);
+                e.printStackTrace();
                 Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
                 message.setTitle("Error");
-                setSystemDialog(message);
+                windows.get(0).openDialog(message);
             }
         }
         return true;
     }
 
     public void renderComponentTooltip(@NotNull GuiGraphics graphics, @NotNull List<Component> tooltips, int x, int y) {
-        if (minecraft != null) {
-            graphics.renderComponentTooltip(minecraft.font, tooltips, x, y);
-        }
+        graphics.renderComponentTooltip(minecraft.font, tooltips, x, y);
     }
 
     @SuppressWarnings("ReassignedVariable")
@@ -972,7 +866,8 @@ public class Laptop extends Screen implements System {
             if (window != null && window.content instanceof Application && ((Application) window.content).getInfo() == info) {
                 windows.remove(i);
                 updateWindowStack();
-                windows.addFirst(window);
+                windows.add(0, window);
+                i--;
                 return Pair.of((Application) window.content, true);
             }
         }
@@ -980,25 +875,19 @@ public class Laptop extends Screen implements System {
     }
 
     @Override
-    public Application launchApp(AppInfo info) {
-        return launchApp(info, null);
+    public Application openApplication(AppInfo info) {
+        return openApplication(info, (CompoundTag) null);
     }
 
     @Override
-    public Application launchApp(AppInfo info, CompoundTag intentTag) {
+    public Application openApplication(AppInfo info, CompoundTag intentTag) {
         Optional<Application> optional = APPLICATIONS.stream().filter(app -> app.getInfo() == info).findFirst();
         Application[] a = new Application[]{null};
-        optional.ifPresent(application -> a[0] = launchApp(application, intentTag));
+        optional.ifPresent(application -> a[0] = openApplication(application, intentTag));
         return a[0];
     }
 
-    @Override
-    public @Nullable Application loadApp(AppInfo info) {
-        Optional<Application> optional = APPLICATIONS.stream().filter(app -> app.getInfo() == info).findFirst();
-        return optional.orElse(null);
-    }
-
-    private Application launchApp(Application app, CompoundTag intent) {
+    private Application openApplication(Application app, CompoundTag intent) {
         if (!(app instanceof DiagnosticsApp)) {
             if (isApplicationNotInstalled(app.getInfo()))
                 return null;
@@ -1035,54 +924,43 @@ public class Laptop extends Screen implements System {
 
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
         } catch (Exception e) {
-            Devices.LOGGER.error("An error has occurred.", e);
+            e.printStackTrace();
             AppInfo info = ApplicationManager.getApplication(Devices.id("diagnostics"));
-            system.launchApp(info);
+            system.openApplication(info);
         }
         return app;
     }
 
-    public void launchApp(AppInfo info, FileInfo file, Callback<Application> callback) {
-        if (isApplicationNotInstalled(info)) {
-            if (callback != null) {
-                callback.execute(null, false);
-            }
-            return;
-        }
+    @Override
+    public Pair<Application, Boolean> openApplication(AppInfo info, File file) {
+        if (isApplicationNotInstalled(info))
+            return Pair.of(null, false);
 
-        if (isInvalidApplication(info)) {
-            if (callback != null) {
-                callback.execute(null, false);
-            }
-            return;
-        }
+        if (isInvalidApplication(info))
+            return Pair.of(null, false);
 
         try {
             Optional<Application> optional = APPLICATIONS.stream().filter(app -> app.getInfo() == info).findFirst();
             if (optional.isPresent()) {
                 Application application = optional.get();
                 boolean alreadyRunning = isApplicationRunning(info);
-                launchApp(application, null);
+                openApplication(application, null);
                 if (isApplicationRunning(info)) {
-                    if (!application.handleFile(file, (response, success) -> {
-                        if (success) {
-                            if (!alreadyRunning) {
-                                closeApplication(application);
-                            }
-                            callback.execute(application, true);
-                        } else {
-                            callback.execute(application, false);
+                    if (!application.handleFile(file)) {
+                        if (!alreadyRunning) {
+                            closeApplication(application);
                         }
-                    })) {
-                        system.openDialog(new Dialog.Message("The file could not be opened."));
+                        return Pair.of(application, false);
                     }
+                    return Pair.of(application, true);
                 }
             }
         } catch (Exception e) {
-            Devices.LOGGER.error("An error has occurred.", e);
+            e.printStackTrace();
             AppInfo info1 = ApplicationManager.getApplication(Devices.id("diagnostics"));
-            system.launchApp(info1);
+            system.openApplication(info1);
         }
+        return Pair.of(null, true);
     }
 
     @Override
@@ -1122,7 +1000,7 @@ public class Laptop extends Screen implements System {
             return;
 
         updateWindowStack();
-        windows.addFirst(window);
+        windows.add(0, window);
     }
 
     private void updateWindowStack() {
@@ -1141,7 +1019,10 @@ public class Laptop extends Screen implements System {
     }
 
     private boolean hasReachedWindowLimit() {
-        return windows.size() >= 1024;
+//        for (Window<?> window : windows) {
+//           // if (window == null) return false;
+//        }
+        return false;
     }
 
     private boolean isMouseOnScreen(int mouseX, int mouseY) {
@@ -1182,14 +1063,14 @@ public class Laptop extends Screen implements System {
     public void nextWallpaper() {
         if (!currentWallpaper.isBuiltIn()) return;
         if (currentWallpaper.location + 1 < WALLPAPERS.size()) {
-            this.currentWallpaper = new Wallpaper(currentWallpaper.location + 1);
+            this.currentWallpaper = new Wallpaper(currentWallpaper.location+1);
         }
         wallpaperUpdated();
     }
 
     public void prevWallpaper() {
         if (currentWallpaper.location - 1 >= 0) {
-            this.currentWallpaper = new Wallpaper(currentWallpaper.location - 1);
+            this.currentWallpaper = new Wallpaper(currentWallpaper.location-1);
         }
         wallpaperUpdated();
     }
@@ -1198,12 +1079,12 @@ public class Laptop extends Screen implements System {
         if (currentWallpaper.isBuiltIn()) {
             wallpaper.setImage(WALLPAPERS.get(currentWallpaper.location));
         } else {
-            wallpaper.setImage(currentWallpaper.locationPath);
+            wallpaper.setImage(currentWallpaper.url);
         }
     }
 
-    public void setWallpaper(Path path) {
-        currentWallpaper = new Wallpaper(path);
+    public void setWallpaper(String url) {
+        currentWallpaper = new Wallpaper(url);
         wallpaperUpdated();
     }
 
@@ -1230,11 +1111,6 @@ public class Laptop extends Screen implements System {
         return ImmutableList.copyOf(installedApps);
     }
 
-    @Override
-    public void openDialog(Dialog message) {
-        this.systemDialog = message;
-    }
-
     public boolean isApplicationInstalled(AppInfo info) {
         return info.isSystemApp() || installedApps.contains(info);
     }
@@ -1254,10 +1130,7 @@ public class Laptop extends Screen implements System {
         return !isValidApplication(info);
     }
 
-    public void installApplication(AppInfo info, @Nullable Callback<Object> callback) throws AccessDeniedException {
-        if (!PermissionManager.hasPermission(Permission.SOFTWARE_MANAGEMENT))
-            throw new AccessDeniedException("You do not have permission to install applications");
-
+    public void installApplication(AppInfo info, @Nullable Callback<Object> callback) {
         if (isValidApplication(info)) {
             Task task = new TaskInstallApp(info, pos, true);
             task.setCallback((tag, success) ->
@@ -1291,10 +1164,8 @@ public class Laptop extends Screen implements System {
         TaskManager.sendTask(task);
     }
 
-    public static void loadApplications(Consumer<List<Application>> loader) {
-        if (loaded) throw new IllegalStateException("Applications are already loaded");
-        loaded = true;
-        loader.accept(APPLICATIONS);
+    public List<Application> getApplications() {
+        return APPLICATIONS;
     }
 
     public TaskBar getTaskBar() {
@@ -1329,16 +1200,11 @@ public class Laptop extends Screen implements System {
     }
 
     public static final class Wallpaper {
-        private final Path locationPath;
+        private final String url;
         private final int location;
 
-        public Wallpaper(Path of) {
-            this.locationPath = of;
-            this.location = -87;
-        }
-
-        public Path getPath() {
-            return locationPath;
+        public String getUrl() {
+            return url;
         }
 
         public int getLocation() {
@@ -1348,18 +1214,28 @@ public class Laptop extends Screen implements System {
         private Wallpaper(CompoundTag tag) {
             var url = tag.getString("url");
             var location = tag.getInt("location");
-            if (tag.contains("path", 8)) {
-                this.locationPath = Path.of(tag.getString("path"));
-                this.location = -87;
+            if (tag.contains("url", 8)) {
+                if (!OnlineRequest.isSafeAddress(url)) {
+                    // Reset to default wallpaper.
+                    this.url = null;
+                    this.location = 0;
+                } else {
+                    this.url = url;
+                    this.location = -87;
+                }
             } else {
-                this.locationPath = Path.of(url);
+                this.url = null;
                 this.location = location;
             }
+        }
+        private Wallpaper(String url) {
+            this.url = url;
+            this.location = -87;
         }
 
         private Wallpaper(int location) {
             this.location = location;
-            this.locationPath = null;
+            this.url = null;
         }
 
         public boolean isBuiltIn() {
@@ -1371,7 +1247,7 @@ public class Laptop extends Screen implements System {
             if (isBuiltIn()) {
                 a.putInt("location", location);
             } else {
-                a.putString("path", this.locationPath.toString());
+                a.putString("url", this.url);
             }
             return a;
         }

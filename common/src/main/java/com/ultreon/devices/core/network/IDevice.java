@@ -2,7 +2,9 @@ package com.ultreon.devices.core.network;
 
 import java.util.UUID;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public interface IDevice {
     UUID getId();
 }

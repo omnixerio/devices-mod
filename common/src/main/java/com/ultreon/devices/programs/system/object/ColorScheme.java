@@ -5,7 +5,9 @@ import net.minecraft.nbt.Tag;
 
 import java.awt.*;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class ColorScheme {
     public int buttonColor;
     public int textColor;

@@ -73,12 +73,14 @@ public class TextArea extends Component {
     private IHighlight highlight = null;
     private KeyListener keyListener = null;
 
-    /// Default text area constructor
-    ///
-    /// @param left   how many pixels from the left
-    /// @param top    how many pixels from the top
-    /// @param width  the width of the text area
-    /// @param height the height of the text area
+    /**
+     * Default text area constructor
+     *
+     * @param left   how many pixels from the left
+     * @param top    how many pixels from the top
+     * @param width  the width of the text area
+     * @param height the height of the text area
+     */
     public TextArea(int left, int top, int width, int height) {
         super(left, top);
         this.font = Laptop.getFont();
@@ -324,7 +326,9 @@ public class TextArea extends Component {
         return lines.get(cursorY);
     }
 
-    /// Performs a backspace at the current cursor position
+    /**
+     * Performs a backspace at the current cursor position
+     */
     public void performBackspace() {
         if (cursorY == 0 && cursorX == 0) return;
 
@@ -353,7 +357,9 @@ public class TextArea extends Component {
         recalculateMaxWidth();
     }
 
-    /// Performs a return at the current cursor position
+    /**
+     * Performs a return at the current cursor position
+     */
     public void performReturn() {
         if (maxLines > 0) {
             if (getNewLineCount() == maxLines - 1) {
@@ -437,9 +443,11 @@ public class TextArea extends Component {
         recalculateMaxWidth();
     }
 
-    /// Writes a character at the current cursor position
-    ///
-    /// @param c the char to write
+    /**
+     * Writes a character at the current cursor position
+     *
+     * @param c the char to write
+     */
     public void writeText(char c) {
         int prevCursorY = cursorY;
         writeText(Character.toString(c));
@@ -448,9 +456,11 @@ public class TextArea extends Component {
         }
     }
 
-    /// Writes a String at the current cursor position
-    ///
-    /// @param text the String to write
+    /**
+     * Writes a String at the current cursor position
+     *
+     * @param text the String to write
+     */
     public void writeText(String text) {
         text = text.replace("\r", "");
         String activeLine = getActiveLine();
@@ -610,7 +620,9 @@ public class TextArea extends Component {
         }
     }
 
-    /// Converts the text from wrapped lines to single lines and vice versa.
+    /**
+     * Converts the text from wrapped lines to single lines and vice versa.
+     */
     private void updateText() {
         List<String> updatedLines = new ArrayList<>();
         if (wrapText) {
@@ -734,7 +746,9 @@ public class TextArea extends Component {
         return charX;
     }
 
-    /// Clears the text
+    /**
+     * Clears the text
+     */
     public void clear() {
         cursorX = 0;
         cursorY = 0;
@@ -742,9 +756,11 @@ public class TextArea extends Component {
         lines.add("");
     }
 
-    /// Gets the text in the box
-    ///
-    /// @return the text
+    /**
+     * Gets the text in the box
+     *
+     * @return the text
+     */
     public String getText() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < lines.size() - 1; i++) {
@@ -754,9 +770,11 @@ public class TextArea extends Component {
         return builder.toString();
     }
 
-    /// Sets the text for this component
-    ///
-    /// @param text the text
+    /**
+     * Sets the text for this component
+     *
+     * @param text the text
+     */
     public void setText(String text) {
         lines.clear();
         String[] splitText = text.replace("\r", "").split("\n");
@@ -768,70 +786,88 @@ public class TextArea extends Component {
         cursorY = splitText.length - 1;
     }
 
-    /// Sets the placeholder for the text area. This is the text that is shown if no text is present
-    /// and gives a hint to the user what this text area is for.
-    ///
-    /// @param placeholder the placeholder text
+    /**
+     * Sets the placeholder for the text area. This is the text that is shown if no text is present
+     * and gives a hint to the user what this text area is for.
+     *
+     * @param placeholder the placeholder text
+     */
     public void setPlaceholder(String placeholder) {
         this.placeholder = placeholder;
     }
 
-    /// Sets whether or not the text area should wrap it's contents.
-    ///
-    /// @param wrapText if should wrap text
+    /**
+     * Sets whether or not the text area should wrap it's contents.
+     *
+     * @param wrapText if should wrap text
+     */
     public void setWrapText(boolean wrapText) {
         this.wrapText = wrapText;
         this.horizontalScroll = 0;
         updateText();
     }
 
-    /// Sets whether or not the scroll bar should be visible
-    ///
-    /// @param scrollBarVisible the scroll bar visibility
+    /**
+     * Sets whether or not the scroll bar should be visible
+     *
+     * @param scrollBarVisible the scroll bar visibility
+     */
     public void setScrollBarVisible(boolean scrollBarVisible) {
         this.scrollBarVisible = scrollBarVisible;
     }
 
-    /// Sets the width of the scroll bars.
-    ///
-    /// @param scrollBarSize the width of the scroll bar
+    /**
+     * Sets the width of the scroll bars.
+     *
+     * @param scrollBarSize the width of the scroll bar
+     */
     public void setScrollBarSize(int scrollBarSize) {
         this.scrollBarSize = Math.max(0, scrollBarSize);
     }
 
-    /// Sets the highlighting for the text area. This is used, for instance, where you want
-    /// particular keywords to be a different color from the rest.
-    ///
-    /// @param highlight the highlight to color the text
+    /**
+     * Sets the highlighting for the text area. This is used, for instance, where you want
+     * particular keywords to be a different color from the rest.
+     *
+     * @param highlight the highlight to color the text
+     */
     public void setHighlight(IHighlight highlight) {
         this.highlight = highlight;
     }
 
-    /// Sets this text area focused. Makes it available for typing.
-    ///
-    /// @param isFocused whether the text area should be focused
+    /**
+     * Sets this text area focused. Makes it available for typing.
+     *
+     * @param isFocused whether the text area should be focused
+     */
     public void setFocused(boolean isFocused) {
         this.isFocused = isFocused;
     }
 
-    /// Sets the padding for the text area
-    ///
-    /// @param padding the padding size
+    /**
+     * Sets the padding for the text area
+     *
+     * @param padding the padding size
+     */
     public void setPadding(int padding) {
         this.padding = padding;
         this.visibleLines = (int) Math.floor((float) ((height - padding * 2) / font.lineHeight));
     }
 
-    /// Sets the text color for this component
-    ///
-    /// @param color the text color
+    /**
+     * Sets the text color for this component
+     *
+     * @param color the text color
+     */
     public void setTextColor(Color color) {
         this.textColor = color.getRGB();
     }
 
-    /// Sets the background color for this component
-    ///
-    /// @param color the background color
+    /**
+     * Sets the background color for this component
+     *
+     * @param color the background color
+     */
     public void setBackgroundColor(Color color) {
         this.backgroundColor = color.getRGB();
     }
@@ -844,25 +880,31 @@ public class TextArea extends Component {
         return backgroundColor;
     }
 
-    /// Sets the border color for this component
-    ///
-    /// @param color the border color
+    /**
+     * Sets the border color for this component
+     *
+     * @param color the border color
+     */
     public void setBorderColor(Color color) {
         this.borderColor = color.getRGB();
     }
 
-    /// Sets whether the user can edit the text
-    ///
-    /// @param editable is this component editable
+    /**
+     * Sets whether the user can edit the text
+     *
+     * @param editable is this component editable
+     */
     public void setEditable(boolean editable) {
         this.editable = editable;
     }
 
-    /// Sets the maximum amount of lines that the text area can have. If the maximum lines is set to
-    /// zero or below, the text area will ignore the max line property. It's suggested that this
-    /// method should not be called in any other place besides the initialization of the component.
-    ///
-    /// @param maxLines the maximum amount of lines for the text area
+    /**
+     * Sets the maximum amount of lines that the text area can have. If the maximum lines is set to
+     * zero or below, the text area will ignore the max line property. It's suggested that this
+     * method should not be called in any other place besides the initialization of the component.
+     *
+     * @param maxLines the maximum amount of lines for the text area
+     */
     public void setMaxLines(int maxLines) {
         if (maxLines < 0) maxLines = 0;
         this.maxLines = maxLines;

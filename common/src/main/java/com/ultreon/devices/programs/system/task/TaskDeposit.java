@@ -9,7 +9,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class TaskDeposit extends Task {
     private int amount;
 

@@ -5,7 +5,9 @@ import com.ultreon.devices.core.Laptop;
 
 import org.jetbrains.annotations.Nullable;
 
-/// Created by Casey on 03-Aug-17.
+/**
+ * Created by Casey on 03-Aug-17.
+ */
 public abstract class SystemApp extends Application {
     private Laptop laptop;
 

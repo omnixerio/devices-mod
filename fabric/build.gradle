@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 version rootProject.version
@@ -44,7 +44,7 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury-fabric:$architectury_version"
 
-    modApi "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:21.1.0"
+    modApi "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:8.0.0"
     modImplementation 'com.electronwill.night-config:core:3.6.5'
     modImplementation 'com.electronwill.night-config:toml:3.6.5'
 
@@ -61,15 +61,15 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
-    modCompileOnly "com.terraformersmc:modmenu:11.0.3", {
+    modCompileOnly "com.terraformersmc:modmenu:4.0.6", {
         exclude module: "fabric-api"
     }
 
-    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:16.0.788", {
+    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:12.0.684", {
         exclude module: "fabric-api"
     }
 
-    include 'com.github.Nuix:jnode-fs:v1.0.1'
+  //  modApi "curse.maven:emojiful-284324:4672307"
 }
 
 configurations.all {

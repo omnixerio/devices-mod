@@ -11,7 +11,6 @@ import com.ultreon.devices.api.print.PrintingManager;
 import com.ultreon.devices.api.task.TaskManager;
 import com.ultreon.devices.api.utils.OnlineRequest;
 import com.ultreon.devices.block.PrinterBlock;
-import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.core.client.ClientNotification;
 import com.ultreon.devices.core.client.debug.ClientAppDebug;
 import com.ultreon.devices.core.io.task.*;
@@ -87,7 +86,7 @@ public abstract class Devices {
     public static final Supplier<RegistrarManager> REGISTRIES = Suppliers.memoize(() -> RegistrarManager.get(MOD_ID));
     public static final List<SiteRegistration> SITE_REGISTRATIONS = new ProtectedArrayList<>();
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    public static final DevicesEarlyConfig EARLY_CONFIG = new DevicesEarlyConfig();
+    public static final DevicesEarlyConfig EARLY_CONFIG = DevicesEarlyConfig.load();
     private static final Pattern DEV_PREVIEW_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+-dev\\d+");
     private static final boolean IS_DEV_PREVIEW = DEV_PREVIEW_PATTERN.matcher(Reference.VERSION).matches();
     private static final String GITWEB_REGISTER_URL = "https://ultreon.gitlab.io/gitweb/site_register.json";
@@ -103,7 +102,6 @@ public abstract class Devices {
     static List<AppInfo> allowedApps = new ArrayList<>();
     private static List<Vulnerability> vulnerabilities = new ArrayList<>();
     private static Devices instance;
-    private ArrayList<Application> apps;
 
     public static List<Vulnerability> getVulnerabilities() {
         return vulnerabilities;
@@ -150,7 +148,6 @@ public abstract class Devices {
             Devices.checkForVulnerabilities();
         });
 
-        LOGGER.info("Registering events.");
         setupEvents();
 
         EnvExecutor.runInEnv(Env.CLIENT, () -> Devices::setupClientEvents); //todo
@@ -205,7 +202,7 @@ public abstract class Devices {
         TaskManager.registerTask(TaskSendAction::new);
         TaskManager.registerTask(TaskSetupFileBrowser::new);
         TaskManager.registerTask(TaskGetFiles::new);
-        TaskManager.registerTask(TaskListDirectory::new);
+        TaskManager.registerTask(TaskGetStructure::new);
         TaskManager.registerTask(TaskGetMainDrive::new);
 
         // App Store
@@ -236,15 +233,15 @@ public abstract class Devices {
 
         if (Platform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableDebugApps) {
             // Applications (Developers)
-            ApplicationManager.registerApplication(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "example"), () -> ExampleApp::new, false);
-            ApplicationManager.registerApplication(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "icons"), () -> IconsApp::new, false);
-            ApplicationManager.registerApplication(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "text_area"), () -> TextAreaApp::new, false);
-            ApplicationManager.registerApplication(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "test"), () -> TestApp::new, false);
+            ApplicationManager.registerApplication(new ResourceLocation(Reference.MOD_ID, "example"), () -> ExampleApp::new, false);
+            ApplicationManager.registerApplication(new ResourceLocation(Reference.MOD_ID, "icons"), () -> IconsApp::new, false);
+            ApplicationManager.registerApplication(new ResourceLocation(Reference.MOD_ID, "text_area"), () -> TextAreaApp::new, false);
+            ApplicationManager.registerApplication(new ResourceLocation(Reference.MOD_ID, "test"), () -> TestApp::new, false);
 
             TaskManager.registerTask(TaskNotificationTest::new);
         }
 
-        EnvExecutor.runInEnv(Env.CLIENT, () -> () -> PrintingManager.registerPrint(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "picture"), PixelPainterApp.PicturePrint.class));
+        EnvExecutor.runInEnv(Env.CLIENT, () -> () -> PrintingManager.registerPrint(new ResourceLocation(Reference.MOD_ID, "picture"), PixelPainterApp.PicturePrint.class));
     }
 
     public abstract int getBurnTime(ItemStack stack, RecipeType<?> type);
@@ -252,14 +249,7 @@ public abstract class Devices {
     protected abstract void registerApplicationEvent();
 
     @Environment(EnvType.CLIENT)
-    protected List<Application> loadApps() {
-        if (apps != null) {
-            return apps;
-        }
-        apps = new ArrayList<>();
-        Laptop.loadApplications(apps::addAll);
-        return apps;
-    }
+    protected abstract List<Application> getApplications();
 
     public static void setAllowedApps(List<AppInfo> allowedApps) {
         Devices.allowedApps = allowedApps;
@@ -271,15 +261,19 @@ public abstract class Devices {
 
     public interface ApplicationSupplier {
 
-        /// Gets a result.
-        ///
-        /// @return a result
+        /**
+         * Gets a result.
+         *
+         * @return a result
+         */
         Supplier<Application> get();
 
         boolean isSystem();
     }
 
-    /// DO NOT CALL: FOR INTERNAL USE ONLY
+    /**
+     * DO NOT CALL: FOR INTERNAL USE ONLY
+     */
     @Nullable
     @ApiStatus.Internal
     public Application registerApplication(ResourceLocation identifier, ApplicationSupplier app) {
@@ -299,16 +293,14 @@ public abstract class Devices {
 
         AtomicReference<Application> application = new AtomicReference<>(null);
         EnvExecutor.runInEnv(Env.CLIENT, () -> () -> {
-            Application theAppWeGot = app.get().get();
-            List<Application> apps = loadApps(); /*ObfuscationReflectionHelper.getPrivateValue(Laptop.class, null, "APPLICATIONS");*/
+            Application appl = app.get().get();
+            List<Application> apps = getApplications(); /*ObfuscationReflectionHelper.getPrivateValue(Laptop.class, null, "APPLICATIONS");*/
             assert apps != null;
-            apps.add(theAppWeGot);
+            apps.add(appl);
 
-            AppInfo info = new AppInfo(identifier, SystemApp.class.isAssignableFrom(theAppWeGot.getClass()));
-            info.reload();
-            theAppWeGot.setInfo(info);
+            appl.setInfo(generateAppInfo(identifier, appl.getClass()));
 
-            application.set(theAppWeGot);
+            application.set(appl);
         });
         return application.get();
     }
@@ -316,7 +308,7 @@ public abstract class Devices {
     @NotNull
     @Environment(EnvType.CLIENT)
     private static AppInfo generateAppInfo(ResourceLocation identifier, Class<? extends Application> clazz) {
-        LOGGER.debug("Generating app info for {}", identifier.toString());
+        LOGGER.debug("Generating app info for " + identifier.toString());
 
         AppInfo info = new AppInfo(identifier, SystemApp.class.isAssignableFrom(clazz));
         info.reload();
@@ -331,7 +323,7 @@ public abstract class Devices {
 
     @Environment(EnvType.CLIENT)
     public boolean registerPrint(ResourceLocation identifier, Class<? extends IPrint> classPrint) {
-        LOGGER.debug("Registering print: {}", identifier.toString());
+        LOGGER.debug("Registering print: " + identifier.toString());
 
         try {
             Constructor<? extends IPrint> constructor = classPrint.getConstructor();
@@ -347,12 +339,12 @@ public abstract class Devices {
                 }
                 idToRenderer.put(identifier.toString(), renderer);
             } catch (InstantiationException e) {
-                Devices.LOGGER.error("The print renderer '{}' is missing an empty constructor and could not be registered!", classRenderer.getName());
+                Devices.LOGGER.error("The print renderer '" + classRenderer.getName() + "' is missing an empty constructor and could not be registered!");
                 return false;
             }
             return true;
         } catch (Exception e) {
-            Devices.LOGGER.error("The print '{}' is missing an empty constructor and could not be registered!", classPrint.getName());
+            Devices.LOGGER.error("The print '" + classPrint.getName() + "' is missing an empty constructor and could not be registered!");
         }
         return false;
     }
@@ -378,7 +370,7 @@ public abstract class Devices {
     }
 
     public static ResourceLocation res(String path) {
-        return ResourceLocation.fromNamespaceAndPath(Devices.MOD_ID, path);
+        return new ResourceLocation(Devices.MOD_ID, path);
     }
 
     private static void setupClientEvents() {
@@ -405,7 +397,7 @@ public abstract class Devices {
         }));
 
         PlayerEvent.PLAYER_JOIN.register((player -> {
-            LOGGER.info("Player logged in: {}", player.getName());
+            LOGGER.info("Player logged in: " + player.getName());
 
             if (allowedApps != null) {
                 PacketHandler.sendToClient(new SyncApplicationPacket(allowedApps), player);
@@ -426,7 +418,7 @@ public abstract class Devices {
                 return;
             }
 
-            JsonArray array = JsonParser.parseString(new String(response)).getAsJsonArray();
+            JsonArray array = JsonParser.parseString(response).getAsJsonArray();
             vulnerabilities = Vulnerability.parseArray(array);
             vulnerabilities.forEach(vul -> {
                 String s = vul.toPrettyString();
@@ -448,7 +440,7 @@ public abstract class Devices {
         OnlineRequest.getInstance().make(url, (success, response) -> CompletableFuture.runAsync(() -> {
             if (success) {
                 //Minecraft.getInstance().doRunTask(() -> {
-                JsonElement root = JsonParser.parseString(new String(response));
+                JsonElement root = JsonParser.parseString(response);
                 DebugLog.log("root = " + root);
                 JsonArray rootArray = root.getAsJsonArray();
                 for (JsonElement rootRegister : rootArray) {
@@ -463,7 +455,7 @@ public abstract class Devices {
                             }
                             case "site-register" -> type = Type.SITE_REGISTER;
                             default -> {
-                                LOGGER.error("Invalid element type: {}", typeElem.getAsString());
+                                LOGGER.error("Invalid element type: " + typeElem.getAsString());
                                 continue;
                             }
                         }
@@ -495,13 +487,13 @@ public abstract class Devices {
                                 var registerFuture = setupSiteRegistration(registerUrl);
                                 registerFuture.join();
                             } catch (Exception e) {
-                                LOGGER.error("Error when loading site register: {}", registerUrl);
+                                LOGGER.error("Error when loading site register: " + registerUrl);
                             }
                         }
                     }
                 }
             } else {
-                LOGGER.error("Error occurred when loading site registrations at: {}", url);
+                LOGGER.error("Error occurred when loading site registrations at: " + url);
                 future.complete(null);
                 return;
             }
@@ -513,7 +505,7 @@ public abstract class Devices {
     }
 
     public static ResourceLocation id(String id) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, id);
+        return new ResourceLocation(MOD_ID, id);
     }
 
     private static class ProtectedArrayList<T> extends ArrayList<T> {

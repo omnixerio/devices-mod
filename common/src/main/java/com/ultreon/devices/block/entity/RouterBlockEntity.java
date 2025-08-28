@@ -1,25 +1,14 @@
 package com.ultreon.devices.block.entity;
 
-import com.ultreon.devices.block.RouterBlock;
-import com.ultreon.devices.block.entity.renderer.RouterRenderer;
 import com.ultreon.devices.core.network.Router;
 import com.ultreon.devices.init.DeviceBlockEntities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
 
-/// # Router (Block Entity)
-/// The block entity for the router block.
-///
-/// @author [MrCrayfish](https://github.com/MrCrayfish), [XyperCode](https://github.com/XyperCode)
-/// @see Router
-/// @see RouterBlock
-/// @see RouterRenderer
 @SuppressWarnings("unused")
 public class RouterBlockEntity extends DeviceBlockEntity.Colored {
     private Router router;
@@ -67,8 +56,8 @@ public class RouterBlockEntity extends DeviceBlockEntity.Colored {
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
-        super.saveAdditional(tag, registries);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         if (tag.contains("router", Tag.TAG_COMPOUND)) {
             router = Router.fromTag(worldPosition, tag.getCompound("router"));
         }

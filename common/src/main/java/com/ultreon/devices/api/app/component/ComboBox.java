@@ -1,6 +1,7 @@
 package com.ultreon.devices.api.app.component;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.api.app.listener.ChangeListener;
@@ -9,13 +10,16 @@ import com.ultreon.devices.api.app.renderer.ListItemRenderer;
 import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.core.Laptop;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 
 import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 
-/// Created by Casey on 06-Aug-17.
+/**
+ * Created by Casey on 06-Aug-17.
+ */
 @SuppressWarnings("unused")
 public abstract class ComboBox<T> extends Component {
     protected T value;
@@ -58,7 +62,7 @@ public abstract class ComboBox<T> extends Component {
             RenderSystem.blendFuncSeparate(770, 771, 1, 0);
             RenderSystem.blendFunc(770, 771);
 
-            Color bgColor = new Color(getColorScheme().getBackgroundColor(), true).brighter().brighter();
+            Color bgColor = new Color(getColorScheme().getBackgroundColor()).brighter().brighter();
             float[] hsb = Color.RGBtoHSB(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), null);
             bgColor = new Color(Color.HSBtoRGB(hsb[0], hsb[1], 1f));
             RenderSystem.setShaderColor(bgColor.getRed() / 255f, bgColor.getGreen() / 255f, bgColor.getBlue() / 255f, 1f);
@@ -87,7 +91,7 @@ public abstract class ComboBox<T> extends Component {
             /* Icons */
             RenderUtil.drawRectWithTexture(Component.COMPONENTS_GUI, graphics, xPosition + xOffset + 3, yPosition + 5, 111, 12, 8, 5, 8, 5);
 
-            Color boxColor = new Color(getColorScheme().getBackgroundColor(), true);
+            Color boxColor = new Color(getColorScheme().getBackgroundColor());
             Color borderColor = boxColor.darker().darker();
 
             /* Box */

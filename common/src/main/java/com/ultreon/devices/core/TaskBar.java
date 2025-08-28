@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class TaskBar {
-    public static final ResourceLocation APP_BAR_GUI = ResourceLocation.parse("devices:textures/gui/application_bar.png");
+    public static final ResourceLocation APP_BAR_GUI = new ResourceLocation("devices:textures/gui/application_bar.png");
     public static final int BAR_HEIGHT = 18;
     private static final int APPS_DISPLAYED = Devices.DEVELOPER_MODE ? 18 : 10;
 
@@ -42,7 +42,9 @@ public class TaskBar {
     private final List<TrayItem> trayItems = new ArrayList<>();
     private static final Marker MARKER = MarkerFactory.getMarker("TaskBar");
 
-    /// @deprecated use [#TaskBar(Laptop,CompoundTag)] instead.
+    /**
+     * @deprecated use {@link #TaskBar(Laptop, CompoundTag)} instead.
+     */
     @Deprecated
     public TaskBar(Laptop laptop) {
         this(laptop, new CompoundTag());
@@ -163,7 +165,7 @@ public class TaskBar {
             Devices.LOGGER.debug(MARKER, "Clicked on task bar");
             int appIndex = (mouseX - x - 1) / 16;
             if (appIndex >= 0 && appIndex <= offset + APPS_DISPLAYED && appIndex < laptop.installedApps.size()) {
-                laptop.launchApp(laptop.installedApps.get(appIndex));
+                laptop.openApplication(laptop.installedApps.get(appIndex));
                 return;
             }
         }

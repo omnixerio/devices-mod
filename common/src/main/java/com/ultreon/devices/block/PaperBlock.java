@@ -1,10 +1,10 @@
 package com.ultreon.devices.block;
 
-import com.mojang.serialization.MapCodec;
 import com.ultreon.devices.api.print.IPrint;
 import com.ultreon.devices.block.entity.PaperBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -15,10 +15,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -31,8 +31,6 @@ import java.util.List;
 
 @SuppressWarnings("NullableProblems")
 public class PaperBlock extends HorizontalDirectionalBlock implements EntityBlock {
-    public static final MapCodec<PaperBlock> CODEC = simpleCodec(PaperBlock::new);
-
     private static final VoxelShape SELECTION_BOUNDS = box(15, 0, 0, 16, 16, 16);
 
     private static final VoxelShape SELECTION_BOX_NORTH = box(15, 0, 0, 16, 16, 16);
@@ -42,11 +40,7 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
     private static final VoxelShape[] SELECTION_BOUNDING_BOX = {SELECTION_BOX_SOUTH, SELECTION_BOX_WEST, SELECTION_BOX_NORTH, SELECTION_BOX_EAST};
 
     public PaperBlock() {
-        this(Properties.of().noCollission().instabreak().noOcclusion().noLootTable());
-    }
-
-    private PaperBlock(Block.Properties properties) {
-        super(properties);
+        super(Properties.of().noCollission().instabreak().noOcclusion().noLootTable());
 
         registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
     }
@@ -71,8 +65,9 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {if (!level.isClientSide) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
+    public InteractionResult use(BlockState pState, Level level, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+        if (!level.isClientSide) {
+            BlockEntity blockEntity = level.getBlockEntity(pPos);
             if (blockEntity instanceof PaperBlockEntity paper) {
                 paper.nextRotation();
             }
@@ -108,19 +103,14 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
         pBuilder.add(FACING);
     }
 
-    @Override
-    protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
-    }
+    // Todo: Port this to Minecraft 1.18.2
+//    public EnumBlockRenderType getRenderType(IBlockState state) {
+//        return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+//    }
 
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new PaperBlockEntity(pos, state);
-    }
-
-    @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return CODEC;
     }
 }

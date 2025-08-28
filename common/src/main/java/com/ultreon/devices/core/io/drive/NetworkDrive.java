@@ -10,21 +10,20 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.nio.file.Path;
-
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public final class NetworkDrive extends AbstractDrive {
     private final BlockPos pos;
 
     public NetworkDrive(String name, BlockPos pos) {
         super(name);
         this.pos = pos;
+        this.root = null;
     }
 
     @Nullable
     @Override
-    @Deprecated
     public ServerFolder getRoot(Level level) {
         BlockEntity tileEntity = level.getBlockEntity(pos);
         if (tileEntity instanceof Interface impl) {
@@ -51,7 +50,6 @@ public final class NetworkDrive extends AbstractDrive {
 
     @Nullable
     @Override
-    @Deprecated
     public ServerFolder getFolder(String path) {
         return null;
     }

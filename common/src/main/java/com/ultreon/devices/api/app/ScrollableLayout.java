@@ -11,7 +11,9 @@ import net.minecraft.util.Mth;
 
 import java.awt.*;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class ScrollableLayout extends Layout {
     protected int placeholderColor = new Color(1f, 1f, 1f, 0.35f).getRGB();
 
@@ -24,14 +26,16 @@ public class ScrollableLayout extends Layout {
         this.visibleHeight = visibleHeight;
     }
 
-    /// The default constructor for a component.
-    ///
-    /// Laying out components is simply relative positioning. So for left (x position),
-    /// specific how many pixels from the left of the application window you want
-    /// it to be positioned at. The top is the same, but instead from the top (y position).
-    ///
-    /// @param left how many pixels from the left
-    /// @param top  how many pixels from the top
+    /**
+     * The default constructor for a component.
+     * <p>
+     * Laying out components is simply relative positioning. So for left (x position),
+     * specific how many pixels from the left of the application window you want
+     * it to be positioned at. The top is the same, but instead from the top (y position).
+     *
+     * @param left how many pixels from the left
+     * @param top  how many pixels from the top
+     */
     public ScrollableLayout(int left, int top, int width, int height, int visibleHeight) {
         super(left,  top, Math.max(13, width), Math.max(1, height));
         this.visibleHeight = visibleHeight;

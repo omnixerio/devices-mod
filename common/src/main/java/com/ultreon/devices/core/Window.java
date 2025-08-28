@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.app.Dialog;
 import com.ultreon.devices.gui.GuiButtonClose;
-import com.ultreon.devices.util.GLHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 
 public class Window<T extends Wrappable> {
-    public static final ResourceLocation WINDOW_GUI = ResourceLocation.parse("devices:textures/gui/application.png");
+    public static final ResourceLocation WINDOW_GUI = new ResourceLocation("devices:textures/gui/application.png");
 
     public static final int COLOR_WINDOW_DARK = new Color(0f, 0f, 0f, 0.25f).getRGB();
     final Laptop laptop;
@@ -27,7 +26,6 @@ public class Window<T extends Wrappable> {
     Window<Dialog> dialogWindow = null;
     Window<? extends Wrappable> parent = null;
     protected boolean removed;
-    protected final Minecraft minecraft = Minecraft.getInstance();
 
     public Window(T wrappable, Laptop laptop) {
         this.content = wrappable;
@@ -88,63 +86,50 @@ public class Window<T extends Wrappable> {
 
         graphics.pose().pushPose();
 
-        GLHelper.pushScissor(x + offsetX, y + offsetY, width, height);
-        try {
-            this.minecraft.gameRenderer.processBlurEffect(partialTicks);
-            this.minecraft.getMainRenderTarget().bindWrite(false);
+        Color color = new Color(Laptop.getSystem().getSettings().getColorScheme().getWindowBackgroundColor());
+        RenderSystem.enableBlend();
+        RenderSystem.setShaderTexture(0, WINDOW_GUI);
+        RenderSystem.setShaderColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1);
 
-            graphics.pose().translate(0, 0, 1);
+        /* Corners */
+        graphics.blit(WINDOW_GUI,x + offsetX, y + offsetY, 0, 0, 1, 1);
+        graphics.blit(WINDOW_GUI,x + offsetX + width - 13, y + offsetY, 2, 0, 13, 13);
+        graphics.blit(WINDOW_GUI,x + offsetX + width - 1, y + offsetY + height - 1, 14, 14, 1, 1);
+        graphics.blit(WINDOW_GUI,x + offsetX, y + offsetY + height - 1, 0, 14, 1, 1);
 
-            Color color = new Color(Laptop.getSystem().getSettings().getColorScheme().getWindowBackgroundColor(), true);
-            RenderSystem.enableBlend();
-            RenderSystem.setShaderTexture(0, WINDOW_GUI);
-            RenderSystem.setShaderColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1);
+        /* Edges */
+        graphics.blit(WINDOW_GUI,x + offsetX + 1, y + offsetY, width - 14, 13, 1, 0, 1, 13, 256, 256);
+        graphics.blit(WINDOW_GUI,x + offsetX + width - 1, y + offsetY + 13, 1, height - 14, 14, 13, 1, 1, 256, 256);
+        graphics.blit(WINDOW_GUI,x + offsetX + 1, y + offsetY + height - 1, width - 2, 1, 1, 14, 13, 1, 256, 256);
+        graphics.blit(WINDOW_GUI,x + offsetX, y + offsetY + 13, 1, height - 14, 0, 13, 1, 1, 256, 256);
 
-            /* Corners */
-            graphics.blit(WINDOW_GUI, x + offsetX, y + offsetY, 0, 0, 1, 1);
-            graphics.blit(WINDOW_GUI, x + offsetX + width - 13, y + offsetY, 2, 0, 13, 13);
-            graphics.blit(WINDOW_GUI, x + offsetX + width - 1, y + offsetY + height - 1, 14, 14, 1, 1);
-            graphics.blit(WINDOW_GUI, x + offsetX, y + offsetY + height - 1, 0, 14, 1, 1);
+        /* Center */
+        graphics.blit(WINDOW_GUI, x + offsetX + 1, y + offsetY + 13, width - 2, height - 14, 1, 13, 13, 1, 256, 256);
 
-            /* Edges */
-            graphics.blit(WINDOW_GUI, x + offsetX + 1, y + offsetY, width - 14, 13, 1, 0, 1, 13, 256, 256);
-            graphics.blit(WINDOW_GUI, x + offsetX + width - 1, y + offsetY + 13, 1, height - 14, 14, 13, 1, 1, 256, 256);
-            graphics.blit(WINDOW_GUI, x + offsetX + 1, y + offsetY + height - 1, width - 2, 1, 1, 14, 13, 1, 256, 256);
-            graphics.blit(WINDOW_GUI, x + offsetX, y + offsetY + 13, 1, height - 14, 0, 13, 1, 1, 256, 256);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
-            /* Center */
-            RenderSystem.setShaderColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() == 0 ? 1 : color.getAlpha() / 255f);
-            graphics.blit(WINDOW_GUI, x + offsetX + 1, y + offsetY + 13, width - 2, height - 14, 1, 13, 13, 1, 256, 256);
-
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-
-            String windowTitle = content.getWindowTitle();
-            if (mc.font.width(windowTitle) > width - 2 - 13 - 3) { // window width, border, close button, padding, padding
-                windowTitle = mc.font.plainSubstrByWidth(windowTitle, width - 2 - 13 - 3);
-            }
-            graphics.drawString(mc.font, windowTitle, x + offsetX + 3, y + offsetY + 3, Color.WHITE.getRGB(), true);
-
-            btnClose.renderWidget(graphics, mouseX, mouseY, partialTicks);
-
-            RenderSystem.disableBlend();
-
-            /* Render content */
-            content.render(graphics, gui, mc, x + offsetX + 1, y + offsetY + 13, mouseX, mouseY, active && dialogWindow == null, partialTicks);
-
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-            graphics.pose().translate(0, 0, 200);
-        } finally {
-            GLHelper.popScissor();
+        String windowTitle = content.getWindowTitle();
+        if (mc.font.width(windowTitle) > width - 2 - 13 - 3) { // window width, border, close button, padding, padding
+            windowTitle = mc.font.plainSubstrByWidth(windowTitle, width - 2 - 13 - 3);
         }
+        graphics.drawString(mc.font, windowTitle, x + offsetX + 3, y + offsetY + 3, Color.WHITE.getRGB(), true);
 
-        graphics.pose().popPose();
-    }
+        btnClose.renderWidget(graphics, mouseX, mouseY, partialTicks);
 
-    public final void renderOverlay(GuiGraphics graphics, Laptop gui, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean active, float partialTicks) {
+        RenderSystem.disableBlend();
+
+        /* Render content */
+        content.render(graphics, gui, mc, x + offsetX + 1, y + offsetY + 13, mouseX, mouseY, active && dialogWindow == null, partialTicks);
+
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        graphics.pose().translate(0, 0, 200);
+
         if (dialogWindow != null) {
             graphics.fill(x + offsetX, y + offsetY, x + offsetX + width, y + offsetY + height, COLOR_WINDOW_DARK);
             dialogWindow.render(graphics, gui, mc, x, y, mouseX, mouseY, active, partialTicks);
         }
+
+        graphics.pose().popPose();
     }
 
     @Deprecated
@@ -219,8 +204,6 @@ public class Window<T extends Wrappable> {
 
             if (parent != null) {
                 parent.closeDialog();
-            } else {
-                close();
             }
         }
 
@@ -261,12 +244,6 @@ public class Window<T extends Wrappable> {
     }
 
     private void updateComponents(int x, int y) {
-        content.updateComponents(x + offsetX + 1, y + offsetY + 13);
-        btnClose.setX(x + offsetX + width - 12);
-        btnClose.setY(y + offsetY + 1);
-    }
-
-    public void setPosition(int x, int y) {
         content.updateComponents(x + offsetX + 1, y + offsetY + 13);
         btnClose.setX(x + offsetX + width - 12);
         btnClose.setY(y + offsetY + 1);

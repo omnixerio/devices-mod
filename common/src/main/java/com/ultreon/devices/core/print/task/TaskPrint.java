@@ -15,7 +15,9 @@ import net.minecraft.world.level.chunk.LevelChunk;
 
 import java.util.UUID;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class TaskPrint extends Task {
     private BlockPos devicePos;
     private UUID printerId;

@@ -4,7 +4,9 @@ import com.ultreon.devices.Devices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class LaptopFont{//} extends Font {
     private boolean debug = false;
 

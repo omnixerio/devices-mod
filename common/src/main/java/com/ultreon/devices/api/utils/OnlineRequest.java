@@ -1,28 +1,25 @@
 package com.ultreon.devices.api.utils;
 
-import com.ultreon.devices.Devices;
+import com.ultreon.devices.util.StreamUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
-import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.net.URL;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/// OnlineRequest is a simple built in request system for handling URL connections.
-/// It runs in the background, so it doesn't freeze the user interface of your application.
-/// All requests are returned with a string, use how you please!
-///
-/// @author MrCrayfish
+/**
+ * OnlineRequest is a simple built in request system for handling URL connections.
+ * It runs in the background, so it doesn't freeze the user interface of your application.
+ * All requests are returned with a string, use how you please!
+ *
+ * @author MrCrayfish
+ */
 @SuppressWarnings("unused")
 public class OnlineRequest {
     private static OnlineRequest instance = null;
@@ -37,10 +34,12 @@ public class OnlineRequest {
         start();
     }
 
-    /// Gets a singleton instance of OnlineRequest. Use this instance to
-    /// start making requests.
-    ///
-    /// @return the singleton OnlineRequest object
+    /**
+     * Gets a singleton instance of OnlineRequest. Use this instance to
+     * start making requests.
+     *
+     * @return the singleton OnlineRequest object
+     */
     public static OnlineRequest getInstance() {
         if (instance == null) {
             instance = new OnlineRequest();
@@ -48,15 +47,15 @@ public class OnlineRequest {
         return instance;
     }
 
-    public static void checkURLForSuspicions(URI url) throws IOException {
-        if (!isSafe(url.getHost()) || !url.getScheme().equals("https")) {
+    public static void checkURLForSuspicions(URL url) throws IOException {
+        if (!isSafe(url.getHost()) || !url.getProtocol().equals("https")) {
             throw new IOException("Unsafe URL");
         }
     }
 
     public static boolean isSafeAddress(String address) {
         try {
-            URI url = new URI(address);
+            URL url = new URL(address);
             return isSafe(url.getHost());
         } catch (Exception e) {
             return false;
@@ -66,8 +65,7 @@ public class OnlineRequest {
     // ignore that
     private static boolean isSafe(String host) {
         return switch (host) {
-            case "ultreon.gitlab.io", "cdn.discordapp.com", "jab125.com", "jab125.dev", "raw.githubusercontent.com",
-                 "github.com", "i.imgur.com", "i.giphy.com", "avatars1.githubusercontent.com" -> true;
+            case "ultreon.gitlab.io", "cdn.discordapp.com", "jab125.com", "jab125.dev", "raw.githubusercontent.com", "github.com", "i.imgur.com", "i.giphy.com", "avatars1.githubusercontent.com" -> true;
             default -> false;
         };
     }
@@ -77,34 +75,14 @@ public class OnlineRequest {
         thread.start();
     }
 
-    /// Adds a request to the queue. Use the handler to process the
-    /// response you get from the URL connection.
-    ///
-    /// @param url     the URL you want to make a request to
-    /// @param handler the response handler for the request
+    /**
+     * Adds a request to the queue. Use the handler to process the
+     * response you get from the URL connection.
+     *
+     * @param url     the URL you want to make a request to
+     * @param handler the response handler for the request
+     */
     public void make(String url, ResponseHandler handler) {
-        make(url, handler, false);
-    }
-
-    /// Adds a request to the queue. Use the handler to process the
-    /// response you get from the URL connection.
-    ///
-    /// @param url         the URL you want to make a request to
-    /// @param handler     the response handler for the request
-    /// @param bypassCheck if you want to bypass the URL check
-    public void make(String url, ResponseHandler handler, boolean bypassCheck) {
-        if (!bypassCheck) {
-            try {
-                checkURLForSuspicions(new URI(url));
-            } catch (IOException e) {
-                handler.handle(false, e.getMessage().getBytes());
-                return;
-            } catch (URISyntaxException e) {
-                handler.handle(false, "Malformed URL".getBytes());
-                return;
-            }
-        }
-
         synchronized (requests) {
             requests.offer(new RequestWrapper(url, handler));
             requests.notify();
@@ -117,11 +95,13 @@ public class OnlineRequest {
     }
 
     public interface ResponseHandler {
-        /// Handles the response from an OnlineRequest
-        ///
-        /// @param success  if the request was successful or not
-        /// @param response the response from the request. null if success is false
-        void handle(boolean success, byte[] response);
+        /**
+         * Handles the response from an OnlineRequest
+         *
+         * @param success  if the request was successful or not
+         * @param response the response from the request. null if success is false
+         */
+        void handle(boolean success, String response);
     }
 
     private record RequestWrapper(String url, ResponseHandler handler) {
@@ -141,36 +121,23 @@ public class OnlineRequest {
 
                 while (!requests.isEmpty()) {
                     RequestWrapper wrapper = requests.poll();
-                    URI url;
                     try {
-                        url = new URI(wrapper.url);
-                    } catch (URISyntaxException e) {
-                        wrapper.handler.handle(false, "Malformed URL".getBytes());
+                        URL url = new URL(wrapper.url);
+                        checkURLForSuspicions(url);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        wrapper.handler.handle(false, "DOMAIN NOT BLACKLISTED/ERROR PARSING DOMAIN");
                         continue;
                     }
-                    try (HttpClient client = HttpClient.newHttpClient()) {
-                        HttpRequest request = HttpRequest.newBuilder()
-                                .uri(url)
-                                .GET()
-                                .build();
-                        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                        try {
-                            wrapper.handler.handle(response.statusCode() >= 200 && response.statusCode() < 400, response.body().getBytes());
-                        } catch (Exception e) {
-                            Devices.LOGGER.error("An error has occurred.", e);
-                            try {
-                                wrapper.handler.handle(false, "Internal error".getBytes());
-                            } catch (Exception ex) {
-                                Devices.LOGGER.error("A double fault has occurred.", ex);
-                            }
+                    try (CloseableHttpClient client = HttpClients.custom().setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, (chain, authType) -> true).build()).build()) {
+                        HttpGet get = new HttpGet(wrapper.url);
+                        try (CloseableHttpResponse response = client.execute(get)) {
+                            String raw = StreamUtils.convertToString(response.getEntity().getContent());
+                            wrapper.handler.handle(true, raw);
                         }
                     } catch (Exception e) {
-                        Devices.LOGGER.error("An error has occurred.", e);
-                        try {
-                            wrapper.handler.handle(false, "Internal error".getBytes());
-                        } catch (Exception ex) {
-                            Devices.LOGGER.error("A double fault has occurred.", ex);
-                        }
+                        e.printStackTrace();
+                        wrapper.handler.handle(false, "");
                     }
                 }
             }

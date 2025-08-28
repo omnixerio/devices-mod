@@ -3,7 +3,9 @@ package com.ultreon.devices.programs.gitweb.component.container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class CraftingBox extends ContainerBox {
     public static final int HEIGHT = 68;
 

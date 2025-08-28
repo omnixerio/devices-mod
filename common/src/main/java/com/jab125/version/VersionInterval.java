@@ -19,37 +19,49 @@ package com.jab125.version;
 import java.util.Collection;
 import java.util.List;
 
-/// Representation of a version interval, closed or open.
-///
-/// The represented version interval is contiguous between its lower and upper limit, disjoint intervals are built
-/// using collections of [VersionInterval]. Empty intervals may be represented by `null` or any interval
-/// @code (x,x)} with x being a non-`null` version and both endpoints being exclusive.
+/**
+ * Representation of a version interval, closed or open.
+ *
+ * <p>The represented version interval is contiguous between its lower and upper limit, disjoint intervals are built
+ * using collections of {@link VersionInterval}. Empty intervals may be represented by {@code null} or any interval
+ * @code (x,x)} with x being a non-{@code null} version and both endpoints being exclusive.
+ */
 public interface VersionInterval {
 	VersionInterval INFINITE = new VersionIntervalImpl(null, false, null, false);
 
-	/// Get whether the interval uses [SemanticVersion] compatible bounds.
-	///
-	/// @return True if both bounds are open (null), [SemanticVersion] instances or a combination of both, false otherwise.
+	/**
+	 * Get whether the interval uses {@link SemanticVersion} compatible bounds.
+	 *
+	 * @return True if both bounds are open (null), {@link SemanticVersion} instances or a combination of both, false otherwise.
+	 */
 	boolean isSemantic();
 
-	/// Get the lower limit of the version interval.
-	///
-	/// @return Version's lower limit or null if none, inclusive depending on [#isMinInclusive()]
+	/**
+	 * Get the lower limit of the version interval.
+	 *
+	 * @return Version's lower limit or null if none, inclusive depending on {@link #isMinInclusive()}
+	 */
 	Version getMin();
 
-	/// Get whether the lower limit of the version interval is inclusive.
-	///
-	/// @return True if inclusive, false otherwise
+	/**
+	 * Get whether the lower limit of the version interval is inclusive.
+	 *
+	 * @return True if inclusive, false otherwise
+	 */
 	boolean isMinInclusive();
 
-	/// Get the upper limit of the version interval.
-	///
-	/// @return Version's upper limit or null if none, inclusive depending on [#isMaxInclusive()]
+	/**
+	 * Get the upper limit of the version interval.
+	 *
+	 * @return Version's upper limit or null if none, inclusive depending on {@link #isMaxInclusive()}
+	 */
 	Version getMax();
 
-	/// Get whether the upper limit of the version interval is inclusive.
-	///
-	/// @return True if inclusive, false otherwise
+	/**
+	 * Get whether the upper limit of the version interval is inclusive.
+	 *
+	 * @return True if inclusive, false otherwise
+	 */
 	boolean isMaxInclusive();
 
 	default VersionInterval and(VersionInterval o) {
@@ -64,17 +76,23 @@ public interface VersionInterval {
 		return not(this);
 	}
 
-	/// Compute the intersection between two version intervals.
+	/**
+	 * Compute the intersection between two version intervals.
+	 */
 	static VersionInterval and(VersionInterval a, VersionInterval b) {
 		return VersionIntervalImpl.and(a, b);
 	}
 
-	/// Compute the intersection between two potentially disjoint of version intervals.
+	/**
+	 * Compute the intersection between two potentially disjoint of version intervals.
+	 */
 	static List<VersionInterval> and(Collection<VersionInterval> a, Collection<VersionInterval> b) {
 		return VersionIntervalImpl.and(a, b);
 	}
 
-	/// Compute the union between multiple version intervals.
+	/**
+	 * Compute the union between multiple version intervals.
+	 */
 	static List<VersionInterval> or(Collection<VersionInterval> a, VersionInterval b) {
 		return VersionIntervalImpl.or(a, b);
 	}

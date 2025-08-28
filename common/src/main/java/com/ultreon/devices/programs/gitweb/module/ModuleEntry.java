@@ -2,7 +2,9 @@ package com.ultreon.devices.programs.gitweb.module;
 
 import java.util.Map;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class ModuleEntry {
     private final Module module;
     private Map<String, String> data;

@@ -15,7 +15,7 @@ import java.util.Arrays;
 
 
 public class ClientLaptopScreen extends Screen {
-    static final ResourceLocation LAPTOP_GUI = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/laptop.png");
+    static final ResourceLocation LAPTOP_GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/laptop.png");
     private static final int BORDER = 10;
     private final ClientLaptop laptop;
 
@@ -26,7 +26,7 @@ public class ClientLaptopScreen extends Screen {
     }
 
     public void renderBezels(final @NotNull GuiGraphics graphics, final int mouseX, final int mouseY, float partialTicks) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
+        this.renderBackground(graphics);
 
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, LAPTOP_GUI);
@@ -55,7 +55,7 @@ public class ClientLaptopScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         int posX = (width - ClientLaptop.DEVICE_WIDTH) / 2 + BORDER;
         int posY = (height - ClientLaptop.DEVICE_HEIGHT) / 2 + BORDER;
         super.render(graphics, mouseX, mouseY, partialTick);

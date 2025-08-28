@@ -1,5 +1,6 @@
 package com.ultreon.devices;
 
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.platform.Platform;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;

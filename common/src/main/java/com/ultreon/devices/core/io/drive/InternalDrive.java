@@ -2,66 +2,24 @@ package com.ultreon.devices.core.io.drive;
 
 import com.ultreon.devices.core.io.ServerFolder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jnode.fs.FileSystemException;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.UUID;
-
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public final class InternalDrive extends AbstractDrive {
     public InternalDrive(String name) {
         super(name);
     }
 
-    public InternalDrive(String name, UUID uuid) {
-        super(uuid);
-    }
-
-    @Override
-    protected void setup() {
-        super.setup();
-
-        try {
-            this.createDirectory(Path.of("/Home"));
-            this.createDirectory(Path.of("/ApplicationData"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private InternalDrive(Path drivePath) throws FileSystemException, IOException {
-        super(drivePath);
-    }
-
-    @ApiStatus.Internal
     public static @NotNull AbstractDrive fromTag(CompoundTag driveTag) {
-        String string = driveTag.toString();
-        System.out.println("string = " + string);
-        if (!driveTag.contains("uuid")) {
-            if (!driveTag.contains("name"))
-                return new InternalDrive("Drive");
-            return new InternalDrive(driveTag.getString("name"));
-        } else if (!driveTag.contains("name")) {
-            return new InternalDrive("Drive", NbtUtils.loadUUID(driveTag.getCompound("uuid")));
+        AbstractDrive drive = new InternalDrive(driveTag.getString("name"));
+        if (driveTag.contains("root", Tag.TAG_COMPOUND)) {
+            CompoundTag folderTag = driveTag.getCompound("root");
+            drive.root = ServerFolder.fromTag(folderTag.getString("file_name"), folderTag.getCompound("data"));
         }
-        try {
-            return new InternalDrive(driveTag.contains("name") ? driveTag.getString("name") : "Drive", NbtUtils.loadUUID(driveTag.getCompound("uuid")));
-        } catch (Exception e) {
-            return new InternalDrive("Drive");
-        }
-    }
-
-    public static InternalDrive load(Path drivePath) {
-        try {
-            return new InternalDrive(drivePath);
-        } catch (FileSystemException | IOException e) {
-            return null;
-        }
+        return drive;
     }
 
     @Override
@@ -69,7 +27,10 @@ public final class InternalDrive extends AbstractDrive {
         CompoundTag driveTag = new CompoundTag();
         driveTag.putString("name", name);
 
-        driveTag.put("uuid", NbtUtils.createUUID(uuid));
+        CompoundTag folderTag = new CompoundTag();
+        folderTag.putString("file_name", root.getName());
+        folderTag.put("data", root.toTag());
+        driveTag.put("root", folderTag);
 
         return driveTag;
     }

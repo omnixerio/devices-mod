@@ -1,14 +1,17 @@
 package com.ultreon.devices.block;
 
-import com.mojang.serialization.MapCodec;
 import com.ultreon.devices.ModDeviceTypes;
 import com.ultreon.devices.block.entity.OfficeChairBlockEntity;
 import com.ultreon.devices.debug.DebugLog;
-import com.ultreon.devices.entity.Seat;
+import com.ultreon.devices.entity.SeatEntity;
 import com.ultreon.devices.util.SeatUtil;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
@@ -16,7 +19,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -28,24 +30,23 @@ import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
+
 import org.jetbrains.annotations.Nullable;
 
-public class OfficeChairBlock extends DeviceBlock.Colored {
-    public static final MapCodec<OfficeChairBlock> CODEC = simpleCodec(OfficeChairBlock::new);
-
+public class OfficeChairBlock extends DeviceBlock.Colored
+{
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
 
     private static final VoxelShape EMPTY_BOX = Shapes.box(0, 0, 0, 0, 0, 0);
     private static final VoxelShape SELECTION_BOX = Shapes.box(0.0625f, 0, 0.0625f, 0.9375f, /*1.6875f*/0.625f, 0.9375f);
     private static final VoxelShape SEAT_BOUNDING_BOX = Shapes.box(0.0625f, 0, 0.0625f, 0.9375f, 0.625f, 0.9375f);
 
-    public OfficeChairBlock(DyeColor color) {
+    public OfficeChairBlock(DyeColor color)
+    {
         super(BlockBehaviour.Properties.of().mapColor(color), color, ModDeviceTypes.SEAT);
-        this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(TYPE, Type.LEGS));
-    }
-
-    private OfficeChairBlock(Properties properties) {
-        super(properties, DyeColor.WHITE, ModDeviceTypes.SEAT);
+        //this.setUnlocalizedName("office_chair");
+        //this.setRegistryName("office_chair");
+        //this.setCreativeTab(MrCrayfishDeviceMod.TAB_DEVICE);
         this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(TYPE, Type.LEGS));
     }
 
@@ -55,7 +56,8 @@ public class OfficeChairBlock extends DeviceBlock.Colored {
 //    }
 
     @Override
-    public boolean canSurvive(@NotNull BlockState state, @NotNull LevelReader reader, @NotNull BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader reader, BlockPos pos)
+    {
         return false || true;
     }
 
@@ -65,14 +67,14 @@ public class OfficeChairBlock extends DeviceBlock.Colored {
     }
 
     @Override
-    public @NotNull VoxelShape getVisualShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
+    public VoxelShape getVisualShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SEAT_BOUNDING_BOX;
     }
 
     @Override
-    public @NotNull VoxelShape getCollisionShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         if (context instanceof EntityCollisionContext entityCollisionContext) {
-            if (entityCollisionContext.getEntity() != null && entityCollisionContext.getEntity().getVehicle() instanceof Seat) {
+            if (entityCollisionContext.getEntity() != null && entityCollisionContext.getEntity().getVehicle() instanceof SeatEntity) {
                 return EMPTY_BOX;
             }
         }
@@ -80,9 +82,12 @@ public class OfficeChairBlock extends DeviceBlock.Colored {
     }
 
     @Override
-    protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hitResult) {
-        DebugLog.log("OKOKJRTKFD"); // Jab125? What is this?
-        if (!level.isClientSide) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
+    {
+        //DebugLog.log(DeviceEntities.SEAT.get().create(level).toString());
+        DebugLog.log("OKOKJRTKFD");
+        if(!level.isClientSide)
+        {
             SeatUtil.createSeatAndSit(level, pos, player, -1);
         }
         return InteractionResult.SUCCESS;
@@ -90,26 +95,25 @@ public class OfficeChairBlock extends DeviceBlock.Colored {
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
+    {
         return new OfficeChairBlockEntity(pos, state);
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> pBuilder) {
+    protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> pBuilder)
+    {
         super.createBlockStateDefinition(pBuilder);
         pBuilder.add(TYPE);
     }
 
-    @Override
-    protected @NotNull MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return CODEC;
-    }
-
-    public enum Type implements StringRepresentable {
+    public enum Type implements StringRepresentable
+    {
         LEGS, SEAT, FULL;
 
         @Override
-        public @NotNull String getSerializedName() {
+        public String getSerializedName()
+        {
             return name().toLowerCase();
         }
     }

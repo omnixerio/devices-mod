@@ -1,34 +1,29 @@
 package com.ultreon.devices.item;
 
-import com.ultreon.devices.IDeviceType;
 import com.ultreon.devices.ModDeviceTypes;
+import com.ultreon.devices.IDeviceType;
+import dev.architectury.injectables.annotations.PlatformOnly;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.Nullable;
 
-/// <summary>
-///     A device item.
-/// </summary>
-///
-/// @author [MrCrayfish](https://github.com/MrCrayfish), [XyperCode](https://github.com/XyperCode)
+import java.util.Objects;
+
 public class DeviceItem extends BlockItem implements IDeviceType {
     private final ModDeviceTypes deviceType;
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="DeviceItem"/> class.
-    /// </summary>
-    ///
-    /// @param block      The device block to use.
-    /// @param properties The item properties.
-    /// @param deviceType The type of the device.
     public DeviceItem(Block block, Properties properties, ModDeviceTypes deviceType) {
         super(block, properties.stacksTo(1));
         this.deviceType = deviceType;
     }
 
-    /*
     //This method is still bugged due to Forge.
     @Nullable
     @PlatformOnly(PlatformOnly.FORGE)
+//    @Override
     public CompoundTag getShareTag(ItemStack stack) {
         CompoundTag tag = new CompoundTag();
         if (stack.getTag() != null && stack.getTag().contains("display", Tag.TAG_COMPOUND)) {
@@ -36,14 +31,7 @@ public class DeviceItem extends BlockItem implements IDeviceType {
         }
         return tag;
     }
-     */
 
-    /// <summary>
-    ///     Gets the type of the device.
-    /// </summary>
-    ///
-    /// @return The type of the device.
-    @Override
     public ModDeviceTypes getDeviceType() {
         return deviceType;
     }

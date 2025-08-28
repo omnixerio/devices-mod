@@ -11,7 +11,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class FurnaceBox extends ContainerBox {
     public static final int HEIGHT = 68;
 

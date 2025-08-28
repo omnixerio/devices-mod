@@ -7,8 +7,9 @@ import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 import java.util.Comparator;
 
-/// @author MrCrayfish
-@Deprecated
+/**
+ * @author MrCrayfish
+ */
 public sealed class ServerFile permits ServerFolder {
     public static final Comparator<ServerFile> SORT_BY_NAME = (f1, f2) -> {
         if (f1.isFolder() && !f2.isFolder()) return -1;

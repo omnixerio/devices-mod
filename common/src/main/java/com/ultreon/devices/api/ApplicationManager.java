@@ -23,15 +23,17 @@ public final class ApplicationManager {
     private ApplicationManager() {
     }
 
-    /// Registers an application into the application list
-    ///
-    /// The identifier parameter is simply just an id for the application.
-    ///
-    /// Example: `new ResourceLocation("modid:appid");`
-    ///
-    /// @param identifier the
-    /// @param app      a supplier that provides an application
-    /// @param isSystem whether the application is a SystemApp (required as on the server, "Application" cannot instantiate)
+    /**
+     * Registers an application into the application list
+     * <p>
+     * The identifier parameter is simply just an id for the application.
+     * <p>
+     * Example: {@code new ResourceLocation("modid:appid");}
+     *
+     * @param identifier the
+     * @param app      a supplier that provides an application
+     * @param isSystem whether the application is a SystemApp (required as on the server, "Application" cannot instantiate)
+     */
     @Nullable
     public static Application registerApplication(ResourceLocation identifier, Supplier<Supplier<Application>> app, boolean isSystem) {
         Devices.LOGGER.debug(MARKER, "Registering application {}", identifier);
@@ -54,11 +56,13 @@ public final class ApplicationManager {
         return null;
     }
 
-    /// Get all applications that are registered. The returned collection does not include system
-    /// applications, see [#getSystemApplications()] or [#getAllApplications()]. Please
-    /// note that this list is read only and cannot be modified.
-    ///
-    /// @return the application list
+    /**
+     * Get all applications that are registered. The returned collection does not include system
+     * applications, see {@link #getSystemApplications()} or {@link #getAllApplications()}. Please
+     * note that this list is read only and cannot be modified.
+     *
+     * @return the application list
+     */
     public static List<AppInfo> getAvailableApplications() {
         final Predicate<AppInfo> FILTER = info -> !info.isSystemApp() && (!Devices.hasAllowedApplications() || Devices.getAllowedApplications().contains(info));
         return APP_INFO.values().stream().filter(FILTER).collect(Collectors.toList());
@@ -75,14 +79,5 @@ public final class ApplicationManager {
     @Nullable
     public static AppInfo getApplication(ResourceLocation appId) {
         return APP_INFO.get(appId);
-    }
-
-    public static AppInfo getApplicationForExtension(String ext) {
-        for (AppInfo info : APP_INFO.values()) {
-            if (info.getExtensions().contains(ext)) {
-                return info;
-            }
-        }
-        return null;
     }
 }

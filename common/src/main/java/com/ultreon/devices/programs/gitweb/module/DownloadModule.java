@@ -20,7 +20,9 @@ import net.minecraft.resources.ResourceLocation;
 import java.awt.*;
 import java.util.Map;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class DownloadModule extends Module {
     @Override
     public String[] getRequiredData() {
@@ -74,7 +76,8 @@ public class DownloadModule extends Module {
         button.setClickListener((mouseX, mouseY, mouseButton) -> {
             try {
                 CompoundTag tag = TagParser.parseTag(data.get("file-data"));
-                Dialog dialog = new Dialog.SaveFile(frame.getApp());
+                File file = new File(data.getOrDefault("file-name", ""), data.get("file-app"), tag);
+                Dialog dialog = new Dialog.SaveFile(frame.getApp(), file);
                 frame.getApp().openDialog(dialog);
             } catch (CommandSyntaxException e) {
                 e.printStackTrace();

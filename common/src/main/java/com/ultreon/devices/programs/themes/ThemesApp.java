@@ -139,14 +139,16 @@ public class ThemesApp extends Application implements SystemAccessor {
         private final AppInfo info;
         private boolean editing;
 
-        /// The default constructor for a component.
-        ///
-        /// Laying out components is simply relative positioning. So for left (x position),
-        /// specific how many pixels from the left of the application window you want
-        /// it to be positioned at. The top is the same, but instead from the top (y position).
-        ///
-        /// @param left how many pixels from the left
-        /// @param top  how many pixels from the top
+        /**
+         * The default constructor for a component.
+         * <p>
+         * Laying out components is simply relative positioning. So for left (x position),
+         * specific how many pixels from the left of the application window you want
+         * it to be positioned at. The top is the same, but instead from the top (y position).
+         *
+         * @param left how many pixels from the left
+         * @param top  how many pixels from the top
+         */
         public AppTintSet(int left, int top, AppInfo info) {
             super(left, top);
             this.info = info;
@@ -157,14 +159,14 @@ public class ThemesApp extends Application implements SystemAccessor {
             super.init(layout);
             var primaryTint = new TextField(left+16, top, 50);
             primaryTint.setText(toColorHex(info.getTint(1)));
-            primaryTint.setBackgroundColor(new Color(getColorScheme().getBackgroundColor(), true).darker().darker());
+            primaryTint.setBackgroundColor(new Color(getColorScheme().getBackgroundColor()).darker().darker());
             primaryTint.setTextColor(Color.WHITE.darker());
             primaryTint.setEnabled(false);
             layout.addComponent(primaryTint);
 
             var secondaryTint = new TextField(left+16+50, top, 50);
             secondaryTint.setText(toColorHex(info.getTint(2)));
-            secondaryTint.setBackgroundColor(new Color(getColorScheme().getBackgroundColor(), true).darker().darker());
+            secondaryTint.setBackgroundColor(new Color(getColorScheme().getBackgroundColor()).darker().darker());
             secondaryTint.setTextColor(Color.WHITE.darker());
             secondaryTint.setEnabled(false);
             layout.addComponent(secondaryTint);
@@ -181,12 +183,12 @@ public class ThemesApp extends Application implements SystemAccessor {
                 this.info.setTintProvider(AppInfo.getDefaultTintProvider());
 
                 primaryTint.setText(toColorHex(info.getTint(1)));
-                primaryTint.setBackgroundColor(new Color(getColorScheme().getBackgroundColor(), true).darker().darker());
+                primaryTint.setBackgroundColor(new Color(getColorScheme().getBackgroundColor()).darker().darker());
                 primaryTint.setTextColor(Color.WHITE.darker());
                 primaryTint.setEnabled(false);
 
                 secondaryTint.setText(toColorHex(info.getTint(2)));
-                secondaryTint.setBackgroundColor(new Color(getColorScheme().getBackgroundColor(), true).darker().darker());
+                secondaryTint.setBackgroundColor(new Color(getColorScheme().getBackgroundColor()).darker().darker());
                 secondaryTint.setTextColor(Color.WHITE.darker());
                 secondaryTint.setEnabled(false);
 
@@ -215,11 +217,11 @@ public class ThemesApp extends Application implements SystemAccessor {
 
             // click listener
             editButton.setClickListener((__, ___, ____) -> {
-                primaryTint.setBackgroundColor(new Color(getColorScheme().getBackgroundColor(), true));
+                primaryTint.setBackgroundColor(new Color(getColorScheme().getBackgroundColor()));
                 primaryTint.setTextColor(Color.WHITE);
                 primaryTint.setEnabled(true);
 
-                secondaryTint.setBackgroundColor(new Color(getColorScheme().getBackgroundColor(), true));
+                secondaryTint.setBackgroundColor(new Color(getColorScheme().getBackgroundColor()));
                 secondaryTint.setTextColor(Color.WHITE);
                 secondaryTint.setEnabled(true);
                 this.editing = true;

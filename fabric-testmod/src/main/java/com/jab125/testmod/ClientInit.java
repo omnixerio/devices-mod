@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 public class ClientInit implements FabricApplicationRegistration, ClientModInitializer {
     @Override
     public void registerApplications() {
-        ApplicationManager.registerApplication(ResourceLocation.fromNamespaceAndPath("devices-testmod", "test-app"), () -> TestApp::new, false);
+        ApplicationManager.registerApplication(new ResourceLocation("devices-testmod", "test-app"), () -> TestApp::new, false);
     }
 
     @Override

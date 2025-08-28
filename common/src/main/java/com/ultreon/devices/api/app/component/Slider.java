@@ -28,11 +28,13 @@ public class Slider extends Component {
     protected ReleaseListener releaseListener = null;
     protected SlideListener slideListener = null;
 
-    /// Default slider listener
-    ///
-    /// @param left  how many pixels from the left
-    /// @param top   how many pixels from the top
-    /// @param width the width of the slider
+    /**
+     * Default slider listener
+     *
+     * @param left  how many pixels from the left
+     * @param top   how many pixels from the top
+     * @param width the width of the slider
+     */
     public Slider(int left, int top, int width) {
         super(left, top);
         this.width = width;
@@ -41,7 +43,7 @@ public class Slider extends Component {
     @Override
     public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (this.visible) {
-            Color bgColor = new Color(getColorScheme().getBackgroundColor(), true);
+            Color bgColor = new Color(getColorScheme().getBackgroundColor());
             graphics.fill(xPosition, yPosition + 4, xPosition + width, yPosition + 8, bgColor.darker().darker().getRGB());
             graphics.fill(xPosition + 1, yPosition + 5, xPosition + width - 1, yPosition + 7, bgColor.getRGB());
             graphics.fill(xPosition + newSliderX, yPosition, xPosition + newSliderX + 8, yPosition + 12, bgColor.darker().darker().getRGB());
@@ -114,59 +116,75 @@ public class Slider extends Component {
         }
     }
 
-    /// Sets the click listener. Calls the listener when the slider is clicked.
-    ///
-    /// @param clickListener the click listener
+    /**
+     * Sets the click listener. Calls the listener when the slider is clicked.
+     *
+     * @param clickListener the click listener
+     */
     public void setClickListener(ClickListener clickListener) {
         this.clickListener = clickListener;
     }
 
-    /// Sets the release listener. Calls the listener when the slider is released.
-    ///
-    /// @param releaseListener the release listener
+    /**
+     * Sets the release listener. Calls the listener when the slider is released.
+     *
+     * @param releaseListener the release listener
+     */
     public void setReleaseListener(ReleaseListener releaseListener) {
         this.releaseListener = releaseListener;
     }
 
-    /// Sets the slider listener. Calls the listener when the slider is moved.
-    ///
-    /// @param slideListener the slide listener
+    /**
+     * Sets the slider listener. Calls the listener when the slider is moved.
+     *
+     * @param slideListener the slide listener
+     */
     public void setSlideListener(SlideListener slideListener) {
         this.slideListener = slideListener;
     }
 
-    /// Gets the percentage of the slider
-    ///
-    /// @return the percentage
+    /**
+     * Gets the percentage of the slider
+     *
+     * @return the percentage
+     */
     public float getPercentage() {
         return (float) this.newSliderX / (float) (this.width - 8);
     }
 
-    /// Sets the slider percentage
-    ///
-    /// @param percentage the percentage
+    /**
+     * Sets the slider percentage
+     *
+     * @param percentage the percentage
+     */
     public void setPercentage(float percentage) {
         if (percentage < 0f || percentage > 1f) return;
         this.newSliderX = (int) ((this.width - 8) * percentage);
     }
 
-    /// Sets the slider color for this component
-    ///
-    /// @param color the slider color
+    /**
+     * Sets the slider color for this component
+     *
+     * @param color the slider color
+     */
     public void setSliderColor(Color color) {
         this.sliderColor = color.getRGB();
     }
 
-    /// Sets the background color for this component
-    ///
-    /// @param color the background color
+    /**
+     * Sets the background color for this component
+     *
+     * @param color the background color
+     */
     public void setBackgroundColor(Color color) {
         this.backgroundColor = color.getRGB();
     }
 
-    /// Sets the border color for this component
-    ///
-    /// @param color the border color
+    /**
+     * Sets the border color for this component
+     *
+     * @param color the border color
+     */
     public void setBorderColor(Color color) {
         this.borderColor = color.getRGB();
     }

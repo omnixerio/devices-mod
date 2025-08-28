@@ -1,6 +1,7 @@
 package com.ultreon.devices.programs.system.layout;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.ApplicationManager;
 import com.ultreon.devices.api.app.Icons;
 import com.ultreon.devices.api.app.Layout;
@@ -14,6 +15,7 @@ import com.ultreon.devices.programs.system.AppStore;
 import com.ultreon.devices.programs.system.object.LocalEntry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,7 +25,9 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class LayoutSearchApps extends StandardLayout {
     private static final Color ITEM_BACKGROUND = Color.decode("0x9E9E9E");
     private static final Color ITEM_SELECTED = Color.decode("0x757575");

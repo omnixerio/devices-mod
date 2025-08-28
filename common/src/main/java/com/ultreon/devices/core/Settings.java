@@ -8,7 +8,9 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import org.intellij.lang.annotations.Identifier;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class Settings {
     private static boolean showAllApps = true;
 

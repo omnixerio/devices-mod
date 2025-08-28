@@ -3,17 +3,18 @@ package com.ultreon.devices.block.entity;
 import com.ultreon.devices.api.print.IPrint;
 import com.ultreon.devices.init.DeviceBlockEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
+
 import org.jetbrains.annotations.Nullable;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class PaperBlockEntity extends SyncBlockEntity {
     private IPrint print;
     private byte rotation;
@@ -42,8 +43,8 @@ public class PaperBlockEntity extends SyncBlockEntity {
     }
 
     @Override
-    public void loadAdditional(@NotNull CompoundTag compound, HolderLookup.@NotNull Provider registries) {
-        super.loadAdditional(compound, registries);
+    public void load(CompoundTag compound) {
+        super.load(compound);
         if (compound.contains("print", Tag.TAG_COMPOUND)) {
             print = IPrint.load(compound.getCompound("print"));
         }
@@ -53,8 +54,8 @@ public class PaperBlockEntity extends SyncBlockEntity {
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag compound, HolderLookup.@NotNull Provider registries) {
-        super.saveAdditional(compound, registries);
+    public void saveAdditional(CompoundTag compound) {
+        super.saveAdditional(compound);
         if (print != null) {
             compound.put("print", IPrint.save(print));
         }

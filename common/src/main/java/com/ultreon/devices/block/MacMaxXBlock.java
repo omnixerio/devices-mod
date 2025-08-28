@@ -1,6 +1,5 @@
 package com.ultreon.devices.block;
 
-import com.mojang.serialization.MapCodec;
 import com.ultreon.devices.block.entity.MacMaxXBlockEntity;
 import com.ultreon.devices.init.DeviceBlocks;
 import dev.architectury.platform.Platform;
@@ -18,7 +17,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -31,10 +29,11 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/// @author Qboi123
+/**
+ * @author Qboi123
+ */
+@SuppressWarnings("deprecation")
 public class MacMaxXBlock extends ComputerBlock {
-    private static final MapCodec<MacMaxXBlock> CODEC = simpleCodec(MacMaxXBlock::new);
-
     private static final VoxelShape SHAPE_NORTH = Shapes.or(
             Block.box(-16, 31, 5, 32, 32, 7),
             Block.box(-15, 4, 5.5, 31, 32, 7),
@@ -85,11 +84,7 @@ public class MacMaxXBlock extends ComputerBlock {
     );
 
     public MacMaxXBlock() {
-        this(BlockBehaviour.Properties.of().mapColor(DyeColor.WHITE).strength(6f).sound(SoundType.METAL).noOcclusion().dynamicShape());
-    }
-
-    public MacMaxXBlock(Properties properties) {
-        super(properties);
+        super(BlockBehaviour.Properties.of().mapColor(DyeColor.WHITE).strength(6f).sound(SoundType.METAL).noOcclusion().dynamicShape());
     }
 
     @Override
@@ -153,7 +148,7 @@ public class MacMaxXBlock extends ComputerBlock {
         return !(level.getBlockState(pos).isAir() || level.getBlockState(pos).canBeReplaced(new FakeBlockPlaceContext(level, hand, itemInHand, new BlockHitResult(Vec3.atCenterOf(pos), face, pos, false))));
     }
 
-    public void setPlacedBy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, LivingEntity placer, @NotNull ItemStack stack) {
+    public void setPlacedBy(@NotNull Level level, @NotNull BlockPos pos, BlockState state, LivingEntity placer, @NotNull ItemStack stack) {
         if (state.isAir()) return;
         BlockState partState = DeviceBlocks.MAC_MAX_X_PART.get().defaultBlockState();
         partState = partState.setValue(FACING, state.getValue(FACING));
@@ -188,7 +183,7 @@ public class MacMaxXBlock extends ComputerBlock {
     }
 
     @Override
-    public @NotNull BlockState playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, BlockState state, @NotNull Player player) {
+    public void playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, BlockState state, @NotNull Player player) {
         switch (state.getValue(FACING)) {
             case NORTH -> {
                 level.setBlock(pos.above().west(), Blocks.AIR.defaultBlockState(), 3);
@@ -220,7 +215,6 @@ public class MacMaxXBlock extends ComputerBlock {
             }
             default -> throw new IllegalStateException("Unexpected value: " + state.getValue(FACING));
         }
-        return Blocks.AIR.defaultBlockState();
     }
 
     @Override
@@ -229,7 +223,7 @@ public class MacMaxXBlock extends ComputerBlock {
     }
 
     @Override
-    public @NotNull MutableComponent getName() {
+    public MutableComponent getName() {
         MutableComponent normalName = Component.translatable("block.devices.mac_max_x");
         if (Platform.isModLoaded("emojiful")) {
             return Component.translatable("block.devices.mac_max_x_emoji");
@@ -240,10 +234,5 @@ public class MacMaxXBlock extends ComputerBlock {
     @Override
     public @Nullable BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new MacMaxXBlockEntity(pos, state);
-    }
-
-    @Override
-    protected @NotNull MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return CODEC;
     }
 }

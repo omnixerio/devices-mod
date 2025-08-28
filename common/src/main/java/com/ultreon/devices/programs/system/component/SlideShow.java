@@ -15,7 +15,9 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 @SuppressWarnings("unused")
 public class SlideShow extends Component {
     private static final java.awt.Color OVERLAY = new java.awt.Color(0f, 0f, 0f, 0.15f);
@@ -28,14 +30,16 @@ public class SlideShow extends Component {
     private final Image image;
     private int currentImage = -1;
 
-    /// The default constructor for a component.
-    ///
-    /// Laying out components is simply relative positioning. So for left (x position),
-    /// specific how many pixels from the left of the application window you want
-    /// it to be positioned at. The top is the same, but instead from the top (y position).
-    ///
-    /// @param left how many pixels from the left
-    /// @param top  how many pixels from the top
+    /**
+     * The default constructor for a component.
+     * <p>
+     * Laying out components is simply relative positioning. So for left (x position),
+     * specific how many pixels from the left of the application window you want
+     * it to be positioned at. The top is the same, but instead from the top (y position).
+     *
+     * @param left how many pixels from the left
+     * @param top  how many pixels from the top
+     */
     public SlideShow(int left, int top, int width, int height) {
         super(left, top);
         this.width = width;

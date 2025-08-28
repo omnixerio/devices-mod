@@ -1,6 +1,5 @@
 package com.ultreon.devices.programs.auction;
 
-import com.ultreon.devices.Devices;
 import com.ultreon.devices.programs.auction.object.AuctionItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -16,7 +15,7 @@ public class AuctionManager {
     private final List<AuctionItem> items;
 
     private AuctionManager() {
-        items = new ArrayList<>();
+        items = new ArrayList<AuctionItem>();
     }
 
     public void addItem(AuctionItem item) {
@@ -64,9 +63,9 @@ public class AuctionManager {
 
     public void writeToNBT(CompoundTag tag) {
         ListTag tagList = new ListTag();
-        items.stream().filter(AuctionItem::isValid).forEach(i -> {
+        items.stream().filter(i -> i.isValid()).forEach(i -> {
             CompoundTag itemTag = new CompoundTag();
-            i.writeToNBT(itemTag, Devices.getServer().registryAccess());
+            i.writeToNBT(itemTag);
             tagList.add(itemTag);
         });
         tag.put("auctionItems", tagList);
@@ -76,12 +75,10 @@ public class AuctionManager {
         items.clear();
 
         ListTag tagList = (ListTag) tag.get("auctionItems");
-        if (tagList != null) {
-            for (int i = 0; i < tagList.size(); i++) {
-                CompoundTag itemTag = tagList.getCompound(i);
-                AuctionItem item = AuctionItem.readFromNBT(itemTag);
-                items.add(item);
-            }
+        for (int i = 0; i < tagList.size(); i++) {
+            CompoundTag itemTag = tagList.getCompound(i);
+            AuctionItem item = AuctionItem.readFromNBT(itemTag);
+            items.add(item);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.ultreon.devices.programs.gitweb.component.container;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.Reference;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.utils.RenderUtil;
@@ -8,7 +9,6 @@ import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -17,10 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public abstract class ContainerBox extends Component {
     public static final int WIDTH = 128;
-    protected static final ResourceLocation CONTAINER_BOXES_TEXTURE = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/container_boxes.png");
+    protected static final ResourceLocation CONTAINER_BOXES_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/container_boxes.png");
     protected List<Slot> slots = new ArrayList<>();
     protected int boxU, boxV;
     protected int height;
@@ -79,7 +81,7 @@ public abstract class ContainerBox extends Component {
         public void renderOverlay(GuiGraphics graphics, Laptop laptop, int x, int y, int mouseX, int mouseY) {
             if (GuiHelper.isMouseWithin(mouseX, mouseY, x + slotX, y + slotY, 16, 16)) {
                 if (!stack.isEmpty()) {
-                    graphics.renderTooltip(Minecraft.getInstance().font, Screen.getTooltipFromItem(Minecraft.getInstance(), stack), Optional.empty(), mouseX, mouseY/*, stack*/);
+                    graphics.renderTooltip(Minecraft.getInstance().font, laptop.getTooltipFromItem(Minecraft.getInstance(), stack), Optional.empty(), mouseX, mouseY/*, stack*/);
                 }
             }
 

@@ -15,7 +15,6 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +41,7 @@ public class ClientInit implements ClientModInitializer {
             private String currentCode = "en_us";
             private LanguageInfo currentLanguage;
             @Override
-            public @NotNull CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller preparationsProfiler, @NotNull ProfilerFiller reloadProfiler, @NotNull Executor backgroundExecutor, @NotNull Executor gameExecutor) {
+            public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
                 return CompletableFuture.runAsync(() -> {
                     this.languages = extractLanguages(resourceManager.listPacks());
                    // extractAllFrom(languages, resourceManager.listPacks(), resourceManager);
@@ -100,7 +99,7 @@ public class ClientInit implements ClientModInitializer {
             JsonObject gg = new JsonObject();
             for (String string3 : resourceManager.getNamespaces()) {
                 try {
-                    ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(string3, string2);
+                    ResourceLocation resourceLocation = new ResourceLocation(string3, string2);
                     //ClientLanguage.appendFrom(string, resourceManager.getResourceStack(resourceLocation), map);
                     var q = resourceManager.getResourceStack(resourceLocation);
                     for (Resource resource : q) {

@@ -76,7 +76,7 @@ public class Connection {
         Connection connection = new Connection();
         connection.routerId = UUID.fromString(tag.getString("id"));
         if (tag.contains("Pos", Tag.TAG_COMPOUND)) {
-            connection.routerPos = NbtUtils.readBlockPos(tag, "Pos").orElse(null);
+            connection.routerPos = NbtUtils.readBlockPos(tag.getCompound("Pos"));
         }
         return connection;
     }

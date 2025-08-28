@@ -33,6 +33,9 @@ public class RenderUtil {
             graphics.renderItemDecorations(Minecraft.getInstance().font, stack, x, y);
         graphics.pose().last().pose().normal(_4d);
         graphics.pose().last().normal().normal(_3d);
+        // Todo - Port to 1.18.2 if possible
+        //RenderSystem.enableAlpha();
+        //Lighting.setupForFlatItems();
     }
 
     public static void drawIcon(GuiGraphics graphics, double x, double y, AppInfo info, int width, int height) {
@@ -61,18 +64,20 @@ public class RenderUtil {
         // Gui.blit(pose, (int) x, (int) y, width, height, u, v, width, height, (int) textureWidth, (int) textureHeight);
     }
 
-    /// Texture size must be 256x256
-    ///
-    /// @param graphics      gui graphics helper
-    /// @param x             the x position of the rectangle
-    /// @param y             the y position of the rectangle
-    /// @param z             the z position of the rectangle
-    /// @param u             the x position of the texture
-    /// @param v             the y position of the texture
-    /// @param width         the width of the rectangle
-    /// @param height        the height of the rectangle
-    /// @param textureWidth  the width of the texture
-    /// @param textureHeight the height of the texture
+    /**
+     * Texture size must be 256x256
+     *
+     * @param graphics      gui graphics helper
+     * @param x             the x position of the rectangle
+     * @param y             the y position of the rectangle
+     * @param z             the z position of the rectangle
+     * @param u             the x position of the texture
+     * @param v             the y position of the texture
+     * @param width         the width of the rectangle
+     * @param height        the height of the rectangle
+     * @param textureWidth  the width of the texture
+     * @param textureHeight the height of the texture
+     */
     public static void drawRectWithTexture(ResourceLocation location, GuiGraphics graphics, double x, double y, double z, float u, float v, int width, int height, float textureWidth, float textureHeight) {
         drawRectWithTexture(location, graphics.pose(), x, y, z, u, v, width, height, textureWidth, textureHeight);
     }
@@ -82,24 +87,31 @@ public class RenderUtil {
         float scale = 0.00390625f;
         var e = pose.last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        buffer.addVertex(e, (float) x, (float) (y + height), (float) z).setUv(u * scale, (v + textureHeight) * scale)
-                .addVertex(e, (float) (x + width), (float) (y + height), (float) z).setUv((u + textureWidth) * scale, (v + textureHeight) * scale)
-                .addVertex(e, (float) (x + width), (float) y, (float) z).setUv((u + textureWidth) * scale, v * scale)
-                .addVertex(e, (float) x, (float) y, (float) z).setUv(u * scale, v * scale);
-        BufferUploader.drawWithShader(buffer.buildOrThrow());
+        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
+        try {
+            buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        } catch (IllegalStateException e_) {
+            buffer.end();
+            buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        }
+        buffer.vertex(e, (float) x, (float) (y + height), (float) z).uv(u * scale, (v + textureHeight) * scale).endVertex();
+        buffer.vertex(e, (float) (x + width), (float) (y + height), (float) z).uv((u + textureWidth) * scale, (v + textureHeight) * scale).endVertex();
+        buffer.vertex(e, (float) (x + width), (float) y, (float) z).uv((u + textureWidth) * scale, v * scale).endVertex();
+        buffer.vertex(e, (float) x, (float) y, (float) z).uv(u * scale, v * scale).endVertex();
+        BufferUploader.drawWithShader(buffer.end());
     }
 
     public static void drawRectWithFullTexture(GuiGraphics graphics, double x, double y, float u, float v, int width, int height) {
         // Gui.blit(pose, (int) x, (int) y, width, height, u, v, width, height, 256, 256);
         var e = graphics.pose().last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        buffer.addVertex(e, (float) x, (float) (y + height), 0).setUv(0, 1)
-                .addVertex(e, (float) (x + width), (float) (y + height), 0).setUv(1, 1)
-                .addVertex(e, (float) (x + width), (float) y, 0).setUv(1, 0)
-                .addVertex(e, (float) x, (float) y, 0).setUv(0, 0);
-        BufferUploader.drawWithShader(buffer.buildOrThrow());
+        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
+        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        buffer.vertex(e, (float) x, (float) (y + height), 0).uv(0, 1).endVertex();
+        buffer.vertex(e, (float) (x + width), (float) (y + height), 0).uv(1, 1).endVertex();
+        buffer.vertex(e, (float) (x + width), (float) y, 0).uv(1, 0).endVertex();
+        buffer.vertex(e, (float) x, (float) y, 0).uv(0, 0).endVertex();
+        BufferUploader.drawWithShader(buffer.end());
     }
 
     public static void drawRectWithTexture(ResourceLocation location, GuiGraphics graphics, double x, double y, float u, float v, int width, int height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight) {
@@ -112,12 +124,13 @@ public class RenderUtil {
         float scaleHeight = 1f / sourceHeight;
         var e = pose.last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        buffer.addVertex(e, (float) x, (float) (y + height), 0).setUv(u * scaleWidth, (v + textureHeight) * scaleHeight)
-                .addVertex(e, (float) (x + width), (float) (y + height), 0).setUv((u + textureWidth) * scaleWidth, (v + textureHeight) * scaleHeight)
-                .addVertex(e, (float) (x + width), (float) y, 0).setUv((u + textureWidth) * scaleWidth, v * scaleHeight)
-                .addVertex(e, (float) x, (float) y, 0).setUv(u * scaleWidth, v * scaleHeight);
-        BufferUploader.drawWithShader(buffer.buildOrThrow());
+        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
+        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        buffer.vertex(e, (float) x, (float) (y + height), 0).uv(u * scaleWidth, (v + textureHeight) * scaleHeight).endVertex();
+        buffer.vertex(e, (float) (x + width), (float) (y + height), 0).uv((u + textureWidth) * scaleWidth, (v + textureHeight) * scaleHeight).endVertex();
+        buffer.vertex(e, (float) (x + width), (float) y, 0).uv((u + textureWidth) * scaleWidth, v * scaleHeight).endVertex();
+        buffer.vertex(e, (float) x, (float) y, 0).uv(u * scaleWidth, v * scaleHeight).endVertex();
+        BufferUploader.drawWithShader(buffer.end());
     }
 
     public static void drawApplicationIcon(GuiGraphics graphics, @Nullable AppInfo info, double x, double y) {

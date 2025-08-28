@@ -21,7 +21,9 @@ import org.joml.Vector3f;
 import java.util.Collection;
 import java.util.Objects;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public record RouterRenderer(
         BlockEntityRendererProvider.Context context) implements BlockEntityRenderer<RouterBlockEntity> {
 
@@ -33,9 +35,10 @@ public record RouterRenderer(
         if (blockEntity.isDebug()) {
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(770, 771, 1, 0);
+//            RenderSystem.disableLighting();
+            //            RenderSystem.disableTexture();
+//            RenderSystem.enableAlpha();
             pose.pushPose();
-
-            //<editor-fold desc="DebugLines: <...>">
             {
                 pose.translate(blockEntity.getBlockPos().getX(), blockEntity.getBlockPos().getY(), blockEntity.getBlockPos().getZ());
                 Router router = blockEntity.getRouter();
@@ -47,6 +50,7 @@ public record RouterRenderer(
                 final double startLineZ = linePositions.z;
 
                 Tesselator tesselator = Tesselator.getInstance();
+                BufferBuilder buffer = tesselator.getBuilder();
 
                 final Collection<NetworkDevice> DEVICES = router.getConnectedDevices(Minecraft.getInstance().level);
                 DEVICES.forEach(networkDevice -> {
@@ -55,21 +59,23 @@ public record RouterRenderer(
                     Objects.requireNonNull(devicePos, "Connection device has no position, weird.");
 
                     RenderSystem.lineWidth(14F);
-                    BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-                    buffer.addVertex((float) startLineX, (float) startLineY, (float) startLineZ).setColor(0f, 0f, 0f, 0.5f)
-                            .addVertex((devicePos.getX() - routerPos.getX()) + 0.5f, (devicePos.getY() - routerPos.getY()), (devicePos.getZ() - routerPos.getZ()) + 0.5f).setColor(1f, 1f, 1f, 0.35f);
-                    BufferUploader.drawWithShader(buffer.buildOrThrow());
+                    buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+                    buffer.vertex(startLineX, startLineY, startLineZ).color(0f, 0f, 0f, 0.5f).endVertex();
+                    buffer.vertex((devicePos.getX() - routerPos.getX()) + 0.5f, (devicePos.getY() - routerPos.getY()), (devicePos.getZ() - routerPos.getZ()) + 0.5f).color(1f, 1f, 1f, 0.35f).endVertex();
+                    tesselator.end();
 
                     RenderSystem.lineWidth(4F);
-                    BufferBuilder lineBuffer = tesselator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
-                    lineBuffer.addVertex((float) startLineX, (float) startLineY, (float) startLineZ).setColor(0f, 0f, 0f, 0.5f)
-                            .addVertex((devicePos.getX() - routerPos.getX()) + 0.5f, (devicePos.getY() - routerPos.getY()), (devicePos.getZ() - routerPos.getZ()) + 0.5f).setColor(0f, 1f, 0f, 0.5f);
-                    BufferUploader.drawWithShader(lineBuffer.buildOrThrow());
+                    buffer.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
+                    buffer.vertex(startLineX, startLineY, startLineZ).color(0f, 0f, 0f, 0.5f).endVertex();
+                    buffer.vertex((devicePos.getX() - routerPos.getX()) + 0.5f, (devicePos.getY() - routerPos.getY()), (devicePos.getZ() - routerPos.getZ()) + 0.5f).color(0f, 1f, 0f, 0.5f).endVertex();
+                    tesselator.end();
                 });
             }
-            //</editor-fold>
             pose.popPose();
             RenderSystem.disableBlend();
+//            RenderSystem.disableAlpha();
+//            RenderSystem.enableLighting();
+       //     RenderSystem.enableTexture();
         }
     }
 

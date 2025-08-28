@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.Block;
 
 public class DeviceEntityRenderers {
     static {
-        EntityRendererRegistry.register(DeviceEntities.SEAT, SeatEntityRenderer::new);
+        EntityRendererRegistry.register(DeviceEntities.SEAT::get, SeatEntityRenderer::new);
     }
 
     public static void register() {

@@ -2,6 +2,7 @@ package com.ultreon.devices.init;
 
 import com.ultreon.devices.Devices;
 import dev.architectury.registry.CreativeTabRegistry;
+import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.Registrar;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -19,6 +20,6 @@ public class DeviceCreativeTabs {
     static {
         //Devices.TAB_DEVICE.
 
-        REGISTER.register(ResourceLocation.parse("devices:devices_tab_device"), () -> CreativeTabRegistry.create(Component.translatable("itemGroup.devices.devices_tab_device"), () -> new ItemStack(DeviceBlocks.LAPTOPS.of(DyeColor.RED).get())));
+        REGISTER.register(new ResourceLocation("devices:devices_tab_device"), () -> CreativeTabRegistry.create(Component.translatable("itemGroup.devices.devices_tab_device"), () -> new ItemStack(DeviceBlocks.LAPTOPS.of(DyeColor.RED).get())));
     }
 }

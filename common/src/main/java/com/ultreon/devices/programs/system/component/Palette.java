@@ -18,7 +18,9 @@ import net.minecraft.client.renderer.GameRenderer;
 
 import java.awt.*;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class Palette extends Component {
     private final ComboBox.Custom<Integer> colorPicker;
 
@@ -26,14 +28,16 @@ public class Palette extends Component {
 
     private Slider colorSlider;
 
-    /// The default constructor for a component.
-    ///
-    /// Laying out components is simply relative positioning. So for left (x position),
-    /// specific how many pixels from the left of the application window you want
-    /// it to be positioned at. The top is the same, but instead from the top (y position).
-    ///
-    /// @param left how many pixels from the left
-    /// @param top  how many pixels from the top
+    /**
+     * The default constructor for a component.
+     * <p>
+     * Laying out components is simply relative positioning. So for left (x position),
+     * specific how many pixels from the left of the application window you want
+     * it to be positioned at. The top is the same, but instead from the top (y position).
+     *
+     * @param left how many pixels from the left
+     * @param top  how many pixels from the top
+     */
     public Palette(int left, int top, ComboBox.Custom<Integer> colorPicker) {
         super(left, top);
         this.colorPicker = colorPicker;
@@ -76,15 +80,14 @@ public class Palette extends Component {
        // RenderSystem.setShaderTexture(0, GameRenderer.());
 //        RenderSystem.shadeModel(GL11.GL_SMOOTH);
 
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        buffer.addVertex((float) x + 1, y + 1 + 50, 1).setColor(0f, 0f, 0f, 1f);
-        buffer.addVertex(x + 1 + 50, y + 1 + 50, 1).setColor(0f, 0f, 0f, 1f);
-        buffer.addVertex(x + 1 + 50, (float) y + 1, 1).setColor(currentColor.getRed() / 255f, currentColor.getGreen() / 255f, currentColor.getBlue() / 255f, 1f);
-        buffer.addVertex((float) x + 1, (float) y + 1, 1).setColor(1f, 1f, 1f, 1f);
-        try (MeshData meshData = buffer.buildOrThrow()) {
-            meshData.drawState();
-        }
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder buffer = tessellator.getBuilder();
+        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        buffer.vertex((double) x + 1, y + 1 + 50, 1).color(0f, 0f, 0f, 1f).endVertex();
+        buffer.vertex(x + 1 + 50, y + 1 + 50, 1).color(0f, 0f, 0f, 1f).endVertex();
+        buffer.vertex(x + 1 + 50, (double) y + 1, 1).color(currentColor.getRed() / 255f, currentColor.getGreen() / 255f, currentColor.getBlue() / 255f, 1f).endVertex();
+        buffer.vertex((double) x + 1, (double) y + 1, 1).color(1f, 1f, 1f, 1f).endVertex();
+        tessellator.end();
 
         // Todo: Make shade model flag again.
 //        GlStateManager.shadeModel(GL11.GL_FLAT);

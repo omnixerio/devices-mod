@@ -28,11 +28,13 @@ public class NumberSelector extends Component {
     private boolean holding = false;
     private int holdCount = 0;
 
-    /// Default NumberSelector constructor
-    ///
-    /// @param left  how many pixels from the left
-    /// @param top   how many pixels from the top
-    /// @param width the width of the selector
+    /**
+     * Default NumberSelector constructor
+     *
+     * @param left  how many pixels from the left
+     * @param top   how many pixels from the top
+     * @param width the width of the selector
+     */
     public NumberSelector(int left, int top, int width) {
         super(left, top);
         this.width = width;
@@ -90,7 +92,9 @@ public class NumberSelector extends Component {
         }
     }
 
-    /// Updates the selection buttons based on the current value
+    /**
+     * Updates the selection buttons based on the current value
+     */
     public void updateButtons() {
         btnUp.setEnabled(true);
         btnDown.setEnabled(true);
@@ -102,11 +106,13 @@ public class NumberSelector extends Component {
         }
     }
 
-    /// Sets the minimum value a user can select. Throws an illegal
-    /// argument exception if the value is less than 0 or more than
-    /// the max value.
-    ///
-    /// @param min the minimum value
+    /**
+     * Sets the minimum value a user can select. Throws an illegal
+     * argument exception if the value is less than 0 or more than
+     * the max value.
+     *
+     * @param min the minimum value
+     */
     public void setMin(int min) {
         if (min < 0 || min > max) {
             throw new IllegalArgumentException("The min value must be more or equal to zero and less than or equal to the max value");
@@ -119,11 +125,13 @@ public class NumberSelector extends Component {
         }
     }
 
-    /// Sets the maximum value a user can select. Throws an illegal
-    /// argument exception if the value is less than 0 or less than
-    /// the min value.
-    ///
-    /// @param max the maximum value
+    /**
+     * Sets the maximum value a user can select. Throws an illegal
+     * argument exception if the value is less than 0 or less than
+     * the min value.
+     *
+     * @param max the maximum value
+     */
     public void setMax(int max) {
         if (max < 0 || max < min) {
             throw new IllegalArgumentException("The max value must be more or equal to zero and more than or equal to the min value");
@@ -136,18 +144,22 @@ public class NumberSelector extends Component {
         }
     }
 
-    /// Gets the current number selection
-    ///
-    /// @return the current number
+    /**
+     * Gets the current number selection
+     *
+     * @return the current number
+     */
     public int getNumber() {
         return current;
     }
 
-    /// Sets the current number selection. Throws an illegal
-    /// argument exception if the value is not within the bounds
-    /// of the min and max value.
-    ///
-    /// @param current set the current number
+    /**
+     * Sets the current number selection. Throws an illegal
+     * argument exception if the value is not within the bounds
+     * of the min and max value.
+     *
+     * @param current set the current number
+     */
     public void setNumber(int current) {
         if (current < min || current > max) {
             throw new IllegalArgumentException("The current value must be within range of the min and max boundaries");
@@ -156,10 +168,12 @@ public class NumberSelector extends Component {
         display.setText(Integer.toString(current));
     }
 
-    /// Sets the formatting of the display. Read the [DecimalFormat]
-    /// documentation for pattern syntax.
-    ///
-    /// @param format the format
+    /**
+     * Sets the formatting of the display. Read the {@link DecimalFormat}
+     * documentation for pattern syntax.
+     *
+     * @param format the format
+     */
     public void setFormat(DecimalFormat format) {
         this.format = format;
     }

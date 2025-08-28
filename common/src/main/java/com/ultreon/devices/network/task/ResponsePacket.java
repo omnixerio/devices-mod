@@ -3,12 +3,9 @@ package com.ultreon.devices.network.task;
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.api.task.TaskManager;
 import com.ultreon.devices.network.Packet;
-import com.ultreon.devices.network.PacketHandler;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.function.Supplier;
 
@@ -17,7 +14,7 @@ public class ResponsePacket extends Packet<ResponsePacket> {
     private final Task request;
     private CompoundTag tag;
 
-    public ResponsePacket(RegistryFriendlyByteBuf buf) {
+    public ResponsePacket(FriendlyByteBuf buf) {
         this.id = buf.readInt();
         boolean successful = buf.readBoolean();
         this.request = TaskManager.getTaskAndRemove(this.id);
@@ -32,7 +29,7 @@ public class ResponsePacket extends Packet<ResponsePacket> {
     }
 
     @Override
-    public void toBytes(RegistryFriendlyByteBuf buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeInt(this.id);
         buf.writeBoolean(this.request.isSucessful());
         buf.writeUtf(this.request.getName());
@@ -47,10 +44,5 @@ public class ResponsePacket extends Packet<ResponsePacket> {
         request.processResponse(tag);
         request.callback(tag);
         return false;
-    }
-
-    @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
-        return PacketHandler.getResponsePacket();
     }
 }

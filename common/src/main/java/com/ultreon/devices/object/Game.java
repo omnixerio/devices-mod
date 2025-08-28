@@ -17,9 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Game extends Component {
-    public static final ResourceLocation ICONS = ResourceLocation.parse("devices:textures/gui/mine_racer.png");
+    public static final ResourceLocation ICONS = new ResourceLocation("devices:textures/gui/mine_racer.png");
 
-    private static final Map<Integer, Tile> registeredTiles = new HashMap<>();
+    private static final Map<Integer, Tile> registeredTiles = new HashMap<Integer, Tile>();
     private final Player player;
     public int mapWidth;
     public int mapHeight;

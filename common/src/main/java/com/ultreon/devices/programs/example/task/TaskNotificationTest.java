@@ -8,7 +8,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class TaskNotificationTest extends Task {
     public TaskNotificationTest() {
         super("notification_test");

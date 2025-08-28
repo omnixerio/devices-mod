@@ -11,7 +11,9 @@ import net.minecraft.nbt.CompoundTag;
 
 import org.jetbrains.annotations.Nullable;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class TextAreaApp extends Application {
     public static final IHighlight JAVA_HIGHLIGHT = text -> {
         if (text.startsWith("@")) return asArray(ChatFormatting.YELLOW);

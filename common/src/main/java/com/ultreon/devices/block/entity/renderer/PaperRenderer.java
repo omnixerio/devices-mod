@@ -9,17 +9,18 @@ import com.ultreon.devices.api.print.PrintingManager;
 import com.ultreon.devices.block.PaperBlock;
 import com.ultreon.devices.block.entity.PaperBlockEntity;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.entity.ItemFrameRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -27,8 +28,9 @@ import org.joml.Quaternionf;
 import java.awt.*;
 import java.util.Objects;
 
-/// @author MrCrayfish
-@ApiStatus.Experimental
+/**
+ * @author MrCrayfish
+ */
 public record PaperRenderer(
         BlockEntityRendererProvider.Context context) implements BlockEntityRenderer<PaperBlockEntity> {
 
@@ -71,7 +73,7 @@ public record PaperRenderer(
                 int r = (pixels[j + i * resolution] >> 16 & 255);
                 int g = (pixels[j + i * resolution] >> 8 & 255);
                 int b = (pixels[j + i * resolution] & 255);
-                int a = (int) (double) (pixels[j + i * resolution] >> 24 & 255);
+                int a = (int) Math.floor((pixels[j + i * resolution] >> 24 & 255));
                 assert d.getPixels() != null;
                 d.getPixels().setPixelRGBA(i, j, new Color(r, g, b, a).getRGB());
             }
@@ -79,10 +81,10 @@ public record PaperRenderer(
         ResourceLocation resourcelocation = Minecraft.getInstance().getTextureManager().register("map/" + AA, d);
         Matrix4f matrix4f = poseStack.last().pose();
         var vertexconsumer = bufferSource.getBuffer(RenderType.text(resourcelocation));
-        vertexconsumer.addVertex(matrix4f, 0.0f, 128.0f, -0.01f).setColor(255, 255, 255, 255).setUv(0.0f, 1.0f).setLight(packedLight);
-        vertexconsumer.addVertex(matrix4f, 128.0f, 128.0f, -0.01f).setColor(255, 255, 255, 255).setUv(1.0f, 1.0f).setLight(packedLight);
-        vertexconsumer.addVertex(matrix4f, 128.0f, 0.0f, -0.01f).setColor(255, 255, 255, 255).setUv(1.0f, 0.0f).setLight(packedLight);
-        vertexconsumer.addVertex(matrix4f, 0.0f, 0.0f, -0.01f).setColor(255, 255, 255, 255).setUv(0.0f, 0.0f).setLight(packedLight);
+        vertexconsumer.vertex(matrix4f, 0.0f, 128.0f, -0.01f).color(255, 255, 255, 255).uv(0.0f, 1.0f).uv2(packedLight).endVertex();
+        vertexconsumer.vertex(matrix4f, 128.0f, 128.0f, -0.01f).color(255, 255, 255, 255).uv(1.0f, 1.0f).uv2(packedLight).endVertex();
+        vertexconsumer.vertex(matrix4f, 128.0f, 0.0f, -0.01f).color(255, 255, 255, 255).uv(1.0f, 0.0f).uv2(packedLight).endVertex();
+        vertexconsumer.vertex(matrix4f, 0.0f, 0.0f, -0.01f).color(255, 255, 255, 255).uv(0.0f, 0.0f).uv2(packedLight).endVertex();
         AA++;
     }
 
@@ -108,7 +110,7 @@ public record PaperRenderer(
                 if (data.contains("pixels", Tag.TAG_INT_ARRAY) && data.contains("resolution", Tag.TAG_INT)) {
                     RenderSystem.setShaderTexture(0, PrinterRenderer.PaperModel.TEXTURE);
                     if (DeviceConfig.RENDER_PRINTED_3D.get() && !data.getBoolean("cut")) {
-                        drawCuboid(0, 0, 0, 16, 16, 1, bufferSource);
+                       // drawCuboid(0, 0, 0, 16, 16, 1, bufferSource);
                     }
 
                     pose.translate(0, 0, DeviceConfig.RENDER_PRINTED_3D.get() ? 0.0625 : 0.001);

@@ -35,8 +35,8 @@ import java.util.Objects;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class MineBayApp extends Application {
-    private static final ResourceLocation CHEST_GUI_TEXTURE = ResourceLocation.parse("textures/gui/container/generic_54.png");
-    private static final ResourceLocation MINEBAY_ASSETS = ResourceLocation.parse("devices:textures/gui/minebay.png");
+    private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
+    private static final ResourceLocation MINEBAY_ASSETS = new ResourceLocation("devices:textures/gui/minebay.png");
 
     private static final ItemStack EMERALD = new ItemStack(Items.EMERALD);
 

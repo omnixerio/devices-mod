@@ -43,13 +43,15 @@ public class ItemList<E> extends Component implements Iterable<E> {
     protected int borderColor = Color.BLACK.getRGB();
     private Comparator<E> sorter = null;
 
-    /// Default constructor for the item list. Should be noted that the
-    /// height is determined by how many visible items there are.
-    ///
-    /// @param left         how many pixels from the left
-    /// @param top          how many pixels from the top
-    /// @param width        width of the list
-    /// @param visibleItems how many items are visible
+    /**
+     * Default constructor for the item list. Should be noted that the
+     * height is determined by how many visible items there are.
+     *
+     * @param left         how many pixels from the left
+     * @param top          how many pixels from the top
+     * @param width        width of the list
+     * @param visibleItems how many items are visible
+     */
     public ItemList(int left, int top, int width, int visibleItems) {
         super(left, top);
         this.width = width;
@@ -106,7 +108,7 @@ public class ItemList<E> extends Component implements Iterable<E> {
 
             int size = getSize();
 
-            Color bgColor = new Color(getColorScheme().getBackgroundColor(), true);
+            Color bgColor = new Color(getColorScheme().getBackgroundColor());
             Color borderColor = bgColor.darker().darker();
 
             /* Fill */
@@ -240,23 +242,29 @@ public class ItemList<E> extends Component implements Iterable<E> {
         }
     }
 
-    /// Sets the custom item list renderer.
-    ///
-    /// @param renderer the custom renderer
+    /**
+     * Sets the custom item list renderer.
+     *
+     * @param renderer the custom renderer
+     */
     public void setListItemRenderer(ListItemRenderer<E> renderer) {
         this.renderer = renderer;
     }
 
-    /// Sets the item click listener for when an item is clicked.
-    ///
-    /// @param itemClickListener the item click listener
+    /**
+     * Sets the item click listener for when an item is clicked.
+     *
+     * @param itemClickListener the item click listener
+     */
     public void setItemClickListener(ItemClickListener<E> itemClickListener) {
         this.itemClickListener = itemClickListener;
     }
 
-    /// Appends an item to the list
-    ///
-    /// @param e the item
+    /**
+     * Appends an item to the list
+     *
+     * @param e the item
+     */
     public void addItem(@NotNull E e) {
         items.add(e);
         sort();
@@ -266,9 +274,11 @@ public class ItemList<E> extends Component implements Iterable<E> {
         }
     }
 
-    /// Removes an item at the specified index
-    ///
-    /// @param index the index to remove
+    /**
+     * Removes an item at the specified index
+     *
+     * @param index the index to remove
+     */
     public E removeItem(int index) {
         if (index >= 0 && index < items.size()) {
             E e = items.remove(index);
@@ -284,10 +294,12 @@ public class ItemList<E> extends Component implements Iterable<E> {
         return null;
     }
 
-    /// Gets the items at the specified index
-    ///
-    /// @param pos the item's index
-    /// @return the item
+    /**
+     * Gets the items at the specified index
+     *
+     * @param pos the item's index
+     * @return the item
+     */
     public E getItem(int pos) {
         if (pos >= 0 && pos + offset < items.size()) {
             return items.get(pos + offset);
@@ -295,9 +307,11 @@ public class ItemList<E> extends Component implements Iterable<E> {
         return null;
     }
 
-    /// Gets the selected item
-    ///
-    /// @return the selected item
+    /**
+     * Gets the selected item
+     *
+     * @return the selected item
+     */
     @Nullable
     public E getSelectedItem() {
         if (selected >= 0 && selected < items.size()) {
@@ -306,32 +320,40 @@ public class ItemList<E> extends Component implements Iterable<E> {
         return null;
     }
 
-    /// Gets the selected item's index
-    ///
-    /// @return the index
+    /**
+     * Gets the selected item's index
+     *
+     * @return the index
+     */
     public int getSelectedIndex() {
         return selected;
     }
 
-    /// Sets the selected item in the list using the index
-    ///
-    /// @param index the index of the item
+    /**
+     * Sets the selected item in the list using the index
+     *
+     * @param index the index of the item
+     */
     public void setSelectedIndex(int index) {
         if (index < 0) index = -1;
         this.selected = index;
     }
 
-    /// Gets all items from the list. Do not use this to remove items from the item list, instead use
-    /// [#removeItem(int)] otherwise it will cause scroll issues.
-    ///
-    /// @return the items
+    /**
+     * Gets all items from the list. Do not use this to remove items from the item list, instead use
+     * {@link #removeItem(int)} otherwise it will cause scroll issues.
+     *
+     * @return the items
+     */
     public List<E> getItems() {
         return items;
     }
 
-    /// Appends an item to the list
-    ///
-    /// @param newItems the items
+    /**
+     * Appends an item to the list
+     *
+     * @param newItems the items
+     */
     public void setItems(List<E> newItems) {
         items.clear();
         items.addAll(newItems);
@@ -343,7 +365,9 @@ public class ItemList<E> extends Component implements Iterable<E> {
         }
     }
 
-    /// Removes all items from the list
+    /**
+     * Removes all items from the list
+     */
     public void removeAll() {
         this.items.clear();
         this.selected = -1;
@@ -354,23 +378,29 @@ public class ItemList<E> extends Component implements Iterable<E> {
         }
     }
 
-    /// Sets the text color for this component
-    ///
-    /// @param color the text color
+    /**
+     * Sets the text color for this component
+     *
+     * @param color the text color
+     */
     public void setTextColor(Color color) {
         this.textColor = color.getRGB();
     }
 
-    /// Sets the background color for this component
-    ///
-    /// @param color the border color
+    /**
+     * Sets the background color for this component
+     *
+     * @param color the border color
+     */
     public void setBackgroundColor(Color color) {
         this.backgroundColor = color.getRGB();
     }
 
-    /// Sets the border color for this component
-    ///
-    /// @param color the border color
+    /**
+     * Sets the border color for this component
+     *
+     * @param color the border color
+     */
     public void setBorderColor(Color color) {
         this.borderColor = color.getRGB();
     }
@@ -382,15 +412,19 @@ public class ItemList<E> extends Component implements Iterable<E> {
         }
     }
 
-    /// Sets the sorter for this item list and updates straight away
-    ///
-    /// @param sorter the comparator to sort the list by
+    /**
+     * Sets the sorter for this item list and updates straight away
+     *
+     * @param sorter the comparator to sort the list by
+     */
     public void sortBy(Comparator<E> sorter) {
         this.sorter = sorter;
         sort();
     }
 
-    /// Sorts the list
+    /**
+     * Sorts the list
+     */
     public void sort() {
         if (sorter != null) {
             Collections.sort(items, sorter);
@@ -398,7 +432,7 @@ public class ItemList<E> extends Component implements Iterable<E> {
     }
 
     @Override
-    public @NotNull Iterator<E> iterator() {
+    public Iterator<E> iterator() {
         return items.iterator();
     }
 }

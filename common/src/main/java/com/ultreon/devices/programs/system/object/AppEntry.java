@@ -5,7 +5,9 @@ import com.ultreon.devices.object.AppInfo;
 import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public interface AppEntry {
     String id();
 

@@ -1,33 +1,38 @@
 package com.ultreon.devices.programs.email.object;
 
-import com.ultreon.devices.programs.email.AttachedFile;
+import com.ultreon.devices.api.io.File;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
-/// @author MrCrayfish
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * @author MrCrayfish
+ */
 public class Email {
     private final String subject;
     private String author;
     private final String message;
-    private final AttachedFile attachment;
+    private final File attachment;
     private boolean read;
 
-    public Email(String subject, String message, AttachedFile file) {
+    public Email(String subject, String message, @Nullable File file) {
         this.subject = subject;
         this.message = message;
         this.attachment = file;
         this.read = false;
     }
 
-    public Email(String subject, String author, String message, AttachedFile attachment) {
+    public Email(String subject, String author, String message, @Nullable File attachment) {
         this(subject, message, attachment);
         this.author = author;
     }
 
     public static Email readFromNBT(CompoundTag nbt) {
-        AttachedFile attachment = null;
+        File attachment = null;
         if (nbt.contains("attachment", Tag.TAG_COMPOUND)) {
-            attachment = AttachedFile.fromTag(nbt.getCompound("attachment"));
+            CompoundTag fileTag = nbt.getCompound("attachment");
+            attachment = File.fromTag(fileTag.getString("file_name"), fileTag.getCompound("data"));
         }
         Email email = new Email(nbt.getString("subject"), nbt.getString("author"), nbt.getString("message"), attachment);
         email.setRead(nbt.getBoolean("read"));
@@ -50,7 +55,7 @@ public class Email {
         return message;
     }
 
-    public AttachedFile getAttachment() {
+    public File getAttachment() {
         return attachment;
     }
 
@@ -69,7 +74,10 @@ public class Email {
         nbt.putBoolean("read", this.read);
 
         if (attachment != null) {
-            nbt.put("attachment", attachment.toTag());
+            CompoundTag fileTag = new CompoundTag();
+            fileTag.putString("file_name", attachment.getName());
+            fileTag.put("data", attachment.toTag());
+            nbt.put("attachment", fileTag);
         }
     }
 }

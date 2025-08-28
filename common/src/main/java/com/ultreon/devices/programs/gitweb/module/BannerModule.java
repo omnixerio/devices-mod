@@ -8,7 +8,9 @@ import com.ultreon.devices.programs.gitweb.component.GitWebFrame;
 
 import java.util.Map;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class BannerModule extends Module {
     @Override
     public String[] getRequiredData() {

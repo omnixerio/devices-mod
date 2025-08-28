@@ -2,10 +2,6 @@ package com.ultreon.devices.core;
 
 import org.joml.Vector2f;
 
-/// # Resizer
-/// Used for resizing images and textures
-///
-/// @author [XyperCode](https://github.com/XyperCode)
 class Resizer {
     private final float ratio;
     private final float relativeRatio;
@@ -13,10 +9,6 @@ class Resizer {
     private final float sourceWidth;
     private final float sourceHeight;
 
-    /// # Constructor
-    ///
-    /// @param srcWidth  the source width
-    /// @param srcHeight the source height
     public Resizer(float srcWidth, float srcHeight) {
         this.ratio = srcWidth / srcHeight;
 
@@ -35,11 +27,6 @@ class Resizer {
         this.sourceHeight = srcHeight;
     }
 
-    /// # Thumbnail Resize
-    ///
-    /// @param maxWidth  the max width
-    /// @param maxHeight the max height
-    /// @return the vector containing the new width and height
     public Vector2f thumbnail(float maxWidth, float maxHeight) {
         float aspectRatio;
         float width;
@@ -73,7 +60,9 @@ class Resizer {
         return new Vector2f(width, height);
     }
 
-    /// Aspect ratio orientation.
+    /**
+     * Aspect ratio orientation.
+     */
     public enum Orientation {
         LANDSCAPE,
         SQUARE,

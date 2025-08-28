@@ -15,7 +15,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
 
-/// Adds a button to the title screen to test system applications that don't require the system
+/**
+ * Adds a button to the title screen to test system applications that don't require the system
+ */
 public class ClientAppDebug {
     public static void register() {
         ClientGuiEvent.INIT_POST.register(((screen, access) -> {

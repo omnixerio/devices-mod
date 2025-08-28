@@ -3,30 +3,24 @@ package com.ultreon.devices.core.io;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.io.Drive;
-import com.ultreon.devices.api.io.FSResponse;
+import com.ultreon.devices.api.io.Folder;
 import com.ultreon.devices.api.task.Callback;
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.api.task.TaskManager;
 import com.ultreon.devices.block.entity.ComputerBlockEntity;
-import com.ultreon.devices.block.entity.DriveInfo;
-import com.ultreon.devices.core.DeviceFSException;
-import com.ultreon.devices.core.DriveManager;
-import com.ultreon.devices.core.Ext2FS;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.core.io.action.FileAction;
 import com.ultreon.devices.core.io.drive.AbstractDrive;
 import com.ultreon.devices.core.io.drive.ExternalDrive;
 import com.ultreon.devices.core.io.drive.InternalDrive;
+import com.ultreon.devices.core.io.task.TaskGetFiles;
 import com.ultreon.devices.core.io.task.TaskGetMainDrive;
 import com.ultreon.devices.core.io.task.TaskSendAction;
 import com.ultreon.devices.debug.DebugLog;
 import com.ultreon.devices.init.DeviceItems;
-import com.ultreon.devices.init.DeviceDataComponents;
 import com.ultreon.devices.item.FlashDriveItem;
-import com.ultreon.devices.programs.system.component.FileInfo;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -36,25 +30,22 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 public class FileSystem {
     public static final Pattern PATTERN_FILE_NAME = Pattern.compile("^[\\w'.:_ ]{1,32}$");
     public static final Pattern PATTERN_DIRECTORY = Pattern.compile("^(/)|(/[\\w'.:_ ]{1,32})*$");
 
-    public static final Path DIR_ROOT = Path.of("/");
-    public static final Path DIR_APPLICATION_DATA = Path.of("/ApplicationData");
-    public static final Path DIR_HOME = Path.of("/Home");
-    public static final String LAPTOP_DRIVE_NAME = "Main";
+    public static final String DIR_ROOT = "/";
+    public static final String DIR_APPLICATION_DATA = DIR_ROOT + "Application Data";
+    public static final String DIR_HOME = DIR_ROOT + "Home";
+    public static final String LAPTOP_DRIVE_NAME = "Root";
 
     private AbstractDrive mainDrive = null;
     private final Map<UUID, AbstractDrive> additionalDrives = new HashMap<>();
@@ -63,21 +54,14 @@ public class FileSystem {
 
     private final ComputerBlockEntity blockEntity;
 
-    public FileSystem(ComputerBlockEntity blockEntity) {
-        this.blockEntity = blockEntity;
-
-        setupDefault();
-    }
-
     public FileSystem(ComputerBlockEntity blockEntity, CompoundTag tag) {
         this.blockEntity = blockEntity;
 
         load(tag);
     }
 
-    @Deprecated
     @Environment(EnvType.CLIENT)
-    public static void sendAction(UUID drive, FileAction<?> action, @Nullable Callback<Response> callback) {
+    public static void sendAction(Drive drive, FileAction action, @Nullable Callback<Response> callback) {
         if (Laptop.getPos() != null) {
             DebugLog.log("Sending action " + action + " to " + drive);
             Task task = new TaskSendAction(drive, action);
@@ -85,8 +69,7 @@ public class FileSystem {
                 DebugLog.log("Action " + action + " sent to " + drive + ": " + success);
                 if (callback != null) {
                     assert tag != null;
-                    Tag response = tag.get("response");
-                    DebugLog.log("Callback: " + (response == null ? "null" : response));
+                    DebugLog.log("Callback: " + tag.getString("response"));
                     callback.execute(Response.fromTag(tag.getCompound("response")), success);
                 }
             });
@@ -96,41 +79,22 @@ public class FileSystem {
         }
     }
 
-    @Environment(EnvType.CLIENT)
-    public static <T> void request(UUID drive, FileAction<T> action, @Nullable Consumer<FSResponse<T>> callback) {
-        if (Laptop.getPos() != null) {
-            DebugLog.log("Sending action " + action + " to " + drive);
-            Task task = new TaskSendAction(drive, action);
-            task.setCallback((tag, success) -> {
-                DebugLog.log("Action " + action + " sent to " + drive + ": " + success);
-                if (callback != null) {
-                    assert tag != null;
-                    CompoundTag  response = tag.getCompound("response");
-                    DebugLog.log("Callback: " + response);
-                    int status = response.contains("status", Tag.TAG_INT) ? response.getInt("status") : Status.FAILED;
-                    if (status != Status.SUCCESSFUL) {
-                        success = false;
-                    }
-                    callback.accept(new FSResponse<T>(success, status, success ? action.deserialize(response.getCompound("data")) : null, response.getString("message")));
-                }
-            });
-            TaskManager.sendTask(task);
-        } else {
-            DebugLog.log("Sending action " + action + " to " + drive + " failed: Laptop not found");
-        }
-    }
-
-    public static void getApplicationFolder(Application app, Consumer<FSResponse<FileInfo>> callback) {
-        if (Devices.hasAllowedApplications() && !Devices.getAllowedApplications().contains(app.getInfo())) {
-            callback.accept(new FSResponse<>(false, Status.ACCESS_DENIED, null, "Application not allowed"));
-            return;
+    public static void getApplicationFolder(Application app, Callback<Folder> callback) {
+        if (Devices.hasAllowedApplications()) { // in arch we do not do instances
+            if (!Devices.getAllowedApplications().contains(app.getInfo())) {
+                callback.execute(null, false);
+                return;
+            }
         }
 
         if (Laptop.getMainDrive() == null) {
             Task task = new TaskGetMainDrive(Laptop.getPos());
             task.setCallback((tag, success) -> {
-                if (success) setupApplicationFolder(app, callback);
-                else callback.accept(new FSResponse<>(false, Status.DRIVE_UNAVAILABLE, null, "Drive unavailable"));
+                if (success) {
+                    setupApplicationFolder(app, callback);
+                } else {
+                    callback.execute(null, false);
+                }
             });
 
             TaskManager.sendTask(task);
@@ -139,17 +103,43 @@ public class FileSystem {
         }
     }
 
-    private static void setupApplicationFolder(Application app, Consumer<FSResponse<FileInfo>> callback) {
-        Drive mainDrive = Laptop.getMainDrive();
-        assert mainDrive != null;
-        mainDrive.info(FileSystem.DIR_APPLICATION_DATA.resolve(app.getInfo().getFormattedId()), (info) -> mainDrive.exists(FileSystem.DIR_APPLICATION_DATA.resolve(app.getInfo().getFormattedId()), (appDirExist) -> {
-            if (!appDirExist.data()) {
-                info.data().createDirectory(app.getInfo().getFormattedId(), callback);
-                return;
+    private static void setupApplicationFolder(Application app, Callback<Folder> callback) {
+        assert Laptop.getMainDrive() != null;
+        Folder folder = Laptop.getMainDrive().getFolder(FileSystem.DIR_APPLICATION_DATA);
+        if (folder != null) {
+            if (folder.hasFolder(app.getInfo().getFormattedId())) {
+                Folder appFolder = folder.getFolder(app.getInfo().getFormattedId());
+                assert appFolder != null;
+                if (appFolder.isSynced()) {
+                    callback.execute(appFolder, true);
+                } else {
+                    Task task = new TaskGetFiles(appFolder, Laptop.getPos());
+                    task.setCallback((tag, success) -> {
+                        assert tag != null;
+                        if (success && tag.contains("files", Tag.TAG_LIST)) {
+                            ListTag files = tag.getList("files", Tag.TAG_COMPOUND);
+                            appFolder.syncFiles(files);
+                            callback.execute(appFolder, true);
+                        } else {
+                            callback.execute(null, false);
+                        }
+                    });
+                    TaskManager.sendTask(task);
+                }
+            } else {
+                Folder appFolder = new Folder(app.getInfo().getFormattedId());
+                folder.add(appFolder, (response, success) -> {
+                    if (response != null && response.getStatus() == Status.SUCCESSFUL) {
+                        callback.execute(appFolder, true);
+                    } else {
+                        callback.execute(null, false);
+                    }
+                });
             }
-
-            callback.accept(new FSResponse<>(false, Status.FAILED, null, "Application folder still does not exist"));
-        }));
+        } else {
+            DebugLog.log("Application data folder is not initialized");
+            callback.execute(null, false);
+        }
     }
 
     public static Response createSuccessResponse() {
@@ -158,16 +148,6 @@ public class FileSystem {
 
     public static Response createResponse(int status, String message) {
         return new Response(status, message);
-    }
-
-    public static Response createResponse(int status, String message, CompoundTag data) {
-        return new Response(status, message, data);
-    }
-
-    public static UUID getMainDriveId() {
-        if (Laptop.getMainDrive() != null)
-            return Laptop.getMainDrive().getUUID();
-        return null;
     }
 
     private void load(CompoundTag tag) {
@@ -191,12 +171,15 @@ public class FileSystem {
 
     private void setupDefault() {
         if (mainDrive == null) {
-            mainDrive = new InternalDrive(LAPTOP_DRIVE_NAME);
+            AbstractDrive drive = new InternalDrive(LAPTOP_DRIVE_NAME);
+            ServerFolder root = drive.getRoot(blockEntity.getLevel());
+            root.add(createProtectedFolder("Home"), false);
+            root.add(createProtectedFolder("Application Data"), false);
+            mainDrive = drive;
             blockEntity.setChanged();
         }
     }
 
-    @Deprecated
     private ServerFolder createProtectedFolder(String name) {
         try {
             Constructor<ServerFolder> constructor = ServerFolder.class.getDeclaredConstructor(String.class, boolean.class);
@@ -207,19 +190,6 @@ public class FileSystem {
             e.printStackTrace();
         }
         return null;
-    }
-
-    private boolean createSystemDirectory(String name) {
-        try {
-            Ext2FS fs = mainDrive.getFS();
-            Path path = Path.of(name);
-            fs.createDirectory(path);
-            fs.setReadOnly(path, true);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     public Response readAction(String driveUuid, FileAction action, Level level) {
@@ -285,46 +255,37 @@ public class FileSystem {
     public ItemStack detachDrive() {
         if (attachedDrive != null) {
             ItemStack stack = new ItemStack(DeviceItems.getFlashDriveByColor(attachedDriveColor), 1);
-            stack.set(DataComponents.CUSTOM_NAME, Component.literal(attachedDrive.getName()));
-            stack.set(DeviceDataComponents.DISK.get(), attachedDrive.getUuid());
+            stack.setHoverName(Component.literal(attachedDrive.getName()));
+            stack.getOrCreateTag().put("drive", attachedDrive.toTag());
             attachedDrive = null;
             return stack;
         }
         return null;
     }
 
-    @Deprecated
     public static CompoundTag getExternalDriveTag(ItemStack stack) {
-        if (!stack.has(DeviceDataComponents.DISK.get())) {
-            ExternalDrive externalDrive = new ExternalDrive(stack.getDisplayName().getString());
-            stack.set(DeviceDataComponents.DISK.get(), externalDrive.getUuid());
-        }
-        return new CompoundTag();
-    }
+        CompoundTag tag = stack.getTag();
+        if (tag == null) tag = new CompoundTag();
 
-    public static UUID getExternalDriveId(ItemStack stack) {
-        if (!stack.has(DeviceDataComponents.DISK.get())) {
-            ExternalDrive externalDrive = new ExternalDrive(stack.getDisplayName().getString());
-            stack.set(DeviceDataComponents.DISK.get(), externalDrive.getUuid());
-            return externalDrive.getUuid();
+        if (!tag.contains("drive", Tag.TAG_COMPOUND)) {
+            tag.put("drive", new ExternalDrive(stack.getDisplayName().getString()).toTag());
+            stack.setTag(tag);
         }
-        return stack.get(DeviceDataComponents.DISK.get());
+        return tag;
     }
 
     public static ExternalDrive getExternalDrive(ItemStack stack) {
-        if (stack.has(DeviceDataComponents.DISK.get())) {
-            UUID uuid = stack.get(DeviceDataComponents.DISK.get());
-            return DriveManager.getExternalDrive(uuid);
-        }
+        CompoundTag tag = stack.getTag();
+        if (tag == null) tag = new CompoundTag();
 
-        ExternalDrive externalDrive = new ExternalDrive(stack.getDisplayName().getString());
-        try {
-            DriveManager.registerExternalDrive(externalDrive);
-        } catch (IOException e) {
-            throw new DeviceFSException("Failed to register external drive", e);
+        if (!tag.contains("drive", Tag.TAG_COMPOUND)) {
+            ExternalDrive externalDrive = new ExternalDrive(stack.getDisplayName().getString());
+            tag.put("drive", externalDrive.toTag());
+            stack.setTag(tag);
+            return externalDrive;
+        } else {
+            return ExternalDrive.fromTag(tag.getCompound("drive"));
         }
-        stack.set(DeviceDataComponents.DISK.get(), externalDrive.getUuid());
-        return externalDrive;
     }
 
     public CompoundTag toTag() {
@@ -345,18 +306,9 @@ public class FileSystem {
         return fileSystemTag;
     }
 
-    public Map<UUID, DriveInfo> getDrives() {
-        Map<UUID, DriveInfo> drives = new HashMap<>();
-        if (mainDrive != null) drives.put(mainDrive.getUuid(), new DriveInfo(mainDrive.getName(), mainDrive.getUuid(), Drive.Type.INTERNAL, true));
-        additionalDrives.forEach((k, v) -> drives.put(v.getUuid(), new DriveInfo(v.getName(), v.getUuid(), Drive.Type.INTERNAL)));
-        if (attachedDrive != null) drives.put(attachedDrive.getUuid(), new DriveInfo(attachedDrive.getName(), attachedDrive.getUuid(), Drive.Type.EXTERNAL));
-        return drives;
-    }
-
     public static class Response {
         private final int status;
         private String message = "";
-        private CompoundTag data = new CompoundTag();
 
         private Response(int status) {
             this.status = status;
@@ -367,14 +319,8 @@ public class FileSystem {
             this.message = message;
         }
 
-        private Response(int status, String message, CompoundTag data) {
-            this.status = status;
-            this.message = message;
-            this.data = data;
-        }
-
         public static Response fromTag(CompoundTag responseTag) {
-            return new Response(responseTag.getInt("status"), responseTag.getString("message"), responseTag.getCompound("data"));
+            return new Response(responseTag.getInt("status"), responseTag.getString("message"));
         }
 
         public int getStatus() {
@@ -385,15 +331,10 @@ public class FileSystem {
             return message;
         }
 
-        public CompoundTag getData() {
-            return data;
-        }
-
         public CompoundTag toTag() {
             CompoundTag responseTag = new CompoundTag();
             responseTag.putInt("status", status);
             responseTag.putString("message", message);
-            responseTag.put("data", data);
             return responseTag;
         }
     }
@@ -407,8 +348,5 @@ public class FileSystem {
         public static final int FILE_INVALID_NAME = 5;
         public static final int FILE_INVALID_DATA = 6;
         public static final int DRIVE_UNAVAILABLE = 7;
-        public static final int ACCESS_DENIED = 8;
-        public static final int TOO_LARGE = 9;
-        public static final int FILE_DOES_NOT_EXIST = 10;
     }
 }

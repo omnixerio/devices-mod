@@ -2,23 +2,20 @@ package com.ultreon.devices.api.io;
 
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.task.Callback;
-import com.ultreon.devices.core.DataPath;
 import com.ultreon.devices.core.io.FileSystem;
 import com.ultreon.devices.core.io.action.FileAction;
 import com.ultreon.devices.programs.system.component.FileBrowser;
 import net.minecraft.nbt.CompoundTag;
-import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.nio.file.Path;
+import org.jetbrains.annotations.Nullable;
 import java.util.Comparator;
 import java.util.Objects;
 
-@Deprecated
 @SuppressWarnings("unused")
 public class File {
-    /// Comparator to sort the file list by alphabetical order. Folders are brought to the top.
-    @Deprecated
+    /**
+     * Comparator to sort the file list by alphabetical order. Folders are brought to the top.
+     */
     public static final Comparator<File> SORT_BY_NAME = (f1, f2) -> {
         if (f1.isFolder() && !f2.isFolder()) return -1;
         if (!f1.isFolder() && f2.isFolder()) return 1;
@@ -37,24 +34,26 @@ public class File {
 
     }
 
-    /// The standard constructor for a file
-    ///
-    /// @param name the name of the file
-    /// @param app  the application that is opening the file
-    /// @param data the data of the file
-    @Deprecated
+    /**
+     * The standard constructor for a file
+     *
+     * @param name the name of the file
+     * @param app  the application that is opening the file
+     * @param data the data of the file
+     */
     public File(String name, Application app, CompoundTag data) {
         this(name, app.getInfo().getFormattedId(), data, false);
     }
 
-    /// The alternate constructor for a file. This second constructor allows the specification of
-    /// an application identifier. This allows the creation of files for different applications. You
-    /// should know the format of the target file if you are using this constructor
-    ///
-    /// @param name         the name of the file
-    /// @param openingAppId the application identifier of the application that is opening the file
-    /// @param data         the data of the file
-    @Deprecated
+    /**
+     * The alternate constructor for a file. This second constructor allows the specification of
+     * an application identifier. This allows the creation of files for different applications. You
+     * should know the format of the target file if you are using this constructor
+     *
+     * @param name         the name of the file
+     * @param openingAppId the application identifier of the application that is opening the file
+     * @param data         the data of the file
+     */
     public File(String name, String openingAppId, CompoundTag data) {
         this(name, openingAppId, data, false);
     }
@@ -66,65 +65,69 @@ public class File {
         this.protect = protect;
     }
 
-    /// Gets the name of the file
-    ///
-    /// @return the file name
-    @Deprecated
+    /**
+     * Gets the name of the file
+     *
+     * @return the file name
+     */
     public String getName() {
         return name;
     }
 
-    /// Renames the file with the specified name. This method is asynchronous, so the name will not
-    /// be set immediately. It will ignore if the rename failed. Use
-    /// [#rename(String,Callback)] instead if you need to know it that it successfully
-    /// renamed the file.
-    ///
-    /// @param name the new file name
-    @Deprecated
+    /**
+     * Renames the file with the specified name. This method is asynchronous, so the name will not
+     * be set immediately. It will ignore if the rename failed. Use
+     * {@link File#rename(String, Callback)} instead if you need to know it that it successfully
+     * renamed the file.
+     *
+     * @param name the new file name
+     */
     public void rename(String name) {
         rename(name, null);
     }
 
-    /// Renames the file with the specified name and allows a callback to be specified. This method
-    /// is asynchronous, so the name will not be set immediately. The callback is fired when the file
-    /// has been renamed, however it is not necessarily successful.
-    ///
-    /// @param name the new file name
-    @Deprecated
+    /**
+     * Renames the file with the specified name and allows a callback to be specified. This method
+     * is asynchronous, so the name will not be set immediately. The callback is fired when the file
+     * has been renamed, however it is not necessarily successful.
+     *
+     * @param name the new file name
+     */
     public void rename(String name, @Nullable Callback<FileSystem.Response> callback) {
-//        if (!valid)
-//            throw new IllegalStateException("File must be added to the system before you can rename it");
-//
-//        if (protect) {
-//            if (callback != null) {
-//                callback.execute(FileSystem.createResponse(FileSystem.Status.FILE_IS_PROTECTED, "Cannot rename a protected file"), false);
-//            }
-//            return;
-//        }
-//
-//        if (!FileSystem.PATTERN_FILE_NAME.matcher(name).matches()) {
-//            if (callback != null) {
-//                callback.execute(FileSystem.createResponse(FileSystem.Status.FILE_INVALID_NAME, "Invalid file name"), true);
-//            }
-//            return;
-//        }
-//
-//        FileSystem.sendAction(drive, FileAction.Factory.makeRename(fi, name), (response, success) -> {
-//            if (success) {
-//                this.name = name;
-//            }
-//            if (callback != null) {
-//                callback.execute(response, success);
-//            }
-//        });
+        if (!valid)
+            throw new IllegalStateException("File must be added to the system before you can rename it");
+
+        if (protect) {
+            if (callback != null) {
+                callback.execute(FileSystem.createResponse(FileSystem.Status.FILE_IS_PROTECTED, "Cannot rename a protected file"), false);
+            }
+            return;
+        }
+
+        if (!FileSystem.PATTERN_FILE_NAME.matcher(name).matches()) {
+            if (callback != null) {
+                callback.execute(FileSystem.createResponse(FileSystem.Status.FILE_INVALID_NAME, "Invalid file name"), true);
+            }
+            return;
+        }
+
+        FileSystem.sendAction(drive, FileAction.Factory.makeRename(this, name), (response, success) -> {
+            if (success) {
+                this.name = name;
+            }
+            if (callback != null) {
+                callback.execute(response, success);
+            }
+        });
     }
 
-    /// Gets the path of this file. The path is the set of all the folders needed to traverse in
-    /// order to find the folder this file is contained within and appends the file's name at the
-    /// end. This is different to [#getLocation()] which does not append the file's name.
-    ///
-    /// @return the path of the file
-    @Deprecated
+    /**
+     * Gets the path of this file. The path is the set of all the folders needed to traverse in
+     * order to find the folder this file is contained within and appends the file's name at the
+     * end. This is different to {@link #getLocation()} which does not append the file's name.
+     *
+     * @return the path of the file
+     */
     public String getPath() {
         if (parent == null)
             return "/";
@@ -140,12 +143,13 @@ public class File {
         return builder.toString();
     }
 
-    /// Gets the location of this file. The location is the set of folders needed to traverse in
-    /// order to find the folder this file is contained within. This is different to
-    /// [#getPath()] and does not include the file name on the end.
-    ///
-    /// @return the location of the file
-    @Deprecated
+    /**
+     * Gets the location of this file. The location is the set of folders needed to traverse in
+     * order to find the folder this file is contained within. This is different to
+     * {@link #getPath()} and does not include the file name on the end.
+     *
+     * @return the location of the file
+     */
     public String getLocation() {
         if (parent == null)
             throw new NullPointerException("File must have a parent to compile the directory");
@@ -161,30 +165,33 @@ public class File {
         return builder.toString();
     }
 
-    /// Gets the application this file can be open with.
-    ///
-    /// @return the application identifier
+    /**
+     * Gets the application this file can be open with.
+     *
+     * @return the application identifier
+     */
     @Nullable
-    @Deprecated
     public String getOpeningApp() {
         return openingApp;
     }
 
-    /// Sets the data for the file. This method is asynchronous, so data will not be set immediately.
-    ///
-    /// @param data the data for the file
-    @Deprecated
+    /**
+     * Sets the data for the file. This method is asynchronous, so data will not be set immediately.
+     *
+     * @param data the data for the file
+     */
     public void setData(CompoundTag data) {
         setData(data, null);
     }
 
-    /// Sets the data for the file and allows a callback to be specified. This method is
-    /// asynchronous, so data will not be set immediately. The callback is fired when the data is
-    /// set, however it is not necessarily successful.
-    ///
-    /// @param data     the data for the file
-    /// @param callback the callback to be fired when the data is set
-    @Deprecated
+    /**
+     * Sets the data for the file and allows a callback to be specified. This method is
+     * asynchronous, so data will not be set immediately. The callback is fired when the data is
+     * set, however it is not necessarily successful.
+     *
+     * @param data     the data for the file
+     * @param callback the callback to be fired when the data is set
+     */
     public void setData(CompoundTag data, @Nullable Callback<FileSystem.Response> callback) {
         if (!valid)
             throw new IllegalStateException("File must be added to the system before you can rename it");
@@ -203,101 +210,98 @@ public class File {
             return;
         }
 
-        try {
-            FileSystem.sendAction(drive.getUUID(), FileAction.Factory.makeData(Path.of(getPath()), data), (response, success) -> {
-                if (success) {
-                    this.data = data.copy();
-                }
-                if (callback != null) {
-                    callback.execute(response, success);
-                }
-            });
-        } catch (IOException e) {
-            if (callback != null) {
-                callback.execute(FileSystem.createResponse(FileSystem.Status.FAILED, "Unknown error occurred"), false);
+        FileSystem.sendAction(drive, FileAction.Factory.makeData(this, data), (response, success) -> {
+            if (success) {
+                this.data = data.copy();
             }
-        }
+            if (callback != null) {
+                callback.execute(response, success);
+            }
+        });
     }
 
-    /// Gets the data of this file. The data you receive is a copied version. If you want to update
-    /// it, use [#setData(CompoundTag,Callback)] to do so.
-    ///
-    /// @return the file's data
+    /**
+     * Gets the data of this file. The data you receive is a copied version. If you want to update
+     * it, use {@link #setData(CompoundTag, Callback)} to do so.
+     *
+     * @return the file's data
+     */
     @Nullable
-    @Deprecated
     public CompoundTag getData() {
         return data.copy();
     }
 
-    @Deprecated
-    public byte[] getDataBytes() {
-        byte[] bytes = new byte[data.getByteArray("data").length];
-        System.arraycopy(data.getByteArray("data"), 0, bytes, 0, bytes.length);
-        return bytes;
-    }
-
-    /// Gets the [Folder] this file is contained in.
-    ///
-    /// @return the parent of this file
+    /**
+     * Gets the {@link Folder} this file is contained in.
+     *
+     * @return the parent of this file
+     */
     @Nullable
-    @Deprecated
     public Folder getParent() {
         return parent;
     }
 
-    /// Gets the drive this file belongs to.
-    ///
-    /// @return the drive this file is contained in
-    @Deprecated
+    /**
+     * Gets the drive this file belongs to.
+     *
+     * @return the drive this file is contained in
+     */
     public Drive getDrive() {
         return drive;
     }
 
-    /// Sets the drive for this file.
-    ///
-    /// @param drive the drive this file is contained in
+    /**
+     * Sets the drive for this file.
+     *
+     * @param drive the drive this file is contained in
+     */
     void setDrive(Drive drive) {
         this.drive = drive;
     }
 
-    /// Gets the protected flag of this file.
-    ///
-    /// @return the protected flag
-    @Deprecated
+    /**
+     * Gets the protected flag of this file.
+     *
+     * @return the protected flag
+     */
     public boolean isProtected() {
         return protect;
     }
 
-    /// Gets whether this file is actually folder
-    ///
-    /// @return is this file is a folder
-    @Deprecated
+    /**
+     * Gets whether this file is actually folder
+     *
+     * @return is this file is a folder
+     */
     public boolean isFolder() {
         return false;
     }
 
-    /// Determines if this file is for the specified application. This helps identify files that are
-    /// designed for the specified application. Useful in filtering out files in a list.
-    ///
-    /// @param app the application to test against
-    /// @return if this file is for the application
-    @Deprecated
+    /**
+     * Determines if this file is for the specified application. This helps identify files that are
+     * designed for the specified application. Useful in filtering out files in a list.
+     *
+     * @param app the application to test against
+     * @return if this file is for the application
+     */
     public boolean isForApplication(Application app) {
         return openingApp != null && openingApp.equals(app.getInfo().getFormattedId());
     }
 
-    /// Deletes this file from the folder its contained in. This method does not specify a callback,
-    /// so any errors occurred will not be reported.
-    @Deprecated
+    /**
+     * Deletes this file from the folder its contained in. This method does not specify a callback,
+     * so any errors occurred will not be reported.
+     */
     public void delete() {
         delete(null);
     }
 
-    /// Deletes this file from the folder its contained in. This method allows the specification of a
-    /// callback and will tell if deleted successfully or not.
-    ///
-    /// @param callback the callback
-    @Deprecated
+    /**
+     * Deletes this file from the folder its contained in. This method allows the specification of a
+     * callback and will tell if deleted successfully or not.
+     *
+     * @param callback the callback
+     */
     public void delete(@Nullable Callback<FileSystem.Response> callback) {
         if (!valid)
             throw new IllegalStateException("File must be added to the system before you can rename it");
@@ -314,7 +318,6 @@ public class File {
         }
     }
 
-    @Deprecated
     public void copyTo(Folder destination, boolean override, @Nullable Callback<FileSystem.Response> callback) {
         if (destination == null) {
             if (callback != null) {
@@ -351,7 +354,7 @@ public class File {
             }
         }
 
-        FileSystem.sendAction(drive.getUUID(), FileAction.Factory.makeCopy(Path.of(getPath()), Path.of(destination.getPath()), override), (response, success) -> {
+        FileSystem.sendAction(drive, FileAction.Factory.makeCopyCut(this, destination, override, false), (response, success) -> {
             assert response != null;
             if (response.getStatus() == FileSystem.Status.SUCCESSFUL) {
                 if (override) {
@@ -370,7 +373,6 @@ public class File {
         });
     }
 
-    @Deprecated
     public void moveTo(Folder destination, boolean override, @Nullable Callback<FileSystem.Response> callback) {
         if (destination == null) {
             if (callback != null) {
@@ -414,7 +416,7 @@ public class File {
             }
         }
 
-        FileSystem.sendAction(drive.getUUID(), FileAction.Factory.makeCopyCut(Path.of(getPath()), new DataPath(destination.drive.getUUID(), Path.of(destination.getPath())), override, true), (response, success) -> {
+        FileSystem.sendAction(drive, FileAction.Factory.makeCopyCut(this, destination, override, true), (response, success) -> {
             assert response != null;
             if (response.getStatus() == FileSystem.Status.SUCCESSFUL) {
                 if (override) {
@@ -432,11 +434,12 @@ public class File {
         });
     }
 
-    /// Converts this file into a tag compound. Due to how the file system works, this tag does not
-    /// include the name of the file and will have to be set manually for any storage.
-    ///
-    /// @return the file tag
-    @Deprecated
+    /**
+     * Converts this file into a tag compound. Due to how the file system works, this tag does not
+     * include the name of the file and will have to be set manually for any storage.
+     *
+     * @return the file tag
+     */
     public CompoundTag toTag() {
         CompoundTag tag = new CompoundTag();
         tag.putString("openingApp", openingApp);
@@ -444,18 +447,18 @@ public class File {
         return tag;
     }
 
-    /// Converts a tag compound to a file instance.
-    ///
-    /// @param name the name of the file
-    /// @param tag  the tag compound from [#toTag()]
-    /// @return a file instance
-    @Deprecated
+    /**
+     * Converts a tag compound to a file instance.
+     *
+     * @param name the name of the file
+     * @param tag  the tag compound from {@link #toTag()}
+     * @return a file instance
+     */
     public static File fromTag(String name, CompoundTag tag) {
         return new File(name, tag.getString("openingApp"), tag.getCompound("data"));
     }
 
     @Override
-    @Deprecated
     public boolean equals(Object obj) {
         if (obj == null)
             return false;
@@ -464,21 +467,23 @@ public class File {
         return parent == file.parent && name.equalsIgnoreCase(file.name);
     }
 
-    /// Returns a copy of this file. The copied file is considered invalid and changes to it can not
-    /// be made until it is added into the file system.
-    ///
-    /// @return copy of this file
-    @Deprecated
+    /**
+     * Returns a copy of this file. The copied file is considered invalid and changes to it can not
+     * be made until it is added into the file system.
+     *
+     * @return copy of this file
+     */
     public File copy() {
         return new File(name, openingApp, data.copy());
     }
 
-    /// Returns a copy of this file with a different name. The copied file is considered invalid and
-    /// changes to it can not be made until it is added into the file system.
-    ///
-    /// @param newName the new name for the file
-    /// @return copy of this file
-    @Deprecated
+    /**
+     * Returns a copy of this file with a different name. The copied file is considered invalid and
+     * changes to it can not be made until it is added into the file system.
+     *
+     * @param newName the new name for the file
+     * @return copy of this file
+     */
     public File copy(String newName) {
         return new File(newName, openingApp, data.copy());
     }

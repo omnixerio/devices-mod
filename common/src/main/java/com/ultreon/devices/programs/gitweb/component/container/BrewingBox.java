@@ -8,7 +8,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-/// @author MrCrayfish
+/**
+ * @author MrCrayfish
+ */
 public class BrewingBox extends ContainerBox {
     public static final int HEIGHT = 73;
     //Copied from GuiBrewingStand. Why do they store the length in an array?

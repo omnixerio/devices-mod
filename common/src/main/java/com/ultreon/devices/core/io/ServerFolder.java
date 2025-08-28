@@ -11,8 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-/// @author MrCrayfish
-@Deprecated
+/**
+ * @author MrCrayfish
+ */
 public final class ServerFolder extends ServerFile {
     private List<ServerFile> files = new ArrayList<>();
     private final Object interrupt = new Object();
