@@ -80,4 +80,8 @@ public final class ApplicationManager {
     public static AppInfo getApplication(ResourceLocation appId) {
         return APP_INFO.get(appId);
     }
+
+    public static AppInfo getApplicationForExtension(String upperCase) {
+        return APP_INFO.values().stream().filter(info -> info.getExtensions().contains(upperCase)).findFirst().orElse(null);
+    }
 }

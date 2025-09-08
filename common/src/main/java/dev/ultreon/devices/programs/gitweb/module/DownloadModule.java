@@ -7,6 +7,7 @@ import dev.ultreon.devices.api.app.Dialog;
 import dev.ultreon.devices.api.app.Icons;
 import dev.ultreon.devices.api.app.Layout;
 import dev.ultreon.devices.api.app.component.Button;
+import dev.ultreon.devices.api.io.File;
 import dev.ultreon.devices.api.utils.RenderUtil;
 import dev.ultreon.devices.object.AppInfo;
 import dev.ultreon.devices.programs.gitweb.component.GitWebFrame;
@@ -71,14 +72,11 @@ public class DownloadModule extends Module {
         button.left = section * 5 - 70 - 5;
         button.setSize(70, height - 15);
         button.setClickListener((mouseX, mouseY, mouseButton) -> {
-            try {
-                CompoundTag tag = TagParser.parseTag(data.get("file-data"));
-                File file = new File(data.getOrDefault("file-name", ""), data.get("file-app"), tag);
-                Dialog dialog = new Dialog.SaveFile(frame.getApp(), file);
-                frame.getApp().openDialog(dialog);
-            } catch (CommandSyntaxException e) {
-                e.printStackTrace();
-            }
+//                CompoundTag tag = TagParser.parseTag(data.get("file-data"));
+//                File file = new File(data.getOrDefault("file-name", ""), data.get("file-app"), tag);
+//                Dialog dialog = new Dialog.SaveFile(frame.getApp(), );
+//                frame.getApp().openDialog(dialog);
+            frame.getApp().openDialog(new Dialog.Message("Downloads are not yet ready"));
         });
         layout.addComponent(button);
     }

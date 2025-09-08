@@ -99,11 +99,9 @@ public class NoteStashApp extends Application {
                 Note note = notes.getSelectedItem();
                 assert note != null;
                 noteTitle.setText(note.getTitle());
-                noteContent.setLoading(true);
                 note.getContent((content, success) -> {
                     if (success) {
                         noteContent.setText(content);
-                        noteContent.setLoading(false);
                     } else {
                         Dialog.Message message = new Dialog.Message("Failed to load note!");
                         message.setTitle("Error");

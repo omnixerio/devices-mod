@@ -158,8 +158,8 @@ public record PrinterRenderer(
     }
 
     public static class PaperModel extends Model {
-        public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/model/paper.png");
-        public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Devices.id("paper_model"), "main");
+        public static final ResourceLocation TEXTURE = Devices.res("textures/model/paper.png");
+        public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Devices.res("paper_model"), "main");
         private final ModelPart root;
 //        private final ModelPart main;
 
@@ -178,14 +178,14 @@ public record PrinterRenderer(
             return LayerDefinition.create(meshdefinition, 64, 32);
         }
 
-        @Override
-        public void renderToBuffer(@NotNull PoseStack pPoseStack, @NotNull VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
-            this.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+        private void render(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+            RenderSystem.setShaderTexture(0, TEXTURE);
+            this.root.render(poseStack, buffer, packedLight, packedOverlay, color);
         }
 
-        private void render(PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
-            RenderSystem.setShaderTexture(0, TEXTURE);
-            this.root.render(pPoseStack, pBuffer, pPackedLight, pPackedOverlay, pRed, pGreen, pBlue, pAlpha);
+        @Override
+        public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+            this.render(poseStack, buffer, packedLight, packedOverlay, color);
         }
 
 //        public ModelPart getMain() {

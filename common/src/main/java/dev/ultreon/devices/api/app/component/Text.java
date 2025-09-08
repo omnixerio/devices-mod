@@ -101,7 +101,7 @@ public class Text extends Component {
     @Override
     protected void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
         if (GuiHelper.isMouseWithin(mouseX, mouseY, xPosition + padding, yPosition + padding, width - padding * 2, getHeight() - padding * 2)) {
-            if (this.wordListener != null && lines.size() > 0) {
+            if (this.wordListener != null && !lines.isEmpty()) {
                 int lineIndex = (mouseY - (yPosition + padding)) / 10;
                 if (lineIndex < lines.size()) {
                     int cursorX = mouseX - (xPosition + padding);

@@ -5,7 +5,6 @@ import dev.ultreon.devices.network.PacketHandler;
 import dev.ultreon.devices.network.task.RequestPacket;
 import net.minecraft.client.Minecraft;
 
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -13,8 +12,8 @@ import java.util.function.Supplier;
 public final class TaskManager {
     private static TaskManager instance = null;
 
-    private final Map<String, Task> registeredRequests = new HashMap<String, Task>();
-    private final Map<Integer, Task> requests = new HashMap<Integer, Task>();
+    private final Map<String, Task> registeredRequests = new HashMap<>();
+    private final Map<Integer, Task> requests = new HashMap<>();
     private int currentId = 0;
 
     private TaskManager() {
@@ -33,7 +32,7 @@ public final class TaskManager {
             Devices.LOGGER.info("Registering task '{}'", task.getName());
             get().registeredRequests.put(task.getName(), task);
         } catch (Exception e) {
-            e.printStackTrace();
+            Devices.LOGGER.error("Failed to register task:", e);
         }
     }
 
@@ -45,8 +44,8 @@ public final class TaskManager {
 
         int requestId = manager.currentId++;
         manager.requests.put(requestId, task);
-        if(Minecraft.getInstance().getConnection() != null)
-        PacketHandler.INSTANCE.sendToServer(new RequestPacket(requestId, task));
+        if (Minecraft.getInstance().getConnection() != null)
+            PacketHandler.sendToServer(new RequestPacket(requestId, task));
     }
 
     public static Task getTask(String name) {

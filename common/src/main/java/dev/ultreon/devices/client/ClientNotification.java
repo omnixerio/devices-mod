@@ -1,4 +1,4 @@
-package dev.ultreon.devices.core.client;
+package dev.ultreon.devices.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.ultreon.devices.Devices;

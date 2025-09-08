@@ -8,6 +8,7 @@ import dev.ultreon.devices.core.io.FileSystem;
 import dev.ultreon.devices.core.io.ServerFolder;
 import dev.ultreon.devices.core.io.drive.AbstractDrive;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -37,14 +38,14 @@ public class TaskGetStructure extends Task {
 
     @Override
     @Deprecated
-    public void prepareRequest(CompoundTag tag) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag tag) {
         tag.putString("uuid", uuid);
         tag.putLong("pos", pos.asLong());
     }
 
     @Override
     @Deprecated
-    public void processRequest(CompoundTag tag, Level level, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag tag, Level level, Player player) {
         BlockPos pos1 = BlockPos.of(tag.getLong("pos"));
 
         Devices.getServer().submit(() -> {
@@ -63,7 +64,7 @@ public class TaskGetStructure extends Task {
 
     @Override
     @Deprecated
-    public void prepareResponse(CompoundTag tag) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
         if (folder != null) {
             tag.putString("file_name", folder.getName());
             tag.put("structure", folder.toTag());
@@ -72,7 +73,7 @@ public class TaskGetStructure extends Task {
 
     @Override
     @Deprecated
-    public void processResponse(CompoundTag tag) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag tag) {
 
     }
 }

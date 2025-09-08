@@ -36,7 +36,7 @@ public class TrayItemWifi extends TrayItem {
     private Strength strength = Strength.NONE;
 
     public TrayItemWifi() {
-        super(Icons.WIFI_NONE, Devices.id("wifi"));
+        super(Icons.WIFI_NONE, Devices.res("wifi"));
     }
 
     private static Layout createWifiMenu(TrayItem item) {

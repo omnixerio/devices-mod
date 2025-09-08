@@ -8,6 +8,8 @@ import dev.ultreon.devices.programs.gitweb.component.GitWebFrame;
 import dev.ultreon.devices.programs.gitweb.component.container.ContainerBox;
 import dev.ultreon.devices.programs.gitweb.component.container.CraftingBox;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
 
@@ -72,7 +74,10 @@ public abstract class ContainerModule extends Module {
     protected static ItemStack getItem(Map<String, String> data, String key) {
         if (data.containsKey(key)) {
             try {
-                return ItemStack.of(TagParser.parseTag(data.get(key)));
+                ClientLevel level = Minecraft.getInstance().level;
+                if (level != null) {
+                    return ItemStack.parse(level.registryAccess(), TagParser.parseTag(data.get(key))).orElse(ItemStack.EMPTY);
+                }
             } catch (CommandSyntaxException e) {
                 return ItemStack.EMPTY;
             }

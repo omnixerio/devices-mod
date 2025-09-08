@@ -8,6 +8,7 @@ import dev.ultreon.devices.core.io.FileSystem;
 import dev.ultreon.devices.core.io.drive.AbstractDrive;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.entity.player.Player;
@@ -30,12 +31,12 @@ public class TaskGetMainDrive extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag tag) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag tag) {
         tag.putLong("pos", pos.asLong());
     }
 
     @Override
-    public void processRequest(CompoundTag tag, Level level, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag tag, Level level, Player player) {
         BlockEntity tileEntity = level.getBlockEntity(BlockPos.of(tag.getLong("pos")));
         if (tileEntity instanceof ComputerBlockEntity laptop) {
             FileSystem fileSystem = laptop.getFileSystem();
@@ -45,7 +46,7 @@ public class TaskGetMainDrive extends Task {
     }
 
     @Override
-    public void prepareResponse(CompoundTag tag) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
         if (this.isSucessful()) {
             CompoundTag mainDriveTag = new CompoundTag();
             mainDriveTag.putString("name", mainDrive.getName());
@@ -56,7 +57,7 @@ public class TaskGetMainDrive extends Task {
     }
 
     @Override
-    public void processResponse(CompoundTag tag) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag tag) {
         if (this.isSucessful()) {
             if (Minecraft.getInstance().screen instanceof ComputerScreen) {
                 Drive drive = new Drive(tag.getCompound("main_drive"));

@@ -6,6 +6,7 @@ import dev.ultreon.devices.core.io.FileSystem;
 import dev.ultreon.devices.core.io.drive.AbstractDrive;
 import dev.ultreon.devices.debug.DebugLog;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Player;
@@ -37,13 +38,13 @@ public class TaskSetupFileBrowser extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag tag) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag tag) {
         tag.putLong("pos", pos.asLong());
         tag.putBoolean("include_main", includeMain);
     }
 
     @Override
-    public void processRequest(CompoundTag tag, Level level, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag tag, Level level, Player player) {
         BlockEntity tileEntity = level.getChunkAt(BlockPos.of(tag.getLong("pos"))).getBlockEntity(BlockPos.of(tag.getLong("pos")), LevelChunk.EntityCreationType.IMMEDIATE);
         if (tileEntity instanceof ComputerBlockEntity laptop) {
             FileSystem fileSystem = laptop.getFileSystem();
@@ -56,15 +57,14 @@ public class TaskSetupFileBrowser extends Task {
     }
 
     @Override
-    public void prepareResponse(CompoundTag tag) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
         if (this.isSucessful()) {
             if (mainDrive != null) {
                 CompoundTag mainDriveTag = new CompoundTag();
                 mainDriveTag.putString("name", mainDrive.getName());
-                mainDriveTag.putString("uuid", mainDrive.getUuid().toString());
+                mainDriveTag.putUUID("uuid", mainDrive.getUuid());
                 mainDriveTag.putString("type", mainDrive.getType().toString());
                 tag.put("main_drive", mainDriveTag);
-                tag.put("structure", mainDrive.getDriveStructure().toTag());
             }
 
             ListTag driveList = new ListTag();
@@ -73,7 +73,7 @@ public class TaskSetupFileBrowser extends Task {
                 DebugLog.log("v.getUuid() = " + v.getUuid());
                 CompoundTag driveTag = new CompoundTag();
                 driveTag.putString("name", v.getName());
-                driveTag.putString("uuid", v.getUuid().toString());
+                driveTag.putUUID("uuid", v.getUuid());
                 driveTag.putString("type", v.getType().toString());
                 driveList.add(driveTag);
             });
@@ -82,7 +82,7 @@ public class TaskSetupFileBrowser extends Task {
     }
 
     @Override
-    public void processResponse(CompoundTag tag) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag tag) {
 
     }
 }

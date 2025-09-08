@@ -5,6 +5,7 @@ import dev.ultreon.devices.block.entity.NetworkDeviceBlockEntity;
 import dev.ultreon.devices.core.network.NetworkDevice;
 import dev.ultreon.devices.core.network.Router;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -51,7 +52,7 @@ public class TaskGetDevices extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag tag) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag tag) {
         tag.putLong("devicePos", devicePos.asLong());
         if (targetType != null) {
             tag.putInt("targetType", BuiltInRegistries.BLOCK_ENTITY_TYPE.getId(targetType));
@@ -59,7 +60,7 @@ public class TaskGetDevices extends Task {
     }
 
     @Override
-    public void processRequest(CompoundTag tag, Level level, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag tag, Level level, Player player) {
         BlockPos devicePos = BlockPos.of(tag.getLong("devicePos"));
         BlockEntityType<?> targetType;
         int typeId = tag.getInt("targetType");
@@ -93,7 +94,7 @@ public class TaskGetDevices extends Task {
     }
 
     @Override
-    public void prepareResponse(CompoundTag tag) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
         if (this.isSucessful()) {
             ListTag deviceList = new ListTag();
             foundDevices.forEach(device -> deviceList.add(device.toTag(true)));
@@ -104,7 +105,7 @@ public class TaskGetDevices extends Task {
     }
 
     @Override
-    public void processResponse(CompoundTag tag) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag tag) {
         // Does not need response processing
     }
 }

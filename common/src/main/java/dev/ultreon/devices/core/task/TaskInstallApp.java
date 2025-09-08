@@ -6,6 +6,7 @@ import dev.ultreon.devices.block.entity.computer.ComputerBlockEntity;
 import dev.ultreon.devices.debug.DebugLog;
 import dev.ultreon.devices.object.AppInfo;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -35,7 +36,7 @@ public class TaskInstallApp extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag tag) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag tag) {
         tag.putString("appId", appId);
         tag.putLong("pos", laptopPos.asLong());
         tag.putBoolean("install", install);
@@ -43,7 +44,7 @@ public class TaskInstallApp extends Task {
     }
 
     @Override
-    public void processRequest(CompoundTag tag, Level level, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag tag, Level level, Player player) {
         DebugLog.log("Proc message " + tag.getString("appId") + ", " +  BlockPos.of(tag.getLong("pos")) + ", " + tag.getBoolean("install"));
         String appId = tag.getString("appId");
         DebugLog.log(level.getBlockState(BlockPos.of(tag.getLong("pos"))).getBlock());
@@ -81,12 +82,12 @@ public class TaskInstallApp extends Task {
 
 
     @Override
-    public void prepareResponse(CompoundTag tag) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
 
     }
 
     @Override
-    public void processResponse(CompoundTag tag) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag tag) {
 
     }
 }

@@ -3,6 +3,7 @@ package dev.ultreon.devices.programs.system.task;
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.block.entity.computer.ComputerBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -28,7 +29,7 @@ public class TaskUpdateApplicationData extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag tag) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag tag) {
         tag.putInt("posX", this.x);
         tag.putInt("posY", this.y);
         tag.putInt("posZ", this.z);
@@ -37,7 +38,7 @@ public class TaskUpdateApplicationData extends Task {
     }
 
     @Override
-    public void processRequest(CompoundTag tag, Level level, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag tag, Level level, Player player) {
         BlockEntity tileEntity = level.getBlockEntity(new BlockPos(tag.getInt("posX"), tag.getInt("posY"), tag.getInt("posZ")));
         if (tileEntity instanceof ComputerBlockEntity laptop) {
             laptop.setApplicationData(tag.getString("appId"), tag.getCompound("appData"));
@@ -46,12 +47,12 @@ public class TaskUpdateApplicationData extends Task {
     }
 
     @Override
-    public void prepareResponse(CompoundTag tag) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
 
     }
 
     @Override
-    public void processResponse(CompoundTag tag) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag tag) {
 
     }
 }

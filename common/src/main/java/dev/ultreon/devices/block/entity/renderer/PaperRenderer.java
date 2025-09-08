@@ -82,10 +82,10 @@ public record PaperRenderer(
         ResourceLocation resourcelocation = Minecraft.getInstance().getTextureManager().register("map/" + AA, d);
         Matrix4f matrix4f = poseStack.last().pose();
         var vertexconsumer = bufferSource.getBuffer(RenderType.text(resourcelocation));
-        vertexconsumer.vertex(matrix4f, 0.0f, 128.0f, -0.01f).color(255, 255, 255, 255).uv(0.0f, 1.0f).uv2(packedLight).endVertex();
-        vertexconsumer.vertex(matrix4f, 128.0f, 128.0f, -0.01f).color(255, 255, 255, 255).uv(1.0f, 1.0f).uv2(packedLight).endVertex();
-        vertexconsumer.vertex(matrix4f, 128.0f, 0.0f, -0.01f).color(255, 255, 255, 255).uv(1.0f, 0.0f).uv2(packedLight).endVertex();
-        vertexconsumer.vertex(matrix4f, 0.0f, 0.0f, -0.01f).color(255, 255, 255, 255).uv(0.0f, 0.0f).uv2(packedLight).endVertex();
+        vertexconsumer.addVertex(matrix4f, 0.0f, 128.0f, -0.01f).setColor(255, 255, 255, 255).setUv(0.0f, 1.0f).setLight(packedLight);
+        vertexconsumer.addVertex(matrix4f, 128.0f, 128.0f, -0.01f).setColor(255, 255, 255, 255).setUv(1.0f, 1.0f).setLight(packedLight);
+        vertexconsumer.addVertex(matrix4f, 128.0f, 0.0f, -0.01f).setColor(255, 255, 255, 255).setUv(1.0f, 0.0f).setLight(packedLight);
+        vertexconsumer.addVertex(matrix4f, 0.0f, 0.0f, -0.01f).setColor(255, 255, 255, 255).setUv(0.0f, 0.0f).setLight(packedLight);
         AA++;
     }
 

@@ -3,6 +3,7 @@ package dev.ultreon.devices.programs.system.task;
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.api.utils.BankUtil;
 import dev.ultreon.devices.programs.system.object.Account;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -26,12 +27,12 @@ public class TaskWithdraw extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag tag) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag tag) {
         tag.putInt("amount", this.amount);
     }
 
     @Override
-    public void processRequest(CompoundTag tag, Level level, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag tag, Level level, Player player) {
         int amount = tag.getInt("amount");
         Account account = BankUtil.INSTANCE.getAccount(player);
         if (account.withdraw(amount)) {
@@ -51,11 +52,11 @@ public class TaskWithdraw extends Task {
     }
 
     @Override
-    public void prepareResponse(CompoundTag tag) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
         tag.putInt("balance", this.amount);
     }
 
     @Override
-    public void processResponse(CompoundTag tag) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag tag) {
     }
 }

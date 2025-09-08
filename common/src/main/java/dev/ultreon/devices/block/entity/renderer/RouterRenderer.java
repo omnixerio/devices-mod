@@ -1,10 +1,12 @@
 package dev.ultreon.devices.block.entity.renderer;
 
+import com.mojang.blaze3d.Blaze3D;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import dev.ultreon.devices.block.PrinterBlock;
 import dev.ultreon.devices.block.RouterBlock;
 import dev.ultreon.devices.block.entity.RouterBlockEntity;
+import dev.ultreon.devices.client.components.RenderDataComponent;
 import dev.ultreon.devices.core.network.NetworkDevice;
 import dev.ultreon.devices.core.network.Router;
 import net.minecraft.client.Minecraft;
@@ -32,67 +34,67 @@ public record RouterRenderer(
         BlockState state = Objects.requireNonNull(blockEntity.getLevel()).getBlockState(blockEntity.getBlockPos());
         if (state.getBlock() != blockEntity.getBlock()) return;
 
-        if (blockEntity.isDebug()) {
-            RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(770, 771, 1, 0);
-//            RenderSystem.disableLighting();
-            //            RenderSystem.disableTexture();
-//            RenderSystem.enableAlpha();
-            pose.pushPose();
-            {
-                pose.translate(blockEntity.getBlockPos().getX(), blockEntity.getBlockPos().getY(), blockEntity.getBlockPos().getZ());
-                Router router = blockEntity.getRouter();
-                BlockPos routerPos = router.getPos();
-
-                Vec3 linePositions = getLineStartPosition(state);
-                final double startLineX = linePositions.x;
-                final double startLineY = linePositions.y;
-                final double startLineZ = linePositions.z;
-
-                Tesselator tesselator = Tesselator.getInstance();
-                BufferBuilder buffer = tesselator.getBuilder();
-
-                final Collection<NetworkDevice> DEVICES = router.getConnectedDevices(Minecraft.getInstance().level);
-                DEVICES.forEach(networkDevice -> {
-                    BlockPos devicePos = networkDevice.getPos();
-
-                    Objects.requireNonNull(devicePos, "Connection device has no position, weird.");
-
-                    RenderSystem.lineWidth(14F);
-                    buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-                    buffer.vertex(startLineX, startLineY, startLineZ).color(0f, 0f, 0f, 0.5f).endVertex();
-                    buffer.vertex((devicePos.getX() - routerPos.getX()) + 0.5f, (devicePos.getY() - routerPos.getY()), (devicePos.getZ() - routerPos.getZ()) + 0.5f).color(1f, 1f, 1f, 0.35f).endVertex();
-                    tesselator.end();
-
-                    RenderSystem.lineWidth(4F);
-                    buffer.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
-                    buffer.vertex(startLineX, startLineY, startLineZ).color(0f, 0f, 0f, 0.5f).endVertex();
-                    buffer.vertex((devicePos.getX() - routerPos.getX()) + 0.5f, (devicePos.getY() - routerPos.getY()), (devicePos.getZ() - routerPos.getZ()) + 0.5f).color(0f, 1f, 0f, 0.5f).endVertex();
-                    tesselator.end();
-                });
-            }
-            pose.popPose();
-            RenderSystem.disableBlend();
-//            RenderSystem.disableAlpha();
-//            RenderSystem.enableLighting();
-       //     RenderSystem.enableTexture();
-        }
+//        if (blockEntity.isDebug()) {
+//            RenderSystem.enableBlend();
+//            RenderSystem.blendFuncSeparate(770, 771, 1, 0);
+//            pose.pushPose();
+//            {
+//                pose.translate(blockEntity.getBlockPos().getX(), blockEntity.getBlockPos().getY(), blockEntity.getBlockPos().getZ());
+//                Router router = blockEntity.getRouter();
+//                BlockPos routerPos = router.getPos();
+//
+//                Vec3 linePositions = getLineStartPosition(state);
+//                final double startLineX = linePositions.x;
+//                final double startLineY = linePositions.y;
+//                final double startLineZ = linePositions.z;
+//
+//                Tesselator tesselator = Tesselator.getInstance();
+//
+//                final Collection<NetworkDevice> DEVICES = router.getConnectedDevices(Minecraft.getInstance().level);
+//                DEVICES.forEach(networkDevice -> {
+//                    BlockPos devicePos = networkDevice.getPos();
+//
+//                    Objects.requireNonNull(devicePos, "Connection device has no position, weird.");
+//
+//                    RenderDataComponent renderData = networkDevice.getOrCreateComponent(RenderDataComponent.class, RenderDataComponent::new);
+//
+//                    RenderSystem.lineWidth(14F);
+//                    MeshData orCreateMeshData = renderData.getOrCreateMeshData("quads-debug", () -> {
+//                        var buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+//                        buffer.addVertex((float) startLineX, (float) startLineY, (float) startLineZ).setColor(0f, 0f, 0f, 0.5f);
+//                        buffer.addVertex((devicePos.getX() - routerPos.getX()) + 0.5f, (devicePos.getY() - routerPos.getY()), (devicePos.getZ() - routerPos.getZ()) + 0.5f).setColor(1f, 1f, 1f, 0.35f);
+//                        return buffer.buildOrThrow();
+//                    });
+//
+//                    RenderSystem.lineWidth(4F);
+//                    buffer.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
+//                    buffer.vertex(startLineX, startLineY, startLineZ).color(0f, 0f, 0f, 0.5f).endVertex();
+//                    buffer.vertex((devicePos.getX() - routerPos.getX()) + 0.5f, (devicePos.getY() - routerPos.getY()), (devicePos.getZ() - routerPos.getZ()) + 0.5f).color(0f, 1f, 0f, 0.5f).endVertex();
+//                    tesselator.end();
+//                });
+//            }
+//            pose.popPose();
+//            RenderSystem.disableBlend();
+////            RenderSystem.disableAlpha();
+////            RenderSystem.enableLighting();
+//       //     RenderSystem.enableTexture();
+//        }
     }
 
-    private Vec3 getLineStartPosition(BlockState state) {
-        float lineX = 0.5f;
-        float lineY = 0.1f;
-        float lineZ = 0.5f;
-
-        if (state.getValue(RouterBlock.VERTICAL)) {
-            Quaternionf rotation = state.getValue(PrinterBlock.FACING).getRotation();
-            rotation.mul(new Quaternionf((float) (14 * 0.0625), 0.5f, (float) (14 * 0.0625), 0.5f));
-            Vector3f fixedPosition = new Vector3f(rotation.x, rotation.y, rotation.z);
-            lineX = fixedPosition.x();
-            lineY = 0.35f;
-            lineZ = fixedPosition.z();
-        }
-
-        return new Vec3(lineX, lineY, lineZ);
-    }
+//    private Vec3 getLineStartPosition(BlockState state) {
+//        float lineX = 0.5f;
+//        float lineY = 0.1f;
+//        float lineZ = 0.5f;
+//
+//        if (state.getValue(RouterBlock.VERTICAL)) {
+//            Quaternionf rotation = state.getValue(PrinterBlock.FACING).getRotation();
+//            rotation.mul(new Quaternionf((float) (14 * 0.0625), 0.5f, (float) (14 * 0.0625), 0.5f));
+//            Vector3f fixedPosition = new Vector3f(rotation.x, rotation.y, rotation.z);
+//            lineX = fixedPosition.x();
+//            lineY = 0.35f;
+//            lineZ = fixedPosition.z();
+//        }
+//
+//        return new Vec3(lineX, lineY, lineZ);
+//    }
 }

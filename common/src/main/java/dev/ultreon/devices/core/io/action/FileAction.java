@@ -14,17 +14,8 @@ import java.util.List;
 import java.util.function.Function;
 
 /// @author MrCrayfish
-public class FileAction<T> {
+public record FileAction<T>(Type type, CompoundTag data, Function<CompoundTag, T> deserializer) {
     public static final Function<CompoundTag, Object> NULL = tag1 -> null;
-    private final Type type;
-    private final CompoundTag data;
-    private final Function<CompoundTag, T> deserializer;
-
-    private FileAction(Type type, CompoundTag data, Function<CompoundTag, T> deserializer) {
-        this.type = type;
-        this.data = data;
-        this.deserializer = deserializer;
-    }
 
     public CompoundTag toTag() {
         CompoundTag tag = new CompoundTag();
@@ -39,19 +30,11 @@ public class FileAction<T> {
         return new FileAction<>(type, data, NULL);
     }
 
-    public Type getType() {
-        return type;
-    }
-
-    public CompoundTag getData() {
-        return data;
-    }
-
     @Override
     public String toString() {
         return "FileAction{" +
-               "type=" + type +
-               '}';
+                "type=" + type +
+                '}';
     }
 
     public T deserialize(CompoundTag data) {
@@ -71,6 +54,7 @@ public class FileAction<T> {
             vars.putByteArray("data", new byte[0]);
             return new FileAction<>(Type.NEW_FILE, vars, FileInfo::fromTag);
         }
+
         public static FileAction<FileInfo> makeNewFolder(Path parent, String name, boolean override) {
             CompoundTag vars = new CompoundTag();
             vars.putString("path", parent.resolve(name).toString());
@@ -141,7 +125,7 @@ public class FileAction<T> {
             vars.putString("path", path.toString());
             return new FileAction<>(Type.LIST_DIR, vars, (tag) -> {
                 List<FileInfo> list = new ArrayList<>();
-                ListTag listTag = tag.getList("files", Tag.TAG_STRING);
+                ListTag listTag = tag.getList("files", Tag.TAG_COMPOUND);
                 for (Tag tag1 : listTag) {
                     if (!(tag1 instanceof CompoundTag compoundTag)) continue;
                     list.add(FileInfo.fromTag(compoundTag));

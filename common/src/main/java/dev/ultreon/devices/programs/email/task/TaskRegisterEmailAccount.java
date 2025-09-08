@@ -2,6 +2,7 @@ package dev.ultreon.devices.programs.email.task;
 
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.programs.email.EmailManager;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -19,23 +20,23 @@ public class TaskRegisterEmailAccount extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag nbt) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag nbt) {
         nbt.putString("AccountName", this.name);
     }
 
     @Override
-    public void processRequest(CompoundTag nbt, Level level, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag nbt, Level level, Player player) {
         if (EmailManager.INSTANCE.addAccount(player, nbt.getString("AccountName"))) {
             this.setSuccessful();
         }
     }
 
     @Override
-    public void prepareResponse(CompoundTag nbt) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag nbt) {
     }
 
     @Override
-    public void processResponse(CompoundTag nbt) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag nbt) {
     }
 
 }

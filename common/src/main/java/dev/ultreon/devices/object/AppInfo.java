@@ -13,7 +13,9 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.io.IOException;
@@ -246,13 +248,13 @@ public class AppInfo {
         return this == info || getFormattedId().equals(info.getFormattedId());
     }
 
-    public void reload() {
+    public void reload(@NotNull ResourceManager resourceManager) {
         resetInfo();
-        if (Minecraft.getInstance().getResourceManager() == null) return;
+
         // TODO "Check if the resource manager can be used on client side."
         ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(APP_ID.getNamespace(), "apps/" + APP_ID.getPath() + ".json");
         DebugLog.log("Reloading app info for '" + APP_ID + "'");
-        Resource resource = Minecraft.getInstance().getResourceManager().getResource(resourceLocation).orElse(null);
+        Resource resource = resourceManager.getResource(resourceLocation).orElse(null);
 
         if (resource == null)
             throw new NoSuchElementException("Missing app info json for '" + APP_ID + "'");

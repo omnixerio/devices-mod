@@ -1,7 +1,6 @@
 package dev.ultreon.devices;
 
 import com.google.common.base.Suppliers;
-import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import com.mojang.serialization.Lifecycle;
 import dev.ultreon.devices.api.ApplicationManager;
@@ -12,8 +11,8 @@ import dev.ultreon.devices.api.task.TaskManager;
 import dev.ultreon.devices.api.utils.OnlineRequest;
 import dev.ultreon.devices.block.PrinterBlock;
 import dev.ultreon.devices.core.ComputerScreen;
-import dev.ultreon.devices.core.client.ClientNotification;
-import dev.ultreon.devices.core.client.debug.ClientAppDebug;
+import dev.ultreon.devices.client.ClientNotification;
+import dev.ultreon.devices.client.debug.ClientAppDebug;
 import dev.ultreon.devices.core.io.task.*;
 import dev.ultreon.devices.core.network.task.TaskConnect;
 import dev.ultreon.devices.core.network.task.TaskGetDevices;
@@ -52,6 +51,7 @@ import dev.ultreon.mods.xinexlib.event.server.ServerStoppedEvent;
 import dev.ultreon.mods.xinexlib.event.system.EventSystem;
 import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import dev.ultreon.mods.xinexlib.registrar.RegistrarManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.nbt.CompoundTag;
@@ -59,6 +59,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -68,7 +69,6 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +93,6 @@ public abstract class Devices {
     private static final Pattern DEV_PREVIEW_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+-dev\\d+");
     private static final boolean IS_DEV_PREVIEW = DEV_PREVIEW_PATTERN.matcher(Reference.VERSION).matches();
     private static final String GITWEB_REGISTER_URL = "https://ultreon.gitlab.io/gitweb/site_register.json";
-    public static final String VULNERABILITIES_URL = "https://jab125.com/gitweb/vulnerabilities.php";
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private static final SiteRegisterStack SITE_REGISTER_STACK = new SiteRegisterStack();
 
@@ -206,7 +205,6 @@ public abstract class Devices {
         TaskManager.registerTask(TaskSendAction::new);
         TaskManager.registerTask(TaskSetupFileBrowser::new);
         TaskManager.registerTask(TaskGetFiles::new);
-        TaskManager.registerTask(TaskListDirectory::new);
         TaskManager.registerTask(TaskGetMainDrive::new);
 
         // App Store
@@ -303,21 +301,13 @@ public abstract class Devices {
             apps.add(theAppWeGot);
 
             AppInfo info = new AppInfo(identifier, SystemApp.class.isAssignableFrom(theAppWeGot.getClass()));
-            info.reload();
+            ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
+
             theAppWeGot.setInfo(info);
 
             application.set(theAppWeGot);
         });
         return application.get();
-    }
-
-    @NotNull
-    private static AppInfo generateAppInfo(ResourceLocation identifier, Class<? extends Application> clazz) {
-        LOGGER.debug("Generating app info for {}", identifier.toString());
-
-        AppInfo info = new AppInfo(identifier, SystemApp.class.isAssignableFrom(clazz));
-        info.reload();
-        return info;
     }
 
     protected abstract Map<String, IPrint.Renderer> getRegisteredRenders();
@@ -419,21 +409,7 @@ public abstract class Devices {
     }
 
     private static void checkForVulnerabilities() {
-        OnlineRequest.getInstance().make(VULNERABILITIES_URL, ((success, response) -> {
-            if (!success) {
-                LOGGER.error("Could not access vulnerabilities!");
-                vulnerabilities = ImmutableList.of();
-                return;
-            }
 
-            JsonArray array = JsonParser.parseString(new String(response)).getAsJsonArray();
-            vulnerabilities = Vulnerability.parseArray(array);
-            vulnerabilities.forEach(vul -> {
-                String s = vul.toPrettyString();
-                s.lines().toList().forEach(line -> LOGGER.debug("[VulChecker] {}", line));
-                LOGGER.debug("[VulChecker]");
-            });
-        }));
     }
 
     private static CompletableFuture<Void> setupSiteRegistration(String url) {
@@ -512,8 +488,12 @@ public abstract class Devices {
         return future;
     }
 
+    /**
+     * @deprecated Use {@link #res(String)} instead!
+     */
+    @Deprecated
     public static ResourceLocation id(String id) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, id);
+        return res(id);
     }
 
     private static class ProtectedArrayList<T> extends ArrayList<T> {

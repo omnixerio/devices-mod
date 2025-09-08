@@ -161,8 +161,8 @@ public class Ext2FS implements FS {
     }
 
     private @Nullable Ext2Entry getFsEntry(Path path) throws IOException {
-        if (!path.toString().startsWith("/")) path = Path.of("/" + path);
-        if (!path.toString().startsWith("/")) path = Path.of("/" + path);
+        String string = path.toString().replace("\\", "/");
+        if (!string.startsWith("/")) path = Path.of("/" + path);
         if (path.getParent() == null) return (Ext2Entry) fs.getRootEntry();
 
         Ext2Directory root = (Ext2Directory) fs.getRootEntry().getDirectory();
@@ -182,8 +182,9 @@ public class Ext2FS implements FS {
 
     @Override
     public void createFile(Path path, byte[] data) throws IOException {
-        if (!path.toString().startsWith("/")) path = Path.of("/" + path);
-        if (path.toString().equals("/")) throw new IOException("Invalid path for file: " + path);
+        String string = path.toString().replace("\\", "/");
+        if (!string.startsWith("/")) path = Path.of("/" + path);
+        else if (string.equals("/")) throw new IOException("Invalid path for file: " + path);
 
         Ext2Directory parentDir = path.getParent() == null ? (Ext2Directory) fs.getRootEntry().getDirectory() : getDirectoryAt(path.getParent());
         if (parentDir == null)
@@ -203,7 +204,8 @@ public class Ext2FS implements FS {
 
     @Override
     public void createDirectory(Path path) throws IOException {
-        if (!path.toString().startsWith("/")) path = Path.of("/" + path);
+        String string = path.toString().replace("\\", "/");
+        if (!string.startsWith("/")) path = Path.of("/" + path);
         Ext2Directory parentDir = path.getParent() == null ? (Ext2Directory) fs.getRootEntry().getDirectory() : getDirectoryAt(path.getParent());
         if (path.getParent() != null && parentDir != null) {
             parentDir.addDirectory(path.getFileName().toString());

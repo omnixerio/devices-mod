@@ -3,14 +3,16 @@ package dev.ultreon.devices.fabric.datagen;
 import dev.ultreon.devices.init.DeviceBlocks;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootTable;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 public class DevicesBlockLootTableGenerator extends FabricBlockLootTableProvider {
-    public DevicesBlockLootTableGenerator(FabricDataOutput output) {
-        super(output);
+    public DevicesBlockLootTableGenerator(FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
+        super(dataOutput, registryLookup);
     }
 
     @Override

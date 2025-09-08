@@ -4,6 +4,7 @@ import dev.ultreon.devices.block.DeviceBlock;
 import dev.ultreon.devices.util.Colorable;
 import dev.ultreon.devices.util.Tickable;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -52,8 +53,8 @@ public abstract class DeviceBlockEntity extends SyncBlockEntity implements Ticka
     }
 
     @Override
-    protected void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
         tag.putString("deviceId", getId().toString());
         if (hasCustomName()) {
@@ -64,8 +65,8 @@ public abstract class DeviceBlockEntity extends SyncBlockEntity implements Ticka
     }
 
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(@NotNull CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         if (tag.contains("deviceId", Tag.TAG_STRING)) {
             deviceId = UUID.fromString(tag.getString("deviceId"));
@@ -110,16 +111,16 @@ public abstract class DeviceBlockEntity extends SyncBlockEntity implements Ticka
         }
 
         @Override
-        public void load(@NotNull CompoundTag tag) {
-            super.load(tag);
+        public void loadAdditional(@NotNull CompoundTag tag, HolderLookup.Provider provider) {
+            super.loadAdditional(tag, provider);
             if (tag.contains("color", Tag.TAG_BYTE)) {
                 color = DyeColor.byId(tag.getByte("color"));
             }
         }
 
         @Override
-        protected void saveAdditional(@NotNull CompoundTag tag) {
-            super.saveAdditional(tag);
+        protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.Provider provider) {
+            super.saveAdditional(tag, provider);
             tag.putByte("color", (byte) color.getId());
         }
 

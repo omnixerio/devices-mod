@@ -27,7 +27,7 @@ public class DyeUtils {
         final Block block;
         final DyeColor dyeColor;
         WoolColor(String block, DyeColor dyeColor) {
-            this.block = BuiltInRegistries.BLOCK.get(new ResourceLocation(block)); // accessing registry directly is fine as this class isn't used with forge at all
+            this.block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(block)); // accessing registry directly is fine as this class isn't used with forge at all
             this.dyeColor = dyeColor;
         }
     }

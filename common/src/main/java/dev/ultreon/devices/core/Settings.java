@@ -6,6 +6,8 @@ import dev.ultreon.devices.programs.system.object.Preset;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
+import javax.annotation.Nullable;
+
 /**
  * @author MrCrayfish
  */
@@ -13,7 +15,7 @@ public class Settings {
     private static boolean showAllApps = true;
 
     private ColorScheme colorScheme = new ColorScheme();
-    private Preset preset = null;
+    private @Nullable Preset preset = null;
 
     public static void setShowAllApps(boolean showAllApps) {
         Settings.showAllApps = showAllApps;

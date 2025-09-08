@@ -1,6 +1,8 @@
 package dev.ultreon.devices.core.network;
 
 import dev.ultreon.devices.block.entity.NetworkDeviceBlockEntity;
+import dev.ultreon.devices.client.components.RenderDataComponent;
+import dev.ultreon.devices.components.GameComponent;
 import dev.ultreon.devices.core.Device;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -11,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.function.Supplier;
 
 public class NetworkDevice extends Device {
     private NetworkDevice() {
@@ -69,5 +72,14 @@ public class NetworkDevice extends Device {
             device.pos = BlockPos.of(tag.getLong("pos"));
         }
         return device;
+    }
+
+    public <T extends GameComponent> T getOrCreateComponent(Class<T> type, Supplier<T> factory) {
+        T component = getComponent(type);
+        if (component == null) {
+            component = factory.get();
+            addComponent(component);
+        }
+        return component;
     }
 }

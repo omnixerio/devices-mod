@@ -132,53 +132,27 @@ public abstract class AbstractDrive implements FS {
     }
 
     public FileSystem.Response handleFileAction(FileSystem fileSystem, FileAction action, Level level) {
-        CompoundTag actionData = action.getData();
+        CompoundTag actionData = action.data();
         try {
             LockKey lock = getFs().lock(actionData.getString("directory"));
             try {
                 CompoundTag data = actionData.getCompound("data");
-                switch (action.getType()) {
-                    case NEW_FILE -> {
-                        return newFile(actionData, data);
-                    }
-                    case NEW_FOLDER -> {
-                        return newFolder(actionData, data);
-                    }
-                    case NEW_FOLDERS -> {
-                        return newFolders(actionData, data);
-                    }
-                    case DELETE -> {
-                        return delete(actionData);
-                    }
-                    case RENAME -> {
-                        return rename(actionData);
-                    }
-                    case WRITE -> {
-                        return writeData(actionData, data);
-                    }
-                    case EXISTS -> {
-                        return exists(actionData);
-                    }
-                    case READ -> {
-                        return readData(actionData);
-                    }
-                    case LIST_DIR -> {
-                        return listDir(actionData);
-                    }
-                    case INFO -> {
-                        return info(actionData);
-                    }
-                    case MOVE -> {
-                        return move(actionData);
-                    }
-                    case COPY -> {
-                        return copy(actionData);
-                    }
-                    case EXTRA_INFO -> {
-                        return extraInfo(actionData);
-                    }
-                    default -> throw new IOException("Invalid FS action: " + action.getType());
-                }
+                return switch (action.type()) {
+                    case NEW_FILE -> newFile(actionData, data);
+                    case NEW_FOLDER -> newFolder(actionData, data);
+                    case NEW_FOLDERS -> newFolders(actionData, data);
+                    case DELETE -> delete(actionData);
+                    case RENAME -> rename(actionData);
+                    case WRITE -> writeData(actionData, data);
+                    case EXISTS -> exists(actionData);
+                    case READ -> readData(actionData);
+                    case LIST_DIR -> listDir(actionData);
+                    case INFO -> info(actionData);
+                    case MOVE -> move(actionData);
+                    case COPY -> copy(actionData);
+                    case EXTRA_INFO -> extraInfo(actionData);
+                    default -> throw new IOException("Invalid FS action: " + action.type());
+                };
             } finally {
                 if (lock != null) {
                     getFs().unlock(actionData.getString("directory"));
@@ -284,7 +258,7 @@ public abstract class AbstractDrive implements FS {
             String child = iterator.next();
             list.add(info(path.resolve(child)));
         }
-        data.put("list", list);
+        data.put("files", list);
         return FileSystem.createResponse(FileSystem.Status.SUCCESSFUL, "", data);
     }
 

@@ -18,7 +18,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -151,7 +151,7 @@ public class GitWebFrame extends Component {
     }
 
     public static String parseFormatting(String s) {
-        return s.replace("&", "\u00A7");
+        return s.replace("&", "§");
     }
 
     public static void dumpModules(File file) {
@@ -206,9 +206,9 @@ public class GitWebFrame extends Component {
         //DebugLog.log("TICK TOCK");
         for (Component component : this.layout.components) {
             //DebugLog.log("A");
-            if (component instanceof ModuleLayout layout) {
+            if (component instanceof ModuleLayout moduleLayout) {
              //   DebugLog.log("AAAA");
-                layout._tick();
+                moduleLayout._tick();
                // layout.entry.getModule()
             } else {
                 DebugLog.log(component);
@@ -288,7 +288,7 @@ public class GitWebFrame extends Component {
         layout.clear();
 
         try {
-            new URL(url).toURI();
+            URI.create(url);
         } catch (Exception e) {
             if (loadedCallback != null) {
                 loadedCallback.execute(null, false);
@@ -307,11 +307,12 @@ public class GitWebFrame extends Component {
     private void load(String url) {
         OnlineRequest.getInstance().make(url, (success, response) ->
         {
+            String websiteData = new String(response);
             if (success) {
-                generateLayout(response, true);
+                generateLayout(websiteData, true);
             }
             if (loadedCallback != null) {
-                loadedCallback.execute(response, success);
+                loadedCallback.execute(websiteData, success);
             }
         });
     }
@@ -342,8 +343,8 @@ public class GitWebFrame extends Component {
                 offset += height;
             }
 
-            if (modules.size() > 0) {
-                ModuleEntry entry = modules.get(modules.size() - 1);
+            if (!modules.isEmpty()) {
+                ModuleEntry entry = modules.getLast();
                 Module module = entry.getModule();
                 int height = module.calculateHeight(entry.getData(), width);
                 //if (height == 0)
@@ -376,7 +377,7 @@ public class GitWebFrame extends Component {
             if (c instanceof Layout) {
                 addWordListener((Layout) c, listener);
             } else if (c instanceof Text text && !text.hasWordListener()) {
-                ((Text) c).setWordListener(listener);
+                text.setWordListener(listener);
             }
         }
     }

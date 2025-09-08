@@ -15,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class RenderUtil {
@@ -87,31 +88,24 @@ public class RenderUtil {
         float scale = 0.00390625f;
         var e = pose.last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
-        try {
-            buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        } catch (IllegalStateException e_) {
-            buffer.end();
-            buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        }
-        buffer.vertex(e, (float) x, (float) (y + height), (float) z).uv(u * scale, (v + textureHeight) * scale).endVertex();
-        buffer.vertex(e, (float) (x + width), (float) (y + height), (float) z).uv((u + textureWidth) * scale, (v + textureHeight) * scale).endVertex();
-        buffer.vertex(e, (float) (x + width), (float) y, (float) z).uv((u + textureWidth) * scale, v * scale).endVertex();
-        buffer.vertex(e, (float) x, (float) y, (float) z).uv(u * scale, v * scale).endVertex();
-        BufferUploader.drawWithShader(buffer.end());
+        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        buffer.addVertex(e, (float) x, (float) (y + height), (float) z).setUv(u * scale, (v + textureHeight) * scale);
+        buffer.addVertex(e, (float) (x + width), (float) (y + height), (float) z).setUv((u + textureWidth) * scale, (v + textureHeight) * scale);
+        buffer.addVertex(e, (float) (x + width), (float) y, (float) z).setUv((u + textureWidth) * scale, v * scale);
+        buffer.addVertex(e, (float) x, (float) y, (float) z).setUv(u * scale, v * scale);
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
     }
 
     public static void drawRectWithFullTexture(GuiGraphics graphics, double x, double y, float u, float v, int width, int height) {
         // Gui.blit(pose, (int) x, (int) y, width, height, u, v, width, height, 256, 256);
         var e = graphics.pose().last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        buffer.vertex(e, (float) x, (float) (y + height), 0).uv(0, 1).endVertex();
-        buffer.vertex(e, (float) (x + width), (float) (y + height), 0).uv(1, 1).endVertex();
-        buffer.vertex(e, (float) (x + width), (float) y, 0).uv(1, 0).endVertex();
-        buffer.vertex(e, (float) x, (float) y, 0).uv(0, 0).endVertex();
-        BufferUploader.drawWithShader(buffer.end());
+        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        buffer.addVertex(e, (float) x, (float) (y + height), 0).setUv(0, 1);
+        buffer.addVertex(e, (float) (x + width), (float) (y + height), 0).setUv(1, 1);
+        buffer.addVertex(e, (float) (x + width), (float) y, 0).setUv(1, 0);
+        buffer.addVertex(e, (float) x, (float) y, 0).setUv(0, 0);
+        BufferUploader.drawWithShader(Objects.requireNonNull(buffer.build()));
     }
 
     public static void drawRectWithTexture(ResourceLocation location, GuiGraphics graphics, double x, double y, float u, float v, int width, int height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight) {
@@ -124,13 +118,12 @@ public class RenderUtil {
         float scaleHeight = 1f / sourceHeight;
         var e = pose.last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        buffer.vertex(e, (float) x, (float) (y + height), 0).uv(u * scaleWidth, (v + textureHeight) * scaleHeight).endVertex();
-        buffer.vertex(e, (float) (x + width), (float) (y + height), 0).uv((u + textureWidth) * scaleWidth, (v + textureHeight) * scaleHeight).endVertex();
-        buffer.vertex(e, (float) (x + width), (float) y, 0).uv((u + textureWidth) * scaleWidth, v * scaleHeight).endVertex();
-        buffer.vertex(e, (float) x, (float) y, 0).uv(u * scaleWidth, v * scaleHeight).endVertex();
-        BufferUploader.drawWithShader(buffer.end());
+        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        buffer.addVertex(e, (float) x, (float) (y + height), 0).setUv(u * scaleWidth, (v + textureHeight) * scaleHeight);
+        buffer.addVertex(e, (float) (x + width), (float) (y + height), 0).setUv((u + textureWidth) * scaleWidth, (v + textureHeight) * scaleHeight);
+        buffer.addVertex(e, (float) (x + width), (float) y, 0).setUv((u + textureWidth) * scaleWidth, v * scaleHeight);
+        buffer.addVertex(e, (float) x, (float) y, 0).setUv(u * scaleWidth, v * scaleHeight);
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
     }
 
     public static void drawApplicationIcon(GuiGraphics graphics, @Nullable AppInfo info, double x, double y) {

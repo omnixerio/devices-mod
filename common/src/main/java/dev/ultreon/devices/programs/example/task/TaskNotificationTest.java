@@ -3,6 +3,7 @@ package dev.ultreon.devices.programs.example.task;
 import dev.ultreon.devices.api.app.Icons;
 import dev.ultreon.devices.api.app.Notification;
 import dev.ultreon.devices.api.task.Task;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -17,12 +18,12 @@ public class TaskNotificationTest extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag nbt) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag nbt) {
 
     }
 
     @Override
-    public void processRequest(CompoundTag nbt, Level world, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag nbt, Level world, Player player) {
         Notification notification = new Notification(Icons.MAIL, "New Email!", "Check your inbox");
         notification.pushTo((ServerPlayer) player);
 
@@ -32,12 +33,12 @@ public class TaskNotificationTest extends Task {
     }
 
     @Override
-    public void prepareResponse(CompoundTag nbt) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag nbt) {
 
     }
 
     @Override
-    public void processResponse(CompoundTag nbt) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag nbt) {
 
     }
 }

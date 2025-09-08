@@ -2,6 +2,7 @@ package dev.ultreon.devices.network.task;
 
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.api.task.TaskManager;
+import dev.ultreon.mods.xinexlib.Env;
 import dev.ultreon.mods.xinexlib.network.Networker;
 import dev.ultreon.mods.xinexlib.network.packet.PacketToClient;
 import net.minecraft.nbt.CompoundTag;
@@ -18,6 +19,7 @@ public class ResponsePacket implements PacketToClient<ResponsePacket> {
         this.request = TaskManager.getTaskAndRemove(this.id);
         if (successful) this.request.setSuccessful();
         String name = buf.readUtf();
+        request.setName(name);
         this.tag = buf.readNbt();
     }
 
@@ -32,14 +34,14 @@ public class ResponsePacket implements PacketToClient<ResponsePacket> {
         buf.writeBoolean(this.request.isSucessful());
         buf.writeUtf(this.request.getName());
         CompoundTag tag = new CompoundTag();
-        this.request.prepareResponse(tag);
+        this.request.prepareResponse(buf.registryAccess(), tag);
         buf.writeNbt(tag);
         this.request.complete();
     }
 
     @Override
     public void handle(Networker networker) {
-        request.processResponse(tag);
+        request.processResponse(SidedSystem.getRegistryProvider(Env.CLIENT), tag);
         request.callback(tag);
     }
 }

@@ -3,6 +3,7 @@ package dev.ultreon.devices.block.entity;
 import dev.ultreon.devices.api.print.IPrint;
 import dev.ultreon.devices.init.DeviceBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvent;
@@ -10,6 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.block.state.BlockState;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -43,8 +45,8 @@ public class PaperBlockEntity extends SyncBlockEntity {
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    public void loadAdditional(@NotNull CompoundTag compound, HolderLookup.@NotNull Provider provider) {
+        super.loadAdditional(compound, provider);
         if (compound.contains("print", Tag.TAG_COMPOUND)) {
             print = IPrint.load(compound.getCompound("print"));
         }
@@ -54,8 +56,8 @@ public class PaperBlockEntity extends SyncBlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
+    public void saveAdditional(@NotNull CompoundTag compound, HolderLookup.@NotNull Provider provider) {
+        super.saveAdditional(compound, provider);
         if (print != null) {
             compound.put("print", IPrint.save(print));
         }
@@ -73,6 +75,8 @@ public class PaperBlockEntity extends SyncBlockEntity {
     }
 
     private void playSound(SoundEvent sound) {
-        level.playSound(null, worldPosition, sound, SoundSource.BLOCKS, 1f, 1f);
+        if (level != null) {
+            level.playSound(null, worldPosition, sound, SoundSource.BLOCKS, 1f, 1f);
+        }
     }
 }

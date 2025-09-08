@@ -1,15 +1,6 @@
 package dev.ultreon.devices.fabric;
 
-<<<<<<<< HEAD:fabric/src/main/java/dev/ultreon/devices/fabric/DevicesFabric.java
-import com.ultreon.devices.DeviceConfig;
-import com.ultreon.devices.Devices;
-import com.ultreon.devices.api.app.Application;
-import com.ultreon.devices.api.print.IPrint;
-import com.ultreon.devices.api.print.PrintingManager;
-import com.ultreon.devices.core.Laptop;
-import com.ultreon.devices.init.RegistrationHandler;
-import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
-========
+import dev.ultreon.devices.ClientModEvents;
 import dev.ultreon.devices.DeviceConfig;
 import dev.ultreon.devices.Devices;
 import dev.ultreon.devices.api.app.Application;
@@ -18,25 +9,49 @@ import dev.ultreon.devices.api.print.PrintingManager;
 import dev.ultreon.devices.core.ComputerScreen;
 import dev.ultreon.devices.init.RegistrationHandler;
 import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
->>>>>>>> origin/wip/port-xinexlib:fabric/src/main/java/dev/ultreon/devices/fabric/DevicesFabricMod.java
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.mixin.resource.loader.KeyedResourceReloadListenerMixin;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimpleReloadInstance;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.fml.config.ModConfig;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
-public class DevicesFabric extends Devices implements ModInitializer {
+public class DevicesFabricMod extends Devices implements ModInitializer {
     @Override
     public void onInitialize() {
         NeoForgeConfigRegistry.INSTANCE.register(Devices.MOD_ID, ModConfig.Type.CLIENT, DeviceConfig.CONFIG);
 
         RegistrationHandler.register();
+
+        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new IdentifiableResourceReloadListener() {
+            private final ClientModEvents.ReloaderListener listener = new ClientModEvents.ReloaderListener();
+
+            @Override
+            public ResourceLocation getFabricId() {
+                return Devices.res("client_resources");
+            }
+
+            @Override
+            public @NotNull CompletableFuture<Void> reload(@NotNull PreparationBarrier preparationBarrier, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller preparationsProfiler, @NotNull ProfilerFiller reloadProfiler, @NotNull Executor backgroundExecutor, @NotNull Executor gameExecutor) {
+                return listener.reload(preparationBarrier, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor);
+            }
+        });
 
         this.init();
     }
@@ -66,10 +81,6 @@ public class DevicesFabric extends Devices implements ModInitializer {
     }
 
     @Override
-<<<<<<<< HEAD:fabric/src/main/java/dev/ultreon/devices/fabric/DevicesFabric.java
-    protected List<Application> getApplications() {
-        return Laptop.getApplicationsForFabric();
-========
     protected List<Application> loadApps() {
         return ComputerScreen.getApplicationsForFabric();
     }
@@ -77,7 +88,6 @@ public class DevicesFabric extends Devices implements ModInitializer {
     @Override
     public String getVersion() {
         return FabricLoader.getInstance().getModContainer("devices").orElseThrow().getMetadata().getVersion().getFriendlyString();
->>>>>>>> origin/wip/port-xinexlib:fabric/src/main/java/dev/ultreon/devices/fabric/DevicesFabricMod.java
     }
 
     @Override

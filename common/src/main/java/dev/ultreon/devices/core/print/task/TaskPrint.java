@@ -7,6 +7,7 @@ import dev.ultreon.devices.block.entity.PrinterBlockEntity;
 import dev.ultreon.devices.core.network.NetworkDevice;
 import dev.ultreon.devices.core.network.Router;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -36,14 +37,14 @@ public class TaskPrint extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag tag) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag tag) {
         tag.putLong("devicePos", devicePos.asLong());
         tag.putUUID("printerId", printerId);
         tag.put("print", IPrint.save(print));
     }
 
     @Override
-    public void processRequest(CompoundTag tag, Level level, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag tag, Level level, Player player) {
         BlockEntity tileEntity = level.getChunkAt(BlockPos.of(tag.getLong("devicePos"))).getBlockEntity(BlockPos.of(tag.getLong("devicePos")), LevelChunk.EntityCreationType.IMMEDIATE);
         if (tileEntity instanceof NetworkDeviceBlockEntity device) {
             Router router = device.getRouter();
@@ -65,14 +66,14 @@ public class TaskPrint extends Task {
     }
 
     @Override
-    public void prepareResponse(CompoundTag tag) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
         if (this.reason != null) {
             tag.putString("reason", this.reason);
         }
     }
 
     @Override
-    public void processResponse(CompoundTag tag) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag tag) {
 
     }
 }

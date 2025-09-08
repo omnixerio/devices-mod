@@ -4,6 +4,7 @@ import dev.ultreon.devices.Devices;
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.programs.auction.AuctionManager;
 import dev.ultreon.devices.programs.auction.object.AuctionItem;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -30,7 +31,7 @@ public class TaskAddAuction extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag nbt) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag nbt) {
         nbt.putInt("slot", slot);
         nbt.putInt("amount", amount);
         nbt.putInt("price", price);
@@ -38,7 +39,7 @@ public class TaskAddAuction extends Task {
     }
 
     @Override
-    public void processRequest(CompoundTag nbt, Level level, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag nbt, Level level, Player player) {
         int slot = nbt.getInt("slot");
         int amount = nbt.getInt("amount");
         int price = nbt.getInt("price");
@@ -62,16 +63,16 @@ public class TaskAddAuction extends Task {
     }
 
     @Override
-    public void prepareResponse(CompoundTag nbt) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag nbt) {
         if (isSucessful()) {
             item.writeToNBT(nbt, Devices.getServer().registryAccess());
         }
     }
 
     @Override
-    public void processResponse(CompoundTag nbt) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag nbt) {
         if (isSucessful()) {
-            AuctionManager.INSTANCE.addItem(AuctionItem.readFromNBT(nbt));
+            AuctionManager.INSTANCE.addItem(AuctionItem.readFromNBT(provider, nbt));
         }
     }
 }

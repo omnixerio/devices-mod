@@ -39,12 +39,12 @@ public class FileBrowserApp extends SystemApp {
 
     public static class FileBrowserTrayItem extends TrayItem {
         public FileBrowserTrayItem() {
-            super(Icons.FOLDER, Devices.id("file_browser"));
+            super(Icons.FOLDER, Devices.res("file_browser"));
         }
 
         @Override
         public void handleClick(int mouseX, int mouseY, int mouseButton) {
-            AppInfo info = ApplicationManager.getApplication(Devices.id("file_browser"));
+            AppInfo info = ApplicationManager.getApplication(Devices.res("file_browser"));
             if (info != null) {
                 ComputerScreen.getSystem().launchApp(info);
             }

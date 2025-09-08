@@ -5,6 +5,7 @@ import dev.ultreon.devices.block.entity.NetworkDeviceBlockEntity;
 import dev.ultreon.devices.block.entity.RouterBlockEntity;
 import dev.ultreon.devices.core.network.Router;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -29,13 +30,13 @@ public class TaskConnect extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag tag) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag tag) {
         tag.putLong("devicePos", devicePos.asLong());
         tag.putLong("routerPos", routerPos.asLong());
     }
 
     @Override
-    public void processRequest(CompoundTag tag, Level level, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag tag, Level level, Player player) {
         BlockEntity tileEntity = level.getChunkAt(BlockPos.of(tag.getLong("routerPos"))).getBlockEntity(BlockPos.of(tag.getLong("routerPos")), LevelChunk.EntityCreationType.IMMEDIATE);
         if (tileEntity instanceof RouterBlockEntity tileEntityRouter) {
             Router router = tileEntityRouter.getRouter();
@@ -51,12 +52,12 @@ public class TaskConnect extends Task {
     }
 
     @Override
-    public void prepareResponse(CompoundTag tag) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
 
     }
 
     @Override
-    public void processResponse(CompoundTag tag) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag tag) {
 
     }
 }

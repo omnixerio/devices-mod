@@ -1,4 +1,4 @@
-package dev.ultreon.devices.core.client;
+package dev.ultreon.devices.client;
 
 import net.minecraft.client.gui.font.FontSet;
 import net.minecraft.client.renderer.texture.TextureManager;

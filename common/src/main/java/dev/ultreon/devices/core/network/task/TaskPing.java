@@ -3,6 +3,7 @@ package dev.ultreon.devices.core.network.task;
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.block.entity.NetworkDeviceBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -26,12 +27,12 @@ public class TaskPing extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag tag) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag tag) {
         tag.putLong("sourceDevicePos", sourceDevicePos.asLong());
     }
 
     @Override
-    public void processRequest(CompoundTag tag, Level level, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag tag, Level level, Player player) {
         BlockEntity blockEntity = level.getChunkAt(BlockPos.of(tag.getLong("sourceDevicePos"))).getBlockEntity(BlockPos.of(tag.getLong("sourceDevicePos")), LevelChunk.EntityCreationType.IMMEDIATE);
         if (blockEntity instanceof NetworkDeviceBlockEntity networkDevice) {
             if (networkDevice.isConnected()) {
@@ -42,14 +43,14 @@ public class TaskPing extends Task {
     }
 
     @Override
-    public void prepareResponse(CompoundTag tag) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
         if (this.isSucessful()) {
             tag.putInt("strength", strength);
         }
     }
 
     @Override
-    public void processResponse(CompoundTag tag) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag tag) {
 
     }
 }

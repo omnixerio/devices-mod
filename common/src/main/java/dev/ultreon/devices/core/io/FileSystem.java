@@ -218,9 +218,8 @@ public class FileSystem {
         }
     }
 
-    public Response readAction(String driveUuid, FileAction action, Level level) {
-        UUID uuid = UUID.fromString(driveUuid);
-        AbstractDrive drive = getAvailableDrives(level, true).get(uuid);
+    public Response readAction(UUID driveUuid, FileAction<?> action, Level level) {
+        AbstractDrive drive = getAvailableDrives(level, true).get(driveUuid);
         if (drive != null) {
             Response response = drive.handleFileAction(this, action, level);
             if (response.getStatus() == Status.SUCCESSFUL) {

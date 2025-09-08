@@ -1,6 +1,7 @@
 package dev.ultreon.devices.programs.auction;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.ultreon.devices.Devices;
 import dev.ultreon.devices.api.app.Application;
 import dev.ultreon.devices.api.app.Dialog;
 import dev.ultreon.devices.api.app.Layout;
@@ -33,8 +34,8 @@ import java.util.Objects;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class MineBayApp extends Application {
-    private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
-    private static final ResourceLocation MINEBAY_ASSETS = new ResourceLocation("devices:textures/gui/minebay.png");
+    private static final ResourceLocation CHEST_GUI_TEXTURE = ResourceLocation.withDefaultNamespace("textures/gui/container/generic_54.png");
+    private static final ResourceLocation MINEBAY_ASSETS = Devices.res("textures/gui/minebay.png");
 
     private static final ItemStack EMERALD = new ItemStack(Items.EMERALD);
 
@@ -75,6 +76,12 @@ public class MineBayApp extends Application {
         //super(Reference.MOD_ID + "MineBay", "MineBay");
     }
 
+    private static void renderItemSelBackground(GuiGraphics graphics, Minecraft mc, int x, int y, int width, int height, int mouseX, int mouseY, boolean windowActive) {
+        graphics.fill(x, y, x + width, y + 22, Color.LIGHT_GRAY.getRGB());
+        graphics.fill(x, y + 22, x + width, y + 23, Color.DARK_GRAY.getRGB());
+        graphics.drawString(mc.font, "Select an Item...", x + 5, y + 7, Color.WHITE.getRGB());
+    }
+
     @Override
     public void onTick() {
         super.onTick();
@@ -103,17 +110,7 @@ public class MineBayApp extends Application {
 
         Button btnViewItem = new Button(135, 5, "Your Auctions");
         btnViewItem.setSize(80, 15);
-        btnViewItem.setClickListener((mouseX, mouseY, mouseButton) -> {
-            assert Minecraft.getInstance().player != null;
-            TaskGetAuctions task = new TaskGetAuctions(Minecraft.getInstance().player.getUUID());
-            task.setCallback((nbt, success) -> {
-                items.removeAll();
-                for (AuctionItem item : AuctionManager.INSTANCE.getItems()) {
-                    items.addItem(item);
-                }
-            });
-            TaskManager.sendTask(task);
-        });
+        btnViewItem.setClickListener(this::onYourActionsClick);
         layoutMain.addComponent(btnViewItem);
 
         Label labelBalance = new Label("Balance", 295, 3);
@@ -169,41 +166,14 @@ public class MineBayApp extends Application {
 
         Button btnBuy = new Button(100, 127, "Buy");
         btnBuy.setSize(50, 15);
-        btnBuy.setClickListener((mouseX, mouseY, mouseButton) ->
-        {
-            final Dialog.Confirmation dialog = new Dialog.Confirmation();
-            dialog.setPositiveText("Buy");
-            dialog.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
-                final int index = items.getSelectedIndex();
-                if (index == -1) return;
-
-                AuctionItem item = items.getItem(index);
-                if (item != null) {
-                    TaskBuyItem task = new TaskBuyItem(item.getId());
-                    task.setCallback((nbt, success) ->
-                    {
-                        if (success) {
-                            items.removeItem(index);
-                        }
-                    });
-                    TaskManager.sendTask(task);
-                }
-            });
-            dialog.setNegativeText("Cancel");
-            dialog.setNegativeListener((mouseX1, mouseY1, mouseButton1) -> dialog.close());
-            MineBayApp.this.openDialog(dialog);
-        });
+        btnBuy.setClickListener(this::onBuyClick);
         layoutMain.addComponent(btnBuy);
 
         /* Select Item Layout */
 
         layoutSelectItem = new Layout(172, 87);
         layoutSelectItem.setTitle("Add Item");
-        layoutSelectItem.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) -> {
-            graphics.fill(x, y, x + width, y + 22, Color.LIGHT_GRAY.getRGB());
-            graphics.fill(x, y + 22, x + width, y + 23, Color.DARK_GRAY.getRGB());
-            graphics.drawString(mc.font, "Select an Item...", x + 5, y + 7, Color.WHITE.getRGB());
-        });
+        layoutSelectItem.setBackground(MineBayApp::renderItemSelBackground);
 
         inventory = new Inventory(5, 28);
         inventory.setClickListener((mouseX, mouseY, mouseButton) ->
@@ -338,7 +308,7 @@ public class MineBayApp extends Application {
                 {
                     if (success) {
                         List<AuctionItem> auctionItems = AuctionManager.INSTANCE.getItems();
-                        items.addItem(auctionItems.get(auctionItems.size() - 1));
+                        items.addItem(auctionItems.getLast());
                     }
                 });
                 TaskManager.sendTask(task);
@@ -404,5 +374,41 @@ public class MineBayApp extends Application {
     @Override
     public void save(CompoundTag tagCompound) {
 
+    }
+
+    private void onYourActionsClick(int mouseX, int mouseY, int mouseButton) {
+        assert Minecraft.getInstance().player != null;
+        TaskGetAuctions task = new TaskGetAuctions(Minecraft.getInstance().player.getUUID());
+        task.setCallback((nbt, success) -> {
+            items.removeAll();
+            for (AuctionItem item : AuctionManager.INSTANCE.getItems()) {
+                items.addItem(item);
+            }
+        });
+        TaskManager.sendTask(task);
+    }
+
+    private void onBuyClick(int mouseX, int mouseY, int mouseButton) {
+        final Dialog.Confirmation dialog = new Dialog.Confirmation();
+        dialog.setPositiveText("Buy");
+        dialog.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
+            final int index = items.getSelectedIndex();
+            if (index == -1) return;
+
+            AuctionItem item = items.getItem(index);
+            if (item != null) {
+                TaskBuyItem task = new TaskBuyItem(item.getId());
+                task.setCallback((nbt, success) ->
+                {
+                    if (success) {
+                        items.removeItem(index);
+                    }
+                });
+                TaskManager.sendTask(task);
+            }
+        });
+        dialog.setNegativeText("Cancel");
+        dialog.setNegativeListener((mouseX1, mouseY1, mouseButton1) -> dialog.close());
+        MineBayApp.this.openDialog(dialog);
     }
 }

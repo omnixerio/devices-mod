@@ -2,6 +2,7 @@ package dev.ultreon.devices.api.task;
 
 import dev.ultreon.devices.core.task.TaskInstallApp;
 import dev.ultreon.devices.debug.DebugLog;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -12,8 +13,8 @@ import net.minecraft.world.level.Level;
  * client-server like applications, e.g. Emails, Instant Messaging, etc</p>
  *
  * <p>Any global variables that are initialized in this class, wont be on the server side.
- * To initialize them, first store the data in the NBT tag provided in {@link #prepareRequest(CompoundTag)},
- * then once your Task gets to the server, use {@link #processRequest(CompoundTag, Level, Player)} to
+ * To initialize them, first store the data in the NBT tag provided in {@link #prepareRequest(HolderLookup.Provider, CompoundTag)},
+ * then once your Task gets to the server, use {@link #processRequest(HolderLookup.Provider, CompoundTag, Level, Player)} to
  * get the data from the NBT tag parameter. Initialize the variables as normal.
  *
  * <p>Please check out the example applications to get a better understanding
@@ -22,7 +23,7 @@ import net.minecraft.world.level.Level;
  * @author MrCrayfish
  */
 public abstract class Task {
-    private final String name;
+    private String name;
     private Callback<CompoundTag> callback = null;
     private boolean success = false;
 
@@ -56,7 +57,7 @@ public abstract class Task {
     /**
      * Sets that this Task was successful. Should be called
      * if your Task produced the correct results, preferably in
-     * {@link #processRequest(CompoundTag, Level, Player)}
+     * {@link #processRequest(HolderLookup.Provider, CompoundTag, Level, Player)}
      */
     public final void setSuccessful() {
         if (this instanceof TaskInstallApp) DebugLog.log("Setting successful...");
@@ -93,33 +94,41 @@ public abstract class Task {
      * Called before the request is sent off to the server.
      * You should store the data you want to sendTask into the NBT Tag
      *
-     * @param tag The NBT to be sent to the server
+     * @param provider
+     * @param tag      The NBT to be sent to the server
      */
-    public abstract void prepareRequest(CompoundTag tag);
+    public abstract void prepareRequest(HolderLookup.Provider provider, CompoundTag tag);
 
     /**
      * Called when the request arrives to the server. Here you can perform actions
-     * with your request. Data attached to the NBT from {@link Task#prepareRequest(CompoundTag tag)}
+     * with your request. Data attached to the NBT from {@link Task#prepareRequest(HolderLookup.Provider, CompoundTag)}
      * can be accessed from the NBT tag parameter.
      *
-     * @param tag The NBT Tag received from the client
+     * @param provider
+     * @param tag      The NBT Tag received from the client
      */
-    public abstract void processRequest(CompoundTag tag, Level level, Player player);
+    public abstract void processRequest(HolderLookup.Provider provider, CompoundTag tag, Level level, Player player);
 
     /**
      * Called before the response is sent back to the client.
      * You should store the data you want to sendTask back into the NBT Tag
      *
-     * @param tag The NBT to be sent back to the client
+     * @param provider
+     * @param tag      The NBT to be sent back to the client
      */
-    public abstract void prepareResponse(CompoundTag tag);
+    public abstract void prepareResponse(HolderLookup.Provider provider, CompoundTag tag);
 
     /**
      * Called when the response arrives to the client. Here you can update data
      * on the client side. If you want to update any UI component, you should set
      * a Callback before you sendTask the request. See {@link #setCallback(Callback)}
      *
-     * @param tag The NBT Tag received from the server
+     * @param provider
+     * @param tag      The NBT Tag received from the server
      */
-    public abstract void processResponse(CompoundTag tag);
+    public abstract void processResponse(HolderLookup.Provider provider, CompoundTag tag);
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

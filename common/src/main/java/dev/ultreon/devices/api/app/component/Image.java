@@ -597,7 +597,7 @@ public class Image extends Component {
         @Override
         public void load(@NotNull ResourceManager resourceManager) throws IOException {
             NativeImage nativeImage = Image.read(in);
-            Minecraft.getInstance().getTextureManager().register(Devices.id("dynamic_loaded/" + getId()), this);
+            Minecraft.getInstance().getTextureManager().register(Devices.res("dynamic_loaded/" + getId()), this);
             this.upload(nativeImage);
         }
 

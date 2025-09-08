@@ -4,6 +4,7 @@ import dev.ultreon.devices.Devices;
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.programs.auction.AuctionManager;
 import dev.ultreon.devices.programs.auction.object.AuctionItem;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Player;
@@ -25,21 +26,21 @@ public class TaskGetAuctions extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag nbt) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag nbt) {
         if (seller != null) {
             nbt.putString("seller", seller.toString());
         }
     }
 
     @Override
-    public void processRequest(CompoundTag nbt, Level world, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag nbt, Level world, Player player) {
         if (nbt.contains("seller")) {
             seller = UUID.fromString(nbt.getString("seller"));
         }
     }
 
     @Override
-    public void prepareResponse(CompoundTag nbt) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag nbt) {
         if (seller != null) {
             List<AuctionItem> items = AuctionManager.INSTANCE.getItemsForSeller(seller);
             ListTag tagList = new ListTag();
@@ -50,13 +51,13 @@ public class TaskGetAuctions extends Task {
             });
             nbt.put("auctionItems", tagList);
         } else {
-            AuctionManager.INSTANCE.writeToNBT(nbt);
+            AuctionManager.INSTANCE.writeToNBT(provider, nbt);
         }
         this.setSuccessful();
     }
 
     @Override
-    public void processResponse(CompoundTag nbt) {
-        AuctionManager.INSTANCE.readFromNBT(nbt);
+    public void processResponse(HolderLookup.Provider provider, CompoundTag nbt) {
+        AuctionManager.INSTANCE.readFromNBT(provider, nbt);
     }
 }

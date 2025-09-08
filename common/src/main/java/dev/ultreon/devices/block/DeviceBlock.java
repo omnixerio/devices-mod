@@ -6,12 +6,14 @@ import dev.ultreon.devices.block.entity.DeviceBlockEntity;
 import dev.ultreon.devices.util.BlockEntityUtil;
 import dev.ultreon.devices.util.Colorable;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -65,7 +67,7 @@ public abstract class DeviceBlock extends HorizontalDirectionalBlock implements 
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof DeviceBlockEntity deviceBlockEntity) {
-            if (stack.hasCustomHoverName()) {
+            if (stack.has(DataComponents.CUSTOM_NAME)) {
                 deviceBlockEntity.setCustomName(stack.getHoverName().getString());
             }
         }
@@ -78,7 +80,7 @@ public abstract class DeviceBlock extends HorizontalDirectionalBlock implements 
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof DeviceBlockEntity device) {
                 CompoundTag blockEntityTag = new CompoundTag();
-                blockEntity.saveWithoutMetadata();
+                blockEntity.saveWithoutMetadata(level.registryAccess());
                 blockEntityTag.remove("id");
 
                 removeTagsForDrop(blockEntityTag);
@@ -92,10 +94,10 @@ public abstract class DeviceBlock extends HorizontalDirectionalBlock implements 
                 } else {
                     drop = new ItemStack(this);
                 }
-                drop.setTag(tag);
+                drop.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(tag));
 
                 if (device.hasCustomName()) {
-                    drop.setHoverName(Component.literal(device.getCustomName()));
+                    drop.set(DataComponents.CUSTOM_NAME, Component.literal(device.getCustomName()));
                 }
 
                 level.addFreshEntity(new ItemEntity((Level) level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop));

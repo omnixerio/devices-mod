@@ -7,6 +7,8 @@ import dev.ultreon.devices.api.app.component.Button;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+
 /**
  * @author MrCrayfish
  */
@@ -50,7 +52,11 @@ public class TestApp extends Application {
         Button button4 = new Button(105, 5, Icons.PRINTER);
         button4.setClickListener((mouseX, mouseY, mouseButton) -> {
             if (mouseButton == 0) {
-                openDialog(new Dialog.SaveFile(this, new CompoundTag()));
+                try {
+                    openDialog(new Dialog.SaveFile(this, new CompoundTag()));
+                } catch (IOException e) {
+                    openDialog(new Dialog.Message("Failed to save file: " + e.getMessage()));
+                }
             }
         });
         super.addComponent(button4);

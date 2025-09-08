@@ -1,4 +1,4 @@
-package dev.ultreon.devices.core.client;
+package dev.ultreon.devices.client;
 
 /**
  * @author MrCrayfish

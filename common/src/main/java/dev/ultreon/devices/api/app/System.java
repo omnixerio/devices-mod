@@ -86,4 +86,5 @@ public interface System {
     Collection<AppInfo> getInstalledApplications();
 
     void openDialog(Dialog message);
+
 }

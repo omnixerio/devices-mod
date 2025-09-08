@@ -88,7 +88,7 @@ public class ClientModEvents {
 
             return CompletableFuture.runAsync(() -> {
                 if (!ApplicationManager.getAllApplications().isEmpty()) {
-                    ApplicationManager.getAllApplications().forEach(AppInfo::reload);
+                    ApplicationManager.getAllApplications().forEach(appInfo -> appInfo.reload(resourceManager));
                     generateIconAtlas(resourceManager); // FIXME: Broken resource reloading, can't find image resource while definitely exists.
                 }
 

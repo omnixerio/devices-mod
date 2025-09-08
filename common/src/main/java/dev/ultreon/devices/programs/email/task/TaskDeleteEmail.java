@@ -3,6 +3,7 @@ package dev.ultreon.devices.programs.email.task;
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.programs.email.EmailManager;
 import dev.ultreon.devices.programs.email.object.Email;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -23,12 +24,12 @@ public class TaskDeleteEmail extends Task {
 	}
 
 	@Override
-	public void prepareRequest(CompoundTag nbt) {
+	public void prepareRequest(HolderLookup.Provider provider, CompoundTag nbt) {
 		nbt.putInt("Index", this.index);
 	}
 
 	@Override
-	public void processRequest(CompoundTag nbt, Level level, Player player) {
+	public void processRequest(HolderLookup.Provider provider, CompoundTag nbt, Level level, Player player) {
 		List<Email> emails = EmailManager.INSTANCE.getEmailsForAccount(player);
 		if (emails != null) {
 			int index = nbt.getInt("Index");
@@ -40,10 +41,10 @@ public class TaskDeleteEmail extends Task {
 	}
 
 	@Override
-	public void prepareResponse(CompoundTag nbt) {
+	public void prepareResponse(HolderLookup.Provider provider, CompoundTag nbt) {
 	}
 
 	@Override
-	public void processResponse(CompoundTag nbt) {
+	public void processResponse(HolderLookup.Provider provider, CompoundTag nbt) {
 	}
 }

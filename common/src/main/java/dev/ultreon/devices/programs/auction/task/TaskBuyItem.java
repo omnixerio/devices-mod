@@ -5,6 +5,7 @@ import dev.ultreon.devices.api.utils.BankUtil;
 import dev.ultreon.devices.programs.auction.AuctionManager;
 import dev.ultreon.devices.programs.auction.object.AuctionItem;
 import dev.ultreon.devices.programs.system.object.Account;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -25,12 +26,12 @@ public class TaskBuyItem extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag nbt) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag nbt) {
         nbt.putString("id", id.toString());
     }
 
     @Override
-    public void processRequest(CompoundTag nbt, Level world, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag nbt, Level world, Player player) {
         this.id = UUID.fromString(nbt.getString("id"));
         AuctionItem item = AuctionManager.INSTANCE.getItem(id);
         if (item != null && item.isValid()) {
@@ -46,10 +47,10 @@ public class TaskBuyItem extends Task {
     }
 
     @Override
-    public void prepareResponse(CompoundTag nbt) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag nbt) {
     }
 
     @Override
-    public void processResponse(CompoundTag nbt) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag nbt) {
     }
 }

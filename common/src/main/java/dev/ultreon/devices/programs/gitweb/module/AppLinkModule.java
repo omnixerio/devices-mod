@@ -43,8 +43,8 @@ public class AppLinkModule extends Module {
                 DebugLog.log("FRAME");
                 gitWeb.getSystem().ifPresent(a -> {
                     DebugLog.log("OPENING APP");
-                    var b = a.openApplication(ApplicationManager.getApplication(ResourceLocation.tryParse("devices:app_store")));
-                    if (b != null && b instanceof AppStore store) {
+                    var b = a.launchApp(ApplicationManager.getApplication(ResourceLocation.tryParse("devices:app_store")));
+                    if (b instanceof AppStore store) {
                         store.queueOpen(info);
                     }
                 });

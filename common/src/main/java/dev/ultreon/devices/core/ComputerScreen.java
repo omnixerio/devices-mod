@@ -627,7 +627,7 @@ public class ComputerScreen extends Screen implements System {
             }
             intent.putString("name", name);
         }
-        launchApp(ApplicationManager.getApplication(Devices.id("diagnostics")), intent);
+        launchApp(ApplicationManager.getApplication(Devices.res("diagnostics")), intent);
         closeApplication(app);
     }
 
@@ -759,7 +759,7 @@ public class ComputerScreen extends Screen implements System {
                         if (info != null) {
                             intent.putString("name", info.getName());
                         }
-                        launchApp(ApplicationManager.getApplication(Devices.id("diagnostics")), intent);
+                        launchApp(ApplicationManager.getApplication(Devices.res("diagnostics")), intent);
                     } else {
                         setSystemDialog(message);
                     }
@@ -1047,7 +1047,7 @@ public class ComputerScreen extends Screen implements System {
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
         } catch (Exception e) {
             Devices.LOGGER.error("An error has occurred.", e);
-            AppInfo info = ApplicationManager.getApplication(Devices.id("diagnostics"));
+            AppInfo info = ApplicationManager.getApplication(Devices.res("diagnostics"));
             system.launchApp(info);
         }
         return app;
@@ -1091,7 +1091,7 @@ public class ComputerScreen extends Screen implements System {
             }
         } catch (Exception e) {
             Devices.LOGGER.error("An error has occurred.", e);
-            AppInfo info1 = ApplicationManager.getApplication(Devices.id("diagnostics"));
+            AppInfo info1 = ApplicationManager.getApplication(Devices.res("diagnostics"));
             system.launchApp(info1);
         }
     }

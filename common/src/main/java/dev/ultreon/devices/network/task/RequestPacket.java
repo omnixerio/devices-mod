@@ -34,13 +34,13 @@ public class RequestPacket implements PacketToServer<RequestPacket> {
         buf.writeInt(this.id);
         buf.writeUtf(this.request.getName());
         CompoundTag tag = new CompoundTag();
-        this.request.prepareRequest(tag);
+        this.request.prepareRequest(buf.registryAccess(), tag);
         buf.writeNbt(tag);
     }
 
     @Override
     public void handle(Networker networker, ServerPlayer player) {
-        request.processRequest(tag, Objects.requireNonNull(player).level(), player);
+        request.processRequest(player.level().registryAccess(), tag, Objects.requireNonNull(player).level(), player);
         PacketHandler.sendToClient(new ResponsePacket(id, request), player);
     }
 

@@ -6,6 +6,7 @@ import dev.ultreon.devices.core.DataPath;
 import dev.ultreon.devices.core.io.FileSystem;
 import dev.ultreon.devices.core.io.drive.AbstractDrive;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -42,14 +43,14 @@ public class TaskGetFiles extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag tag) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag tag) {
         tag.putString("uuid", uuid);
         tag.putString("path", path.toString());
         tag.putLong("pos", pos.asLong());
     }
 
     @Override
-    public void processRequest(CompoundTag tag, Level level, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag tag, Level level, Player player) {
         BlockEntity tileEntity = level.getChunkAt(BlockPos.of(tag.getLong("pos"))).getBlockEntity(BlockPos.of(tag.getLong("pos")), LevelChunk.EntityCreationType.IMMEDIATE);
         if (!(tileEntity instanceof ComputerBlockEntity laptop)) {
             return;
@@ -75,7 +76,7 @@ public class TaskGetFiles extends Task {
     }
 
     @Override
-    public void prepareResponse(CompoundTag tag) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
         if (this.error != null) {
             tag.putString("error", error);
             return;
@@ -88,7 +89,7 @@ public class TaskGetFiles extends Task {
     }
 
     @Override
-    public void processResponse(CompoundTag tag) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag tag) {
 
     }
 }

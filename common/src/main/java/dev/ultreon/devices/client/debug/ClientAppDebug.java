@@ -1,4 +1,4 @@
-package dev.ultreon.devices.core.client.debug;
+package dev.ultreon.devices.client.debug;
 
 /// Adds a button to the title screen to test system applications that don't require the system
 public class ClientAppDebug {

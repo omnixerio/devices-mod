@@ -197,12 +197,12 @@ public class AppStore extends SystemApp {
 
     public static class StoreTrayItem extends TrayItem {
         public StoreTrayItem() {
-            super(Icons.SHOP, Devices.id("app_store"));
+            super(Icons.SHOP, Devices.res("app_store"));
         }
 
         @Override
         public void handleClick(int mouseX, int mouseY, int mouseButton) {
-            AppInfo info = ApplicationManager.getApplication(Devices.id("app_store"));
+            AppInfo info = ApplicationManager.getApplication(Devices.res("app_store"));
             if (info != null) {
                 ComputerScreen.getSystem().launchApp(info);
             }

@@ -30,8 +30,7 @@ public class Drive {
     public Drive(CompoundTag driveTag) {
         this.name = driveTag.getString("name");
         if (driveTag.contains("uuid")) {
-            Tag uuid1 = driveTag.get("uuid");
-            this.uuid = NbtUtils.loadUUID(uuid1);
+            this.uuid = driveTag.getUUID("uuid");
         } else throw new IllegalArgumentException("Drive must have a uuid");
         this.type = Type.fromString(driveTag.getString("type"));
     }

@@ -2,6 +2,7 @@ package dev.ultreon.devices.programs.auction;
 
 import dev.ultreon.devices.Devices;
 import dev.ultreon.devices.programs.auction.object.AuctionItem;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 
@@ -62,24 +63,24 @@ public class AuctionManager {
         }
     }
 
-    public void writeToNBT(CompoundTag tag) {
+    public void writeToNBT(HolderLookup.Provider provider, CompoundTag tag) {
         ListTag tagList = new ListTag();
         items.stream().filter(AuctionItem::isValid).forEach(i -> {
             CompoundTag itemTag = new CompoundTag();
-            i.writeToNBT(itemTag, Devices.getServer().registryAccess());
+            i.writeToNBT(itemTag, provider);
             tagList.add(itemTag);
         });
         tag.put("auctionItems", tagList);
     }
 
-    public void readFromNBT(CompoundTag tag) {
+    public void readFromNBT(HolderLookup.Provider provider, CompoundTag tag) {
         items.clear();
 
         ListTag tagList = (ListTag) tag.get("auctionItems");
         if (tagList != null) {
             for (int i = 0; i < tagList.size(); i++) {
                 CompoundTag itemTag = tagList.getCompound(i);
-                AuctionItem item = AuctionItem.readFromNBT(itemTag);
+                AuctionItem item = AuctionItem.readFromNBT(provider, itemTag);
                 items.add(item);
             }
         }

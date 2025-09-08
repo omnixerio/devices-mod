@@ -12,6 +12,7 @@ import dev.ultreon.devices.item.FlashDriveItem;
 import dev.ultreon.devices.util.ItemColors;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.*;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
@@ -20,15 +21,16 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.ItemLike;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class DevicesRecipeProvider extends FabricRecipeProvider {
-    public DevicesRecipeProvider(FabricDataOutput dataGenerator) {
-        super(dataGenerator);
+    public DevicesRecipeProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
+        super(output, registriesFuture);
     }
 
     @Override
-    public void buildRecipes(Consumer<FinishedRecipe> exporter) {
+    public void buildRecipes(RecipeOutput exporter) {
         DeviceBlocks.LAPTOPS.getMap().forEach(((dyeColor, blockRegistrySupplier) -> laptop(exporter, blockRegistrySupplier.get(), dyeColor)));
 
         //***********************//
@@ -230,7 +232,7 @@ public class DevicesRecipeProvider extends FabricRecipeProvider {
                 .save(exporter);
     }
 
-    public static void laptop(Consumer<FinishedRecipe> exporter, ItemLike laptop, DyeColor color) {
+    public static void laptop(RecipeOutput exporter, ItemLike laptop, DyeColor color) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, laptop)
                 .define('+', DyeUtils.getWoolFromDye(color))
                 .define('/', Items.IRON_INGOT)

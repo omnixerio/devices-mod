@@ -3,6 +3,7 @@ package dev.ultreon.devices.programs.email.task;
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.programs.email.EmailManager;
 import dev.ultreon.devices.programs.email.object.Email;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.player.Player;
@@ -18,16 +19,16 @@ public class TaskUpdateInbox extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag nbt) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag nbt) {
     }
 
     @Override
-    public void processRequest(CompoundTag nbt, Level world, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag nbt, Level world, Player player) {
         this.emails = EmailManager.INSTANCE.getEmailsForAccount(player);
     }
 
     @Override
-    public void prepareResponse(CompoundTag nbt) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag nbt) {
         ListTag tagList = new ListTag();
         if (emails != null) {
             for (Email email : emails) {
@@ -40,7 +41,7 @@ public class TaskUpdateInbox extends Task {
     }
 
     @Override
-    public void processResponse(CompoundTag nbt) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag nbt) {
         EmailManager.INSTANCE.getInbox().clear();
         ListTag emails = (ListTag) nbt.get("emails");
         for (int i = 0; i < emails.size(); i++) {

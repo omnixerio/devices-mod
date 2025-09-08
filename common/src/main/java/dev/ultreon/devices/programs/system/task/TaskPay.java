@@ -3,6 +3,7 @@ package dev.ultreon.devices.programs.system.task;
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.api.utils.BankUtil;
 import dev.ultreon.devices.programs.system.object.Account;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -24,13 +25,13 @@ public class TaskPay extends Task {
     }
 
     @Override
-    public void prepareRequest(CompoundTag tag) {
+    public void prepareRequest(HolderLookup.Provider provider, CompoundTag tag) {
         tag.putString("player", this.uuid);
         tag.putInt("amount", this.amount);
     }
 
     @Override
-    public void processRequest(CompoundTag tag, Level level, Player player) {
+    public void processRequest(HolderLookup.Provider provider, CompoundTag tag, Level level, Player player) {
         String uuid = tag.getString("uuid");
         int amount = tag.getInt("amount");
         Account sender = BankUtil.INSTANCE.getAccount(player);
@@ -44,13 +45,13 @@ public class TaskPay extends Task {
     }
 
     @Override
-    public void prepareResponse(CompoundTag tag) {
+    public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
         if (isSucessful()) {
             tag.putInt("balance", this.amount);
         }
     }
 
     @Override
-    public void processResponse(CompoundTag tag) {
+    public void processResponse(HolderLookup.Provider provider, CompoundTag tag) {
     }
 }

@@ -61,7 +61,7 @@ public final class FileInfo {
         CompoundTag driveTag = new CompoundTag();
         if (drive == null) {
             driveTag.putString("name", "Unknown");
-            driveTag.put("uuid", NbtUtils.createUUID(dataPath.drive()));
+            driveTag.putUUID("uuid", dataPath.drive());
             driveTag.putString("type", Drive.Type.UNKNOWN.toString());
         } else {
             driveTag.putString("name", drive.getName());

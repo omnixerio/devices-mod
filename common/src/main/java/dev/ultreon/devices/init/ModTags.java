@@ -16,7 +16,7 @@ public final class ModTags {
         public static final TagKey<Item> ROUTERS = createTag("routers");
 
         private static TagKey<Item> createTag(String name) {
-            return TagKey.create(Registries.ITEM, Devices.id(name));
+            return TagKey.create(Registries.ITEM, Devices.res(name));
         }
     }
 
@@ -26,7 +26,7 @@ public final class ModTags {
         public static final TagKey<Block> ROUTERS = createTag("routers");
 
         private static TagKey<Block> createTag(String name) {
-            return TagKey.create(Registries.BLOCK, Devices.id(name));
+            return TagKey.create(Registries.BLOCK, Devices.res(name));
         }
     }
 
@@ -34,7 +34,7 @@ public final class ModTags {
         public static final TagKey<BlockEntityType<?>> NETWORK_DEVICES = createTag("network_devices");
 
         private static TagKey<BlockEntityType<?>> createTag(String name) {
-            return TagKey.create(Registries.BLOCK_ENTITY_TYPE, Devices.id(name));
+            return TagKey.create(Registries.BLOCK_ENTITY_TYPE, Devices.res(name));
         }
     }
 }

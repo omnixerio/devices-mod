@@ -6,6 +6,7 @@ import dev.ultreon.devices.core.network.Router;
 import dev.ultreon.devices.util.Colorable;
 import dev.ultreon.devices.util.Tickable;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -100,16 +101,16 @@ public abstract class NetworkDeviceBlockEntity extends DeviceBlockEntity impleme
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(@NotNull CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         if (connection != null) {
             tag.put("connection", connection.toTag());
         }
     }
 
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(@NotNull CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         if (tag.contains("connection", Tag.TAG_COMPOUND)) {
             connection = Connection.fromTag(tag.getCompound("connection"));
         }
@@ -123,16 +124,16 @@ public abstract class NetworkDeviceBlockEntity extends DeviceBlockEntity impleme
         }
 
         @Override
-        public void load(@NotNull CompoundTag tag) {
-            super.load(tag);
+        public void loadAdditional(@NotNull CompoundTag tag, HolderLookup.Provider provider) {
+            super.loadAdditional(tag, provider);
             if (tag.contains("color", Tag.TAG_STRING)) {
                 color = DyeColor.byId(tag.getByte("color"));
             }
         }
 
         @Override
-        public void saveAdditional(@NotNull CompoundTag tag) {
-            super.saveAdditional(tag);
+        public void saveAdditional(@NotNull CompoundTag tag, HolderLookup.Provider provider) {
+            super.saveAdditional(tag, provider);
             tag.putByte("color", (byte) color.getId());
         }
 
