@@ -23,8 +23,8 @@ public final class ExternalDrive extends AbstractDrive {
         super(displayName);
     }
 
-    private ExternalDrive(Path drivePath) throws FileSystemException, IOException {
-        super(drivePath);
+    private ExternalDrive(UUID uuid, Path drivePath) throws FileSystemException, IOException {
+        super(uuid, drivePath);
     }
 
     private ExternalDrive(String s, UUID uuid) {
@@ -32,9 +32,9 @@ public final class ExternalDrive extends AbstractDrive {
         this.uuid = uuid;
     }
 
-    public static ExternalDrive load(Path drivePath) {
+    public static ExternalDrive load(UUID uuid, Path drivePath) {
         try {
-            return new ExternalDrive(drivePath);
+            return new ExternalDrive(uuid, drivePath);
         } catch (FileSystemException | IOException e) {
             return null;
         }

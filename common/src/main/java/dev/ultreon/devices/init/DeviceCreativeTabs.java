@@ -54,6 +54,12 @@ public class DeviceCreativeTabs {
                 output.accept(DeviceItems.COMPONENT_CONTROLLER_UNIT.get());
                 output.accept(DeviceItems.COMPONENT_SMALL_ELECTRIC_MOTOR.get());
                 output.accept(DeviceItems.COMPONENT_MOTHERBOARD.get());
+                output.accept(DeviceItems.ETHERNET_CABLE.get());
+                output.accept(DeviceItems.GLASS_DUST.get());
+                output.accept(DeviceItems.PLASTIC.get());
+                output.accept(DeviceItems.PLASTIC_FRAME.get());
+                output.accept(DeviceItems.PLASTIC_UNREFINED.get());
+                output.accept(DeviceItems.WHEEL.get());
             })
             .build());
 

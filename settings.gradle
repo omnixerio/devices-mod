@@ -30,5 +30,5 @@ rootProject.name = 'devices-mod'
 include('common')
 include('fabric')
 include('neoforge')
-include('forge')
+//include('forge')
 //include('quilt') // TODO Add Quilt support

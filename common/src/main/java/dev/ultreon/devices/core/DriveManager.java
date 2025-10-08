@@ -18,7 +18,7 @@ public class DriveManager {
 
     public static InternalDrive getInternalDrive(UUID uuid) {
         try {
-            return INTERNAL_DRIVE_CACHE.get(uuid, () -> InternalDrive.load(AbstractDrive.getDrivePath(uuid)));
+            return INTERNAL_DRIVE_CACHE.get(uuid, () -> InternalDrive.load(uuid, AbstractDrive.getDrivePath(uuid)));
         } catch (ExecutionException e) {
             Devices.LOGGER.error("Failed to load internal drive", e);
             return null;
@@ -27,7 +27,7 @@ public class DriveManager {
 
     public static ExternalDrive getExternalDrive(UUID uuid) {
         try {
-            return EXTERNAL_DRIVE_CACHE.get(uuid, () -> ExternalDrive.load(AbstractDrive.getDrivePath(uuid)));
+            return EXTERNAL_DRIVE_CACHE.get(uuid, () -> ExternalDrive.load(uuid, AbstractDrive.getDrivePath(uuid)));
         } catch (ExecutionException e) {
             Devices.LOGGER.error("Failed to load external drive", e);
             return null;

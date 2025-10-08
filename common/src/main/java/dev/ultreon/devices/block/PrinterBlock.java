@@ -1,6 +1,7 @@
 package dev.ultreon.devices.block;
 
 import com.mojang.serialization.MapCodec;
+import dev.ultreon.devices.Devices;
 import dev.ultreon.devices.ModDeviceTypes;
 import dev.ultreon.devices.block.entity.PrinterBlockEntity;
 import dev.ultreon.devices.util.Colored;
@@ -35,7 +36,7 @@ public class PrinterBlock extends DeviceBlock.Colored implements Colored {
             box(12, 0, 12, 15, 5, 14),
             box(12, 0, 5, 15, 3, 7),
             box(1, 0, 5, 4, 3, 7),
-            box(1, 0, 12, 4, 5, 14),
+            box(1, 0, 12, 4, 75, 14),
             box(1.1, 0, 7, 14.9, 5, 12),
             box(4, 0, 12, 12, 3, 14),
             box(3.5, 0.1, 1, 12.5, 1.1, 7.5),
@@ -102,20 +103,17 @@ public class PrinterBlock extends DeviceBlock.Colored implements Colored {
 
     @Override
     protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
-        if (level.isClientSide) {
-            if (player.isCrouching()) {
-                return ItemInteractionResult.SUCCESS;
-            } else {
-                return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
-            }
+        if (level.isClientSide && player.isCrouching()) {
+            return ItemInteractionResult.CONSUME;
         }
         ItemStack heldItem = player.getItemInHand(hand);
         BlockEntity tileEntity = level.getChunkAt(pos).getBlockEntity(pos, LevelChunk.EntityCreationType.IMMEDIATE);
         if (tileEntity instanceof PrinterBlockEntity) {
             return ((PrinterBlockEntity) tileEntity).addPaper(heldItem, player.isCrouching()) ? ItemInteractionResult.SUCCESS : ItemInteractionResult.FAIL;
+        } else {
+            Devices.LOGGER.warn("BlockEntity at {} is not a PrinterBlockEntity", pos);
+            return ItemInteractionResult.FAIL;
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-
     }
 
     @Override

@@ -6,11 +6,13 @@ import dev.ultreon.devices.block.entity.PaperBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -19,7 +21,9 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -82,25 +86,25 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
 
     @Override
     public List<ItemStack> getDrops(BlockState pState, LootParams.Builder pBuilder) {
-        return new ArrayList<>();
-    }
+        BlockEntity blockEntity = pBuilder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+        if (!(blockEntity instanceof PaperBlockEntity paper)) return new ArrayList<>();
 
-    @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!level.isClientSide) {
-            BlockEntity tileEntity = level.getBlockEntity(pos);
-            if (tileEntity instanceof PaperBlockEntity paper) {
-                ItemStack drop = IPrint.generateItem(paper.getPrint());
-                level.addFreshEntity(new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop));
-            }
-        }
-        super.onRemove(state, level, pos, newState, isMoving);
+        IPrint print = paper.getPrint();
+        if (print == null) return new ArrayList<>();
+
+        ItemStack drop = IPrint.generateItem(print);
+        return List.of(drop);
     }
 
     @Override
     public boolean triggerEvent(@NotNull BlockState state, Level level, @NotNull BlockPos pos, int id, int param) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         return blockEntity != null && blockEntity.triggerEvent(id, param);
+    }
+
+    @Override
+    public boolean dropFromExplosion(Explosion pExplosion) {
+        return true;
     }
 
     @Override

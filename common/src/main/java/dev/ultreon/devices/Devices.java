@@ -379,17 +379,17 @@ public abstract class Devices {
         EventSystem.MAIN.on(ServerStoppedEvent.class, event -> server = null);
 
         EventSystem.MAIN.on(UseBlockEvent.class, event -> {
-            Player player = event.getPlayer();
-            InteractionHand hand = event.getHand();
-            BlockPos blockPosition = event.getBlockPosition();
-            Block block = event.getBlock();
-            Level level = player.level();
-            if (!player.getItemInHand(hand).isEmpty() && player.getItemInHand(hand).getItem() == Items.PAPER) {
-                if (block instanceof PrinterBlock) {
-                    event.cancel(InteractionResult.CONSUME);
-                    //event.setUseBlock(Event.Result.ALLOW); //todo
-                }
-            }
+//            Player player = event.getPlayer();
+//            InteractionHand hand = event.getHand();
+//            BlockPos blockPosition = event.getBlockPosition();
+//            Block block = event.getBlock();
+//            Level level = player.level();
+//            if (!player.getItemInHand(hand).isEmpty() && player.getItemInHand(hand).getItem() == Items.PAPER) {
+//                if (block instanceof PrinterBlock) {
+//                    event.cancel(InteractionResult.CONSUME);
+//                    //event.setUseBlock(Event.Result.ALLOW); //todo
+//                }
+//            }
         });
 
         EventSystem.MAIN.on(ServerPlayerJoinEvent.class, event -> {

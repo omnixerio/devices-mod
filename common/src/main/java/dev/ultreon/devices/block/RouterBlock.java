@@ -3,16 +3,11 @@ package dev.ultreon.devices.block;
 import com.mojang.serialization.MapCodec;
 import dev.ultreon.devices.ModDeviceTypes;
 import dev.ultreon.devices.block.entity.RouterBlockEntity;
-import dev.ultreon.devices.network.PacketHandler;
-import dev.ultreon.devices.network.task.SyncBlockPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -20,7 +15,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Contract;
@@ -89,21 +83,6 @@ public class RouterBlock extends DeviceBlock.Colored {
             case WEST -> pState.getValue(VERTICAL) ? BODY_VERTICAL_BOUNDING_BOX[3] : BODY_BOUNDING_BOX[3];
             default -> BODY_BOUNDING_BOX[0];
         };
-    }
-
-    @Override
-    protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hitResult) {
-        if (level.isClientSide && player.isCreative()) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof RouterBlockEntity router) {
-                router.setDebug(true);
-                if (router.isDebug()) {
-                    PacketHandler.sendToServer(new SyncBlockPacket(pos));
-                }
-            }
-            return InteractionResult.SUCCESS;
-        }
-        return super.useWithoutItem(state, level, pos, player, hitResult);
     }
 
     @Override

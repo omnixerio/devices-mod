@@ -68,8 +68,9 @@ public abstract class AbstractDrive implements FS {
 
     }
 
-    AbstractDrive(Path drivePath) throws FileSystemException, IOException {
-        this.uuid = UUID.randomUUID();
+    AbstractDrive(UUID uuid, Path drivePath) throws FileSystemException, IOException {
+        this.name = "OS";
+        this.uuid = uuid;
         this.setFs(Ext2FS.open(drivePath));
     }
 

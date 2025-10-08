@@ -245,6 +245,7 @@ public class ClientModEvents {
 
     public static void registerLayerDefinitions() {
         LOGGER.info("Registering layer definitions.");
-//        EntityModelLayerRegistry.register(PrinterRenderer.PaperModel.LAYER_LOCATION, PrinterRenderer.PaperModel::createBodyLayer);
+        EntityRendererRegistry entityRendererRegistry = XinexPlatform.client().entityRenderers();
+        entityRendererRegistry.registerModel(PrinterRenderer.PaperModel.LAYER_LOCATION, PrinterRenderer.PaperModel::createBodyLayer);
     }
 }

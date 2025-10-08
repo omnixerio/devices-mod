@@ -23,17 +23,9 @@ import java.util.Map;
 import java.util.UUID;
 
 public abstract class ComputerBlockEntity extends NetworkDeviceBlockEntity.Colored {
-    private static final int OPENED_ANGLE = 102;
-
-    private boolean open = false;
-
     private CompoundTag applicationData = new CompoundTag();
     private CompoundTag systemData = new CompoundTag();
     private FileSystem fileSystem;
-
-    private int rotation;
-
-    private int prevRotation;
 
     private DyeColor externalDriveColor;
 
@@ -49,37 +41,11 @@ public abstract class ComputerBlockEntity extends NetworkDeviceBlockEntity.Color
     @Override
     public void tick() {
         super.tick();
-        Level level = this.level;
-        if (level == null) return;
-
-        if (getBlockState().getValue(LaptopBlock.OPEN) != open) {
-            level.setBlock(getBlockPos(), this.getBlockState().setValue(LaptopBlock.OPEN, open), 2);
-        }
-
-        if (level.isClientSide) {
-            prevRotation = rotation;
-            if (!open) {
-                if (rotation > 0) {
-                    rotation -= 10;
-                }
-            } else {
-                if (rotation < OPENED_ANGLE) {
-                    rotation += 10;
-                }
-            }
-        }
     }
 
     @Override
     public void loadAdditional(@NotNull CompoundTag compound, HolderLookup.@NotNull Provider registries) {
         super.loadAdditional(compound, registries);
-        if (compound.contains("open")) {
-            this.open = compound.getBoolean("open");
-            Level level = getLevel();
-            if (level != null) {
-                level.setBlock(getBlockPos(), this.getBlockState().setValue(LaptopBlock.OPEN, open), 2);
-            }
-        }
         if (compound.contains("system_data", Tag.TAG_COMPOUND)) {
             this.systemData = compound.getCompound("system_data");
         }
@@ -100,7 +66,6 @@ public abstract class ComputerBlockEntity extends NetworkDeviceBlockEntity.Color
     @Override
     public void saveAdditional(@NotNull CompoundTag compound, HolderLookup.@NotNull Provider registries) {
         super.saveAdditional(compound, registries);
-        compound.putBoolean("open", open);
 
         if (systemData != null) {
             compound.put("system_data", systemData);
@@ -118,7 +83,6 @@ public abstract class ComputerBlockEntity extends NetworkDeviceBlockEntity.Color
     @Override
     public CompoundTag saveSyncTag() {
         CompoundTag tag = super.saveSyncTag();
-        tag.putBoolean("open", open);
         tag.put("system_data", getSystemData());
 
         if (getFileSystem().getAttachedDrive() != null) {
@@ -140,32 +104,8 @@ public abstract class ComputerBlockEntity extends NetworkDeviceBlockEntity.Color
 //        return INFINITE_EXTENT_AABB;
 //    }
 
-    public void openClose(@Nullable Entity entity) {
-        Level level = this.level;
-        if (level != null) {
-            level.gameEvent(!open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, getBlockPos(), GameEvent.Context.of(entity, this.getBlockState()));
-        }
-        boolean oldOpen = open;
-        open = !getBlockState().getValue(LaptopBlock.OPEN);
-        if (oldOpen != open) {
-            pipeline.putBoolean("open", open);
-            var d = getBlockState().setValue(LaptopBlock.OPEN, open);
-            this.level.setBlock(this.getBlockPos(), d, 18);
-            sync();
-        }
-
-        if (level != null) {
-            markUpdated();
-            doNeighborUpdates(level, this.getBlockPos(), this.getBlockState());
-        }
-    }
-
-    private static void doNeighborUpdates(Level level, BlockPos pos, BlockState state) {
+    protected static void doNeighborUpdates(Level level, BlockPos pos, BlockState state) {
         state.updateNeighbourShapes(level, pos, 3);
-    }
-
-    public boolean isOpen() {
-        return open;
     }
 
     public CompoundTag getApplicationData() {
@@ -200,10 +140,6 @@ public abstract class ComputerBlockEntity extends NetworkDeviceBlockEntity.Color
         BlockEntityUtil.markBlockForUpdate(level, worldPosition);
     }
 
-    public float getScreenAngle(float partialTicks) {
-        return -OPENED_ANGLE * ((prevRotation + (rotation - prevRotation) * partialTicks) / OPENED_ANGLE);
-    }
-
     public boolean isExternalDriveAttached() {
         return externalDriveColor != null;
     }
@@ -218,5 +154,13 @@ public abstract class ComputerBlockEntity extends NetworkDeviceBlockEntity.Color
 
     public Bios getBios() {
         return new BiosImpl(this);
+    }
+
+    public boolean isPoweredOn() {
+        return true;
+    }
+
+    public void powerOff() {
+
     }
 }

@@ -5,27 +5,23 @@ import dev.ultreon.devices.*;
 import dev.ultreon.devices.api.print.IPrint;
 import dev.ultreon.devices.api.print.PrintingManager;
 import dev.ultreon.devices.init.RegistrationHandler;
-import fuzs.forgeconfigapiport.forge.api.neoforge.v4.NeoForgeConfigRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.MavenVersionStringHelper;
-import net.minecraftforge.data.loading.DatagenModLoader;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.fml.i18n.MavenVersionTranslator;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import org.slf4j.Logger;
 
 import java.util.Map;
@@ -42,7 +38,7 @@ public final class DevicesForge {
 
         @Override
         public String getVersion() {
-            return MavenVersionStringHelper.artifactVersionToString(ModList.get().getModContainerById("devices").orElseThrow().getModInfo().getVersion());
+            return MavenVersionTranslator.artifactVersionToString(ModList.get().getModContainerById("devices").orElseThrow().getModInfo().getVersion());
         }
 
         @Override
@@ -51,7 +47,6 @@ public final class DevicesForge {
         }
 
         @OnlyIn(Dist.CLIENT)
-        @SuppressWarnings("DataFlowIssue")
         protected void setRegisteredRenders(Map<String, dev.ultreon.devices.api.print.IPrint.Renderer> map) {
             ObfuscationReflectionHelper.setPrivateValue(PrintingManager.class, null, map, "registeredRenders");
         }
@@ -71,12 +66,12 @@ public final class DevicesForge {
         this.modEventBus = modEventBus;
 
         Devices.preInit();
-        IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
+        IEventBus forgeEventBus = NeoForge.EVENT_BUS;
 
         // Common side stuff
         LOGGER.info("Initializing registration handler and mod config.");
         RegistrationHandler.register();
-        NeoForgeConfigRegistry.INSTANCE.register(container, ModConfig.Type.CLIENT, DeviceConfig.CONFIG);
+//        NeoForgeConfigRegistry.INSTANCE.register(container, ModConfig.Type.CLIENT, DeviceConfig.CONFIG);
 
         forgeEventBus.register(this);
 

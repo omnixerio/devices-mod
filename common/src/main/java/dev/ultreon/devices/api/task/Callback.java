@@ -1,5 +1,7 @@
 package dev.ultreon.devices.api.task;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -13,7 +15,7 @@ public interface Callback<T> {
     /**
      * Executes the callback. You should perform any changes to
      * your UI in this method. The NBT tag contains the same data
-     * as {@link Task#processResponse(NBTTagCompound)}'s
+     * as {@link Task#processResponse(HolderLookup.Provider, CompoundTag)}'s
      * tag does.
      *
      * @param t       the response object

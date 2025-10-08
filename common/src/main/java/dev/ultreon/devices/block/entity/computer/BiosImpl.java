@@ -15,11 +15,11 @@ public class BiosImpl implements Bios {
     @Override
     public void systemExit(PowerMode state) {
         if (state == PowerMode.SHUTDOWN) {
-            if (blockEntity.isOpen()) {
-                blockEntity.openClose(null);
+            if (blockEntity.isPoweredOn()) {
+                blockEntity.powerOff();
                 Minecraft.getInstance().setScreen(null);
             }
-        } else if (!blockEntity.isOpen()) {
+        } else if (!blockEntity.isPoweredOn()) {
             Minecraft.getInstance().setScreen(new ComputerScreen(blockEntity));
         }
     }

@@ -26,7 +26,7 @@
     "CreepergamingsMC"
   ],
   "contact": {
-    "website": "https://ultreon.github.io",
+    "website": "https://ultreon.dev",
     "repo": "https://github.com/Ultreon/devices-mod",
     "issues": "https://github.com/Ultreon/devices-mod/issues",
     "sources": "https://github.com/Ultreon/devices-mod"
@@ -51,15 +51,17 @@
   ],
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
+    "fabric": ">=${fabric_version}",
     "minecraft": [">=1.21"],
-    "xinexlib": "*"
+    "xinexlib": "*",
+    "forgeconfigapiport": ">=21.1.0"
   },
   "custom": {
     "modmenu": {
       "links": {
         "modmenu.discord": "https://discord.gg/dtdc46g6ry",
         "modmenu.youtube": "https://youtube.com/@ultreon",
-        "modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/devices-mod",
+        "modmenu.curseforge": "https://curseforge.com/minecraft/mc-mods/devices-mod",
         "modmenu.modrinth": "https://modrinth.com/mod/devices-mod"
       }
     }

@@ -1,7 +1,10 @@
 package dev.ultreon.devices.core.io.drive;
 
+import dev.ultreon.devices.Devices;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jnode.fs.FileSystemException;
@@ -32,8 +35,8 @@ public final class InternalDrive extends AbstractDrive {
         }
     }
 
-    private InternalDrive(Path drivePath) throws FileSystemException, IOException {
-        super(drivePath);
+    private InternalDrive(UUID uuid, Path drivePath) throws FileSystemException, IOException {
+        super(uuid, drivePath);
     }
 
     @ApiStatus.Internal
@@ -48,15 +51,20 @@ public final class InternalDrive extends AbstractDrive {
             return new InternalDrive("Drive", NbtUtils.loadUUID(driveTag.getCompound("uuid")));
         }
         try {
-            return new InternalDrive(driveTag.contains("name") ? driveTag.getString("name") : "Drive", NbtUtils.loadUUID(driveTag.getCompound("uuid")));
+            Tag uuid1 = driveTag.get("uuid");
+            if (!(uuid1 instanceof IntArrayTag)) {
+                Devices.LOGGER.warn("Invalid uuid tag in drive tag: {}", uuid1);
+                return new InternalDrive(driveTag.contains("name") ? driveTag.getString("name") : "Drive");
+            }
+            return new InternalDrive(driveTag.contains("name") ? driveTag.getString("name") : "Drive", NbtUtils.loadUUID(uuid1));
         } catch (Exception e) {
             return new InternalDrive("Drive");
         }
     }
 
-    public static InternalDrive load(Path drivePath) {
+    public static InternalDrive load(UUID uuid, Path drivePath) {
         try {
-            return new InternalDrive(drivePath);
+            return new InternalDrive(uuid, drivePath);
         } catch (FileSystemException | IOException e) {
             return null;
         }
@@ -66,7 +74,6 @@ public final class InternalDrive extends AbstractDrive {
     public CompoundTag toTag() {
         CompoundTag driveTag = new CompoundTag();
         driveTag.putString("name", name);
-
         driveTag.put("uuid", NbtUtils.createUUID(uuid));
 
         return driveTag;
