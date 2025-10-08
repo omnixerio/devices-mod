@@ -1,7 +1,6 @@
 package dev.ultreon.devices.core;
 
 import dev.ultreon.devices.block.entity.DeviceBlockEntity;
-import dev.ultreon.devices.components.GameObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -12,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public class Device extends GameObject {
+public class Device {
     protected UUID id;
     protected String name;
     protected BlockPos pos;

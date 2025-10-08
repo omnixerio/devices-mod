@@ -37,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -313,11 +312,7 @@ public class FileSystem {
         }
 
         ExternalDrive externalDrive = new ExternalDrive(stack.getDisplayName().getString());
-        try {
-            DriveManager.registerExternalDrive(externalDrive);
-        } catch (IOException e) {
-            throw new DeviceFSException("Failed to register external drive", e);
-        }
+        DriveManager.registerExternalDrive(externalDrive);
         stack.set(DeviceDataComponents.DISK.get(), externalDrive.getUuid());
         return externalDrive;
     }

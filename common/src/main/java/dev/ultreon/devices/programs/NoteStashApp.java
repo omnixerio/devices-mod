@@ -8,6 +8,7 @@ import dev.ultreon.devices.api.app.component.*;
 import dev.ultreon.devices.api.io.Drive;
 import dev.ultreon.devices.api.task.Callback;
 import dev.ultreon.devices.core.io.FileSystem;
+import dev.ultreon.devices.core.io.Path;
 import dev.ultreon.devices.programs.system.component.FileInfo;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Unit;
@@ -16,7 +17,6 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
@@ -120,26 +120,24 @@ public class NoteStashApp extends Application {
         btnDelete.setEnabled(false);
         btnDelete.setClickListener((mouseX, mouseY, mouseButton) -> {
             if (notes.getSelectedIndex() != -1) {
-                if (notes.getSelectedIndex() != -1) {
-                    Note note = notes.getSelectedItem();
-                    assert note != null;
-                    Path file = note.getSource();
-                    Drive drive = note.drive;
-                    if (file != null) {
-                        drive.delete(file, (response) -> {
-                            if (response.success()) {
-                                notes.removeItem(notes.getSelectedIndex());
-                                btnView.setEnabled(false);
-                                btnDelete.setEnabled(false);
-                            } else {
-                                Dialog.Message message = new Dialog.Message(response.message());
-                                message.setTitle("I/O Error");
-                                openDialog(message);
-                            }
-                        });
-                    } else {
-                        //TODO error dialog
-                    }
+                Note note = notes.getSelectedItem();
+                assert note != null;
+                Path file = note.getSource();
+                Drive drive = note.drive;
+                if (file != null) {
+                    drive.delete(file, (response) -> {
+                        if (response.success()) {
+                            notes.removeItem(notes.getSelectedIndex());
+                            btnView.setEnabled(false);
+                            btnDelete.setEnabled(false);
+                        } else {
+                            Dialog.Message message = new Dialog.Message(response.message());
+                            message.setTitle("I/O Error");
+                            openDialog(message);
+                        }
+                    });
+                } else {
+                    //TODO error dialog
                 }
             }
         });

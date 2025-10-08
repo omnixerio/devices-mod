@@ -1,6 +1,8 @@
 package dev.ultreon.devices.core.io.drive;
 
 import dev.ultreon.devices.UltreonDevices;
+import dev.ultreon.devices.core.DriveManager;
+import dev.ultreon.devices.core.io.Path;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.NbtUtils;
@@ -10,17 +12,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jnode.fs.FileSystemException;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.UUID;
 
 /// @author MrCrayfish
 public final class InternalDrive extends AbstractDrive {
     public InternalDrive(String name) {
         super(name);
+        DriveManager.registerInternalDrive(this);
     }
 
     public InternalDrive(String name, UUID uuid) {
         super(uuid);
+        DriveManager.registerInternalDrive(this);
     }
 
     @Override
@@ -35,7 +38,7 @@ public final class InternalDrive extends AbstractDrive {
         }
     }
 
-    private InternalDrive(UUID uuid, Path drivePath) throws FileSystemException, IOException {
+    private InternalDrive(UUID uuid, java.nio.file.Path drivePath) throws FileSystemException, IOException {
         super(uuid, drivePath);
     }
 
@@ -48,6 +51,7 @@ public final class InternalDrive extends AbstractDrive {
                 return new InternalDrive("Drive");
             return new InternalDrive(driveTag.getString("name"));
         } else if (!driveTag.contains("name")) {
+
             return new InternalDrive("Drive", NbtUtils.loadUUID(driveTag.getCompound("uuid")));
         }
         try {
@@ -56,13 +60,23 @@ public final class InternalDrive extends AbstractDrive {
                 UltreonDevices.LOGGER.warn("Invalid uuid tag in drive tag: {}", uuid1);
                 return new InternalDrive(driveTag.contains("name") ? driveTag.getString("name") : "Drive");
             }
-            return new InternalDrive(driveTag.contains("name") ? driveTag.getString("name") : "Drive", NbtUtils.loadUUID(uuid1));
+            UUID uuid2 = NbtUtils.loadUUID(uuid1);
+            return DriveManager.getInternalDrive(uuid2);
         } catch (Exception e) {
             return new InternalDrive("Drive");
         }
     }
 
-    public static InternalDrive load(UUID uuid, Path drivePath) {
+    /**
+     * Loads an internal drive from a drive path
+     *
+     * @param uuid      The UUID of the drive
+     * @param drivePath The path to the drive
+     * @return The loaded drive, or null if it failed to load
+     * @deprecated Use {@link DriveManager#getInternalDrive(UUID)} instead
+     */
+    @Deprecated
+    public static InternalDrive load(UUID uuid, java.nio.file.Path drivePath) {
         try {
             return new InternalDrive(uuid, drivePath);
         } catch (FileSystemException | IOException e) {

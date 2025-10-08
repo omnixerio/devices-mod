@@ -5,6 +5,7 @@ import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.task.Callback;
 import dev.ultreon.devices.core.*;
 import dev.ultreon.devices.core.io.FileSystem;
+import dev.ultreon.devices.core.io.Path;
 import dev.ultreon.devices.object.AppInfo;
 import dev.ultreon.devices.programs.system.component.FileInfo;
 import dev.ultreon.devices.util.DataHandler;
@@ -17,13 +18,11 @@ import net.minecraft.util.Unit;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.AccessDeniedException;
-import java.nio.file.Path;
 import java.util.Objects;
 
 /// The abstract base class for creating applications.
 ///
 /// @author MrCrayfish
-@SuppressWarnings("SpellCheckingInspection")
 public abstract class Application extends Wrappable implements DataHandler {
     @SuppressWarnings("FieldMayBeFinal")
     protected AppInfo info = null;
@@ -375,7 +374,7 @@ public abstract class Application extends Wrappable implements DataHandler {
     /// will prompt the user with a dialog.
     ///
     /// @param file the file attempting to be opened
-    /// @return
+    /// @return true if the file was opened, false if it was not
     public boolean handleFile(FileInfo file, Callback<Unit> callback) {
         return false;
     }

@@ -5,12 +5,12 @@ import dev.ultreon.devices.api.io.Drive;
 import dev.ultreon.devices.api.io.FSResponse;
 import dev.ultreon.devices.api.task.Callback;
 import dev.ultreon.devices.core.DataPath;
+import dev.ultreon.devices.core.io.Path;
 import dev.ultreon.devices.core.io.action.FileAction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Unit;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;

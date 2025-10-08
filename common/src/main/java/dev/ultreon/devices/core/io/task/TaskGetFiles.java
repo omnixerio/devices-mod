@@ -4,6 +4,7 @@ import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.block.entity.computer.ComputerBlockEntity;
 import dev.ultreon.devices.core.DataPath;
 import dev.ultreon.devices.core.io.FileSystem;
+import dev.ultreon.devices.core.io.Path;
 import dev.ultreon.devices.core.io.drive.AbstractDrive;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -16,7 +17,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

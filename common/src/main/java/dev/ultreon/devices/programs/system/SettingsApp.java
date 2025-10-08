@@ -16,6 +16,7 @@ import dev.ultreon.devices.api.app.renderer.ItemRenderer;
 import dev.ultreon.devices.api.app.renderer.ListItemRenderer;
 import dev.ultreon.devices.api.utils.OnlineRequest;
 import dev.ultreon.devices.core.ComputerScreen;
+import dev.ultreon.devices.core.io.Path;
 import dev.ultreon.devices.object.AppInfo;
 import dev.ultreon.devices.object.TrayItem;
 import dev.ultreon.devices.programs.system.component.Palette;
@@ -30,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.Stack;

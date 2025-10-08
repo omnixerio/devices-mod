@@ -1,5 +1,6 @@
 package dev.ultreon.devices.core;
 
+import dev.ultreon.devices.core.io.Path;
 import org.jetbrains.annotations.Nullable;
 import org.jnode.fs.FileSystemException;
 
@@ -8,7 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.OpenOption;
-import java.nio.file.Path;
 import java.util.Iterator;
 
 public interface FS {
@@ -82,19 +82,19 @@ public interface FS {
 
     boolean canExecute(Path of) throws IOException;
 
-    static FS loadExt2(Path path) throws IOException, FileSystemException {
+    static FS loadExt2(java.nio.file.Path path) throws IOException, FileSystemException {
         return Ext2FS.open(false, path);
     }
 
-    static FS loadExt2Forced(Path path) throws IOException, FileSystemException {
+    static FS loadExt2Forced(java.nio.file.Path path) throws IOException, FileSystemException {
         return Ext2FS.openForced(path);
     }
 
-    static FS loadExt2ReadOnly(Path path) throws IOException, FileSystemException {
+    static FS loadExt2ReadOnly(java.nio.file.Path path) throws IOException, FileSystemException {
         return Ext2FS.open(true, path);
     }
 
-    static FS formatExt2(Path path, long diskSize) throws IOException, FileSystemException {
+    static FS formatExt2(java.nio.file.Path path, long diskSize) throws IOException, FileSystemException {
         return Ext2FS.format(path, diskSize);
     }
 

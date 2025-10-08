@@ -1,26 +1,13 @@
 package dev.ultreon.devices.block.entity.renderer;
 
-import com.mojang.blaze3d.Blaze3D;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import dev.ultreon.devices.block.PrinterBlock;
-import dev.ultreon.devices.block.RouterBlock;
 import dev.ultreon.devices.block.entity.RouterBlockEntity;
-import dev.ultreon.devices.client.components.RenderDataComponent;
-import dev.ultreon.devices.core.network.NetworkDevice;
-import dev.ultreon.devices.core.network.Router;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
-import java.util.Collection;
 import java.util.Objects;
 
 /**

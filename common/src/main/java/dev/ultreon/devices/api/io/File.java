@@ -4,13 +4,13 @@ import dev.ultreon.devices.api.app.Application;
 import dev.ultreon.devices.api.task.Callback;
 import dev.ultreon.devices.core.DataPath;
 import dev.ultreon.devices.core.io.FileSystem;
+import dev.ultreon.devices.core.io.Path;
 import dev.ultreon.devices.core.io.action.FileAction;
 import dev.ultreon.devices.programs.system.component.FileBrowser;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.Objects;
 

@@ -13,6 +13,7 @@ import dev.ultreon.devices.core.PermissionRequest;
 import dev.ultreon.devices.core.PermissionResult;
 import dev.ultreon.devices.core.Wrappable;
 import dev.ultreon.devices.core.io.FileSystem;
+import dev.ultreon.devices.core.io.Path;
 import dev.ultreon.devices.core.network.NetworkDevice;
 import dev.ultreon.devices.core.network.task.TaskGetDevices;
 import dev.ultreon.devices.core.print.task.TaskPrint;
@@ -32,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -48,7 +48,7 @@ public abstract class Dialog extends Wrappable {
     private boolean pendingClose = false;
 
     public Dialog() {
-        this.defaultLayout = new Layout(150, 40);
+        defaultLayout = new Layout(150, 40);
     }
 
     protected final void addComponent(Component c) {
@@ -59,17 +59,17 @@ public abstract class Dialog extends Wrappable {
     }
 
     protected final void setLayout(Layout layout) {
-        this.customLayout = layout;
-        this.width = layout.width;
-        this.height = layout.height;
-        this.pendingLayoutUpdate = true;
-        this.customLayout.handleLoad();
+        customLayout = layout;
+        width = layout.width;
+        height = layout.height;
+        pendingLayoutUpdate = true;
+        customLayout.handleLoad();
     }
 
     @Override
     public void init(@Nullable CompoundTag intent) {
-        this.defaultLayout.clear();
-        this.setLayout(defaultLayout);
+        defaultLayout.clear();
+        setLayout(defaultLayout);
     }
 
     @Override
@@ -149,7 +149,7 @@ public abstract class Dialog extends Wrappable {
 
     @Override
     public void markForLayoutUpdate() {
-        this.pendingLayoutUpdate = true;
+        pendingLayoutUpdate = true;
     }
 
     @Override
@@ -159,7 +159,7 @@ public abstract class Dialog extends Wrappable {
 
     @Override
     public void clearPendingLayout() {
-        this.pendingLayoutUpdate = false;
+        pendingLayoutUpdate = false;
     }
 
     @Override
@@ -168,7 +168,7 @@ public abstract class Dialog extends Wrappable {
     }
 
     public void close() {
-        this.pendingClose = true;
+        pendingClose = true;
     }
 
     /// The response listener interface. Used for handling responses
@@ -203,7 +203,7 @@ public abstract class Dialog extends Wrappable {
             super.init(intent);
 
             Text message = new Text(messageText, 5, 5, getWidth() - 10);
-            this.addComponent(message);
+            addComponent(message);
 
             buttonPositive = new Button(getWidth() - 41, getHeight() - 20, "Close");
             buttonPositive.setSize(36, 16);
@@ -213,7 +213,7 @@ public abstract class Dialog extends Wrappable {
                 }
                 close();
             });
-            this.addComponent(buttonPositive);
+            addComponent(buttonPositive);
 
         }
     }
@@ -255,7 +255,7 @@ public abstract class Dialog extends Wrappable {
             super.init(intent);
 
             Text message = new Text(messageText, 5, 5, getWidth() - 10);
-            this.addComponent(message);
+            addComponent(message);
 
             int positiveWidth = Minecraft.getInstance().font.width(positiveText);
             buttonPositive = new Button(getWidth() - positiveWidth - DIVIDE_WIDTH, getHeight() - 20, positiveText);
@@ -266,7 +266,7 @@ public abstract class Dialog extends Wrappable {
                 }
                 close();
             });
-            this.addComponent(buttonPositive);
+            addComponent(buttonPositive);
 
             int negativeWidth = Math.max(20, Minecraft.getInstance().font.width(negativeText));
             buttonNegative = new Button(getWidth() - DIVIDE_WIDTH - positiveWidth - DIVIDE_WIDTH - negativeWidth + 1, getHeight() - 20, negativeText);
@@ -277,7 +277,7 @@ public abstract class Dialog extends Wrappable {
                 }
                 close();
             });
-            this.addComponent(buttonNegative);
+            addComponent(buttonNegative);
         }
 
         /// Sets the positive button text
@@ -352,13 +352,13 @@ public abstract class Dialog extends Wrappable {
 
             if (messageText != null) {
                 Text message = new Text(messageText, 5, 5, getWidth() - 10);
-                this.addComponent(message);
+                addComponent(message);
             }
 
             textFieldInput = new TextField(5, 5 + offset, getWidth() - 10);
             textFieldInput.setText(inputText);
             textFieldInput.setFocused(true);
-            this.addComponent(textFieldInput);
+            addComponent(textFieldInput);
 
             int positiveWidth = Minecraft.getInstance().font.width(positiveText);
             buttonPositive = new Button(getWidth() - positiveWidth - DIVIDE_WIDTH, getHeight() - 20, positiveText);
@@ -372,13 +372,13 @@ public abstract class Dialog extends Wrappable {
                     if (close) close();
                 }
             });
-            this.addComponent(buttonPositive);
+            addComponent(buttonPositive);
 
             int negativeWidth = Minecraft.getInstance().font.width(negativeText);
             buttonNegative = new Button(getWidth() - DIVIDE_WIDTH - positiveWidth - DIVIDE_WIDTH - negativeWidth + 1, getHeight() - 20, negativeText);
             buttonNegative.setSize(negativeWidth + 10, 16);
             buttonNegative.setClickListener((mouseX, mouseY, mouseButton) -> close());
-            this.addComponent(buttonNegative);
+            addComponent(buttonNegative);
         }
 
         /// Sets the initial text for the input text field
@@ -449,7 +449,7 @@ public abstract class Dialog extends Wrappable {
 
         public OpenFile(Application app) {
             this.app = app;
-            this.setTitle("Open File");
+            setTitle("Open File");
         }
 
         @Override
@@ -494,7 +494,7 @@ public abstract class Dialog extends Wrappable {
             buttonNegative.setClickListener((mouseX, mouseY, mouseButton) -> close());
             main.addComponent(buttonNegative);
 
-            this.setLayout(main);
+            setLayout(main);
         }
 
         /// Sets the positive button text
@@ -538,7 +538,7 @@ public abstract class Dialog extends Wrappable {
         ///
         /// @param app the predicate
         public void setFilter(Application app) {
-            this.filter = file -> app.getInfo().getFormattedId().equals(file.getOpeningApp());
+            filter = file -> app.getInfo().getFormattedId().equals(file.getOpeningApp());
         }
     }
 
@@ -561,24 +561,24 @@ public abstract class Dialog extends Wrappable {
         @Deprecated
         public SaveFile(Application app, byte[] data) {
             this.app = app;
-            this.setTitle("Save File");
+            setTitle("Save File");
         }
 
         @Deprecated
         public SaveFile(Application app, CompoundTag tag) throws IOException {
             this.app = app;
-            this.setTitle("Save File");
+            setTitle("Save File");
         }
 
         public SaveFile(Application app, String file) {
             this.app = app;
-            this.name = file;
-            this.setTitle("Save File");
+            name = file;
+            setTitle("Save File");
         }
 
         public SaveFile(Application app) {
             this.app = app;
-            this.setTitle("Save File");
+            setTitle("Save File");
         }
 
         @Override
@@ -642,7 +642,7 @@ public abstract class Dialog extends Wrappable {
             if (name != null) textFieldFileName.setText(name);
             main.addComponent(textFieldFileName);
 
-            this.setLayout(main);
+            setLayout(main);
         }
 
         /// Sets the positive button text
@@ -688,7 +688,7 @@ public abstract class Dialog extends Wrappable {
         ///
         /// @param app the predicate
         public void setFilter(Application app) {
-            this.filter = file -> app.getInfo().getFormattedId().equals(file.getOpeningApp());
+            filter = file -> app.getInfo().getFormattedId().equals(file.getOpeningApp());
         }
 
         /// Sets the initial folder path to be shown when the dialog is opened
@@ -713,7 +713,7 @@ public abstract class Dialog extends Wrappable {
 
         public Print(IPrint print) {
             this.print = print;
-            this.setTitle("Print");
+            setTitle("Print");
         }
 
         @Override
@@ -848,7 +848,7 @@ public abstract class Dialog extends Wrappable {
 
             private Info(NetworkDevice entry) {
                 this.entry = entry;
-                this.setTitle("Details");
+                setTitle("Details");
             }
 
             @Override
@@ -892,10 +892,10 @@ public abstract class Dialog extends Wrappable {
         public Permission(PermissionRequest permissionRequest, Consumer<PermissionResult> callback, String reason) {
             super();
 
-            this.setTitle("Permission Request");
-            this.setReason(reason);
-            this.setCallback(callback);
-            this.setPermissionRequest(permissionRequest);
+            setTitle("Permission Request");
+            setReason(reason);
+            setCallback(callback);
+            setPermissionRequest(permissionRequest);
         }
 
         public void setPermissionRequest(PermissionRequest permissionRequest) {

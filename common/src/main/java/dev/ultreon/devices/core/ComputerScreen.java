@@ -16,6 +16,7 @@ import dev.ultreon.devices.api.task.TaskManager;
 import dev.ultreon.devices.api.video.CustomResolution;
 import dev.ultreon.devices.api.video.VideoInfo;
 import dev.ultreon.devices.block.entity.computer.ComputerBlockEntity;
+import dev.ultreon.devices.core.io.Path;
 import dev.ultreon.devices.core.io.task.TaskGetMainDrive;
 import dev.ultreon.devices.core.task.TaskInstallApp;
 import dev.ultreon.devices.object.AppInfo;
@@ -52,7 +53,6 @@ import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.file.AccessDeniedException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -131,17 +131,17 @@ public class ComputerScreen extends Screen implements System {
         super(Component.literal("Laptop"));
 
         instance = this;
-        this.bios = determineBios(laptop);
+        bios = determineBios(laptop);
 
         // Laptop data.
-        this.appData = laptop.getApplicationData();
-        this.systemData = laptop.getSystemData();
+        appData = laptop.getApplicationData();
+        systemData = laptop.getSystemData();
 
-        CompoundTag videoInfoData = this.systemData.getCompound("videoInfo");
-        this.videoInfo = new VideoInfo(videoInfoData);
+        CompoundTag videoInfoData = systemData.getCompound("videoInfo");
+        videoInfo = new VideoInfo(videoInfoData);
 
         // Windows
-        this.windows = new CopyOnWriteArrayList<>() {
+        windows = new CopyOnWriteArrayList<>() {
             @Override
             public Window<?> get(int index) {
                 try {
@@ -159,27 +159,27 @@ public class ComputerScreen extends Screen implements System {
         };
 
         // Settings etc.
-        this.settings = Settings.fromTag(systemData.getCompound("Settings"));
+        settings = Settings.fromTag(systemData.getCompound("Settings"));
 
         // GUI Components
         CompoundTag taskBarTag = systemData.getCompound("TaskBar");
         systemData.put("TaskBar", taskBarTag);
-        this.bar = new TaskBar(this, taskBarTag);
+        bar = new TaskBar(this, taskBarTag);
 
         // Wallpaper stuff
-        this.currentWallpaper = systemData.contains("CurrentWallpaper", 10) ? new Wallpaper(systemData.getCompound("CurrentWallpaper")) : null;
-        if (this.currentWallpaper == null) this.currentWallpaper = new Wallpaper(0);
+        currentWallpaper = systemData.contains("CurrentWallpaper", 10) ? new Wallpaper(systemData.getCompound("CurrentWallpaper")) : null;
+        if (currentWallpaper == null) currentWallpaper = new Wallpaper(0);
         ComputerScreen.system = this;
         ComputerScreen.pos = laptop.getBlockPos();
-        this.wallpaperLayout = new Layout(getScreenWidth(), getScreenHeight());
-        this.wallpaper = new Image(0, 0, getScreenWidth(), getScreenHeight());
+        wallpaperLayout = new Layout(getScreenWidth(), getScreenHeight());
+        wallpaper = new Image(0, 0, getScreenWidth(), getScreenHeight());
         if (currentWallpaper.isBuiltIn()) {
             wallpaper.setImage(WALLPAPERS.get(currentWallpaper.location));
         } else {
             wallpaper.setImage(currentWallpaper.locationPath);
         }
-        this.wallpaperLayout.addComponent(this.wallpaper);
-        this.wallpaperLayout.handleLoad();
+        wallpaperLayout.addComponent(wallpaper);
+        wallpaperLayout.handleLoad();
 
         // World-less flag.
         ComputerScreen.worldLess = worldLess;
@@ -329,7 +329,7 @@ public class ComputerScreen extends Screen implements System {
         }
 
         /* Send system data */
-        this.updateSystemData();
+        updateSystemData();
 
         ComputerScreen.pos = null;
         ComputerScreen.system = null;
@@ -518,7 +518,7 @@ public class ComputerScreen extends Screen implements System {
         //     Wallpaper     //
         //*******************//
         Image.CACHE.forEach((s, cachedImage) -> cachedImage.delete());
-        this.wallpaperLayout.render(graphics, this, this.minecraft, posX + 10, posY + 10, mouseX, mouseY, true, partialTicks);
+        wallpaperLayout.render(graphics, this, minecraft, posX + 10, posY + 10, mouseX, mouseY, true, partialTicks);
         boolean insideContext = false;
         if (context != null) {
             insideContext = isMouseInside(mouseX, mouseY, context.xPosition, context.yPosition, context.xPosition + context.width, context.yPosition + context.height);
@@ -648,7 +648,7 @@ public class ComputerScreen extends Screen implements System {
     }
 
     private void bsod(Throwable e) {
-        this.bsod = new BSOD(e);
+        bsod = new BSOD(e);
         UltreonDevices.LOGGER.error("A fatal error has occurred.", e);
     }
 
@@ -657,8 +657,8 @@ public class ComputerScreen extends Screen implements System {
     }
 
     public void setDisplayResolution(PredefinedResolution newValue) {
-        if (this.videoInfo != null) {
-            this.videoInfo.setResolution(newValue);
+        if (videoInfo != null) {
+            videoInfo.setResolution(newValue);
         }
     }
 
@@ -684,7 +684,7 @@ public class ComputerScreen extends Screen implements System {
         private final Throwable throwable;
 
         public BSOD(Throwable e) {
-            this.throwable = e;
+            throwable = e;
         }
     }
 
@@ -702,24 +702,24 @@ public class ComputerScreen extends Screen implements System {
             return true;
         }
 
-        this.lastMouseX = (int) mouseX;
-        this.lastMouseY = (int) mouseY;
+        lastMouseX = (int) mouseX;
+        lastMouseY = (int) mouseY;
 
         int posX = (width - getScreenWidth()) / 2;
         int posY = (height - getScreenHeight()) / 2;
 
-        if (this.context != null) {
+        if (context != null) {
             int dropdownX = context.xPosition;
             int dropdownY = context.yPosition;
             if (isMouseInside((int) mouseX, (int) mouseY, dropdownX, dropdownY, dropdownX + context.width, dropdownY + context.height)) {
-                this.context.handleMouseClick((int) mouseX, (int) mouseY, mouseButton);
+                context.handleMouseClick((int) mouseX, (int) mouseY, mouseButton);
                 return true;
             } else {
-                this.context = null;
+                context = null;
             }
         }
 
-        this.bar.handleClick(this, posX, posY + getScreenHeight() - TaskBar.BAR_HEIGHT, (int) mouseX, (int) mouseY, mouseButton);
+        bar.handleClick(this, posX, posY + getScreenHeight() - TaskBar.BAR_HEIGHT, (int) mouseX, (int) mouseY, mouseButton);
 
         for (int i = 0; i < windows.size(); i++) {
             Window<Application> window = (Window<Application>) windows.get(i);
@@ -737,14 +737,14 @@ public class ComputerScreen extends Screen implements System {
                         if (isMouseWithinWindowBar((int) mouseX, (int) mouseY, dialogWindow)) {
                             dragWindowFromX = mouseX - dialogWindow.offsetX;
                             dragWindowFromY = mouseY - dialogWindow.offsetY;
-                            this.dragging = true;
+                            dragging = true;
                             return false;
                         }
 
                         if (isMouseWithinWindowBar((int) mouseX, (int) mouseY, window) && dialogWindow == null) {
                             dragWindowFromX = mouseX - window.offsetX;
                             dragWindowFromY = mouseY - window.offsetY;
-                            this.dragging = true;
+                            dragging = true;
                             return false;
                         }
                         break;
@@ -789,15 +789,15 @@ public class ComputerScreen extends Screen implements System {
         }
 
         super.mouseReleased(mouseX, mouseY, state);
-        this.dragging = false;
+        dragging = false;
         dragWindowFromX = null;
         dragWindowFromY = null;
         try {
-            if (this.context != null) {
+            if (context != null) {
                 int dropdownX = context.xPosition;
                 int dropdownY = context.yPosition;
                 if (isMouseInside((int) mouseX, (int) mouseY, dropdownX, dropdownY, dropdownX + context.width, dropdownY + context.height)) {
-                    this.context.handleMouseRelease((int) mouseX, (int) mouseY, state);
+                    context.handleMouseRelease((int) mouseX, (int) mouseY, state);
                 }
             } else if (!windows.isEmpty()) {
                 windows.getFirst().handleMouseRelease((int) mouseX, (int) mouseY, state);
@@ -840,7 +840,7 @@ public class ComputerScreen extends Screen implements System {
         if (super.keyPressed(keyCode, scanCode, modifiers)) return true;
 
         if (bsod != null) {
-            this.bios.systemExit(PowerMode.REBOOT);
+            bios.systemExit(PowerMode.REBOOT);
             return true;
         }
 
@@ -902,11 +902,11 @@ public class ComputerScreen extends Screen implements System {
         int posY = (height - getScreenHeight()) / 2;
 
         try {
-            if (this.context != null) {
+            if (context != null) {
                 int dropdownX = context.xPosition;
                 int dropdownY = context.yPosition;
                 if (isMouseInside((int) mouseX, (int) mouseY, dropdownX, dropdownY, dropdownX + context.width, dropdownY + context.height)) {
-                    this.context.handleMouseDrag((int) mouseX, (int) mouseY, button);
+                    context.handleMouseDrag((int) mouseX, (int) mouseY, button);
                 }
                 return true;
             }
@@ -932,15 +932,15 @@ public class ComputerScreen extends Screen implements System {
             message.setTitle("Error");
             setSystemDialog(message);
         }
-        this.lastMouseX = (int) mouseX;
-        this.lastMouseY = (int) mouseY;
+        lastMouseX = (int) mouseX;
+        lastMouseY = (int) mouseY;
         return true;
     }
 
     @Override
     public void mouseMoved(double pMouseX, double pMouseY) {
-        this.lastMouseX = (int) pMouseX;
-        this.lastMouseY = (int) pMouseY;
+        lastMouseX = (int) pMouseX;
+        lastMouseY = (int) pMouseY;
     }
 
     @Override
@@ -1193,14 +1193,14 @@ public class ComputerScreen extends Screen implements System {
     public void nextWallpaper() {
         if (!currentWallpaper.isBuiltIn()) return;
         if (currentWallpaper.location + 1 < WALLPAPERS.size()) {
-            this.currentWallpaper = new Wallpaper(currentWallpaper.location + 1);
+            currentWallpaper = new Wallpaper(currentWallpaper.location + 1);
         }
         wallpaperUpdated();
     }
 
     public void prevWallpaper() {
         if (currentWallpaper.location - 1 >= 0) {
-            this.currentWallpaper = new Wallpaper(currentWallpaper.location - 1);
+            currentWallpaper = new Wallpaper(currentWallpaper.location - 1);
         }
         wallpaperUpdated();
     }
@@ -1243,7 +1243,7 @@ public class ComputerScreen extends Screen implements System {
 
     @Override
     public void openDialog(Dialog message) {
-        this.systemDialog = message;
+        systemDialog = message;
     }
 
     public boolean isApplicationInstalled(AppInfo info) {
@@ -1344,8 +1344,8 @@ public class ComputerScreen extends Screen implements System {
         private final int location;
 
         public Wallpaper(Path of) {
-            this.locationPath = of;
-            this.location = -87;
+            locationPath = of;
+            location = -87;
         }
 
         public Path getPath() {
@@ -1360,21 +1360,21 @@ public class ComputerScreen extends Screen implements System {
             var url = tag.getString("url");
             var location = tag.getInt("location");
             if (tag.contains("path", 8)) {
-                this.locationPath = Path.of(tag.getString("path"));
+                locationPath = Path.of(tag.getString("path"));
                 this.location = -87;
             } else {
-                this.locationPath = Path.of(url);
+                locationPath = Path.of(url);
                 this.location = location;
             }
         }
 
         private Wallpaper(int location) {
             this.location = location;
-            this.locationPath = null;
+            locationPath = null;
         }
 
         public boolean isBuiltIn() {
-            return this.location != -87;
+            return location != -87;
         }
 
         public Tag serialize() {
@@ -1382,7 +1382,7 @@ public class ComputerScreen extends Screen implements System {
             if (isBuiltIn()) {
                 a.putInt("location", location);
             } else {
-                a.putString("path", this.locationPath.toString());
+                a.putString("path", locationPath.toString());
             }
             return a;
         }

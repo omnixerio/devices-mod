@@ -1,6 +1,7 @@
 package dev.ultreon.devices.core.io.action;
 
 import dev.ultreon.devices.core.DataPath;
+import dev.ultreon.devices.core.io.Path;
 import dev.ultreon.devices.programs.system.component.FileInfo;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -8,7 +9,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.util.Unit;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;

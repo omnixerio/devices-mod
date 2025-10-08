@@ -19,6 +19,7 @@ import dev.ultreon.devices.core.ComputerScreen;
 import dev.ultreon.devices.core.Window;
 import dev.ultreon.devices.core.Wrappable;
 import dev.ultreon.devices.core.io.FileSystem;
+import dev.ultreon.devices.core.io.Path;
 import dev.ultreon.devices.core.io.task.TaskSetupFileBrowser;
 import dev.ultreon.devices.object.AppInfo;
 import dev.ultreon.devices.programs.system.SystemApp;
@@ -34,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.lang.System;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Stack;
 import java.util.function.Predicate;

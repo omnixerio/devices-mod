@@ -6,6 +6,7 @@ import dev.ultreon.devices.api.task.TaskManager;
 import dev.ultreon.devices.core.DataPath;
 import dev.ultreon.devices.core.ComputerScreen;
 import dev.ultreon.devices.core.io.FileSystem;
+import dev.ultreon.devices.core.io.Path;
 import dev.ultreon.devices.core.io.action.FileAction;
 import dev.ultreon.devices.debug.DebugLog;
 import dev.ultreon.devices.programs.system.component.FileBrowser;
@@ -17,7 +18,6 @@ import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

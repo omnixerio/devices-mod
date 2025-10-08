@@ -1,6 +1,6 @@
 package dev.ultreon.devices.core;
 
-import java.nio.file.Path;
+import dev.ultreon.devices.core.io.Path;
 
 @SuppressWarnings("ClassCanBeRecord")
 public class LockKey {

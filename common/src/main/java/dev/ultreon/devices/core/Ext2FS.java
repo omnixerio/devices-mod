@@ -1,6 +1,7 @@
 package dev.ultreon.devices.core;
 
 import com.google.common.base.Preconditions;
+import dev.ultreon.devices.core.io.Path;
 import net.minecraft.util.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,11 +42,11 @@ public class Ext2FS implements FS {
         });
     }
 
-    public static Ext2FS open(Path filePath) throws IOException, FileSystemException {
+    public static Ext2FS open(java.nio.file.Path filePath) throws IOException, FileSystemException {
         return open(false, filePath);
     }
 
-    public static Ext2FS open(boolean readOnly, Path filePath) throws IOException, FileSystemException {
+    public static Ext2FS open(boolean readOnly, java.nio.file.Path filePath) throws IOException, FileSystemException {
         var device = new VirtualDevice("MineDisk");
         var blockDevice = new VirtualBlockDevice(filePath.toFile().getAbsolutePath(), Files.size(filePath));
         device.registerAPI(BlockDeviceAPI.class, blockDevice);
@@ -56,7 +57,7 @@ public class Ext2FS implements FS {
         return new Ext2FS(fs);
     }
 
-    public static Ext2FS openForced(Path filePath) throws IOException, FileSystemException {
+    public static Ext2FS openForced(java.nio.file.Path filePath) throws IOException, FileSystemException {
         var device = new VirtualDevice("MineDisk");
         var blockDevice = new VirtualBlockDevice(filePath.toFile().getAbsolutePath(), Files.size(filePath));
         device.registerAPI(BlockDeviceAPI.class, blockDevice);
@@ -69,7 +70,7 @@ public class Ext2FS implements FS {
         return new Ext2FS(fs);
     }
 
-    public static Ext2FS format(Path filePath, long diskSize) throws IOException, FileSystemException {
+    public static Ext2FS format(java.nio.file.Path filePath, long diskSize) throws IOException, FileSystemException {
         if (diskSize <= 16384) throw new IllegalArgumentException("Disk size must be greater than 16 KiB");
 
         var device = new VirtualDevice("MineDisk");
@@ -166,7 +167,7 @@ public class Ext2FS implements FS {
         if (path.getParent() == null) return (Ext2Entry) fs.getRootEntry();
 
         Ext2Directory root = (Ext2Directory) fs.getRootEntry().getDirectory();
-        for (Path s : path.getParent()) {
+        for (String s : path.getParent()) {
             Ext2Entry entry = (Ext2Entry) root.getEntry(s.toString());
             if (!entry.isDirectory()) return null;
             root = (Ext2Directory) entry.getDirectory();
