@@ -147,7 +147,7 @@ public class SettingsApp extends SystemApp {
 //
 //                    Credits:
 //                    - MrCrayfish (https://mrcrayfish.com/)
-//                    - Qubilux
+//                    - Qubix
 //                    - Jab125
 //                    - lizterzapzap
 //                    - MrBean6000

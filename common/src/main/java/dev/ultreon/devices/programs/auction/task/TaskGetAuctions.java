@@ -17,7 +17,7 @@ public class TaskGetAuctions extends Task {
     private UUID seller;
 
     public TaskGetAuctions() {
-        super("minebay_get_auctions");
+        super();
     }
 
     public TaskGetAuctions(UUID seller) {

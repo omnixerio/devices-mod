@@ -42,12 +42,11 @@ public abstract class AbstractDrive implements FS {
     }
 
     AbstractDrive(UUID uuid) {
-        this.name = "Drive";
+        name = "Drive";
         this.uuid = uuid;
 
         if (Devices.getServer() == null) {
-            this.deferred = true;
-            this.setFs(null);
+            deferred = true;
             return;
         }
 
@@ -55,12 +54,12 @@ public abstract class AbstractDrive implements FS {
             Path resolve = Devices.getServer().getWorldPath(LevelResource.ROOT).resolve("data/devices/drives/" + uuid + ".ext2");
             if (Files.notExists(resolve)) {
                 if (Files.notExists(resolve.getParent())) Files.createDirectories(resolve.getParent());
-                this.setFs(Ext2FS.format(resolve, 1L));
-                this.setup();
-            } else this.setFs(Ext2FS.open(resolve));
+                setFs(Ext2FS.format(resolve, 1L));
+                setup();
+            } else setFs(Ext2FS.open(resolve));
         } catch (IOException | FileSystemException e) {
-            this.invalid = true;
-            this.setFs(null);
+            invalid = true;
+            setFs(null);
         }
     }
 
@@ -69,9 +68,9 @@ public abstract class AbstractDrive implements FS {
     }
 
     AbstractDrive(UUID uuid, Path drivePath) throws FileSystemException, IOException {
-        this.name = "OS";
+        name = "OS";
         this.uuid = uuid;
-        this.setFs(Ext2FS.open(drivePath));
+        setFs(Ext2FS.open(drivePath));
     }
 
     AbstractDrive(String name) {
@@ -83,8 +82,8 @@ public abstract class AbstractDrive implements FS {
         this.uuid = uuid;
 
         if (Devices.getServer() == null) {
-            this.deferred = true;
-            this.setFs(null);
+            deferred = true;
+            setFs(null);
             return;
         }
 
@@ -92,12 +91,12 @@ public abstract class AbstractDrive implements FS {
             Path resolve = Devices.getServer().getWorldPath(LevelResource.ROOT).resolve("data/devices/drives/" + uuid + ".ext2");
             if (Files.notExists(resolve)) {
                 if (Files.notExists(resolve.getParent())) Files.createDirectories(resolve.getParent());
-                this.setFs(Ext2FS.format(resolve, 16 * 1024 * 1024));
-                this.setup();
-            } else this.setFs(Ext2FS.open(resolve));
+                setFs(Ext2FS.format(resolve, 16 * 1024 * 1024));
+                setup();
+            } else setFs(Ext2FS.open(resolve));
         } catch (IOException | FileSystemException e) {
-            this.invalid = true;
-            this.setFs(null);
+            invalid = true;
+            setFs(null);
         }
     }
 
@@ -525,11 +524,11 @@ public abstract class AbstractDrive implements FS {
                 Path resolve = Devices.getServer().getWorldPath(LevelResource.ROOT).resolve("data/devices/drives/" + uuid + ".ext2");
                 if (Files.notExists(resolve)) {
                     if (Files.notExists(resolve.getParent())) Files.createDirectories(resolve.getParent());
-                    this.setFs(Ext2FS.format(resolve, 16 * 1024 * 1024));
-                    this.setup();
-                } else this.setFs(Ext2FS.open(resolve));
+                    setFs(Ext2FS.format(resolve, 16 * 1024 * 1024));
+                    setup();
+                } else setFs(Ext2FS.open(resolve));
             } catch (IOException | FileSystemException e) {
-                this.invalid = true;
+                invalid = true;
                 throw new IOException("Failed to open drive, vHardware failure. Device invalid!", e);
             }
         }

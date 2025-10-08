@@ -26,7 +26,7 @@ public class TaskGetStructure extends Task {
 
     @Deprecated
     public TaskGetStructure() {
-        super("get_folder_structure");
+        super();
     }
 
     @Deprecated

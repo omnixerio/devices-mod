@@ -15,7 +15,7 @@ public class TaskUpdateSystemData extends Task {
     private CompoundTag data;
 
     public TaskUpdateSystemData() {
-        super("update_system_data");
+        super();
     }
 
     public TaskUpdateSystemData(BlockPos pos, CompoundTag data) {

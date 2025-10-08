@@ -15,7 +15,7 @@ public class TaskDeleteEmail extends Task {
 	private int index;
 
 	public TaskDeleteEmail() {
-		super("delete_email");
+		super();
 	}
 
 	public TaskDeleteEmail(int index) {

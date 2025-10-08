@@ -12,7 +12,7 @@ public class TaskAdd extends Task {
     private int amount;
 
     public TaskAdd() {
-        super("bank_add");
+        super();
     }
 
     public TaskAdd(int amount) {

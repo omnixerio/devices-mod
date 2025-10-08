@@ -10,7 +10,7 @@ import java.util.Objects;
 /// ## Debug Logger
 /// This class is used for logging debug information.
 ///
-/// @author [Qubilux](https://github.com/XyperCode)
+/// @author [Qubix](https://github.com/Qubilux)
 public class DebugLog {
     private static final Logger LOGGER = LoggerFactory.getLogger("Devices : Debugger");
 

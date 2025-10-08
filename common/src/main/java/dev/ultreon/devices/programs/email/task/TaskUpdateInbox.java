@@ -15,7 +15,7 @@ public class TaskUpdateInbox extends Task {
     private List<Email> emails;
 
     public TaskUpdateInbox() {
-        super("update_inbox");
+        super();
     }
 
     @Override

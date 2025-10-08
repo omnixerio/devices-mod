@@ -32,7 +32,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/// @author Qubilux
+/// @author Qubix
 public class MacMaxXBlock extends ComputerBlock {
     private static final MapCodec<MacMaxXBlock> CODEC = simpleCodec(MacMaxXBlock::new);
 

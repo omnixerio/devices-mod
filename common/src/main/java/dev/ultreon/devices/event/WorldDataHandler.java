@@ -21,7 +21,7 @@ import java.util.Objects;
 /// # World Data Handler
 /// Handles saving and loading world data
 ///
-/// @author [MrCrayfish](https://github.com/MrCrayfish), [Qubilux](https://github.com/XyperCode)
+/// @author [MrCrayfish](https://github.com/MrCrayfish), [Qubix](https://github.com/Qubilux)
 ///
 public class WorldDataHandler {
     private static final LevelResource DEVICES_MOD_DATA = new LevelResource("data/devices-mod");

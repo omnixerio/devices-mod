@@ -10,7 +10,7 @@ import java.io.OutputStream;
 /// ## Debug Utilities
 /// This class is used for debugging.
 ///
-/// @author [Qubilux](https://github.com/XyperCode)
+/// @author [Qubix](https://github.com/Qubilux)
 public class DebugUtils {
     /// ## Dump a resource
     /// This method is used for dumping a resource.
@@ -29,7 +29,7 @@ public class DebugUtils {
     /// ## Dump Writer
     /// This interface is used for dumping a resource.
     ///
-    /// @author [Qubilux](https://github.com/XyperCode)
+    /// @author [Qubix](https://github.com/Qubilux)
     /// @see DebugUtils#dump(DumpType, ResourceLocation, DumpWriter)
     @FunctionalInterface
     public interface DumpWriter {

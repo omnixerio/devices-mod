@@ -1,6 +1,7 @@
 package dev.ultreon.devices;
 
 import dev.ultreon.devices.api.ApplicationManager;
+import dev.ultreon.devices.event.InitializationEvent;
 import dev.ultreon.devices.programs.BoatRacersApp;
 import dev.ultreon.devices.programs.NoteStashApp;
 import dev.ultreon.devices.programs.PixelPainterApp;
@@ -14,7 +15,7 @@ import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import net.minecraft.resources.ResourceLocation;
 
 public class BuiltinApps {
-    public static void registerBuiltinApps() {
+    public static void registerBuiltinApps(InitializationEvent.AppRegistrationEvent ignored) {
         ApplicationManager.registerApplication(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "diagnostics"), () -> DiagnosticsApp::new, true);
         ApplicationManager.registerApplication(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "settings"), () -> SettingsApp::new, true);
         ApplicationManager.registerApplication(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "file_browser"), () -> FileBrowserApp::new, true);

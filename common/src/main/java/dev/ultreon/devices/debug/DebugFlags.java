@@ -4,7 +4,7 @@ package dev.ultreon.devices.debug;
 ///
 /// These flags are used for debugging.
 ///
-/// @author [Qubilux](https://github.com/XyperCode)
+/// @author [Qubix](https://github.com/Qubilux)
 public class DebugFlags {
     /// Flag for dumping the app icon atlas
     public static final boolean DUMP_APP_ICON_ATLAS = true;

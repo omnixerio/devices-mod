@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 /// # Router (Block Entity)
 /// The block entity for the router block.
 ///
-/// @author [MrCrayfish](https://github.com/MrCrayfish), [Qubilux](https://github.com/XyperCode)
+/// @author [MrCrayfish](https://github.com/MrCrayfish), [Qubix](https://github.com/Qubilux)
 /// @see Router
 /// @see RouterBlock
 /// @see RouterRenderer

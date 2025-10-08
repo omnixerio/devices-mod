@@ -17,7 +17,7 @@ public class TaskBuyItem extends Task {
     private UUID id;
 
     public TaskBuyItem() {
-        super("minebay_buy_item");
+        super();
     }
 
     public TaskBuyItem(UUID id) {

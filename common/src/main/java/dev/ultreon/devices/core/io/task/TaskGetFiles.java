@@ -32,7 +32,7 @@ public class TaskGetFiles extends Task {
     private String error;
 
     public TaskGetFiles() {
-        super("get_files");
+        super();
     }
 
     public TaskGetFiles(DataPath path, BlockPos pos) {

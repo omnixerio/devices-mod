@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 /// ## Renderer for the seat entity
 /// This renderer is used to render the seat entity
 ///
-/// @author [MrCrayfish](https://github.com/MrCrayfish), [Qubilux](https://github.com/XyperCode)
+/// @author [MrCrayfish](https://github.com/MrCrayfish), [Qubix](https://github.com/Qubilux)
 public class SeatEntityRenderer<T extends Entity> extends EntityRenderer<T> {
 
     public SeatEntityRenderer(EntityRendererProvider.Context context) {

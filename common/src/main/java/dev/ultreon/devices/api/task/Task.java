@@ -23,12 +23,10 @@ import net.minecraft.world.level.Level;
  * @author MrCrayfish
  */
 public abstract class Task {
-    private String name;
     private Callback<CompoundTag> callback = null;
     private boolean success = false;
 
-    public Task(String name) {
-        this.name = name;
+    public Task() {
     }
 
     /**
@@ -61,7 +59,7 @@ public abstract class Task {
      */
     public final void setSuccessful() {
         if (this instanceof TaskInstallApp) DebugLog.log("Setting successful...");
-        this.success = true;
+        success = true;
     }
 
     /**
@@ -69,16 +67,8 @@ public abstract class Task {
      *
      * @return if this task was successful
      */
-    public final boolean isSucessful() {
-        return this.success;
-    }
-
-    /**
-     * Sets the task as complete and resets success to false.
-     * This is used for the core.
-     */
-    public final void complete() {
-        this.success = false;
+    public final boolean isSuccessful() {
+        return success;
     }
 
     /**
@@ -87,7 +77,7 @@ public abstract class Task {
      * @return the Task name
      */
     public final String getName() {
-        return this.name;
+        return TaskManager.getTaskName(this);
     }
 
     /**
@@ -129,6 +119,6 @@ public abstract class Task {
     public abstract void processResponse(HolderLookup.Provider provider, CompoundTag tag);
 
     public void setName(String name) {
-        this.name = name;
+
     }
 }

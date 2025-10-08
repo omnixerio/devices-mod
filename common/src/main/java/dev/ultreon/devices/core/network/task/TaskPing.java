@@ -18,7 +18,7 @@ public class TaskPing extends Task {
     private int strength;
 
     public TaskPing() {
-        super("ping");
+        super();
     }
 
     public TaskPing(BlockPos sourceDevicePos) {
@@ -44,7 +44,7 @@ public class TaskPing extends Task {
 
     @Override
     public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
-        if (this.isSucessful()) {
+        if (this.isSuccessful()) {
             tag.putInt("strength", strength);
         }
     }

@@ -7,7 +7,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
-/// @author Qubilux
+/// @author Qubix
 public final class ModTags {
     public static final class Items {
         public static final TagKey<Item> LAPTOPS = createTag("laptops");

@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.Block;
 ///     A device item.
 /// </summary>
 ///
-/// @author [MrCrayfish](https://github.com/MrCrayfish), [Qubilux](https://github.com/XyperCode)
+/// @author [MrCrayfish](https://github.com/MrCrayfish), [Qubix](https://github.com/Qubilux)
 public class DeviceItem extends BlockItem implements IDeviceType {
     private final ModDeviceTypes deviceType;
 

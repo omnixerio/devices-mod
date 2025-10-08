@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 /// Used for the printer.
 /// Uses ink sacks and paper.
 ///
-/// @author [MrCrayfish](https://github.com/MrCrayfish), [Qubilux](https://github.com/XyperCode)
+/// @author [MrCrayfish](https://github.com/MrCrayfish), [Qubix](https://github.com/Qubilux)
 public interface IPrint {
     static CompoundTag save(IPrint print) {
         CompoundTag tag = new CompoundTag();

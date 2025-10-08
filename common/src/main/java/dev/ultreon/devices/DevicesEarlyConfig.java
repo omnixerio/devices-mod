@@ -6,7 +6,7 @@ import java.nio.file.Path;
 /// Devices mod early configuration.
 /// This is used to configure devices mod early, when the NeoForge config isn't loaded yet.
 ///
-/// @author <a href="https://github.com/XyperCode">Qubilux</a>
+/// @author <a href="https://github.com/Qubilux">Qubix</a>
 public class DevicesEarlyConfig {
     private static final File FILE = Path.of("config").resolve("devices-early-config.json").toFile();
     public boolean enableBetaApps = false;

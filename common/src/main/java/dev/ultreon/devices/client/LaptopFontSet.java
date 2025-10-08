@@ -4,7 +4,7 @@ import net.minecraft.client.gui.font.FontSet;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 
-/// @author Qubilux
+/// @author Qubix
 public class LaptopFontSet extends FontSet {
 //    private static final GlyphInfo TAB_INFO = new GlyphInfo() {
 //        @Override

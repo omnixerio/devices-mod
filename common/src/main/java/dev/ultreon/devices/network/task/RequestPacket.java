@@ -17,10 +17,10 @@ public class RequestPacket implements PacketToServer<RequestPacket> {
     private CompoundTag tag;
 
     public RequestPacket(RegistryFriendlyByteBuf buf) {
-        this.id = buf.readInt();
+        id = buf.readInt();
         String name = buf.readUtf();
-        this.request = TaskManager.getTask(name);
-        this.tag = buf.readNbt();
+        request = TaskManager.getTask(name).get();
+        tag = buf.readNbt();
         //DebugLog.log("decoding");
     }
 
@@ -31,10 +31,10 @@ public class RequestPacket implements PacketToServer<RequestPacket> {
 
     @Override
     public void write(RegistryFriendlyByteBuf buf) {
-        buf.writeInt(this.id);
-        buf.writeUtf(this.request.getName());
+        buf.writeInt(id);
+        buf.writeUtf(request.getName());
         CompoundTag tag = new CompoundTag();
-        this.request.prepareRequest(buf.registryAccess(), tag);
+        request.prepareRequest(buf.registryAccess(), tag);
         buf.writeNbt(tag);
     }
 

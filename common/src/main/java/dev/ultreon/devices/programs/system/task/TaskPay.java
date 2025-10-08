@@ -15,7 +15,7 @@ public class TaskPay extends Task {
     private int amount;
 
     public TaskPay() {
-        super("bank_pay");
+        super();
     }
 
     public TaskPay(String uuid, int amount) {
@@ -46,7 +46,7 @@ public class TaskPay extends Task {
 
     @Override
     public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
-        if (isSucessful()) {
+        if (isSuccessful()) {
             tag.putInt("balance", this.amount);
         }
     }

@@ -16,7 +16,7 @@ public class TaskUpdateApplicationData extends Task {
     private CompoundTag data;
 
     public TaskUpdateApplicationData() {
-        super("update_application_data");
+        super();
     }
 
     public TaskUpdateApplicationData(int x, int y, int z, @NotNull String appId, @NotNull CompoundTag data) {

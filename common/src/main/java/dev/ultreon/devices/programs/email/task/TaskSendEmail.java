@@ -13,7 +13,7 @@ public class TaskSendEmail extends Task {
     private String to;
 
     public TaskSendEmail() {
-        super("send_email");
+        super();
     }
 
     public TaskSendEmail(Email email, String to) {

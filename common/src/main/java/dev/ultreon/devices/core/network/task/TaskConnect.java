@@ -20,7 +20,7 @@ public class TaskConnect extends Task {
     private BlockPos routerPos;
 
     public TaskConnect() {
-        super("connect");
+        super();
     }
 
     public TaskConnect(BlockPos devicePos, BlockPos routerPos) {

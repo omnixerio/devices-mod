@@ -22,7 +22,7 @@ public class TaskGetMainDrive extends Task {
     private AbstractDrive mainDrive;
 
     public TaskGetMainDrive() {
-        super("get_main_drive");
+        super();
     }
 
     public TaskGetMainDrive(BlockPos pos) {
@@ -47,7 +47,7 @@ public class TaskGetMainDrive extends Task {
 
     @Override
     public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
-        if (this.isSucessful()) {
+        if (this.isSuccessful()) {
             CompoundTag mainDriveTag = new CompoundTag();
             mainDriveTag.putString("name", mainDrive.getName());
             mainDriveTag.put("uuid", NbtUtils.createUUID(mainDrive.getUuid()));
@@ -58,7 +58,7 @@ public class TaskGetMainDrive extends Task {
 
     @Override
     public void processResponse(HolderLookup.Provider provider, CompoundTag tag) {
-        if (this.isSucessful()) {
+        if (this.isSuccessful()) {
             if (Minecraft.getInstance().screen instanceof ComputerScreen) {
                 Drive drive = new Drive(tag.getCompound("main_drive"));
 

@@ -28,7 +28,7 @@ public class TaskGetDevices extends Task {
     private String reason;
 
     public TaskGetDevices() {
-        super("get_network_devices");
+        super();
     }
 
     public TaskGetDevices(BlockPos devicePos) {
@@ -95,7 +95,7 @@ public class TaskGetDevices extends Task {
 
     @Override
     public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
-        if (this.isSucessful()) {
+        if (this.isSuccessful()) {
             ListTag deviceList = new ListTag();
             foundDevices.forEach(device -> deviceList.add(device.toTag(true)));
             tag.put("network_devices", deviceList);

@@ -12,7 +12,7 @@ public class TaskRemove extends Task {
     private int amount;
 
     public TaskRemove() {
-        super("bank_remove");
+        super();
     }
 
     public TaskRemove(int amount) {
@@ -37,7 +37,7 @@ public class TaskRemove extends Task {
 
     @Override
     public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
-        if (isSucessful()) {
+        if (isSuccessful()) {
             tag.putInt("balance", this.amount);
         }
     }

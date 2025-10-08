@@ -14,13 +14,13 @@ public class ResponsePacket implements PacketToClient<ResponsePacket> {
     private CompoundTag tag;
 
     public ResponsePacket(RegistryFriendlyByteBuf buf) {
-        this.id = buf.readInt();
+        id = buf.readInt();
         boolean successful = buf.readBoolean();
-        this.request = TaskManager.getTaskAndRemove(this.id);
-        if (successful) this.request.setSuccessful();
+        request = TaskManager.getTaskAndRemove(id);
+        if (successful) request.setSuccessful();
         String name = buf.readUtf();
         request.setName(name);
-        this.tag = buf.readNbt();
+        tag = buf.readNbt();
     }
 
     public ResponsePacket(int id, Task request) {
@@ -30,13 +30,12 @@ public class ResponsePacket implements PacketToClient<ResponsePacket> {
 
     @Override
     public void write(RegistryFriendlyByteBuf buf) {
-        buf.writeInt(this.id);
-        buf.writeBoolean(this.request.isSucessful());
-        buf.writeUtf(this.request.getName());
+        buf.writeInt(id);
+        buf.writeBoolean(request.isSuccessful());
+        buf.writeUtf(request.getName());
         CompoundTag tag = new CompoundTag();
-        this.request.prepareResponse(buf.registryAccess(), tag);
+        request.prepareResponse(buf.registryAccess(), tag);
         buf.writeNbt(tag);
-        this.request.complete();
     }
 
     @Override

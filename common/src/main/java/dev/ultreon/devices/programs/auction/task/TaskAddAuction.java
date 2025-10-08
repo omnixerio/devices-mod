@@ -19,7 +19,7 @@ public class TaskAddAuction extends Task {
     private AuctionItem item;
 
     public TaskAddAuction() {
-        super("minebay_add_auction");
+        super();
     }
 
     public TaskAddAuction(int slot, int amount, int price, int duration) {
@@ -64,14 +64,14 @@ public class TaskAddAuction extends Task {
 
     @Override
     public void prepareResponse(HolderLookup.Provider provider, CompoundTag nbt) {
-        if (isSucessful()) {
+        if (isSuccessful()) {
             item.writeToNBT(nbt, Devices.getServer().registryAccess());
         }
     }
 
     @Override
     public void processResponse(HolderLookup.Provider provider, CompoundTag nbt) {
-        if (isSucessful()) {
+        if (isSuccessful()) {
             AuctionManager.INSTANCE.addItem(AuctionItem.readFromNBT(provider, nbt));
         }
     }

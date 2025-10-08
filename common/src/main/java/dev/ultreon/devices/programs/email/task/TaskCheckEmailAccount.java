@@ -12,7 +12,7 @@ public class TaskCheckEmailAccount extends Task {
     private String name = null;
 
     public TaskCheckEmailAccount() {
-        super("check_email_account");
+        super();
     }
 
     @Override
@@ -31,7 +31,7 @@ public class TaskCheckEmailAccount extends Task {
 
     @Override
     public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
-        if (this.isSucessful()) tag.putString("Name", this.name);
+        if (this.isSuccessful()) tag.putString("Name", this.name);
     }
 
     @Override

@@ -9,7 +9,6 @@ import dev.ultreon.devices.api.print.IPrint;
 import dev.ultreon.devices.api.print.PrintingManager;
 import dev.ultreon.devices.api.task.TaskManager;
 import dev.ultreon.devices.api.utils.OnlineRequest;
-import dev.ultreon.devices.block.PrinterBlock;
 import dev.ultreon.devices.core.ComputerScreen;
 import dev.ultreon.devices.client.ClientNotification;
 import dev.ultreon.devices.client.debug.ClientAppDebug;
@@ -20,6 +19,7 @@ import dev.ultreon.devices.core.network.task.TaskPing;
 import dev.ultreon.devices.core.print.task.TaskPrint;
 import dev.ultreon.devices.core.task.TaskInstallApp;
 import dev.ultreon.devices.debug.DebugLog;
+import dev.ultreon.devices.event.InitializationEvent;
 import dev.ultreon.devices.event.WorldDataHandler;
 import dev.ultreon.devices.network.PacketHandler;
 import dev.ultreon.devices.network.task.SyncApplicationPacket;
@@ -52,7 +52,6 @@ import dev.ultreon.mods.xinexlib.event.system.EventSystem;
 import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import dev.ultreon.mods.xinexlib.registrar.RegistrarManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -60,14 +59,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -144,7 +137,9 @@ public abstract class Devices {
 
         PacketHandler.init();
 
-        registerApplications();
+        if (XinexPlatform.getPlatformName().equals(ModPlatform.Fabric)) {
+            registerApplications();
+        }
 
         if (XinexPlatform.getPlatformName().equals(ModPlatform.Fabric)) {
             EnvExecutor.runInEnv(Env.CLIENT, () -> Devices::doClientInit);
@@ -159,7 +154,7 @@ public abstract class Devices {
         }
     }
 
-    protected static void doClientInit() {
+    public static void doClientInit() {
         ClientAppDebug.register();
         ClientModEvents.clientSetup(); //todo
         Devices.setupSiteRegistrations();
@@ -171,6 +166,7 @@ public abstract class Devices {
             throw new LaunchException();
         }
 
+        EventSystem.MAIN.on(InitializationEvent.AppRegistrationEvent.class, BuiltinApps::registerBuiltinApps);
         DeviceConfig.init();
     }
 
@@ -196,48 +192,47 @@ public abstract class Devices {
     }
 
 
-    private void registerApplications() {
+    public void registerApplications() {
         // Applications (Both)
-        registerApplicationEvent();
-
+        EventSystem.MAIN.publish(new InitializationEvent.AppRegistrationEvent(this));
         // Core
-        TaskManager.registerTask(TaskUpdateApplicationData::new);
-        TaskManager.registerTask(TaskPrint::new);
-        TaskManager.registerTask(TaskUpdateSystemData::new);
-        TaskManager.registerTask(TaskConnect::new);
-        TaskManager.registerTask(TaskPing::new);
-        TaskManager.registerTask(TaskGetDevices::new);
+        TaskManager.registerTask("update_application_data", TaskUpdateApplicationData::new, TaskUpdateApplicationData.class);
+        TaskManager.registerTask("print", TaskPrint::new, TaskPrint.class);
+        TaskManager.registerTask("update_system_data", TaskUpdateSystemData::new, TaskUpdateSystemData.class);
+        TaskManager.registerTask("connect", TaskConnect::new, TaskConnect.class);
+        TaskManager.registerTask("ping", TaskPing::new, TaskPing.class);
+        TaskManager.registerTask("get_devices", TaskGetDevices::new, TaskGetDevices.class);
 
         // File browser
-        TaskManager.registerTask(TaskSendAction::new);
-        TaskManager.registerTask(TaskSetupFileBrowser::new);
-        TaskManager.registerTask(TaskGetFiles::new);
-        TaskManager.registerTask(TaskGetMainDrive::new);
+        TaskManager.registerTask("send_action", TaskSendAction::new, TaskSendAction.class);
+        TaskManager.registerTask("setup_file_browser", TaskSetupFileBrowser::new, TaskSetupFileBrowser.class);
+        TaskManager.registerTask("get_files", TaskGetFiles::new, TaskGetFiles.class);
+        TaskManager.registerTask("get_main_drive", TaskGetMainDrive::new, TaskGetMainDrive.class);
 
         // App Store
-        TaskManager.registerTask(TaskInstallApp::new);
+        TaskManager.registerTask("install_app", TaskInstallApp::new, TaskInstallApp.class);
 
         // Ender Mail
-        TaskManager.registerTask(TaskUpdateInbox::new);
-        TaskManager.registerTask(TaskSendEmail::new);
-        TaskManager.registerTask(TaskCheckEmailAccount::new);
-        TaskManager.registerTask(TaskRegisterEmailAccount::new);
-        TaskManager.registerTask(TaskDeleteEmail::new);
-        TaskManager.registerTask(TaskViewEmail::new);
+        TaskManager.registerTask("update_inbox", TaskUpdateInbox::new, TaskUpdateInbox.class);
+        TaskManager.registerTask("send_email", TaskSendEmail::new, TaskSendEmail.class);
+        TaskManager.registerTask("check_email_account", TaskCheckEmailAccount::new, TaskCheckEmailAccount.class);
+        TaskManager.registerTask("register_email_account", TaskRegisterEmailAccount::new, TaskRegisterEmailAccount.class);
+        TaskManager.registerTask("delete_email", TaskDeleteEmail::new, TaskDeleteEmail.class);
+        TaskManager.registerTask("view_email", TaskViewEmail::new, TaskViewEmail.class);
 
         if (XinexPlatform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableBetaApps) {
             // Auction
-            TaskManager.registerTask(TaskAddAuction::new);
-            TaskManager.registerTask(TaskGetAuctions::new);
-            TaskManager.registerTask(TaskBuyItem::new);
+            TaskManager.registerTask("add_auction", TaskAddAuction::new, TaskAddAuction.class);
+            TaskManager.registerTask("get_auctions", TaskGetAuctions::new, TaskGetAuctions.class);
+            TaskManager.registerTask("buy_item", TaskBuyItem::new, TaskBuyItem.class);
 
             // Bank
-            TaskManager.registerTask(TaskDeposit::new);
-            TaskManager.registerTask(TaskWithdraw::new);
-            TaskManager.registerTask(TaskGetBalance::new);
-            TaskManager.registerTask(TaskPay::new);
-            TaskManager.registerTask(TaskAdd::new);
-            TaskManager.registerTask(TaskRemove::new);
+            TaskManager.registerTask("deposit", TaskDeposit::new, TaskDeposit.class);
+            TaskManager.registerTask("withdraw", TaskWithdraw::new, TaskWithdraw.class);
+            TaskManager.registerTask("get_balance", TaskGetBalance::new, TaskGetBalance.class);
+            TaskManager.registerTask("pay", TaskPay::new, TaskPay.class);
+            TaskManager.registerTask("add", TaskAdd::new, TaskAdd.class);
+            TaskManager.registerTask("remove", TaskRemove::new, TaskRemove.class);
         }
 
         if (XinexPlatform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableDebugApps) {
@@ -247,15 +242,13 @@ public abstract class Devices {
             ApplicationManager.registerApplication(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "text_area"), () -> TextAreaApp::new, false);
             ApplicationManager.registerApplication(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "test"), () -> TestApp::new, false);
 
-            TaskManager.registerTask(TaskNotificationTest::new);
+            TaskManager.registerTask("notification_test", TaskNotificationTest::new, TaskNotificationTest.class);
         }
 
         EnvExecutor.runInEnv(Env.CLIENT, () -> () -> PrintingManager.registerPrint(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "picture"), PixelPainterApp.PicturePrint.class));
     }
 
     public abstract int getBurnTime(ItemStack stack, RecipeType<?> type);
-
-    protected abstract void registerApplicationEvent();
 
     protected List<Application> loadApps() {
         if (apps != null) {
@@ -303,7 +296,7 @@ public abstract class Devices {
         AtomicReference<Application> application = new AtomicReference<>(null);
         EnvExecutor.runInEnv(Env.CLIENT, () -> () -> {
             Application theAppWeGot = app.get().get();
-            List<Application> apps = loadApps(); /*ObfuscationReflectionHelper.getPrivateValue(Laptop.class, null, "APPLICATIONS");*/
+            List<Application> apps = loadApps();
             assert apps != null;
             apps.add(theAppWeGot);
 

@@ -60,7 +60,7 @@ import java.util.function.Consumer;
 
 /// Laptop GUI class.
 ///
-/// @author MrCrayfish, Qubilux
+/// @author MrCrayfish, Qubix
 public class ComputerScreen extends Screen implements System {
     public static final int ID = 1;
     public static final ResourceLocation ICON_TEXTURES = ResourceLocation.fromNamespaceAndPath(Devices.MOD_ID, "textures/atlas/app_icons.png");

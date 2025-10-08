@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 /// # Router (Block)
 /// The block for the router device.
 ///
-/// @author [MrCrayfish](https://github.com/MrCrayfish), [Qubilux](https://github.com/XyperCode)
+/// @author [MrCrayfish](https://github.com/MrCrayfish), [Qubix](https://github.com/Qubilux)
 /// @see RouterBlockEntity
 public class RouterBlock extends DeviceBlock.Colored {
     public static final MapCodec<RouterBlock> CODEC = simpleCodec(RouterBlock::new);

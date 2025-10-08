@@ -21,7 +21,7 @@ import static dev.ultreon.devices.core.io.FileSystem.request;
 
 /// A file or folder in the file browser
 ///
-/// @author [Qubilux](https : / / github.com / Qubilux)
+/// @author [Qubix](https : / / github.com / Qubix)
 public final class FileInfo {
     public static final Comparator<FileInfo> SORT_BY_NAME = Comparator.comparing(a -> a.path.getFileName().toString());
     public static final Comparator<FileInfo> SORT_BY_TYPE = Comparator.comparing(a -> a.type);

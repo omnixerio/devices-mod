@@ -25,7 +25,7 @@ public class TaskInstallApp extends Task {
     private boolean install;
 
     public TaskInstallApp() {
-        super("install_app");
+        super();
     }
 
     public TaskInstallApp(AppInfo info, BlockPos laptopPos, boolean install) {
@@ -75,7 +75,7 @@ public class TaskInstallApp extends Task {
             }
             systemData.put("InstalledApps", list);
         }
-        if (!this.isSucessful()) {
+        if (!this.isSuccessful()) {
             Devices.LOGGER.info("Installing {} unsuccessful", appId);
         }
     }

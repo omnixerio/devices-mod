@@ -11,7 +11,7 @@ public class TaskRegisterEmailAccount extends Task {
     private String name;
 
     public TaskRegisterEmailAccount() {
-        super("register_email_account");
+        super();
     }
 
     public TaskRegisterEmailAccount(String name) {

@@ -26,7 +26,7 @@ public class TaskPrint extends Task {
     private String reason = null;
 
     public TaskPrint() {
-        super("print");
+        super();
     }
 
     public TaskPrint(BlockPos devicePos, NetworkDevice printer, IPrint print) {

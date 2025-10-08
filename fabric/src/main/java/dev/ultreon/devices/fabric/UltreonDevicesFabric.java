@@ -61,24 +61,6 @@ public class UltreonDevicesFabric extends Devices implements ModInitializer {
     }
 
     @Override
-    protected void registerApplicationEvent() {
-        var eve = FabricLoader.getInstance().getEntrypointContainers("devices:application_registration", ApplicationRegistration.class);
-        EntrypointContainer<ApplicationRegistration> builtin = null;
-        for (EntrypointContainer<ApplicationRegistration> fabricApplicationRegistrationEntrypointContainer : eve) {
-            if (fabricApplicationRegistrationEntrypointContainer.getProvider().getMetadata().getId().equals("devices")) {
-                builtin = fabricApplicationRegistrationEntrypointContainer;
-            }
-        }
-        assert builtin != null;
-        builtin.getEntrypoint().registerApplications();
-        eve = new ArrayList<>(eve);
-        eve.remove(builtin);
-        for (EntrypointContainer<ApplicationRegistration> fabricApplicationRegistrationEntrypointContainer : eve) {
-            fabricApplicationRegistrationEntrypointContainer.getEntrypoint().registerApplications();
-        }
-    }
-
-    @Override
     protected List<Application> loadApps() {
         return ComputerScreen.getApplicationsForFabric();
     }

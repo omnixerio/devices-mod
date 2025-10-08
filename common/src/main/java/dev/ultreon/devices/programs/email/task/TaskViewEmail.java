@@ -14,7 +14,7 @@ public class TaskViewEmail extends Task {
     private int index;
 
     public TaskViewEmail() {
-        super("view_email");
+        super();
     }
 
     public TaskViewEmail(int index) {

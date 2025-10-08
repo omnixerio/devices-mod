@@ -18,7 +18,7 @@ public class TaskWithdraw extends Task {
     private int amount;
 
     public TaskWithdraw() {
-        super("bank_withdraw");
+        super();
     }
 
     public TaskWithdraw(int amount) {

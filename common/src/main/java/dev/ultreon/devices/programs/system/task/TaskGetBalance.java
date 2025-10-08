@@ -12,7 +12,7 @@ public class TaskGetBalance extends Task {
     private int balance;
 
     public TaskGetBalance() {
-        super("bank_get_balance");
+        super();
     }
 
     @Override

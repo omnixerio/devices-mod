@@ -1,5 +1,6 @@
 package dev.ultreon.devices.core.io.task;
 
+import dev.ultreon.devices.Devices;
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.block.entity.computer.ComputerBlockEntity;
 import dev.ultreon.devices.core.io.FileSystem;
@@ -28,7 +29,7 @@ public class TaskSetupFileBrowser extends Task {
     private Map<UUID, AbstractDrive> availableDrives;
 
     public TaskSetupFileBrowser() {
-        super("get_file_system");
+        super();
     }
 
     public TaskSetupFileBrowser(BlockPos pos, boolean includeMain) {
@@ -53,12 +54,14 @@ public class TaskSetupFileBrowser extends Task {
             }
             availableDrives = fileSystem.getAvailableDrives(level, false);
             this.setSuccessful();
+        } else {
+            Devices.LOGGER.warn("BlockEntity at pos " + BlockPos.of(tag.getLong("pos")) + " is not a ComputerBlockEntity");
         }
     }
 
     @Override
     public void prepareResponse(HolderLookup.Provider provider, CompoundTag tag) {
-        if (this.isSucessful()) {
+        if (this.isSuccessful()) {
             if (mainDrive != null) {
                 CompoundTag mainDriveTag = new CompoundTag();
                 mainDriveTag.putString("name", mainDrive.getName());

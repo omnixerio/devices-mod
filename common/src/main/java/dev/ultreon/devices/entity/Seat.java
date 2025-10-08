@@ -23,7 +23,7 @@ import java.util.List;
 /// The entity that represents a seat
 /// Is used for [OfficeChairBlock]
 ///
-/// @author [MrCrayfish](https://github.com/MrCrayfish), [Qubilux](https://github.com/XyperCode)
+/// @author [MrCrayfish](https://github.com/MrCrayfish), [Qubix](https://github.com/Qubilux)
 /// @see OfficeChairBlock
 public class Seat extends Entity {
     private double yOffset;

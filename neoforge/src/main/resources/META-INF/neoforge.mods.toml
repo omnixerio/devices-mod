@@ -24,23 +24,23 @@ config = "${mod_id}.mixins.json"
 config = "${mod_id}.neoforge.mixins.json"
 
 # Dependencies for the main mod.
-[[dependencies.devices]]
+[[dependencies."${mod_id}"]]
 modId = "neoforge"
 mandatory = true
 versionRange = "[${neoforge_version},)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.devices]]
+[[dependencies."${mod_id}"]]
 modId = "minecraft"
 mandatory = true
 versionRange = "1.21.1"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.devices]]
+[[dependencies."${mod_id}"]]
 modId = "xinexlib"
 mandatory = true
 versionRange = "[0,)"
-ordering = "NONE"
+ordering = "BEFORE"
 side = "BOTH"

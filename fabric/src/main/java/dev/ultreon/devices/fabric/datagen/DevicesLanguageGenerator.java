@@ -126,7 +126,7 @@ public class DevicesLanguageGenerator extends FabricLanguageProvider {
 //        createTranslationsFromTemplate(translationBuilder, "lol");
 //    }
 //
-//    private void createTranslationsForDutch(TranslationBuilder translationBuilder) { // TODO: @Qubilux
+//    private void createTranslationsForDutch(TranslationBuilder translationBuilder) { // TODO: @Qubix
 //        createTranslationsFromTemplate(translationBuilder, "nl");
 //    }
 //

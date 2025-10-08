@@ -24,7 +24,7 @@ public class TaskSendAction extends Task {
     private FileSystem.Response response;
 
     public TaskSendAction() {
-        super("send_action");
+        super();
     }
 
     public TaskSendAction(UUID drive, FileAction<?> action) {

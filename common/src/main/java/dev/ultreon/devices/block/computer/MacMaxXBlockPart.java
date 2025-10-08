@@ -22,7 +22,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
-/// @author Qubilux
+/// @author Qubix
 public class MacMaxXBlockPart extends HorizontalDirectionalBlock {
     public static final MapCodec<MacMaxXBlockPart> CODEC = simpleCodec(MacMaxXBlockPart::new);
     public static final EnumProperty<Part> PART = EnumProperty.create("part", Part.class);

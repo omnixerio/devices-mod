@@ -14,7 +14,7 @@ import net.minecraft.world.level.Level;
  */
 public class TaskNotificationTest extends Task {
     public TaskNotificationTest() {
-        super("notification_test");
+        super();
     }
 
     @Override

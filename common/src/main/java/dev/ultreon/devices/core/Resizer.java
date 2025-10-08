@@ -5,7 +5,7 @@ import org.joml.Vector2f;
 /// # Resizer
 /// Used for resizing images and textures
 ///
-/// @author [Qubilux](https://github.com/XyperCode)
+/// @author [Qubix](https://github.com/Qubilux)
 class Resizer {
     private final float ratio;
     private final float relativeRatio;

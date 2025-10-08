@@ -17,7 +17,7 @@ public class TaskDeposit extends Task {
     private int amount;
 
     public TaskDeposit() {
-        super("bank_deposit");
+        super();
     }
 
     public TaskDeposit(int amount) {
