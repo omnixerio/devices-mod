@@ -1,6 +1,6 @@
 package dev.ultreon.devices.fabric.datagen;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.init.DeviceItems;
 import dev.ultreon.devices.init.ModTags;
 import dev.ultreon.mods.xinexlib.registrar.Registrar;
@@ -23,7 +23,7 @@ public class DevicesItemTagProvider extends FabricTagProvider<Item> {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        Registrar<Item> items = Devices.REGISTRIES.get().getRegistrar(Registries.ITEM);
+        Registrar<Item> items = UltreonDevices.REGISTRIES.get().getRegistrar(Registries.ITEM);
         TagAppender<Item> laptops = this.tag(ModTags.Items.LAPTOPS);
         TagAppender<Item> printers = this.tag(ModTags.Items.PRINTERS);
         TagAppender<Item> routers = this.tag(ModTags.Items.ROUTERS);

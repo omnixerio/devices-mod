@@ -1,6 +1,6 @@
 package dev.ultreon.devices.api;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.app.Application;
 import dev.ultreon.devices.object.AppInfo;
 import net.minecraft.resources.ResourceLocation;
@@ -36,9 +36,9 @@ public final class ApplicationManager {
      */
     @Nullable
     public static Application registerApplication(ResourceLocation identifier, Supplier<Supplier<Application>> app, boolean isSystem) {
-        Devices.LOGGER.debug(MARKER, "Registering application {}", identifier);
+        UltreonDevices.LOGGER.debug(MARKER, "Registering application {}", identifier);
 
-        Application application = Devices.getInstance().registerApplication(identifier, new Devices.ApplicationSupplier() {
+        Application application = UltreonDevices.getInstance().registerApplication(identifier, new UltreonDevices.ApplicationSupplier() {
             @Override
             public Supplier<Application> get() {
                 return app.get();
@@ -64,7 +64,7 @@ public final class ApplicationManager {
      * @return the application list
      */
     public static List<AppInfo> getAvailableApplications() {
-        final Predicate<AppInfo> FILTER = info -> !info.isSystemApp() && (!Devices.hasAllowedApplications() || Devices.getAllowedApplications().contains(info));
+        final Predicate<AppInfo> FILTER = info -> !info.isSystemApp() && (!UltreonDevices.hasAllowedApplications() || UltreonDevices.getAllowedApplications().contains(info));
         return APP_INFO.values().stream().filter(FILTER).collect(Collectors.toList());
     }
 

@@ -1,7 +1,7 @@
 package dev.ultreon.devices.api.app;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.task.Callback;
 import dev.ultreon.devices.core.*;
 import dev.ultreon.devices.core.io.FileSystem;
@@ -28,7 +28,7 @@ public abstract class Application extends Wrappable implements DataHandler {
     @SuppressWarnings("FieldMayBeFinal")
     protected AppInfo info = null;
     public void setInfo(AppInfo info) {
-        if (StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().equals(Devices.class)) {
+        if (StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().equals(UltreonDevices.class)) {
             this.info = info;
             return;
         }

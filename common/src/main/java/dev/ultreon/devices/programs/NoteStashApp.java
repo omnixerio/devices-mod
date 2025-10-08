@@ -1,6 +1,6 @@
 package dev.ultreon.devices.programs;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.app.Application;
 import dev.ultreon.devices.api.app.Dialog;
 import dev.ultreon.devices.api.app.Layout;
@@ -55,7 +55,7 @@ public class NoteStashApp extends Application {
         layoutMain.setInitListener(() -> {
             notes.getItems().clear();
             notes.setLoading(true);
-            Devices.LOGGER.debug(MARKER, "Loading notes...");
+            UltreonDevices.LOGGER.debug(MARKER, "Loading notes...");
             FileSystem.getApplicationFolder(this, (response) -> {
                 response.data().child("notes.json", (response2) -> {
                     if (response2.success()) {
@@ -167,7 +167,7 @@ public class NoteStashApp extends Application {
 
             FileSystem.getApplicationFolder(this, (response) -> {
                 if (!response.success()) {
-                    Devices.LOGGER.error(MARKER, "Failed to get application folder: {}", response.message());
+                    UltreonDevices.LOGGER.error(MARKER, "Failed to get application folder: {}", response.message());
                     Dialog.Message message = new Dialog.Message("Failed to get app directory, report the log to the developers.");
                     openDialog(message);
                 }

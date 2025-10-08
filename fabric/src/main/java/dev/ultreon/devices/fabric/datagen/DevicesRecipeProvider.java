@@ -1,6 +1,6 @@
 package dev.ultreon.devices.fabric.datagen;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.block.OfficeChairBlock;
 import dev.ultreon.devices.block.PrinterBlock;
 import dev.ultreon.devices.block.RouterBlock;
@@ -18,11 +18,9 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.ItemLike;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public class DevicesRecipeProvider extends FabricRecipeProvider {
     public DevicesRecipeProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
@@ -48,7 +46,7 @@ public class DevicesRecipeProvider extends FabricRecipeProvider {
                     .define('f', DeviceItems.COMPONENT_FLASH_CHIP.get())
                     .define('c', DeviceItems.COMPONENT_CIRCUIT_BOARD.get())
                     .unlockedBy("has_flash_chip", has(DeviceItems.COMPONENT_FLASH_CHIP.get()))
-                    .group(Devices.MOD_ID + ":laptop")
+                    .group(UltreonDevices.MOD_ID + ":laptop")
                     .save(exporter);
         }
 
@@ -67,7 +65,7 @@ public class DevicesRecipeProvider extends FabricRecipeProvider {
                     .define('c', DeviceItems.COMPONENT_CARRIAGE.get())
                     .define('b', DeviceItems.COMPONENT_CONTROLLER_UNIT.get())
                     .unlockedBy("has_carriage", has(DeviceItems.COMPONENT_CARRIAGE.get()))
-                    .group(Devices.MOD_ID + ":printer")
+                    .group(UltreonDevices.MOD_ID + ":printer")
                     .save(exporter);
         }
 
@@ -86,7 +84,7 @@ public class DevicesRecipeProvider extends FabricRecipeProvider {
                     .define('c', DeviceItems.COMPONENT_CIRCUIT_BOARD.get())
                     .define('b', DeviceItems.COMPONENT_BATTERY.get())
                     .unlockedBy("has_circuit_board", has(DeviceItems.COMPONENT_CIRCUIT_BOARD.get()))
-                    .group(Devices.MOD_ID + ":router")
+                    .group(UltreonDevices.MOD_ID + ":router")
                     .save(exporter);
         }
 
@@ -104,7 +102,7 @@ public class DevicesRecipeProvider extends FabricRecipeProvider {
                     .define('w', DeviceItems.WHEEL.get())
                     .define('f', Items.COBBLESTONE_WALL)
                     .unlockedBy("has_wheel", has(DeviceItems.WHEEL.get()))
-                    .group(Devices.MOD_ID + ":office_chair")
+                    .group(UltreonDevices.MOD_ID + ":office_chair")
                     .save(exporter);
         }
 

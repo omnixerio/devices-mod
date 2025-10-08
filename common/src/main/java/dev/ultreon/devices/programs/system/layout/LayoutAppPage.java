@@ -1,7 +1,7 @@
 package dev.ultreon.devices.programs.system.layout;
 
 import com.google.common.collect.Lists;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.app.Dialog;
 import dev.ultreon.devices.api.app.Icons;
 import dev.ultreon.devices.api.app.Layout;
@@ -111,14 +111,14 @@ public class LayoutAppPage extends Layout {
             if (entry.screenshots() != null) {
                 for (String image : entry.screenshots()) {
                     if (image == null) {
-                        slideShow.addImage(ResourceLocation.fromNamespaceAndPath(Devices.MOD_ID, "invalid.png"));
+                        slideShow.addImage(ResourceLocation.fromNamespaceAndPath(UltreonDevices.MOD_ID, "invalid.png"));
                         continue;
                     }
                     if (image.startsWith("http://") || image.startsWith("https://")) {
                         slideShow.addImage(image);
                     } else {
                         ResourceLocation resource1 = ResourceLocation.tryParse(image);
-                        if (resource1 == null) slideShow.addImage(ResourceLocation.fromNamespaceAndPath(Devices.MOD_ID, "invalid.png"));
+                        if (resource1 == null) slideShow.addImage(ResourceLocation.fromNamespaceAndPath(UltreonDevices.MOD_ID, "invalid.png"));
                         slideShow.addImage(resource1);
                     }
                 }

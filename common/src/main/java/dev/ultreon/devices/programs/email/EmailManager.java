@@ -1,7 +1,7 @@
 package dev.ultreon.devices.programs.email;
 
 import com.google.common.collect.HashBiMap;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.WorldSavedData;
 import dev.ultreon.devices.api.app.Icons;
 import dev.ultreon.devices.api.app.Notification;
@@ -131,7 +131,7 @@ public class EmailManager implements WorldSavedData {
     }
 
     private void sendNotification(String name, Email email) {
-        MinecraftServer server = Devices.getServer();
+        MinecraftServer server = UltreonDevices.getServer();
         UUID id = uuidToName.inverse().get(name);
         if (id != null) {
             ServerPlayer player = server.getPlayerList().getPlayer(id);

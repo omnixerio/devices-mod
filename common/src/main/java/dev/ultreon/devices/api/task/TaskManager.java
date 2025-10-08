@@ -1,6 +1,6 @@
 package dev.ultreon.devices.api.task;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.network.PacketHandler;
 import dev.ultreon.devices.network.task.RequestPacket;
 import net.minecraft.client.Minecraft;
@@ -33,11 +33,11 @@ public final class TaskManager {
             if (get().registeredRequests.containsKey(name))
                 throw new RuntimeException("Task '" + name + "' is already registered!");
 
-            Devices.LOGGER.info("Registering task '{}'", name);
+            UltreonDevices.LOGGER.info("Registering task '{}'", name);
             get().registeredRequests.put(name, factory);
             get().taskTypeMap.put(type, name);
         } catch (Exception e) {
-            Devices.LOGGER.error("Failed to register task:", e);
+            UltreonDevices.LOGGER.error("Failed to register task:", e);
         }
     }
 
@@ -52,7 +52,7 @@ public final class TaskManager {
 
         int requestId = manager.currentId++;
         if (manager.requests.containsKey(requestId))
-            Devices.LOGGER.warn("Request ID collision! Request ID: {}", requestId, new Throwable());
+            UltreonDevices.LOGGER.warn("Request ID collision! Request ID: {}", requestId, new Throwable());
         manager.requests.put(requestId, task);
         if (Minecraft.getInstance().getConnection() != null)
             PacketHandler.sendToServer(new RequestPacket(requestId, task));

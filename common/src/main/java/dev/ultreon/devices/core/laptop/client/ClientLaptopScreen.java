@@ -1,8 +1,7 @@
 package dev.ultreon.devices.core.laptop.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.ultreon.devices.Devices;
-import dev.ultreon.devices.Reference;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.debug.DebugLog;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -14,7 +13,7 @@ import java.util.Arrays;
 
 
 public class ClientLaptopScreen extends Screen {
-    static final ResourceLocation LAPTOP_GUI = Devices.res("textures/gui/laptop.png");
+    static final ResourceLocation LAPTOP_GUI = UltreonDevices.res("textures/gui/laptop.png");
     private static final int BORDER = 10;
     private final ClientLaptop laptop;
 

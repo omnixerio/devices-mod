@@ -1,6 +1,6 @@
 package dev.ultreon.devices.programs.system.object;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Consumer;
@@ -36,7 +36,7 @@ public class ColorSchemePresets {
 
     private static Preset createPreset(String name, ColorScheme colorScheme, Consumer<ColorScheme> consumer) {
         consumer.accept(colorScheme);
-        ResourceLocation id = Devices.res(name);
+        ResourceLocation id = UltreonDevices.res(name);
         Preset preset = new Preset(colorScheme, id);
         ColorSchemePresetRegistry.register(id, preset);
 

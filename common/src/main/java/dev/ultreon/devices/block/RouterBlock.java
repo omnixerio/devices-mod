@@ -1,7 +1,7 @@
 package dev.ultreon.devices.block;
 
 import com.mojang.serialization.MapCodec;
-import dev.ultreon.devices.ModDeviceTypes;
+import dev.ultreon.devices.DeviceType;
 import dev.ultreon.devices.block.entity.RouterBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -61,7 +61,7 @@ public class RouterBlock extends DeviceBlock.Colored {
     }
 
     public RouterBlock(DyeColor color, Properties properties) {
-        super(properties, color, ModDeviceTypes.ROUTER);
+        super(properties, color, DeviceType.ROUTER);
         this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(VERTICAL, false));
     }
 

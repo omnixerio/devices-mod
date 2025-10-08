@@ -1,6 +1,6 @@
 package dev.ultreon.devices.core.task;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.block.entity.computer.ComputerBlockEntity;
 import dev.ultreon.devices.debug.DebugLog;
@@ -57,7 +57,7 @@ public class TaskInstallApp extends Task {
             if (tag.getBoolean("install")) {
                 for (int i = 0; i < list.size(); i++) {
                     if (list.getString(i).equals(appId)) {
-                        Devices.LOGGER.warn("Found duplicate, noping out");
+                        UltreonDevices.LOGGER.warn("Found duplicate, noping out");
                         return;
                     }
                 }
@@ -76,7 +76,7 @@ public class TaskInstallApp extends Task {
             systemData.put("InstalledApps", list);
         }
         if (!this.isSuccessful()) {
-            Devices.LOGGER.info("Installing {} unsuccessful", appId);
+            UltreonDevices.LOGGER.info("Installing {} unsuccessful", appId);
         }
     }
 

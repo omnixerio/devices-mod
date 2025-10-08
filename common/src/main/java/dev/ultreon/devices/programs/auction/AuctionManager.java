@@ -1,6 +1,5 @@
 package dev.ultreon.devices.programs.auction;
 
-import dev.ultreon.devices.Devices;
 import dev.ultreon.devices.programs.auction.object.AuctionItem;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;

@@ -1,6 +1,6 @@
 package dev.ultreon.devices.init;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.block.entity.*;
 import dev.ultreon.devices.block.entity.computer.LaptopBlockEntity;
 import dev.ultreon.devices.block.entity.computer.MacMaxXBlockEntity;
@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 
 @SuppressWarnings("ConstantConditions")
 public class DeviceBlockEntities {
-    private static final Registrar<BlockEntityType<?>> REGISTER = Devices.REGISTRIES.get().getRegistrar(Registries.BLOCK_ENTITY_TYPE);
+    private static final Registrar<BlockEntityType<?>> REGISTER = UltreonDevices.REGISTRIES.get().getRegistrar(Registries.BLOCK_ENTITY_TYPE);
 
     public static final RegistrySupplier<BlockEntityType<PaperBlockEntity>, BlockEntityType<?>> PAPER = REGISTER.register("paper", () -> BlockEntityType.Builder.of(PaperBlockEntity::new, DeviceBlocks.PAPER.get()).build(null));
     public static final RegistrySupplier<BlockEntityType<LaptopBlockEntity>, BlockEntityType<?>> LAPTOP = REGISTER.register("laptop", () -> BlockEntityType.Builder.of(LaptopBlockEntity::new, DeviceBlocks.getAllLaptops().toArray(new Block[]{})).build(null));

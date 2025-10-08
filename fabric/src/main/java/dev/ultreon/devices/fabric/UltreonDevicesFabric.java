@@ -2,7 +2,7 @@ package dev.ultreon.devices.fabric;
 
 import dev.ultreon.devices.ClientModEvents;
 import dev.ultreon.devices.DeviceConfig;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.app.Application;
 import dev.ultreon.devices.api.print.IPrint;
 import dev.ultreon.devices.api.print.PrintingManager;
@@ -13,7 +13,6 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -24,16 +23,15 @@ import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.neoforged.fml.config.ModConfig;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class UltreonDevicesFabric extends Devices implements ModInitializer {
+public class UltreonDevicesFabric extends UltreonDevices implements ModInitializer {
     @Override
     public void onInitialize() {
-        NeoForgeConfigRegistry.INSTANCE.register(Devices.MOD_ID, ModConfig.Type.CLIENT, DeviceConfig.CONFIG);
+        NeoForgeConfigRegistry.INSTANCE.register(UltreonDevices.MOD_ID, ModConfig.Type.CLIENT, DeviceConfig.CONFIG);
 
         RegistrationHandler.register();
 
@@ -42,7 +40,7 @@ public class UltreonDevicesFabric extends Devices implements ModInitializer {
 
             @Override
             public ResourceLocation getFabricId() {
-                return Devices.res("client_resources");
+                return UltreonDevices.res("client_resources");
             }
 
             @Override

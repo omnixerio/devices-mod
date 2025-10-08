@@ -1,7 +1,7 @@
 package dev.ultreon.devices.block;
 
 import com.mojang.serialization.MapCodec;
-import dev.ultreon.devices.ModDeviceTypes;
+import dev.ultreon.devices.DeviceType;
 import dev.ultreon.devices.block.entity.OfficeChairBlockEntity;
 import dev.ultreon.devices.debug.DebugLog;
 import dev.ultreon.devices.entity.Seat;
@@ -40,12 +40,12 @@ public class OfficeChairBlock extends DeviceBlock.Colored {
     private static final VoxelShape SEAT_BOUNDING_BOX = Shapes.box(0.0625f, 0, 0.0625f, 0.9375f, 0.625f, 0.9375f);
 
     public OfficeChairBlock(DyeColor color) {
-        super(BlockBehaviour.Properties.of().mapColor(color), color, ModDeviceTypes.SEAT);
+        super(BlockBehaviour.Properties.of().mapColor(color), color, DeviceType.SEAT);
         this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(TYPE, Type.LEGS));
     }
 
     private OfficeChairBlock(Properties properties) {
-        super(properties, DyeColor.WHITE, ModDeviceTypes.SEAT);
+        super(properties, DyeColor.WHITE, DeviceType.SEAT);
         this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(TYPE, Type.LEGS));
     }
 

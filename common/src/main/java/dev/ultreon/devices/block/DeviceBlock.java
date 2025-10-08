@@ -1,7 +1,7 @@
 package dev.ultreon.devices.block;
 
-import dev.ultreon.devices.IDeviceType;
-import dev.ultreon.devices.ModDeviceTypes;
+import dev.ultreon.devices.DeviceTypeSupplier;
+import dev.ultreon.devices.DeviceType;
 import dev.ultreon.devices.block.entity.DeviceBlockEntity;
 import dev.ultreon.devices.util.BlockEntityUtil;
 import dev.ultreon.devices.util.Colorable;
@@ -35,10 +35,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 @SuppressWarnings("deprecation")
-public abstract class DeviceBlock extends HorizontalDirectionalBlock implements EntityBlock, IDeviceType {
-    private final ModDeviceTypes deviceType;
+public abstract class DeviceBlock extends HorizontalDirectionalBlock implements EntityBlock, DeviceTypeSupplier {
+    private final DeviceType deviceType;
 
-    public DeviceBlock(Properties properties, ModDeviceTypes deviceType) {
+    public DeviceBlock(Properties properties, DeviceType deviceType) {
         super(properties.strength(0.5f));
         this.deviceType = deviceType;
     }
@@ -130,14 +130,14 @@ public abstract class DeviceBlock extends HorizontalDirectionalBlock implements 
     }
 
     @Override
-    public ModDeviceTypes getDeviceType() {
+    public DeviceType getDeviceType() {
         return deviceType;
     }
 
     public static abstract class Colored extends DeviceBlock implements ColoredBlock {
         private final DyeColor color;
 
-        protected Colored(Properties properties, DyeColor color, ModDeviceTypes deviceType) {
+        protected Colored(Properties properties, DyeColor color, DeviceType deviceType) {
             super(properties, deviceType);
             this.color = color;
         }

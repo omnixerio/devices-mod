@@ -1,6 +1,6 @@
 package dev.ultreon.devices.api.utils;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 
 import java.io.IOException;
 import java.net.URI;
@@ -150,19 +150,19 @@ public class OnlineRequest {
                         try {
                             wrapper.handler.handle(response.statusCode() >= 200 && response.statusCode() < 400, response.body().getBytes());
                         } catch (Exception e) {
-                            Devices.LOGGER.error("An error has occurred.", e);
+                            UltreonDevices.LOGGER.error("An error has occurred.", e);
                             try {
                                 wrapper.handler.handle(false, "Internal error".getBytes());
                             } catch (Exception ex) {
-                                Devices.LOGGER.error("A double fault has occurred.", ex);
+                                UltreonDevices.LOGGER.error("A double fault has occurred.", ex);
                             }
                         }
                     } catch (Exception e) {
-                        Devices.LOGGER.error("An error has occurred.", e);
+                        UltreonDevices.LOGGER.error("An error has occurred.", e);
                         try {
                             wrapper.handler.handle(false, "Internal error".getBytes());
                         } catch (Exception ex) {
-                            Devices.LOGGER.error("A double fault has occurred.", ex);
+                            UltreonDevices.LOGGER.error("A double fault has occurred.", ex);
                         }
                     }
                 }

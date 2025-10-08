@@ -6,7 +6,6 @@ import dev.ultreon.devices.api.app.Application;
 import dev.ultreon.devices.api.print.IPrint;
 import dev.ultreon.devices.api.print.PrintingManager;
 import dev.ultreon.devices.core.ComputerScreen;
-import dev.ultreon.devices.event.InitializationEvent;
 import dev.ultreon.devices.init.RegistrationHandler;
 import dev.ultreon.mods.xinexlib.Env;
 import dev.ultreon.mods.xinexlib.platform.NeoForgePlatform;
@@ -22,13 +21,10 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.i18n.MavenVersionTranslator;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import org.slf4j.Logger;
 
@@ -39,7 +35,7 @@ import java.util.Map;
 @Mod(Reference.MOD_ID)
 public final class UltreonDevicesNeo {
     public static final Logger LOGGER = LogUtils.getLogger();
-    private final Devices instance = new Devices() {
+    private final UltreonDevices instance = new UltreonDevices() {
         @Override
         protected List<Application> loadApps() {
             return ObfuscationReflectionHelper.getPrivateValue(ComputerScreen.class, null, "APPLICATIONS");
@@ -69,14 +65,14 @@ public final class UltreonDevicesNeo {
 
     public IEventBus modEventBus;
 
-    public UltreonDevicesNeo(IEventBus modEventBus, ModContainer container) throws LaunchException {
+    public UltreonDevicesNeo(IEventBus modEventBus, ModContainer container) {
         super();
 
         NeoForgePlatform.getPlatform().registerMod(container.getModId(), modEventBus);
 
         this.modEventBus = modEventBus;
 
-        Devices.preInit();
+        UltreonDevices.preInit();
 
         // Common side stuff
         LOGGER.info("Initializing registration handler and mod config.");
@@ -85,7 +81,7 @@ public final class UltreonDevicesNeo {
 
         LOGGER.info("Registering common setup handler, and load complete handler.");
         if (XinexPlatform.getEnv() == Env.CLIENT) {
-            Devices.doClientInit();
+            UltreonDevices.doClientInit();
         }
         modEventBus.addListener(this::onLoadComplete);
 

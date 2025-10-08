@@ -2,13 +2,12 @@ package dev.ultreon.devices.object;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.Reference;
 import dev.ultreon.devices.core.ComputerScreen;
 import dev.ultreon.devices.core.Permission;
 import dev.ultreon.devices.core.PermissionManager;
 import dev.ultreon.devices.debug.DebugLog;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -309,7 +308,7 @@ public class AppInfo {
                     default -> throw new RuntimeException("Schema " + getSchemaVersion(json) + " is not implemented in " + Reference.VERSION + "!");
                 }
             } catch (JsonParseException e) {
-                Devices.LOGGER.error("Malformed app info json for '{}'", info.getFormattedId());
+                UltreonDevices.LOGGER.error("Malformed app info json for '{}'", info.getFormattedId());
             }
 
             return info;
@@ -368,7 +367,7 @@ public class AppInfo {
             }
 
             if (json.getAsJsonObject().has("icon") && json.getAsJsonObject().get("icon").isJsonPrimitive()) {
-                Devices.LOGGER.warn("{} uses removed \"icon\"! Please advise {} to fix the icon!", info.name, info.authors[0]);
+                UltreonDevices.LOGGER.warn("{} uses removed \"icon\"! Please advise {} to fix the icon!", info.name, info.authors[0]);
             }
 
             if (json.getAsJsonObject().has("support") && !json.getAsJsonObject().get("support").getAsJsonObject().isEmpty()) {
@@ -416,7 +415,7 @@ public class AppInfo {
             if (json.getAsJsonObject().has("author") && json.getAsJsonObject().get("author").isJsonPrimitive()) {
                 if (info.authors == null) {
                     info.authors = new String[]{convertToLocal(json.getAsJsonObject().get("author").getAsString())};
-                    Devices.LOGGER.warn("{} uses deprecated \"author\"!, Please advise {} to replace \"author\": \"{}\" with the \"authors\": [] format", info.name, info.authors[0], info.authors[0]);
+                    UltreonDevices.LOGGER.warn("{} uses deprecated \"author\"!, Please advise {} to replace \"author\": \"{}\" with the \"authors\": [] format", info.name, info.authors[0], info.authors[0]);
                 }
             }
 
@@ -428,7 +427,7 @@ public class AppInfo {
             }
 
             if (json.getAsJsonObject().has("icon") && json.getAsJsonObject().get("icon").isJsonPrimitive()) {
-                Devices.LOGGER.warn("{} uses removed \"icon\"! Please advise {} to fix the icon!", info.name, info.authors[0]);
+                UltreonDevices.LOGGER.warn("{} uses removed \"icon\"! Please advise {} to fix the icon!", info.name, info.authors[0]);
             }
 
             if (d) info.authors = new String[0];

@@ -1,7 +1,7 @@
 package dev.ultreon.devices.init;
 
 import com.google.common.collect.Lists;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.block.*;
 import dev.ultreon.devices.block.computer.LaptopBlock;
 import dev.ultreon.devices.block.computer.MacMaxXBlock;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class DeviceBlocks {
-    private static final Registrar<Block> REGISTER = Devices.REGISTRIES.get().getRegistrar(Registries.BLOCK);
+    private static final Registrar<Block> REGISTER = UltreonDevices.REGISTRIES.get().getRegistrar(Registries.BLOCK);
 
     public static void register() {
         REGISTER.load();

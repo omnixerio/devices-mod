@@ -1,7 +1,7 @@
 package dev.ultreon.devices.programs.auction;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.app.Application;
 import dev.ultreon.devices.api.app.Dialog;
 import dev.ultreon.devices.api.app.Layout;
@@ -35,7 +35,7 @@ import java.util.Objects;
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class MineBayApp extends Application {
     private static final ResourceLocation CHEST_GUI_TEXTURE = ResourceLocation.withDefaultNamespace("textures/gui/container/generic_54.png");
-    private static final ResourceLocation MINEBAY_ASSETS = Devices.res("textures/gui/minebay.png");
+    private static final ResourceLocation MINEBAY_ASSETS = UltreonDevices.res("textures/gui/minebay.png");
 
     private static final ItemStack EMERALD = new ItemStack(Items.EMERALD);
 

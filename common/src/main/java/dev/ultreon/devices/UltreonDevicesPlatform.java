@@ -1,6 +1,5 @@
 package dev.ultreon.devices;
 
-public interface DevicesModPlatform {
+public interface UltreonDevicesPlatform {
     String getVersion();
-
 }

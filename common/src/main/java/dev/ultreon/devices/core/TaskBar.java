@@ -1,7 +1,7 @@
 package dev.ultreon.devices.core;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.TrayItemAdder;
 import dev.ultreon.devices.api.app.Application;
 import dev.ultreon.devices.api.event.client.ComputerTrayItemsEvent;
@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 public class TaskBar {
     public static final ResourceLocation APP_BAR_GUI = ResourceLocation.parse("devices:textures/gui/application_bar.png");
     public static final int BAR_HEIGHT = 18;
-    private static final int APPS_DISPLAYED = Devices.DEVELOPER_MODE ? 18 : 10;
+    private static final int APPS_DISPLAYED = UltreonDevices.DEVELOPER_MODE ? 18 : 10;
 
     private final CompoundTag tag;
 
@@ -83,12 +83,12 @@ public class TaskBar {
             if (app instanceof SystemApp) {
                 return true;
             }
-            if (Devices.hasAllowedApplications()) {
-                if (Devices.getAllowedApplications().contains(app.getInfo())) {
-                    return !Devices.DEVELOPER_MODE || Settings.isShowAllApps();
+            if (UltreonDevices.hasAllowedApplications()) {
+                if (UltreonDevices.getAllowedApplications().contains(app.getInfo())) {
+                    return !UltreonDevices.DEVELOPER_MODE || Settings.isShowAllApps();
                 }
                 return false;
-            } else if (Devices.DEVELOPER_MODE) {
+            } else if (UltreonDevices.DEVELOPER_MODE) {
                 return Settings.isShowAllApps();
             }
             return true;
@@ -161,7 +161,7 @@ public class TaskBar {
 
     public void handleClick(ComputerScreen computerScreen, int x, int y, int mouseX, int mouseY, int mouseButton) {
         if (isMouseInside(mouseX, mouseY, x + 1, y + 1, x + 236, y + 16)) {
-            Devices.LOGGER.debug(MARKER, "Clicked on task bar");
+            UltreonDevices.LOGGER.debug(MARKER, "Clicked on task bar");
             int appIndex = (mouseX - x - 1) / 16;
             if (appIndex >= 0 && appIndex <= offset + APPS_DISPLAYED && appIndex < computerScreen.installedApps.size()) {
                 computerScreen.launchApp(computerScreen.installedApps.get(appIndex));
@@ -175,7 +175,7 @@ public class TaskBar {
             if (isMouseInside(mouseX, mouseY, posX, y + 2, posX + 13, y + 15)) {
                 TrayItem trayItem = trayItems.get(i);
                 trayItem.handleClick(mouseX, mouseY, mouseButton);
-                Devices.LOGGER.debug(MARKER, "Clicked on tray item (%d): %s".formatted(i, trayItem.getClass().getSimpleName()));
+                UltreonDevices.LOGGER.debug(MARKER, "Clicked on tray item (%d): %s".formatted(i, trayItem.getClass().getSimpleName()));
                 break;
             }
         }

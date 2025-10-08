@@ -1,6 +1,6 @@
 package dev.ultreon.devices.network.task;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.mods.xinexlib.Env;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -15,7 +15,7 @@ public class SidedSystem {
 
             return connection.registryAccess();
         } else {
-            return Devices.getServer().registryAccess();
+            return UltreonDevices.getServer().registryAccess();
         }
     }
 }

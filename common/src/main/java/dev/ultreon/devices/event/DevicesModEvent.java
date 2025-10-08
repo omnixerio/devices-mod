@@ -1,7 +1,7 @@
 package dev.ultreon.devices.event;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 
 public interface DevicesModEvent {
-    Devices devices();
+    UltreonDevices devices();
 }

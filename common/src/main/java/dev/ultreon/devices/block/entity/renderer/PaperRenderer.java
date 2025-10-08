@@ -2,7 +2,7 @@ package dev.ultreon.devices.block.entity.renderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import net.minecraft.nbt.CompoundTag;
 import dev.ultreon.devices.DeviceConfig;
 import dev.ultreon.devices.api.print.IPrint;
@@ -60,7 +60,7 @@ public record PaperRenderer(
     public void render(PaperBlockEntity blockEntity, float partialTick, @NotNull PoseStack pose, @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         BlockState state = Objects.requireNonNull(blockEntity.getLevel()).getBlockState(blockEntity.getBlockPos());
         if (blockEntity.getBlockState().getBlock() != state.getBlock()) {
-            Devices.LOGGER.error("Paper block mismatch: {} != {}", blockEntity.getBlockState().getBlock(), state.getBlock());
+            UltreonDevices.LOGGER.error("Paper block mismatch: {} != {}", blockEntity.getBlockState().getBlock(), state.getBlock());
             return;
         }
 

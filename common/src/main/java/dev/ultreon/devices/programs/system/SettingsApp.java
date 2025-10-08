@@ -1,7 +1,7 @@
 package dev.ultreon.devices.programs.system;
 
 import com.google.common.base.CaseFormat;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.Reference;
 import dev.ultreon.devices.api.ApplicationManager;
 import dev.ultreon.devices.api.app.Dialog;
@@ -233,7 +233,7 @@ public class SettingsApp extends SystemApp {
         final Layout layoutColorSchemes = new Menu("Themes");
         layoutColorSchemes.addComponent(backBtn);
 
-        Preset custom = new Preset(null, Devices.res("custom"));
+        Preset custom = new Preset(null, UltreonDevices.res("custom"));
 
         ItemList<Preset> list = new ItemList<>(0, 21, layoutColorSchemes.width, layoutColorSchemes.height - 21);
         for (Preset colorScheme : ColorSchemePresetRegistry.getValues()) {
@@ -250,7 +250,7 @@ public class SettingsApp extends SystemApp {
             @Override
             public void render(GuiGraphics graphics, Preset scheme, Minecraft mc, int x, int y, int width, int height, boolean selected) {
                 ResourceLocation key = ColorSchemePresetRegistry.getKey(scheme);
-                if (key == null) key = Devices.res("custom");
+                if (key == null) key = UltreonDevices.res("custom");
                 graphics.drawString(mc.font, CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, key.getPath()).replaceAll("[A-Z]", " $0").substring(1), x + 5, y + 5, Color.WHITE.getRGB());
             }
         });
@@ -538,12 +538,12 @@ public class SettingsApp extends SystemApp {
 
     public static class SettingsTrayItem extends TrayItem {
         public SettingsTrayItem() {
-            super(Icons.WRENCH, Devices.res("settings"));
+            super(Icons.WRENCH, UltreonDevices.res("settings"));
         }
 
         @Override
         public void handleClick(int mouseX, int mouseY, int mouseButton) {
-            AppInfo info = ApplicationManager.getApplication(Devices.res("settings"));
+            AppInfo info = ApplicationManager.getApplication(UltreonDevices.res("settings"));
             if (info != null) {
                 ComputerScreen.getSystem().launchApp(info);
             }

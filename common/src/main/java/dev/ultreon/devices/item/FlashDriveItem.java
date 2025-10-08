@@ -1,7 +1,7 @@
 package dev.ultreon.devices.item;
 
-import dev.ultreon.devices.IDeviceType;
-import dev.ultreon.devices.ModDeviceTypes;
+import dev.ultreon.devices.DeviceTypeSupplier;
+import dev.ultreon.devices.DeviceType;
 import dev.ultreon.devices.Reference;
 import dev.ultreon.devices.util.Colored;
 import net.minecraft.ChatFormatting;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class FlashDriveItem extends Item implements Colored, SubItems, IDeviceType {
+public class FlashDriveItem extends Item implements Colored, SubItems, DeviceTypeSupplier {
 
     private final DyeColor color;
 
@@ -50,7 +50,7 @@ public class FlashDriveItem extends Item implements Colored, SubItems, IDeviceTy
     }
 
     @Override
-    public ModDeviceTypes getDeviceType() {
-        return ModDeviceTypes.FLASH_DRIVE;
+    public DeviceType getDeviceType() {
+        return DeviceType.FLASH_DRIVE;
     }
 }

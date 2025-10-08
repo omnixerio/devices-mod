@@ -2,12 +2,12 @@ package dev.ultreon.devices;
 
 import org.jetbrains.annotations.Contract;
 
-public enum ModDeviceTypes implements IDeviceType {
+public enum DeviceType implements DeviceTypeSupplier {
     COMPUTER, PRINTER, FLASH_DRIVE, ROUTER, SEAT;
 
     @Override
     @Contract(pure = true, value = "-> this")
-    public ModDeviceTypes getDeviceType() {
+    public DeviceType getDeviceType() {
         return this;
     }
 }

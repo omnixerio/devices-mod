@@ -1,6 +1,6 @@
 package dev.ultreon.devices.core.io;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.app.Application;
 import dev.ultreon.devices.api.io.Drive;
 import dev.ultreon.devices.api.io.FSResponse;
@@ -117,7 +117,7 @@ public class FileSystem {
     }
 
     public static void getApplicationFolder(Application app, Consumer<FSResponse<FileInfo>> callback) {
-        if (Devices.hasAllowedApplications() && !Devices.getAllowedApplications().contains(app.getInfo())) {
+        if (UltreonDevices.hasAllowedApplications() && !UltreonDevices.getAllowedApplications().contains(app.getInfo())) {
             callback.accept(new FSResponse<>(false, Status.ACCESS_DENIED, null, "Application not allowed"));
             return;
         }

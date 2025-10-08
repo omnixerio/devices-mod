@@ -1,6 +1,6 @@
 package dev.ultreon.devices.init;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.item.ColoredDeviceItem;
 import dev.ultreon.devices.item.FlashDriveItem;
 import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
@@ -14,7 +14,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 public class DeviceCreativeTabs {
-    private static final Registrar<CreativeModeTab> REGISTER = Devices.REGISTRIES.get().getRegistrar(Registries.CREATIVE_MODE_TAB);
+    private static final Registrar<CreativeModeTab> REGISTER = UltreonDevices.REGISTRIES.get().getRegistrar(Registries.CREATIVE_MODE_TAB);
 
     public static void register() {
         REGISTER.load();

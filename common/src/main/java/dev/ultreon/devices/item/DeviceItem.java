@@ -1,7 +1,7 @@
 package dev.ultreon.devices.item;
 
-import dev.ultreon.devices.IDeviceType;
-import dev.ultreon.devices.ModDeviceTypes;
+import dev.ultreon.devices.DeviceTypeSupplier;
+import dev.ultreon.devices.DeviceType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
 
@@ -10,8 +10,8 @@ import net.minecraft.world.level.block.Block;
 /// </summary>
 ///
 /// @author [MrCrayfish](https://github.com/MrCrayfish), [Qubix](https://github.com/Qubilux)
-public class DeviceItem extends BlockItem implements IDeviceType {
-    private final ModDeviceTypes deviceType;
+public class DeviceItem extends BlockItem implements DeviceTypeSupplier {
+    private final DeviceType deviceType;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="DeviceItem"/> class.
@@ -20,7 +20,7 @@ public class DeviceItem extends BlockItem implements IDeviceType {
     /// @param block      The device block to use.
     /// @param properties The item properties.
     /// @param deviceType The type of the device.
-    public DeviceItem(Block block, Properties properties, ModDeviceTypes deviceType) {
+    public DeviceItem(Block block, Properties properties, DeviceType deviceType) {
         super(block, properties.stacksTo(1));
         this.deviceType = deviceType;
     }
@@ -44,7 +44,7 @@ public class DeviceItem extends BlockItem implements IDeviceType {
     ///
     /// @return The type of the device.
     @Override
-    public ModDeviceTypes getDeviceType() {
+    public DeviceType getDeviceType() {
         return deviceType;
     }
 }

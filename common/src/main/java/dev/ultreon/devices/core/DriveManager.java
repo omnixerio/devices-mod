@@ -2,7 +2,7 @@ package dev.ultreon.devices.core;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.core.io.drive.AbstractDrive;
 import dev.ultreon.devices.core.io.drive.ExternalDrive;
 import dev.ultreon.devices.core.io.drive.InternalDrive;
@@ -20,7 +20,7 @@ public class DriveManager {
         try {
             return INTERNAL_DRIVE_CACHE.get(uuid, () -> InternalDrive.load(uuid, AbstractDrive.getDrivePath(uuid)));
         } catch (ExecutionException e) {
-            Devices.LOGGER.error("Failed to load internal drive", e);
+            UltreonDevices.LOGGER.error("Failed to load internal drive", e);
             return null;
         }
     }
@@ -29,7 +29,7 @@ public class DriveManager {
         try {
             return EXTERNAL_DRIVE_CACHE.get(uuid, () -> ExternalDrive.load(uuid, AbstractDrive.getDrivePath(uuid)));
         } catch (ExecutionException e) {
-            Devices.LOGGER.error("Failed to load external drive", e);
+            UltreonDevices.LOGGER.error("Failed to load external drive", e);
             return null;
         }
     }

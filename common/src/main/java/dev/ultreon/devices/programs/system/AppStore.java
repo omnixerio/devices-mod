@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.Reference;
 import dev.ultreon.devices.api.ApplicationManager;
 import dev.ultreon.devices.api.app.Component;
@@ -197,12 +197,12 @@ public class AppStore extends SystemApp {
 
     public static class StoreTrayItem extends TrayItem {
         public StoreTrayItem() {
-            super(Icons.SHOP, Devices.res("app_store"));
+            super(Icons.SHOP, UltreonDevices.res("app_store"));
         }
 
         @Override
         public void handleClick(int mouseX, int mouseY, int mouseButton) {
-            AppInfo info = ApplicationManager.getApplication(Devices.res("app_store"));
+            AppInfo info = ApplicationManager.getApplication(UltreonDevices.res("app_store"));
             if (info != null) {
                 ComputerScreen.getSystem().launchApp(info);
             }

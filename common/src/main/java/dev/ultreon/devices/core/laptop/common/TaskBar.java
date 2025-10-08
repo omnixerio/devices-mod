@@ -1,7 +1,7 @@
 package dev.ultreon.devices.core.laptop.common;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.core.laptop.client.ClientLaptop;
 import dev.ultreon.devices.programs.system.object.ColorScheme;
 import net.minecraft.client.Minecraft;
@@ -13,9 +13,9 @@ import org.slf4j.MarkerFactory;
 import java.awt.*;
 
 public class TaskBar {
-    public static final ResourceLocation APP_BAR_GUI = Devices.res("textures/gui/application_bar.png");
+    public static final ResourceLocation APP_BAR_GUI = UltreonDevices.res("textures/gui/application_bar.png");
     public static final int BAR_HEIGHT = 18;
-    private static final int APPS_DISPLAYED = Devices.DEVELOPER_MODE ? 18 : 10;
+    private static final int APPS_DISPLAYED = UltreonDevices.DEVELOPER_MODE ? 18 : 10;
     private final ClientLaptop laptop;
 
     private final int offset = 0;
@@ -100,7 +100,7 @@ public class TaskBar {
 
     public void handleClick(ClientLaptop laptop, int x, int y, int mouseX, int mouseY, int mouseButton) {
         if (isMouseInside(mouseX, mouseY, x + 1, y + 1, x + 236, y + 16)) {
-            Devices.LOGGER.debug(MARKER, "Clicked on task bar");
+            UltreonDevices.LOGGER.debug(MARKER, "Clicked on task bar");
 //            int appIndex = (mouseX - x - 1) / 16;
 //            if (appIndex >= 0 && appIndex <= offset + APPS_DISPLAYED && appIndex < laptop.installedApps.size()) {
 //                laptop.openApplication(laptop.installedApps.get(appIndex));

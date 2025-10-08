@@ -3,7 +3,7 @@ package dev.ultreon.devices.core;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.ApplicationManager;
 import dev.ultreon.devices.api.app.Dialog;
 import dev.ultreon.devices.api.app.System;
@@ -63,11 +63,11 @@ import java.util.function.Consumer;
 /// @author MrCrayfish, Qubix
 public class ComputerScreen extends Screen implements System {
     public static final int ID = 1;
-    public static final ResourceLocation ICON_TEXTURES = ResourceLocation.fromNamespaceAndPath(Devices.MOD_ID, "textures/atlas/app_icons.png");
+    public static final ResourceLocation ICON_TEXTURES = ResourceLocation.fromNamespaceAndPath(UltreonDevices.MOD_ID, "textures/atlas/app_icons.png");
     public static final int ICON_SIZE = 14;
-    private static final ResourceLocation LAPTOP_FONT = Devices.res("laptop");
+    private static final ResourceLocation LAPTOP_FONT = UltreonDevices.res("laptop");
     private static Font font;
-    private static final ResourceLocation LAPTOP_GUI = ResourceLocation.fromNamespaceAndPath(Devices.MOD_ID, "textures/gui/laptop.png");
+    private static final ResourceLocation LAPTOP_GUI = ResourceLocation.fromNamespaceAndPath(UltreonDevices.MOD_ID, "textures/gui/laptop.png");
     private static final List<Application> APPLICATIONS = new ArrayList<>();
     private static boolean worldLess;
     private static ComputerScreen instance;
@@ -608,7 +608,7 @@ public class ComputerScreen extends Screen implements System {
                 graphics.pose().popPose();
             }
             RenderSystem.disableScissor();
-            Devices.LOGGER.error("An error has occurred.", e);
+            UltreonDevices.LOGGER.error("An error has occurred.", e);
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
             CompoundTag intent = new CompoundTag();
@@ -627,7 +627,7 @@ public class ComputerScreen extends Screen implements System {
             }
             intent.putString("name", name);
         }
-        launchApp(ApplicationManager.getApplication(Devices.res("diagnostics")), intent);
+        launchApp(ApplicationManager.getApplication(UltreonDevices.res("diagnostics")), intent);
         closeApplication(app);
     }
 
@@ -649,7 +649,7 @@ public class ComputerScreen extends Screen implements System {
 
     private void bsod(Throwable e) {
         this.bsod = new BSOD(e);
-        Devices.LOGGER.error("A fatal error has occurred.", e);
+        UltreonDevices.LOGGER.error("A fatal error has occurred.", e);
     }
 
     public VideoInfo getVideoInfo() {
@@ -750,7 +750,7 @@ public class ComputerScreen extends Screen implements System {
                         break;
                     }
                 } catch (Exception e) {
-                    Devices.LOGGER.error("An error has occurred.", e);
+                    UltreonDevices.LOGGER.error("An error has occurred.", e);
                     Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
                     message.setTitle("Error");
                     if (windows.isEmpty() || windows.getFirst() == null) {
@@ -759,7 +759,7 @@ public class ComputerScreen extends Screen implements System {
                         if (info != null) {
                             intent.putString("name", info.getName());
                         }
-                        launchApp(ApplicationManager.getApplication(Devices.res("diagnostics")), intent);
+                        launchApp(ApplicationManager.getApplication(UltreonDevices.res("diagnostics")), intent);
                     } else {
                         setSystemDialog(message);
                     }
@@ -803,7 +803,7 @@ public class ComputerScreen extends Screen implements System {
                 windows.getFirst().handleMouseRelease((int) mouseX, (int) mouseY, state);
             }
         } catch (Exception e) {
-            Devices.LOGGER.error("An error has occurred.", e);
+            UltreonDevices.LOGGER.error("An error has occurred.", e);
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
             setSystemDialog(message);
@@ -827,7 +827,7 @@ public class ComputerScreen extends Screen implements System {
             if (!override && !windows.isEmpty())
                 windows.getFirst().handleCharTyped(codePoint, modifiers);
         } catch (Exception e) {
-            Devices.LOGGER.error("An error has occurred.", e);
+            UltreonDevices.LOGGER.error("An error has occurred.", e);
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
             setSystemDialog(message);
@@ -856,7 +856,7 @@ public class ComputerScreen extends Screen implements System {
                 windows.getFirst().handleKeyPressed(keyCode, scanCode, modifiers);
             }
         } catch (Exception e) {
-            Devices.LOGGER.error("An error has occurred.", e);
+            UltreonDevices.LOGGER.error("An error has occurred.", e);
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
             setSystemDialog(message);
@@ -878,7 +878,7 @@ public class ComputerScreen extends Screen implements System {
                 return true;
             }
         } catch (Exception e) {
-            Devices.LOGGER.error("An error has occurred.", e);
+            UltreonDevices.LOGGER.error("An error has occurred.", e);
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
             setSystemDialog(message);
@@ -927,7 +927,7 @@ public class ComputerScreen extends Screen implements System {
                 }
             }
         } catch (Exception e) {
-            Devices.LOGGER.error("An error has occurred.", e);
+            UltreonDevices.LOGGER.error("An error has occurred.", e);
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
             setSystemDialog(message);
@@ -960,7 +960,7 @@ public class ComputerScreen extends Screen implements System {
                     windows.getFirst().handleMouseScroll((int) mouseX, (int) mouseY, deltaY, deltaY >= 0);
                 }
             } catch (Exception e) {
-                Devices.LOGGER.error("An error has occurred.", e);
+                UltreonDevices.LOGGER.error("An error has occurred.", e);
                 Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
                 message.setTitle("Error");
                 setSystemDialog(message);
@@ -1046,8 +1046,8 @@ public class ComputerScreen extends Screen implements System {
 
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
         } catch (Exception e) {
-            Devices.LOGGER.error("An error has occurred.", e);
-            AppInfo info = ApplicationManager.getApplication(Devices.res("diagnostics"));
+            UltreonDevices.LOGGER.error("An error has occurred.", e);
+            AppInfo info = ApplicationManager.getApplication(UltreonDevices.res("diagnostics"));
             system.launchApp(info);
         }
         return app;
@@ -1090,8 +1090,8 @@ public class ComputerScreen extends Screen implements System {
                 }
             }
         } catch (Exception e) {
-            Devices.LOGGER.error("An error has occurred.", e);
-            AppInfo info1 = ApplicationManager.getApplication(Devices.res("diagnostics"));
+            UltreonDevices.LOGGER.error("An error has occurred.", e);
+            AppInfo info1 = ApplicationManager.getApplication(UltreonDevices.res("diagnostics"));
             system.launchApp(info1);
         }
     }
@@ -1255,8 +1255,8 @@ public class ComputerScreen extends Screen implements System {
     }
 
     private boolean isValidApplication(AppInfo info) {
-        if (Devices.hasAllowedApplications()) {
-            return Devices.getAllowedApplications().contains(info);
+        if (UltreonDevices.hasAllowedApplications()) {
+            return UltreonDevices.getAllowedApplications().contains(info);
         }
         return true;
     }

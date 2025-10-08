@@ -1,8 +1,8 @@
 package dev.ultreon.devices.block;
 
 import com.mojang.serialization.MapCodec;
-import dev.ultreon.devices.Devices;
-import dev.ultreon.devices.ModDeviceTypes;
+import dev.ultreon.devices.UltreonDevices;
+import dev.ultreon.devices.DeviceType;
 import dev.ultreon.devices.block.entity.PrinterBlockEntity;
 import dev.ultreon.devices.util.Colored;
 import net.minecraft.core.BlockPos;
@@ -80,12 +80,12 @@ public class PrinterBlock extends DeviceBlock.Colored implements Colored {
             box(12, 3, 4, 16, 9.3, 12));
 
     public PrinterBlock(DyeColor color) {
-        super(Properties.of().mapColor(color).strength(6f).sound(SoundType.METAL), color, ModDeviceTypes.PRINTER);
+        super(Properties.of().mapColor(color).strength(6f).sound(SoundType.METAL), color, DeviceType.PRINTER);
         this.registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
     }
 
     private PrinterBlock(Properties properties) {
-        super(properties, DyeColor.WHITE, ModDeviceTypes.PRINTER);
+        super(properties, DyeColor.WHITE, DeviceType.PRINTER);
         this.registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
     }
 
@@ -111,7 +111,7 @@ public class PrinterBlock extends DeviceBlock.Colored implements Colored {
         if (tileEntity instanceof PrinterBlockEntity) {
             return ((PrinterBlockEntity) tileEntity).addPaper(heldItem, player.isCrouching()) ? ItemInteractionResult.SUCCESS : ItemInteractionResult.FAIL;
         } else {
-            Devices.LOGGER.warn("BlockEntity at {} is not a PrinterBlockEntity", pos);
+            UltreonDevices.LOGGER.warn("BlockEntity at {} is not a PrinterBlockEntity", pos);
             return ItemInteractionResult.FAIL;
         }
     }

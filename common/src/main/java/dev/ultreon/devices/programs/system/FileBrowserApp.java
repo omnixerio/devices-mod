@@ -1,7 +1,7 @@
 package dev.ultreon.devices.programs.system;
 
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.ApplicationManager;
 import dev.ultreon.devices.api.app.Icons;
 import dev.ultreon.devices.core.ComputerScreen;
@@ -39,12 +39,12 @@ public class FileBrowserApp extends SystemApp {
 
     public static class FileBrowserTrayItem extends TrayItem {
         public FileBrowserTrayItem() {
-            super(Icons.FOLDER, Devices.res("file_browser"));
+            super(Icons.FOLDER, UltreonDevices.res("file_browser"));
         }
 
         @Override
         public void handleClick(int mouseX, int mouseY, int mouseButton) {
-            AppInfo info = ApplicationManager.getApplication(Devices.res("file_browser"));
+            AppInfo info = ApplicationManager.getApplication(UltreonDevices.res("file_browser"));
             if (info != null) {
                 ComputerScreen.getSystem().launchApp(info);
             }

@@ -37,12 +37,12 @@ import java.util.concurrent.Executor;
 
 public class ClientModEvents {
     private static final Marker SETUP = MarkerFactory.getMarker("SETUP");
-    private static final Logger LOGGER = Devices.LOGGER;
+    private static final Logger LOGGER = UltreonDevices.LOGGER;
 
     public static void clientSetup() {
         LOGGER.info("Doing some client setup.");
 
-        if (Devices.DEVELOPER_MODE) {
+        if (UltreonDevices.DEVELOPER_MODE) {
             LOGGER.info(SETUP, "Adding developer wallpaper.");
             ComputerScreen.addWallpaper(ResourceLocation.parse("devices:textures/gui/developer_wallpaper.png"));
         } else {
@@ -149,7 +149,7 @@ public class ClientModEvents {
                     }
                     BufferedImage icon = ImageIO.read(input);
                     if (icon.getWidth() != ICON_SIZE || icon.getHeight() != ICON_SIZE) {
-                        Devices.LOGGER.error("Incorrect icon size for {} (Must be 14 by 14 pixels)", info == null ? null : info.getId());
+                        UltreonDevices.LOGGER.error("Incorrect icon size for {} (Must be 14 by 14 pixels)", info == null ? null : info.getId());
                         return;
                     }
                     int iconU = (index % 16) * ICON_SIZE;
@@ -167,15 +167,15 @@ public class ClientModEvents {
                     }
                     index++;
                     if (DebugFlags.LOG_APP_ICON_STITCHES) {
-                        Devices.LOGGER.info("Stitching texture: {}", location);
+                        UltreonDevices.LOGGER.info("Stitching texture: {}", location);
                     }
                 } catch (FileNotFoundException e) {
-                    Devices.LOGGER.error("Unable to load icon for '{}': {}", info == null ? null : info.getId(), e.getMessage());
+                    UltreonDevices.LOGGER.error("Unable to load icon for '{}': {}", info == null ? null : info.getId(), e.getMessage());
                     if (DebugFlags.PRINT_MISSING_APP_ICONS_STACK_TRACES) {
                         LOGGER.error("Unable to load icon for {}", info == null ? null : info.getId(), e);
                     }
                 } catch (Exception e) {
-                    Devices.LOGGER.error("Unable to load icon for {}", info == null ? null : info.getId());
+                    UltreonDevices.LOGGER.error("Unable to load icon for {}", info == null ? null : info.getId());
                     if (DebugFlags.PRINT_APP_ICONS_STACK_TRACES) {
                         LOGGER.error("Unable to load icon for {}", info == null ? null : info.getId(), e);
                     }

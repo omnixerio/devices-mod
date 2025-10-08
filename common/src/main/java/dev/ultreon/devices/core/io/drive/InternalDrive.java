@@ -1,6 +1,6 @@
 package dev.ultreon.devices.core.io.drive;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.NbtUtils;
@@ -53,7 +53,7 @@ public final class InternalDrive extends AbstractDrive {
         try {
             Tag uuid1 = driveTag.get("uuid");
             if (!(uuid1 instanceof IntArrayTag)) {
-                Devices.LOGGER.warn("Invalid uuid tag in drive tag: {}", uuid1);
+                UltreonDevices.LOGGER.warn("Invalid uuid tag in drive tag: {}", uuid1);
                 return new InternalDrive(driveTag.contains("name") ? driveTag.getString("name") : "Drive");
             }
             return new InternalDrive(driveTag.contains("name") ? driveTag.getString("name") : "Drive", NbtUtils.loadUUID(uuid1));

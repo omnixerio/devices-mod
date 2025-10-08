@@ -1,7 +1,7 @@
 package dev.ultreon.devices.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.app.IIcon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -55,7 +55,7 @@ public class ClientNotification implements Toast {
         try {
             notification.icon = (IIcon) Class.forName(className).getEnumConstants()[ordinal];
         } catch (ClassNotFoundException e) {
-            Devices.LOGGER.error("Failed to load icon for notification", e);
+            UltreonDevices.LOGGER.error("Failed to load icon for notification", e);
         }
 
         notification.title = tag.getString("title");

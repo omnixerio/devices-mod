@@ -74,7 +74,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-public abstract class Devices {
+public abstract class UltreonDevices {
     public static final boolean DEVELOPER_MODE = XinexPlatform.isDevelopmentEnvironment();
     public static final String MOD_ID = "devices";
     public static final Logger LOGGER = LoggerFactory.getLogger("Ultreon Devices Mod");
@@ -94,8 +94,8 @@ public abstract class Devices {
     //---- Registry : End ----//
 
     static List<AppInfo> allowedApps = new ArrayList<>();
-    private static List<Vulnerability> vulnerabilities = new ArrayList<>();
-    private static Devices instance;
+    private static final List<Vulnerability> vulnerabilities = new ArrayList<>();
+    private static UltreonDevices instance;
     private ArrayList<Application> apps;
 
     public static List<Vulnerability> getVulnerabilities() {
@@ -104,11 +104,11 @@ public abstract class Devices {
     private static MinecraftServer server;
     private static TestManager tests;
 
-    protected Devices() {
-        Devices.instance = this;
+    protected UltreonDevices() {
+        UltreonDevices.instance = this;
     }
 
-    public static Devices getInstance() {
+    public static UltreonDevices getInstance() {
         return instance;
     }
 
@@ -142,13 +142,13 @@ public abstract class Devices {
         }
 
         if (XinexPlatform.getPlatformName().equals(ModPlatform.Fabric)) {
-            EnvExecutor.runInEnv(Env.CLIENT, () -> Devices::doClientInit);
+            EnvExecutor.runInEnv(Env.CLIENT, () -> UltreonDevices::doClientInit);
         }
 
         LOGGER.info("Registering events.");
         setupEvents();
 
-        EnvExecutor.runInEnv(Env.CLIENT, () -> Devices::setupClientEvents); //todo
+        EnvExecutor.runInEnv(Env.CLIENT, () -> UltreonDevices::setupClientEvents); //todo
         if (XinexPlatform.getPlatformName() != ModPlatform.Forge) {
             loadComplete();
         }
@@ -157,15 +157,11 @@ public abstract class Devices {
     public static void doClientInit() {
         ClientAppDebug.register();
         ClientModEvents.clientSetup(); //todo
-        Devices.setupSiteRegistrations();
-        Devices.checkForVulnerabilities();
+        UltreonDevices.setupSiteRegistrations();
+        UltreonDevices.checkForVulnerabilities();
     }
 
     public static void preInit() {
-        if (DEVELOPER_MODE && !XinexPlatform.isDevelopmentEnvironment()) {
-            throw new LaunchException();
-        }
-
         EventSystem.MAIN.on(InitializationEvent.AppRegistrationEvent.class, BuiltinApps::registerBuiltinApps);
         DeviceConfig.init();
     }
@@ -220,7 +216,7 @@ public abstract class Devices {
         TaskManager.registerTask("delete_email", TaskDeleteEmail::new, TaskDeleteEmail.class);
         TaskManager.registerTask("view_email", TaskViewEmail::new, TaskViewEmail.class);
 
-        if (XinexPlatform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableBetaApps) {
+        if (XinexPlatform.isDevelopmentEnvironment() || UltreonDevices.EARLY_CONFIG.enableBetaApps) {
             // Auction
             TaskManager.registerTask("add_auction", TaskAddAuction::new, TaskAddAuction.class);
             TaskManager.registerTask("get_auctions", TaskGetAuctions::new, TaskGetAuctions.class);
@@ -235,7 +231,7 @@ public abstract class Devices {
             TaskManager.registerTask("remove", TaskRemove::new, TaskRemove.class);
         }
 
-        if (XinexPlatform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableDebugApps) {
+        if (XinexPlatform.isDevelopmentEnvironment() || UltreonDevices.EARLY_CONFIG.enableDebugApps) {
             // Applications (Developers)
             ApplicationManager.registerApplication(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "example"), () -> ExampleApp::new, false);
             ApplicationManager.registerApplication(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "icons"), () -> IconsApp::new, false);
@@ -260,7 +256,7 @@ public abstract class Devices {
     }
 
     public static void setAllowedApps(List<AppInfo> allowedApps) {
-        Devices.allowedApps = allowedApps;
+        UltreonDevices.allowedApps = allowedApps;
     }
 
     public abstract String getVersion();
@@ -301,7 +297,6 @@ public abstract class Devices {
             apps.add(theAppWeGot);
 
             AppInfo info = new AppInfo(identifier, SystemApp.class.isAssignableFrom(theAppWeGot.getClass()));
-            ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
 
             theAppWeGot.setInfo(info);
 
@@ -331,12 +326,12 @@ public abstract class Devices {
                 }
                 idToRenderer.put(identifier.toString(), renderer);
             } catch (InstantiationException e) {
-                Devices.LOGGER.error("The print renderer '{}' is missing an empty constructor and could not be registered!", classRenderer.getName());
+                UltreonDevices.LOGGER.error("The print renderer '{}' is missing an empty constructor and could not be registered!", classRenderer.getName());
                 return false;
             }
             return true;
         } catch (Exception e) {
-            Devices.LOGGER.error("The print '{}' is missing an empty constructor and could not be registered!", classPrint.getName());
+            UltreonDevices.LOGGER.error("The print '{}' is missing an empty constructor and could not be registered!", classPrint.getName());
         }
         return false;
     }
@@ -362,7 +357,7 @@ public abstract class Devices {
     }
 
     public static ResourceLocation res(String path) {
-        return ResourceLocation.fromNamespaceAndPath(Devices.MOD_ID, path);
+        return ResourceLocation.fromNamespaceAndPath(UltreonDevices.MOD_ID, path);
     }
 
     private static void setupClientEvents() {
@@ -511,7 +506,7 @@ public abstract class Devices {
         @Override
         public boolean add(T t) {
             freezeCheck();
-            if (stackWalker.getCallerClass() != Devices.class) {
+            if (stackWalker.getCallerClass() != UltreonDevices.class) {
                 throw new IllegalCallerException("Should be called from Devices Mod main class.");
             }
             return super.add(t);
@@ -520,7 +515,7 @@ public abstract class Devices {
         @Override
         public boolean addAll(Collection<? extends T> c) {
             freezeCheck();
-            if (stackWalker.getCallerClass() != Devices.class) {
+            if (stackWalker.getCallerClass() != UltreonDevices.class) {
                 throw new IllegalCallerException("Should be called from Devices Mod main class.");
             }
             return super.addAll(c);
@@ -529,7 +524,7 @@ public abstract class Devices {
         @Override
         public void add(int index, T element) {
             freezeCheck();
-            if (stackWalker.getCallerClass() != Devices.class) {
+            if (stackWalker.getCallerClass() != UltreonDevices.class) {
                 throw new IllegalCallerException("Should be called from Devices Mod main class.");
             }
             super.add(index, element);
@@ -538,7 +533,7 @@ public abstract class Devices {
         @Override
         protected void removeRange(int fromIndex, int toIndex) {
             freezeCheck();
-            if (stackWalker.getCallerClass() != Devices.class) {
+            if (stackWalker.getCallerClass() != UltreonDevices.class) {
                 throw new IllegalCallerException("Should be called from Devices Mod main class.");
             }
             super.removeRange(fromIndex, toIndex);
@@ -547,7 +542,7 @@ public abstract class Devices {
         @Override
         public boolean remove(Object o) {
             freezeCheck();
-            if (stackWalker.getCallerClass() != Devices.class) {
+            if (stackWalker.getCallerClass() != UltreonDevices.class) {
                 throw new IllegalCallerException("Should be called from Devices Mod main class.");
             }
             return super.remove(o);
@@ -556,7 +551,7 @@ public abstract class Devices {
         @Override
         public boolean removeAll(Collection<?> c) {
             freezeCheck();
-            if (stackWalker.getCallerClass() != Devices.class) {
+            if (stackWalker.getCallerClass() != UltreonDevices.class) {
                 throw new IllegalCallerException("Should be called from Devices Mod main class.");
             }
             return super.removeAll(c);
@@ -565,7 +560,7 @@ public abstract class Devices {
         @Override
         public boolean removeIf(Predicate<? super T> filter) {
             freezeCheck();
-            if (stackWalker.getCallerClass() != Devices.class) {
+            if (stackWalker.getCallerClass() != UltreonDevices.class) {
                 throw new IllegalCallerException("Should be called from Devices Mod main class.");
             }
             return super.removeIf(filter);
@@ -574,7 +569,7 @@ public abstract class Devices {
         @Override
         public T remove(int index) {
             freezeCheck();
-            if (stackWalker.getCallerClass() != Devices.class) {
+            if (stackWalker.getCallerClass() != UltreonDevices.class) {
                 throw new IllegalCallerException("Should be called from Devices Mod main class.");
             }
             return super.remove(index);

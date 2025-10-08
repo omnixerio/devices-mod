@@ -1,8 +1,8 @@
 package dev.ultreon.devices.init;
 
 import com.google.common.collect.Streams;
-import dev.ultreon.devices.Devices;
-import dev.ultreon.devices.ModDeviceTypes;
+import dev.ultreon.devices.UltreonDevices;
+import dev.ultreon.devices.DeviceType;
 import dev.ultreon.devices.item.*;
 import dev.ultreon.devices.util.DyeableRegistration;
 import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
@@ -23,13 +23,13 @@ import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
 public class DeviceItems {
-    private static final Registrar<Item> REGISTER = Devices.REGISTRIES.get().getRegistrar(Registries.ITEM);
+    private static final Registrar<Item> REGISTER = UltreonDevices.REGISTRIES.get().getRegistrar(Registries.ITEM);
 
     // Laptops
     public static final DyeableRegistration<ColoredDeviceItem, Item> LAPTOPS = new DyeableRegistration<>() {
         @Override
         public RegistrySupplier<ColoredDeviceItem, Item> register(Registrar<Item> registrar, DyeColor color) {
-            return registrar.register(color.getName() + "_laptop", () -> new ColoredDeviceItem(DeviceBlocks.LAPTOPS.of(color).get(), new Item.Properties(), color, ModDeviceTypes.COMPUTER));
+            return registrar.register(color.getName() + "_laptop", () -> new ColoredDeviceItem(DeviceBlocks.LAPTOPS.of(color).get(), new Item.Properties(), color, DeviceType.COMPUTER));
         }
 
         @Override
@@ -39,7 +39,7 @@ public class DeviceItems {
     };
 
     // Custom Computers
-    public static final RegistrySupplier<DeviceItem, Item> MAC_MAX_X = REGISTER.register("mac_max_x", () -> new DeviceItem(DeviceBlocks.MAC_MAX_X.get(), new Item.Properties(), ModDeviceTypes.COMPUTER) {
+    public static final RegistrySupplier<DeviceItem, Item> MAC_MAX_X = REGISTER.register("mac_max_x", () -> new DeviceItem(DeviceBlocks.MAC_MAX_X.get(), new Item.Properties(), DeviceType.COMPUTER) {
         @NotNull
         @Override
         public Component getDescription() {
@@ -61,7 +61,7 @@ public class DeviceItems {
     public static final DyeableRegistration<ColoredDeviceItem, Item> PRINTERS = new DyeableRegistration<>() {
         @Override
         public RegistrySupplier<ColoredDeviceItem, Item> register(Registrar<Item> registrar, DyeColor color) {
-            return registrar.register(color.getName() + "_printer", () -> new ColoredDeviceItem(DeviceBlocks.PRINTERS.of(color).get(), new Item.Properties(), color, ModDeviceTypes.PRINTER));
+            return registrar.register(color.getName() + "_printer", () -> new ColoredDeviceItem(DeviceBlocks.PRINTERS.of(color).get(), new Item.Properties(), color, DeviceType.PRINTER));
         }
 
         @Override
@@ -74,7 +74,7 @@ public class DeviceItems {
     public static final DyeableRegistration<ColoredDeviceItem, Item> ROUTERS = new DyeableRegistration<>() {
         @Override
         public RegistrySupplier<ColoredDeviceItem, Item> register(Registrar<Item> registrar, DyeColor color) {
-            return registrar.register(color.getName() + "_router", () -> new ColoredDeviceItem(DeviceBlocks.ROUTERS.of(color).get(), new Item.Properties(), color, ModDeviceTypes.ROUTER));
+            return registrar.register(color.getName() + "_router", () -> new ColoredDeviceItem(DeviceBlocks.ROUTERS.of(color).get(), new Item.Properties(), color, DeviceType.ROUTER));
         }
 
         @Override
@@ -87,7 +87,7 @@ public class DeviceItems {
     public static final DyeableRegistration<ColoredDeviceItem, Item> OFFICE_CHAIRS = new DyeableRegistration<>() {
         @Override
         public RegistrySupplier<ColoredDeviceItem, Item> register(Registrar<Item> registrar, DyeColor color) {
-            return registrar.register(color.getName() + "_office_chair", () -> new ColoredDeviceItem(DeviceBlocks.OFFICE_CHAIRS.of(color).get(), new Item.Properties(), color, ModDeviceTypes.SEAT));
+            return registrar.register(color.getName() + "_office_chair", () -> new ColoredDeviceItem(DeviceBlocks.OFFICE_CHAIRS.of(color).get(), new Item.Properties(), color, DeviceType.SEAT));
         }
 
         @Override
@@ -156,7 +156,7 @@ public class DeviceItems {
         return getAllItems()
                 .filter(item -> item.asItem() instanceof ColoredDeviceItem)
                 .map(item -> (ColoredDeviceItem) item.asItem())
-                .filter(item -> item.getDeviceType() == ModDeviceTypes.COMPUTER)
+                .filter(item -> item.getDeviceType() == DeviceType.COMPUTER)
                 .toList();
     }
 
@@ -164,7 +164,7 @@ public class DeviceItems {
         return getAllItems()
                 .filter(item -> item.asItem() instanceof ColoredDeviceItem)
                 .map(item -> (ColoredDeviceItem) item.asItem())
-                .filter(item -> item.getDeviceType() == ModDeviceTypes.PRINTER)
+                .filter(item -> item.getDeviceType() == DeviceType.PRINTER)
                 .toList();
     }
 
@@ -172,7 +172,7 @@ public class DeviceItems {
         return getAllItems()
                 .filter(item -> item.asItem() instanceof ColoredDeviceItem)
                 .map(item -> (ColoredDeviceItem) item.asItem())
-                .filter(item -> item.getDeviceType() == ModDeviceTypes.ROUTER)
+                .filter(item -> item.getDeviceType() == DeviceType.ROUTER)
                 .toList();
     }
 

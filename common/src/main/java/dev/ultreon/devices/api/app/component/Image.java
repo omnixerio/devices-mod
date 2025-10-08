@@ -3,7 +3,7 @@ package dev.ultreon.devices.api.app.component;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.app.Component;
 import dev.ultreon.devices.api.app.Dialog;
 import dev.ultreon.devices.api.app.IIcon;
@@ -517,14 +517,14 @@ public class Image extends Component {
 
                                 try (NativeImage nativeImage = Image.read(in)) {
                                     ComputerScreen.runLater(() -> {
-                                        Devices.LOGGER.debug("Loaded image: {}", path);
+                                        UltreonDevices.LOGGER.debug("Loaded image: {}", path);
                                         texture = new DynamicTexture(nativeImage);
                                         setup = true;
                                     });
                                 } catch (IOException e) {
                                     texture = MissingTextureAtlasSprite.getTexture();
                                     setup = true;
-                                    Devices.LOGGER.error("Failed to load image: {}", path, e);
+                                    UltreonDevices.LOGGER.error("Failed to load image: {}", path, e);
                                 }
                             });
                         }
@@ -548,14 +548,14 @@ public class Image extends Component {
                     NativeImage nativeImage = Image.read(in);
 
                     ComputerScreen.runLater(() -> {
-                        Devices.LOGGER.debug("Loaded image: {}", url);
+                        UltreonDevices.LOGGER.debug("Loaded image: {}", url);
                         texture = new DynamicTexture(nativeImage);
                         setup = true;
                     });
                 } catch (IOException | URISyntaxException e) {
                     texture = MissingTextureAtlasSprite.getTexture();
                     setup = true;
-                    Devices.LOGGER.error("Failed to load image: {}", url, e);
+                    UltreonDevices.LOGGER.error("Failed to load image: {}", url, e);
                 }
             };
             Thread thread = new Thread(r, "Image Loader");
@@ -597,7 +597,7 @@ public class Image extends Component {
         @Override
         public void load(@NotNull ResourceManager resourceManager) throws IOException {
             NativeImage nativeImage = Image.read(in);
-            Minecraft.getInstance().getTextureManager().register(Devices.res("dynamic_loaded/" + getId()), this);
+            Minecraft.getInstance().getTextureManager().register(UltreonDevices.res("dynamic_loaded/" + getId()), this);
             this.upload(nativeImage);
         }
 

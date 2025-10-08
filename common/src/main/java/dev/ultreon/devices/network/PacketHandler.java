@@ -1,6 +1,6 @@
 package dev.ultreon.devices.network;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.core.laptop.common.C2SUpdatePacket;
 import dev.ultreon.devices.core.laptop.common.S2CUpdatePacket;
 import dev.ultreon.devices.network.task.*;
@@ -20,7 +20,7 @@ public class PacketHandler {
     }
 
     public static void init() {
-        networker = XinexPlatform.createNetworker(Devices.MOD_ID, networkRegistry -> {
+        networker = XinexPlatform.createNetworker(UltreonDevices.MOD_ID, networkRegistry -> {
             networkRegistry.registerServer("request", RequestPacket.class, RequestPacket::new);
             networkRegistry.registerClient("response", ResponsePacket.class, ResponsePacket::new);
             networkRegistry.registerClient("sync_application", SyncApplicationPacket.class, SyncApplicationPacket::new);

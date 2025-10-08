@@ -1,6 +1,6 @@
 package dev.ultreon.devices.core.network;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.block.entity.RouterBlockEntity;
 import dev.ultreon.devices.debug.DebugLog;
 import net.minecraft.core.BlockPos;
@@ -80,7 +80,7 @@ public class Connection {
         if (tag.contains("Pos", Tag.TAG_COMPOUND)) {
             Optional<BlockPos> pos = NbtUtils.readBlockPos(tag, "Pos");
             if (pos.isEmpty()) {
-                Devices.LOGGER.warn("Failed to read block position from connection tag!");
+                UltreonDevices.LOGGER.warn("Failed to read block position from connection tag!");
                 connection.routerPos = null;
             } else {
                 connection.routerPos = pos.get();

@@ -1,6 +1,6 @@
 package dev.ultreon.devices.block;
 
-import dev.ultreon.devices.ModDeviceTypes;
+import dev.ultreon.devices.DeviceType;
 import dev.ultreon.devices.block.entity.computer.LaptopBlockEntity;
 import dev.ultreon.devices.debug.DebugLog;
 import dev.ultreon.devices.item.FlashDriveItem;
@@ -34,7 +34,7 @@ import java.util.Locale;
 
 public abstract class ComputerBlock extends DeviceBlock {
     public ComputerBlock(BlockBehaviour.Properties properties) {
-        super(properties, ModDeviceTypes.COMPUTER);;
+        super(properties, DeviceType.COMPUTER);;
     }
 
     @Override
@@ -127,7 +127,7 @@ public abstract class ComputerBlock extends DeviceBlock {
     public static abstract class Colored extends ComputerBlock implements ColoredBlock {
         private final DyeColor color;
 
-        protected Colored(Properties properties, DyeColor color, ModDeviceTypes deviceType) {
+        protected Colored(Properties properties, DyeColor color, DeviceType deviceType) {
             super(properties);
             this.color = color;
         }

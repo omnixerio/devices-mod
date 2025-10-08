@@ -3,7 +3,7 @@ package dev.ultreon.devices.block.entity.renderer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.Reference;
 import dev.ultreon.devices.api.print.IPrint;
 import dev.ultreon.devices.api.print.PrintingManager;
@@ -159,7 +159,7 @@ public record PrinterRenderer(
 
     public static class PaperModel extends Model {
         public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/model/paper.png");
-        public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Devices.res("paper_model"), "main");
+        public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(UltreonDevices.res("paper_model"), "main");
         private final ModelPart root;
         private final ModelPart main;
 

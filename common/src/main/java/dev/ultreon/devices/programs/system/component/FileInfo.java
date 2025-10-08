@@ -1,13 +1,12 @@
 package dev.ultreon.devices.programs.system.component;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.io.Drive;
 import dev.ultreon.devices.api.io.FSResponse;
 import dev.ultreon.devices.api.task.Callback;
 import dev.ultreon.devices.core.DataPath;
 import dev.ultreon.devices.core.io.action.FileAction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.util.Unit;
 import org.jetbrains.annotations.NotNull;
 
@@ -85,7 +84,7 @@ public final class FileInfo {
     }
 
     public String getOpeningApp() {
-        Devices.LOGGER.warn("getOpeningApp is not implemented");
+        UltreonDevices.LOGGER.warn("getOpeningApp is not implemented");
         return null;
     }
 

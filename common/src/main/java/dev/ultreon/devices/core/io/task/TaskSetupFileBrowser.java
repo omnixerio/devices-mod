@@ -1,6 +1,6 @@
 package dev.ultreon.devices.core.io.task;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.block.entity.computer.ComputerBlockEntity;
 import dev.ultreon.devices.core.io.FileSystem;
@@ -55,7 +55,7 @@ public class TaskSetupFileBrowser extends Task {
             availableDrives = fileSystem.getAvailableDrives(level, false);
             this.setSuccessful();
         } else {
-            Devices.LOGGER.warn("BlockEntity at pos " + BlockPos.of(tag.getLong("pos")) + " is not a ComputerBlockEntity");
+            UltreonDevices.LOGGER.warn("BlockEntity at pos " + BlockPos.of(tag.getLong("pos")) + " is not a ComputerBlockEntity");
         }
     }
 

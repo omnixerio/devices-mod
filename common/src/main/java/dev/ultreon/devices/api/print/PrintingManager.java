@@ -1,7 +1,7 @@
 package dev.ultreon.devices.api.print;
 
 import com.google.common.collect.HashBiMap;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,16 +27,16 @@ public class PrintingManager {
     public static void registerPrint(ResourceLocation identifier, Class<? extends IPrint> classPrint) {
         try {
             classPrint.getConstructor().newInstance();
-            if (Devices.getInstance().registerPrint(identifier, classPrint)) {
-                Devices.LOGGER.info("Registering print '{}'", classPrint.getName());
+            if (UltreonDevices.getInstance().registerPrint(identifier, classPrint)) {
+                UltreonDevices.LOGGER.info("Registering print '{}'", classPrint.getName());
                 registeredPrints.put(identifier.toString(), classPrint);
             } else {
-                Devices.LOGGER.error("The print '{}' could not be registered due to a critical error!", classPrint.getName());
+                UltreonDevices.LOGGER.error("The print '{}' could not be registered due to a critical error!", classPrint.getName());
             }
         } catch (NoSuchMethodException e) {
-            Devices.LOGGER.error("The print '{}' is missing an empty constructor and could not be registered!", classPrint.getName());
+            UltreonDevices.LOGGER.error("The print '{}' is missing an empty constructor and could not be registered!", classPrint.getName());
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            Devices.LOGGER.error("The print '{}' could not be registered due to a critical error!", classPrint.getName());
+            UltreonDevices.LOGGER.error("The print '{}' could not be registered due to a critical error!", classPrint.getName());
         }
     }
 

@@ -1,6 +1,6 @@
 package dev.ultreon.devices.core.io.task;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.io.Drive;
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.block.entity.computer.ComputerBlockEntity;
@@ -48,7 +48,7 @@ public class TaskGetStructure extends Task {
     public void processRequest(HolderLookup.Provider provider, CompoundTag tag, Level level, Player player) {
         BlockPos pos1 = BlockPos.of(tag.getLong("pos"));
 
-        Devices.getServer().submit(() -> {
+        UltreonDevices.getServer().submit(() -> {
             BlockEntity tileEntity = level.getBlockEntity(pos1);
             if (tileEntity instanceof ComputerBlockEntity laptop) {
                 FileSystem fileSystem = laptop.getFileSystem();

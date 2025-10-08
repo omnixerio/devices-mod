@@ -1,7 +1,7 @@
 package dev.ultreon.devices.block.computer;
 
 import com.mojang.serialization.MapCodec;
-import dev.ultreon.devices.ModDeviceTypes;
+import dev.ultreon.devices.DeviceType;
 import dev.ultreon.devices.block.ComputerBlock;
 import dev.ultreon.devices.block.entity.computer.LaptopBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -49,12 +49,12 @@ public class LaptopBlock extends ComputerBlock.Colored {
     }
 
     private LaptopBlock(Properties properties, DyeColor color) {
-        super(properties, color, ModDeviceTypes.COMPUTER);
+        super(properties, color, DeviceType.COMPUTER);
         this.registerDefaultState(this.stateDefinition.any().setValue(TYPE, Type.BASE).setValue(FACING, Direction.NORTH).setValue(OPEN, false));
     }
 
     private LaptopBlock(Properties properties) {
-        super(properties, DyeColor.WHITE, ModDeviceTypes.COMPUTER);
+        super(properties, DyeColor.WHITE, DeviceType.COMPUTER);
         this.registerDefaultState(this.stateDefinition.any().setValue(TYPE, Type.BASE).setValue(FACING, Direction.NORTH).setValue(OPEN, false));
     }
 

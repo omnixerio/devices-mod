@@ -1,7 +1,7 @@
 package dev.ultreon.devices.network.task;
 
 import com.google.common.collect.ImmutableList;
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.ApplicationManager;
 import dev.ultreon.devices.object.AppInfo;
 import dev.ultreon.mods.xinexlib.network.Networker;
@@ -24,7 +24,7 @@ public class SyncApplicationPacket implements PacketToClient<SyncApplicationPack
             if (info != null) {
                 builder.add(info);
             } else {
-                Devices.LOGGER.error("Missing application '{}'", appId);
+                UltreonDevices.LOGGER.error("Missing application '{}'", appId);
             }
         }
 
@@ -45,6 +45,6 @@ public class SyncApplicationPacket implements PacketToClient<SyncApplicationPack
 
     @Override
     public void handle(Networker networker) {
-        Devices.setAllowedApps(allowedApps);
+        UltreonDevices.setAllowedApps(allowedApps);
     }
 }

@@ -1,6 +1,6 @@
 package dev.ultreon.devices.core.io.drive;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.core.Ext2FS;
 import dev.ultreon.devices.core.FS;
 import dev.ultreon.devices.core.LockKey;
@@ -45,13 +45,13 @@ public abstract class AbstractDrive implements FS {
         name = "Drive";
         this.uuid = uuid;
 
-        if (Devices.getServer() == null) {
+        if (UltreonDevices.getServer() == null) {
             deferred = true;
             return;
         }
 
         try {
-            Path resolve = Devices.getServer().getWorldPath(LevelResource.ROOT).resolve("data/devices/drives/" + uuid + ".ext2");
+            Path resolve = UltreonDevices.getServer().getWorldPath(LevelResource.ROOT).resolve("data/devices/drives/" + uuid + ".ext2");
             if (Files.notExists(resolve)) {
                 if (Files.notExists(resolve.getParent())) Files.createDirectories(resolve.getParent());
                 setFs(Ext2FS.format(resolve, 1L));
@@ -81,14 +81,14 @@ public abstract class AbstractDrive implements FS {
         this.name = name;
         this.uuid = uuid;
 
-        if (Devices.getServer() == null) {
+        if (UltreonDevices.getServer() == null) {
             deferred = true;
             setFs(null);
             return;
         }
 
         try {
-            Path resolve = Devices.getServer().getWorldPath(LevelResource.ROOT).resolve("data/devices/drives/" + uuid + ".ext2");
+            Path resolve = UltreonDevices.getServer().getWorldPath(LevelResource.ROOT).resolve("data/devices/drives/" + uuid + ".ext2");
             if (Files.notExists(resolve)) {
                 if (Files.notExists(resolve.getParent())) Files.createDirectories(resolve.getParent());
                 setFs(Ext2FS.format(resolve, 16 * 1024 * 1024));
@@ -101,7 +101,7 @@ public abstract class AbstractDrive implements FS {
     }
 
     public static Path getDrivePath(UUID uuid) {
-        return Devices.getServer().getWorldPath(LevelResource.ROOT).resolve("data/devices/drives/" + uuid + ".ext2");
+        return UltreonDevices.getServer().getWorldPath(LevelResource.ROOT).resolve("data/devices/drives/" + uuid + ".ext2");
     }
 
     private void createProtectedFolder(Ext2FS fs, String name) {
@@ -521,7 +521,7 @@ public abstract class AbstractDrive implements FS {
             deferred = false;
             if (fs != null) return fs;
             try {
-                Path resolve = Devices.getServer().getWorldPath(LevelResource.ROOT).resolve("data/devices/drives/" + uuid + ".ext2");
+                Path resolve = UltreonDevices.getServer().getWorldPath(LevelResource.ROOT).resolve("data/devices/drives/" + uuid + ".ext2");
                 if (Files.notExists(resolve)) {
                     if (Files.notExists(resolve.getParent())) Files.createDirectories(resolve.getParent());
                     setFs(Ext2FS.format(resolve, 16 * 1024 * 1024));

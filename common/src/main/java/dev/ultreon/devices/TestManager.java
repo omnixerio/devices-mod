@@ -7,7 +7,7 @@ public class TestManager {
     private Set<String> enabled = new HashSet<>();
 
     public void load(Set<String> tests) {
-        this.enabled = tests;
+        enabled = tests;
     }
 
     public boolean isEnabled(String name) {

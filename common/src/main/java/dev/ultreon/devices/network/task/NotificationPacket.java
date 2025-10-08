@@ -1,6 +1,6 @@
 package dev.ultreon.devices.network.task;
 
-import dev.ultreon.devices.Devices;
+import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.app.Notification;
 import dev.ultreon.mods.xinexlib.network.Networker;
 import dev.ultreon.mods.xinexlib.network.packet.PacketToClient;
@@ -26,6 +26,6 @@ public class NotificationPacket implements PacketToClient<NotificationPacket> {
 
     @Override
     public void handle(Networker networker) {
-        Devices.showNotification(notificationTag);
+        UltreonDevices.showNotification(notificationTag);
     }
 }
