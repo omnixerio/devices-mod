@@ -26,7 +26,7 @@ public class DeviceItem extends BlockItem implements IDeviceType {
     }
 
     /*
-    //This method is still bugged due to Forge.
+    //This method is still bugged due to NeoForge.
     @Nullable
     @PlatformOnly(PlatformOnly.FORGE)
     public CompoundTag getShareTag(ItemStack stack) {

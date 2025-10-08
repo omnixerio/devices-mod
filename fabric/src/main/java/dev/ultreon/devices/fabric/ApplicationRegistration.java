@@ -1,6 +1,6 @@
 package dev.ultreon.devices.fabric;
 
 @FunctionalInterface
-public interface FabricApplicationRegistration {
+public interface ApplicationRegistration {
     void registerApplications();
 }

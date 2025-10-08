@@ -501,11 +501,11 @@ public class ComputerScreen extends Screen implements System {
     /// @param graphics     gui graphics helper
     /// @param mouseX       the current mouse X position.
     /// @param mouseY       the current mouse Y position.
-    /// @param partialTicks the rendering partial ticks that forge give use (which is useless here).
+    /// @param partialTicks the rendering partial ticks that NeoForge give use (which is useless here).
     public void renderLaptop(final @NotNull GuiGraphics graphics, final int mouseX, final int mouseY, float partialTicks) {
         int posX = (width - getDeviceWidth()) / 2;
         int posY = (height - getDeviceHeight()) / 2;
-        // Fixes the strange partialTicks that Forge decided to give us
+        // Fixes the strange partialTicks that NeoForge decided to give us
         final float frameTime = Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
         for (Runnable task : tasks) {
             task.run();

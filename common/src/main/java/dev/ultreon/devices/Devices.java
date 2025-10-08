@@ -120,6 +120,8 @@ public abstract class Devices {
     }
 
     public void init() {
+        LOGGER.info("Initializing Ultreon Devices on {} platform.", XinexPlatform.getPlatformName());
+
         if (XinexPlatform.getPlatformName().equals(ModPlatform.Fabric)) {
             preInit();
             serverSetup();
@@ -132,6 +134,7 @@ public abstract class Devices {
         final var property = System.getProperty("ultreon.devices.tests");
         tests = new TestManager();
         if (property != null) {
+            LOGGER.warn("Ultreon Devices: Tests enabled: {}", property);
             String[] split = property.split(",");
             tests.load(Set.of(split));
         }
@@ -143,12 +146,9 @@ public abstract class Devices {
 
         registerApplications();
 
-        EnvExecutor.runInEnv(Env.CLIENT, () -> () -> {
-            ClientAppDebug.register();
-            ClientModEvents.clientSetup(); //todo
-            Devices.setupSiteRegistrations();
-            Devices.checkForVulnerabilities();
-        });
+        if (XinexPlatform.getPlatformName().equals(ModPlatform.Fabric)) {
+            EnvExecutor.runInEnv(Env.CLIENT, () -> Devices::doClientInit);
+        }
 
         LOGGER.info("Registering events.");
         setupEvents();
@@ -157,6 +157,13 @@ public abstract class Devices {
         if (XinexPlatform.getPlatformName() != ModPlatform.Forge) {
             loadComplete();
         }
+    }
+
+    protected static void doClientInit() {
+        ClientAppDebug.register();
+        ClientModEvents.clientSetup(); //todo
+        Devices.setupSiteRegistrations();
+        Devices.checkForVulnerabilities();
     }
 
     public static void preInit() {

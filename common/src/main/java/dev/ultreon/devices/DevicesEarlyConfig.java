@@ -4,7 +4,7 @@ import java.io.*;
 import java.nio.file.Path;
 
 /// Devices mod early configuration.
-/// This is used to configure devices mod early, when the forge config isn't loaded yet.
+/// This is used to configure devices mod early, when the NeoForge config isn't loaded yet.
 ///
 /// @author <a href="https://github.com/XyperCode">Qubilux</a>
 public class DevicesEarlyConfig {

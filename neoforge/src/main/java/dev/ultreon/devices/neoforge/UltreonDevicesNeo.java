@@ -5,6 +5,7 @@ import dev.ultreon.devices.*;
 import dev.ultreon.devices.api.print.IPrint;
 import dev.ultreon.devices.api.print.PrintingManager;
 import dev.ultreon.devices.init.RegistrationHandler;
+import dev.ultreon.mods.xinexlib.Env;
 import dev.ultreon.mods.xinexlib.platform.NeoForgePlatform;
 import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import net.minecraft.client.Minecraft;
@@ -18,6 +19,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -31,12 +33,12 @@ import java.util.Map;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(Reference.MOD_ID)
-public final class DevicesNeoForge {
+public final class UltreonDevicesNeo extends Devices {
     public static final Logger LOGGER = LogUtils.getLogger();
     private final Devices instance = new Devices() {
         @Override
         protected void registerApplicationEvent() {
-            DevicesNeoForge.this.modEventBus.post(new ForgeApplicationRegistration());
+            UltreonDevicesNeo.this.modEventBus.post(new ApplicationRegistrationEvent());
         }
 
         @Override
@@ -63,7 +65,7 @@ public final class DevicesNeoForge {
 
     public IEventBus modEventBus;
 
-    public DevicesNeoForge(IEventBus modEventBus, ModContainer container) throws LaunchException {
+    public UltreonDevicesNeo(IEventBus modEventBus, ModContainer container) throws LaunchException {
         super();
 
         NeoForgePlatform.getPlatform().registerMod(container.getModId(), modEventBus);
@@ -79,32 +81,60 @@ public final class DevicesNeoForge {
         container.registerConfig(ModConfig.Type.CLIENT, DeviceConfig.CONFIG);
 
         LOGGER.info("Registering common setup handler, and load complete handler.");
-        this.modEventBus.addListener(this::fmlCommonSetup);
-        this.modEventBus.addListener(this::fmlLoadComplete);
+        if (XinexPlatform.getEnv() == Env.CLIENT)
+            modEventBus.addListener(this::onClientSetup);
+        modEventBus.addListener(this::onCommonSetup);
+        modEventBus.addListener(this::onLoadComplete);
 
         // Server side stuff
         LOGGER.info("Registering server setup handler.");
-        this.modEventBus.addListener(this::fmlServerSetup);
+        modEventBus.addListener(this::onServerSetup);
 
         // Client side stuff
         if (!DatagenModLoader.isRunningDataGen()) {
             LOGGER.info("Registering the reload listener.");
             ((ReloadableResourceManager ) Minecraft.getInstance().getResourceManager()).registerReloadListener(new ClientModEvents.ReloaderListener());
         }
-
-        // Register ourselves for server and other game events we are interested in
-        LOGGER.info("Registering mod class to forge events.");
     }
 
-    private void fmlCommonSetup(FMLCommonSetupEvent t) {
-        this.instance.init();
+    private void onClientSetup(FMLClientSetupEvent t) {
+        t.enqueueWork(Devices::doClientInit);
     }
 
-    private void fmlLoadComplete(FMLLoadCompleteEvent t) {
-        this.instance.loadComplete();
+    private void onCommonSetup(FMLCommonSetupEvent t) {
+        t.enqueueWork(this.instance::init);
     }
 
-    private void fmlServerSetup(FMLDedicatedServerSetupEvent t) {
-        this.instance.serverSetup();
+    private void onServerSetup(FMLDedicatedServerSetupEvent t) {
+        t.enqueueWork(this.instance::serverSetup);
+    }
+
+    private void onLoadComplete(FMLLoadCompleteEvent t) {
+        t.enqueueWork(this.instance::loadComplete);
+    }
+
+    @Override
+    public int getBurnTime(ItemStack stack, RecipeType<?> type) {
+        return 0;
+    }
+
+    @Override
+    protected void registerApplicationEvent() {
+        this.modEventBus.post(new ApplicationRegistrationEvent());
+    }
+
+    @Override
+    public String getVersion() {
+        return "";
+    }
+
+    @Override
+    protected Map<String, IPrint.Renderer> getRegisteredRenders() {
+        return Map.of();
+    }
+
+    @Override
+    protected void setRegisteredRenders(Map<String, IPrint.Renderer> map) {
+
     }
 }

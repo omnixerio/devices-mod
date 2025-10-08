@@ -31,7 +31,6 @@ dependencies {
     annotationProcessor group: 'io.github.llamalad7', name: 'mixinextras-common', version: '0.4.1'
 
     // Project Reactor
-    implementation group: 'io.projectreactor', name: 'reactor-core', version: '3.5.5'
     implementation "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:21.1.0"
 
     implementation "dev.ultreon.mods:xinexlib-common-1.21.1:$xinexlib_version"

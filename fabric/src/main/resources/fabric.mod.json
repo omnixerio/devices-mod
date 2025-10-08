@@ -36,7 +36,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "dev.ultreon.devices.fabric.DevicesFabricMod"
+      "dev.ultreon.devices.fabric.UltreonDevicesFabric"
     ],
     "devices:application_registration": [
       "dev.ultreon.devices.fabric.BuiltinAppsRegistration"

@@ -80,7 +80,7 @@ public class RouterBlockEntity extends DeviceBlockEntity.Colored {
 //        return 16384;
 //    }
 //
-//    @PlatformOnly("forge")
+//    @PlatformOnly("neoforge")
 //    @Environment(EnvType.CLIENT)
 //    @ExpectPlatform
 //    public AABB getRenderBoundingBox() {
