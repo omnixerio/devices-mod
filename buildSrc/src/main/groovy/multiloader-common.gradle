@@ -3,6 +3,22 @@ plugins {
     id 'maven-publish'
 }
 
+if (project.hasProperty('ci') && project.ci.toBoolean() && project.hasProperty('snapshot') && project.snapshot.toBoolean()) {
+    version += '-SNAPSHOT'
+}
+
+configurations {
+    library {
+        extendsFrom api
+    }
+
+    compileClasspath.extendsFrom library
+    apiElements.extendsFrom library
+    runtimeElements.extendsFrom library
+    sourcesElements.extendsFrom library
+    javadocElements.extendsFrom library
+}
+
 base {
     archivesName = "${mod_id}-${project.name}-${minecraft_version}"
 }
@@ -14,25 +30,9 @@ java {
 }
 
 repositories {
-    flatDir {
-        dir rootProject.file("libs")
-    }
-    maven { url = uri("https://maven.ultreon.dev/snapshots") }
-    maven { url = uri("https://maven.ultreon.dev/releases") }
     maven {
         name = 'MinecraftForge'
         url = 'https://maven.minecraftforge.net'
-    }
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = 'Quilt'
-                url = 'https://maven.quiltmc.org/repository/release'
-            }
-        }
-        filter { {
-            includeGroupAndSubgroups('org.quiltmc')
-        } }
     }
     // https://docs.gradle.org/current/userguide/declaring_repositories.html#declaring_content_exclusively_found_in_one_repository
     exclusiveContent {
@@ -43,6 +43,12 @@ repositories {
             }
         }
         filter { includeGroupAndSubgroups('org.spongepowered') }
+    }
+
+    // Add KFF Maven repository
+    maven {
+        name = 'Kotlin for Forge'
+        url = 'https://thedarkcolour.github.io/KotlinForForge/'
     }
     exclusiveContent {
         forRepositories(maven {
@@ -71,14 +77,21 @@ repositories {
         name = "Fuzs Mod Resources"
         url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
     }
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = "Jitpack"
-                url = 'https://jitpack.io'
-            }
-        }
-        filter { includeGroupAndSubgroups('com.github.Nuix') }
+    maven {
+        name = "Ultreon Maven Releases"
+        url = "https://maven.ultreon.dev/releases"
+    }
+    maven {
+        name = "Ultreon Maven Snapshots"
+        url = "https://maven.ultreon.dev/snapshots"
+    }
+    maven {
+        name = "Sonatype OSS Snapshots"
+        url = 'https://oss.sonatype.org/content/repositories/snapshots'
+    }
+    maven {
+        name = "Sonatype OSS Releases"
+        url = 'https://oss.sonatype.org/content/repositories/releases'
     }
     mavenCentral()
 }
@@ -137,7 +150,7 @@ processResources {
                        'credits'                      : credits,
                        'java_version'                 : java_version]
 
-    filesMatching(['pack.mcmeta', 'fabric.mod.json', 'quilt.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {
+    filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {
         expand expandProps
     }
     inputs.properties(expandProps)
@@ -152,7 +165,27 @@ publishing {
     }
     repositories {
         maven {
-            url System.getenv('local_maven_url')
+            name = "UltreonMavenReleases"
+            url = "https://maven.ultreon.dev/releases"
+            credentials(PasswordCredentials) {
+                username = findProperty("ultreonmvn.name") ?: System.getenv("ULTREON_MVN_NAME")
+                password = findProperty("ultreonmvn.secret") ?: System.getenv("ULTREON_MVN_SEC")
+            }
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+
+        maven {
+            name = "UltreonMavenSnapshots"
+            url = "https://maven.ultreon.dev/snapshots"
+            credentials(PasswordCredentials) {
+                username = findProperty("ultreonmvn.name") ?: System.getenv("ULTREON_MVN_NAME")
+                password = findProperty("ultreonmvn.secret") ?: System.getenv("ULTREON_MVN_SEC")
+            }
+            authentication {
+                basic(BasicAuthentication)
+            }
         }
     }
 }

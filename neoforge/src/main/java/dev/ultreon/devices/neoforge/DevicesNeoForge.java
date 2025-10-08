@@ -1,10 +1,12 @@
-package dev.ultreon.devices.forge;
+package dev.ultreon.devices.neoforge;
 
 import com.mojang.logging.LogUtils;
 import dev.ultreon.devices.*;
 import dev.ultreon.devices.api.print.IPrint;
 import dev.ultreon.devices.api.print.PrintingManager;
 import dev.ultreon.devices.init.RegistrationHandler;
+import dev.ultreon.mods.xinexlib.platform.NeoForgePlatform;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.world.item.ItemStack;
@@ -15,6 +17,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -28,12 +31,12 @@ import java.util.Map;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(Reference.MOD_ID)
-public final class DevicesForge {
+public final class DevicesNeoForge {
     public static final Logger LOGGER = LogUtils.getLogger();
     private final Devices instance = new Devices() {
         @Override
         protected void registerApplicationEvent() {
-            DevicesForge.this.modEventBus.post(new ForgeApplicationRegistration());
+            DevicesNeoForge.this.modEventBus.post(new ForgeApplicationRegistration());
         }
 
         @Override
@@ -60,8 +63,10 @@ public final class DevicesForge {
 
     public IEventBus modEventBus;
 
-    public DevicesForge(IEventBus modEventBus, ModContainer container) throws LaunchException {
+    public DevicesNeoForge(IEventBus modEventBus, ModContainer container) throws LaunchException {
         super();
+
+        NeoForgePlatform.getPlatform().registerMod(container.getModId(), modEventBus);
 
         this.modEventBus = modEventBus;
 
@@ -71,9 +76,7 @@ public final class DevicesForge {
         // Common side stuff
         LOGGER.info("Initializing registration handler and mod config.");
         RegistrationHandler.register();
-//        NeoForgeConfigRegistry.INSTANCE.register(container, ModConfig.Type.CLIENT, DeviceConfig.CONFIG);
-
-        forgeEventBus.register(this);
+        container.registerConfig(ModConfig.Type.CLIENT, DeviceConfig.CONFIG);
 
         LOGGER.info("Registering common setup handler, and load complete handler.");
         this.modEventBus.addListener(this::fmlCommonSetup);
@@ -91,7 +94,6 @@ public final class DevicesForge {
 
         // Register ourselves for server and other game events we are interested in
         LOGGER.info("Registering mod class to forge events.");
-        forgeEventBus.register(this);
     }
 
     private void fmlCommonSetup(FMLCommonSetupEvent t) {

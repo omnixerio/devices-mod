@@ -1,4 +1,4 @@
-package dev.ultreon.devices.forge;
+package dev.ultreon.devices.neoforge;
 
 import dev.ultreon.devices.BuiltinApps;
 import net.neoforged.bus.api.EventPriority;

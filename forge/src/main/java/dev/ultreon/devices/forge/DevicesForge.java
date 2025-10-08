@@ -1,4 +1,4 @@
-package dev.ultreon.devices.forge;
+package dev.ultreon.devices.neoforge;
 
 import com.mojang.logging.LogUtils;
 import dev.ultreon.devices.*;

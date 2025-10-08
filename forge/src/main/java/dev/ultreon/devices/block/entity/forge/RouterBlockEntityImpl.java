@@ -1,4 +1,4 @@
-package dev.ultreon.devices.block.entity.forge;
+package dev.ultreon.devices.block.entity.neoforge;
 
 import net.minecraft.world.phys.AABB;
 

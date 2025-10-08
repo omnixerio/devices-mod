@@ -1,4 +1,4 @@
-package dev.ultreon.devices.forge.client;
+package dev.ultreon.devices.neoforge.client;
 
 import dev.ultreon.devices.client.RenderRegistry;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
