@@ -9,7 +9,10 @@ import dev.ultreon.devices.api.task.TaskManager;
 import dev.ultreon.devices.core.ComputerScreen;
 import dev.ultreon.devices.core.network.task.TaskPing;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NetworkManagerImpl implements NetworkManager {
     private final OperatingSystem system;
@@ -76,5 +79,15 @@ public class NetworkManagerImpl implements NetworkManager {
 
     public boolean isConnected() {
         return strength != WifiStrength.NONE;
+    }
+
+    public CompletableFuture<List<WiFiNetwork>> scan() {
+        List<WiFiNetwork> ssids = new CopyOnWriteArrayList<>();
+        WifiDriver[] drivers = system.getDrivers(WifiDriver.class);
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        for (WifiDriver driver : drivers) {
+            futures.add(driver.scan().thenAccept(ssids::addAll));
+        }
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenApply(v -> ssids);
     }
 }

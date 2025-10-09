@@ -10,6 +10,8 @@ import dev.ultreon.devices.api.app.OperatingSystem;
 import dev.ultreon.devices.api.app.*;
 import dev.ultreon.devices.api.app.component.Image;
 import dev.ultreon.devices.api.driver.Driver;
+import dev.ultreon.devices.api.driver.Hardware;
+import dev.ultreon.devices.api.driver.WifiDriver;
 import dev.ultreon.devices.api.io.Drive;
 import dev.ultreon.devices.api.task.Callback;
 import dev.ultreon.devices.api.task.Task;
@@ -21,6 +23,7 @@ import dev.ultreon.devices.core.io.Path;
 import dev.ultreon.devices.core.io.task.TaskGetMainDrive;
 import dev.ultreon.devices.core.network.NetworkManagerImpl;
 import dev.ultreon.devices.core.task.TaskInstallApp;
+import dev.ultreon.devices.impl.hardware.gwifi.GWiFiAdapter;
 import dev.ultreon.devices.object.AppInfo;
 import dev.ultreon.devices.programs.system.DiagnosticsApp;
 import dev.ultreon.devices.programs.system.DisplayResolution;
@@ -58,6 +61,7 @@ import java.lang.reflect.Array;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
@@ -74,16 +78,19 @@ public class ComputerScreen extends Screen implements OperatingSystem {
     private static final List<Application> APPLICATIONS = new ArrayList<>();
     private static boolean worldLess;
     private static ComputerScreen instance;
+    private final List<Hardware<?, ?>> hardware = new ArrayList<>();
+    private boolean booted = false;
     private Double dragWindowFromX;
     private Double dragWindowFromY;
-    private final VideoInfo videoInfo;
+    private VideoInfo videoInfo;
     private final Map<UUID, Drive> drives = new HashMap<>();
     private Dialog systemDialog = null;
     private Window<Dialog> systemDialogWindow = null;
     private static boolean loaded;
     private final Bios bios;
-    private final Map<Class<?>, List<?>> drivers = new HashMap<>();
+    private final Map<Class<?>, List<? extends Driver>> drivers = new HashMap<>();
     private final NetworkManagerImpl networkManager = new NetworkManagerImpl(this);
+    private float tickTime;
 
     public static List<Application> getApplicationsForFabric() {
         return APPLICATIONS;
@@ -100,19 +107,19 @@ public class ComputerScreen extends Screen implements OperatingSystem {
     private static OperatingSystem system;
     private static BlockPos pos;
     private static Drive mainDrive;
-    private final Settings settings;
-    private final TaskBar bar;
-    final CopyOnWriteArrayList<Window<?>> windows;
-    private final CompoundTag appData;
-    private final CompoundTag systemData;
+    private Settings settings;
+    private TaskBar bar;
+    CopyOnWriteArrayList<Window<?>> windows;
+    private CompoundTag appData;
+    private CompoundTag systemData;
     protected List<AppInfo> installedApps = new ArrayList<>();
     private Layout context = null;
     private Wallpaper currentWallpaper;
     private int lastMouseX, lastMouseY;
     private boolean dragging = false;
     private final IntArraySet pressed = new IntArraySet();
-    private final Image wallpaper;
-    private final Layout wallpaperLayout;
+    private Image wallpaper;
+    private Layout wallpaperLayout;
     private BSOD bsod;
 
     public static Font getFont() {
@@ -138,56 +145,106 @@ public class ComputerScreen extends Screen implements OperatingSystem {
         instance = this;
         bios = determineBios(laptop);
 
-        // Laptop data.
-        appData = laptop.getApplicationData();
-        systemData = laptop.getSystemData();
+        drivers.put(WifiDriver.class, new ArrayList<>());
 
-        CompoundTag videoInfoData = systemData.getCompound("videoInfo");
-        videoInfo = new VideoInfo(videoInfoData);
+        hardware.add(new GWiFiAdapter());
 
-        // Windows
-        windows = new CopyOnWriteArrayList<>() {
-            @Override
-            public Window<?> get(int index) {
-                try {
-                    return super.get(index);
-                } catch (Exception e) {
-                    return null;
+        videoInfo = new VideoInfo();
+        videoInfo.setResolution(new CustomResolution(320, 240));
+
+        loadDrivers().thenRun(() -> {
+            // Laptop data.
+            appData = laptop.getApplicationData();
+            systemData = laptop.getSystemData();
+
+            CompoundTag videoInfoData = systemData.getCompound("videoInfo");
+            videoInfo = new VideoInfo(videoInfoData);
+
+            // Windows
+            windows = new CopyOnWriteArrayList<>() {
+                @Override
+                public Window<?> get(int index) {
+                    try {
+                        return super.get(index);
+                    } catch (Exception e) {
+                        return null;
+                    }
+                }
+
+                @Override
+                public boolean add(Window<?> window) {
+                    window.removed = false;
+                    return super.add(window);
+                }
+            };
+
+            // Settings etc.
+            settings = Settings.fromTag(systemData.getCompound("Settings"));
+
+            // GUI Components
+            CompoundTag taskBarTag = systemData.getCompound("TaskBar");
+            systemData.put("TaskBar", taskBarTag);
+            bar = new TaskBar(this, taskBarTag);
+
+            // Wallpaper stuff
+            currentWallpaper = systemData.contains("CurrentWallpaper", 10) ? new Wallpaper(systemData.getCompound("CurrentWallpaper")) : null;
+            if (currentWallpaper == null) currentWallpaper = new Wallpaper(0);
+            ComputerScreen.system = this;
+            ComputerScreen.pos = laptop.getBlockPos();
+            wallpaperLayout = new Layout(getScreenWidth(), getScreenHeight());
+            wallpaper = new Image(0, 0, getScreenWidth(), getScreenHeight());
+            if (currentWallpaper.isBuiltIn()) {
+                wallpaper.setImage(WALLPAPERS.get(currentWallpaper.location));
+            } else {
+                wallpaper.setImage(currentWallpaper.locationPath);
+            }
+            wallpaperLayout.addComponent(wallpaper);
+            wallpaperLayout.handleLoad();
+
+            // World-less flag.
+            ComputerScreen.worldLess = worldLess;
+
+            int posX = (width - getDeviceWidth()) / 2;
+            int posY = (height - getDeviceHeight()) / 2;
+            bar.init(posX + BORDER, posY + getDeviceHeight() - 28);
+
+            installedApps.clear();
+            ListTag list = systemData.getList("InstalledApps", Tag.TAG_STRING);
+            for (int i = 0; i < list.size(); i++) {
+                AppInfo info = ApplicationManager.getApplication(ResourceLocation.tryParse(list.getString(i)));
+                if (info != null) {
+                    installedApps.add(info);
                 }
             }
-
-            @Override
-            public boolean add(Window<?> window) {
-                window.removed = false;
-                return super.add(window);
+            installedApps.sort(AppInfo.SORT_NAME);
+            if (Minecraft.getInstance().getConnection() == null) {
+                installedApps.addAll(ApplicationManager.getAvailableApplications());
             }
-        };
 
-        // Settings etc.
-        settings = Settings.fromTag(systemData.getCompound("Settings"));
+            booted = true;
+        });
+    }
 
-        // GUI Components
-        CompoundTag taskBarTag = systemData.getCompound("TaskBar");
-        systemData.put("TaskBar", taskBarTag);
-        bar = new TaskBar(this, taskBarTag);
-
-        // Wallpaper stuff
-        currentWallpaper = systemData.contains("CurrentWallpaper", 10) ? new Wallpaper(systemData.getCompound("CurrentWallpaper")) : null;
-        if (currentWallpaper == null) currentWallpaper = new Wallpaper(0);
-        ComputerScreen.system = this;
-        ComputerScreen.pos = laptop.getBlockPos();
-        wallpaperLayout = new Layout(getScreenWidth(), getScreenHeight());
-        wallpaper = new Image(0, 0, getScreenWidth(), getScreenHeight());
-        if (currentWallpaper.isBuiltIn()) {
-            wallpaper.setImage(WALLPAPERS.get(currentWallpaper.location));
-        } else {
-            wallpaper.setImage(currentWallpaper.locationPath);
-        }
-        wallpaperLayout.addComponent(wallpaper);
-        wallpaperLayout.handleLoad();
-
-        // World-less flag.
-        ComputerScreen.worldLess = worldLess;
+    private CompletableFuture<Void> loadDrivers() {
+        return CompletableFuture.runAsync(() -> {
+            for (var driver : drivers.entrySet()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    return;
+                }
+                for (Driver o : driver.getValue()) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        return;
+                    }
+                    for (Hardware<?, ?> hardware1 : hardware) {
+                        o.load(this, hardware1);
+                    }
+                }
+            }
+        }, UltreonDevices.OS_EXECUTOR);
     }
 
     private Bios determineBios(ComputerBlockEntity laptop) {
@@ -296,22 +353,6 @@ public class ComputerScreen extends Screen implements OperatingSystem {
     /// Initialize the Laptop GUI.
     @Override
     public void init() {
-        int posX = (width - getDeviceWidth()) / 2;
-        int posY = (height - getDeviceHeight()) / 2;
-        bar.init(posX + BORDER, posY + getDeviceHeight() - 28);
-
-        installedApps.clear();
-        ListTag list = systemData.getList("InstalledApps", Tag.TAG_STRING);
-        for (int i = 0; i < list.size(); i++) {
-            AppInfo info = ApplicationManager.getApplication(ResourceLocation.tryParse(list.getString(i)));
-            if (info != null) {
-                installedApps.add(info);
-            }
-        }
-        installedApps.sort(AppInfo.SORT_NAME);
-        if (Minecraft.getInstance().getConnection() == null) {
-            installedApps.addAll(ApplicationManager.getAvailableApplications());
-        }
     }
 
     private static int getDeviceWidth() {
@@ -370,15 +411,22 @@ public class ComputerScreen extends Screen implements OperatingSystem {
     }
 
     public void revalidateDisplay() {
-        wallpaper.componentWidth = videoInfo.getResolution().width();
-        wallpaper.componentHeight = videoInfo.getResolution().height();
-        wallpaperLayout.width = videoInfo.getResolution().width();
-        wallpaperLayout.height = videoInfo.getResolution().height();
-        wallpaperLayout.updateComponents(0, 0);
+        if (wallpaper != null) {
+            wallpaper.componentWidth = videoInfo.getResolution().width();
+            wallpaper.componentHeight = videoInfo.getResolution().height();
+        }
 
-        for (var window : windows) {
-            if (window != null) {
-                window.content.markForLayoutUpdate();
+        if (wallpaperLayout != null) {
+            wallpaperLayout.width = videoInfo.getResolution().width();
+            wallpaperLayout.height = videoInfo.getResolution().height();
+            wallpaperLayout.updateComponents(0, 0);
+        }
+
+        if (windows != null) {
+            for (var window : windows) {
+                if (window != null) {
+                    window.content.markForLayoutUpdate();
+                }
             }
         }
     }
@@ -520,6 +568,32 @@ public class ComputerScreen extends Screen implements OperatingSystem {
         renderBezels(graphics, mouseX, mouseY, partialTicks);
 
         GLHelper.pushScissor(posX, posY, videoInfo.getResolution().width() + BORDER, videoInfo.getResolution().height() + BORDER);
+        renderOS(graphics, mouseX, mouseY, partialTicks, posX, posY, frameTime);
+
+        GLHelper.popScissor();
+
+        GLHelper.clearScissorStack();
+    }
+
+    private void renderOS(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, int posX, int posY, float frameTime) {
+        DisplayResolution resolution = getResolution();
+        if (!booted) {
+            tickTime += frameTime;
+            int h = resolution.height();
+            int w = resolution.width();
+            graphics.fill(posX + w / 2 - 10, posY + h / 3 - 10, posX + w / 2 - 10 + 20, posY + h / 3 - 10 + 20, 0xFFFFFFFF);
+            graphics.fill(posX + w / 2 - 10, posY + h / 3 + 12, posX + w / 2 - 10 + 20, posY + h / 3 + 12 + 4, 0xFFFFFFFF);
+
+            int v = (int) ((tickTime * 10) % 4);
+            graphics.fill(posX + w / 2 - 5, posY + h / 3 + h / 3 - 5, posX + w / 2 - 5 + 4, posY + h / 3 + h / 3 - 5 + 4, v == 0 ? 0xFF303030 : 0xFF101010);
+            graphics.fill(posX + w / 2 + 1, posY + h / 3 + h / 3 - 5, posX + w / 2 + 1 + 4, posY + h / 3 + h / 3 - 5 + 4, v == 1 ? 0xFF303030 : 0xFF101010);
+            graphics.fill(posX + w / 2 - 5, posY + h / 3 + h / 3 + 1, posX + w / 2 - 5 + 4, posY + h / 3 + h / 3 + 1 + 4, v == 2 ? 0xFF303030 : 0xFF101010);
+            graphics.fill(posX + w / 2 + 1, posY + h / 3 + h / 3 + 1, posX + w / 2 + 1 + 4, posY + h / 3 + h / 3 + 1 + 4, v == 3 ? 0xFF303030 : 0xFF101010);
+
+            graphics.drawString(getFont(), "Loading...", posX + w / 2 - 10, posY + h / 3 + 10, 0xFFFFFFFF);
+            return;
+        }
+
         //*******************//
         //     Wallpaper     //
         //*******************//
@@ -571,10 +645,6 @@ public class ComputerScreen extends Screen implements OperatingSystem {
             }
             return false;
         });
-
-        GLHelper.popScissor();
-
-        GLHelper.clearScissorStack();
     }
 
     private void renderWindows(@NotNull GuiGraphics graphics,
@@ -692,7 +762,46 @@ public class ComputerScreen extends Screen implements OperatingSystem {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Driver> T[] getDrivers(Class<T> wifiDriverClass) {
-        return (T[]) drivers.get(wifiDriverClass).toArray((Object[])Array.newInstance(wifiDriverClass, 0));
+        List<?> objects = drivers.get(wifiDriverClass);
+        if (objects == null) {
+            return (T[]) Array.newInstance(wifiDriverClass, 0);
+        }
+        return (T[]) objects.toArray((Object[]) Array.newInstance(wifiDriverClass, 0));
+    }
+
+    @Override
+    public void logCritical(String message, Throwable throwable) {
+        UltreonDevices.LOGGER.error(message, throwable);
+    }
+
+    @Override
+    public void logCritical(String message) {
+        UltreonDevices.LOGGER.error(message);
+    }
+
+    @Override
+    public void logError(String message, Throwable throwable) {
+        UltreonDevices.LOGGER.error(message, throwable);
+    }
+
+    @Override
+    public void logError(String message) {
+        UltreonDevices.LOGGER.error(message);
+    }
+
+    @Override
+    public void logWarning(String message) {
+        UltreonDevices.LOGGER.warn(message);
+    }
+
+    @Override
+    public void logInfo(String message) {
+        UltreonDevices.LOGGER.info(message);
+    }
+
+    @Override
+    public void logDebug(String message) {
+        UltreonDevices.LOGGER.debug(message);
     }
 
     private static final class BSOD {

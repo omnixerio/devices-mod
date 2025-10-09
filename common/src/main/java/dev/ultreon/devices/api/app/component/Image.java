@@ -10,6 +10,7 @@ import dev.ultreon.devices.api.app.IIcon;
 import dev.ultreon.devices.api.app.Layout;
 import dev.ultreon.devices.api.utils.OnlineRequest;
 import dev.ultreon.devices.api.utils.RenderUtil;
+import dev.ultreon.devices.client.UltreonDevicesClient;
 import dev.ultreon.devices.core.ComputerScreen;
 import dev.ultreon.devices.core.io.Path;
 import dev.ultreon.devices.object.AppInfo;
@@ -56,15 +57,15 @@ public class Image extends Component {
 
         public AppImage(int left, int top, AppInfo resource) {
             this(left, top, 14, 14, resource);
-            this.glyphs = new AppInfo.Icon.Glyph[]{resource.getIcon().getBase(), resource.getIcon().getOverlay0(), resource.getIcon().getOverlay1()};
+            glyphs = new AppInfo.Icon.Glyph[]{resource.getIcon().getBase(), resource.getIcon().getOverlay0(), resource.getIcon().getOverlay1()};
         }
 
         public AppImage(int left, int top, int componentWidth, int componentHeight, AppInfo resource) {
             super(left, top, componentWidth, componentHeight);
-            this.appInfo = resource;
+            appInfo = resource;
             AppInfo.Icon icon = resource.getIcon();
             if (icon != null) {
-                this.glyphs = new AppInfo.Icon.Glyph[]{icon.getBase(), icon.getOverlay0(), icon.getOverlay1()};
+                glyphs = new AppInfo.Icon.Glyph[]{icon.getBase(), icon.getOverlay0(), icon.getOverlay1()};
             }
             this.componentWidth = componentWidth;
             this.componentHeight = componentHeight;
@@ -77,7 +78,7 @@ public class Image extends Component {
             AppInfo.Icon icon = appInfo.getIcon();
             if (icon == null || icon.getBase().getU() == -1 && icon.getBase().getV() == -1) {
                 var image = new Image(0, 0, componentWidth, componentHeight, 0, 0, 14, 14, 224, 224, ComputerScreen.ICON_TEXTURES);
-                this.addComponent(image);
+                addComponent(image);
                 return;
             }
             for (AppInfo.Icon.Glyph glyph : glyphs) {
@@ -93,7 +94,7 @@ public class Image extends Component {
                     return cs;
                 };
                 image.setTint(suscs);
-                this.addComponent(image);
+                addComponent(image);
                 //image.init(layout);
             }
         }
@@ -123,7 +124,7 @@ public class Image extends Component {
         cs.r = r;
         cs.g = g;
         cs.b = b;
-        this.setTint(() -> cs);
+        setTint(() -> cs);
     }
 
     public static class ColorSupplier {
@@ -133,7 +134,7 @@ public class Image extends Component {
     }
 
     public void setTint(Supplier<ColorSupplier> colorSupplier) {
-        this.tint = colorSupplier;
+        tint = colorSupplier;
     }
 
     private boolean hasBorder = false;
@@ -142,8 +143,8 @@ public class Image extends Component {
 
     public Image(int left, int top, int width, int height) {
         super(left, top);
-        this.componentWidth = width;
-        this.componentHeight = height;
+        componentWidth = width;
+        componentHeight = height;
     }
 
     /// Creates a new Image using a ResourceLocation. This automatically sets the width and height of
@@ -179,7 +180,7 @@ public class Image extends Component {
 
     public Image(int left, int top, int componentWidth, int componentHeight, int imageU, int imageV, int imageWidth, int imageHeight, int sourceWidth, int sourceHeight, ResourceLocation resource) {
         super(left, top);
-        this.loader = new StandardLoader(resource);
+        loader = new StandardLoader(resource);
         this.componentWidth = componentWidth;
         this.componentHeight = componentHeight;
         this.imageU = imageU;
@@ -205,36 +206,36 @@ public class Image extends Component {
     /// @param url             the url of the resource
     public Image(int left, int top, int componentWidth, int componentHeight, String url) {
         super(left, top);
-        this.loader = new DynamicLoader(url);
+        loader = new DynamicLoader(url);
         this.componentWidth = componentWidth;
         this.componentHeight = componentHeight;
-        this.drawFull = true;
+        drawFull = true;
     }
 
     public Image(int left, int top, IIcon icon) {
         super(left, top);
-        this.loader = new StandardLoader(icon.getIconAsset());
-        this.componentWidth = icon.getIconSize();
-        this.componentHeight = icon.getIconSize();
-        this.imageU = icon.getU();
-        this.imageV = icon.getV();
-        this.imageWidth = icon.getIconSize();
-        this.imageHeight = icon.getIconSize();
-        this.sourceWidth = icon.getGridWidth() * icon.getIconSize();
-        this.sourceHeight = icon.getGridHeight() * icon.getIconSize();
+        loader = new StandardLoader(icon.getIconAsset());
+        componentWidth = icon.getIconSize();
+        componentHeight = icon.getIconSize();
+        imageU = icon.getU();
+        imageV = icon.getV();
+        imageWidth = icon.getIconSize();
+        imageHeight = icon.getIconSize();
+        sourceWidth = icon.getGridWidth() * icon.getIconSize();
+        sourceHeight = icon.getGridHeight() * icon.getIconSize();
     }
 
     public Image(int left, int top, int componentWidth, int componentHeight, IIcon icon) {
         super(left, top);
-        this.loader = new StandardLoader(icon.getIconAsset());
+        loader = new StandardLoader(icon.getIconAsset());
         this.componentWidth = componentWidth;
         this.componentHeight = componentHeight;
-        this.imageU = icon.getU();
-        this.imageV = icon.getV();
-        this.imageWidth = icon.getIconSize();
-        this.imageHeight = icon.getIconSize();
-        this.sourceWidth = icon.getGridWidth() * icon.getIconSize();
-        this.sourceHeight = icon.getGridHeight() * icon.getIconSize();
+        imageU = icon.getU();
+        imageV = icon.getV();
+        imageWidth = icon.getIconSize();
+        imageHeight = icon.getIconSize();
+        sourceWidth = icon.getGridWidth() * icon.getIconSize();
+        sourceHeight = icon.getGridHeight() * icon.getIconSize();
     }
 
     @Override
@@ -248,17 +249,17 @@ public class Image extends Component {
 
     @Override
     public void handleLoad() {
-        this.reload();
+        reload();
     }
 
     @Override
     protected void handleUnload() {
-        this.initialized = false;
+        initialized = false;
     }
 
     @Override
     public void render(GuiGraphics graphics, ComputerScreen computerScreen, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
-        if (this.visible) {
+        if (visible) {
             if (loader != null && loader.setup) {
                 image = loader.load(this);
                 spinner.setVisible(false);
@@ -302,7 +303,7 @@ public class Image extends Component {
 
     public void setImage(ResourceLocation resource) {
         setLoader(new StandardLoader(resource));
-        this.drawFull = true;
+        drawFull = true;
     }
 
     public void setImage(ComputerScreen.Wallpaper wallpaper) {
@@ -315,20 +316,22 @@ public class Image extends Component {
 
     public void setImage(String url) {
         setLoader(new DynamicLoader(url));
-        this.drawFull = true;
+        drawFull = true;
     }
 
     public void setImage(Path path) {
         setLoader(new DynamicLoader(path));
-        this.drawFull = true;
+        drawFull = true;
     }
 
     private void setLoader(ImageLoader loader) {
         this.loader = loader;
-        if (initialized) {
-            loader.setup(this);
-            spinner.setVisible(true);
-        }
+        UltreonDevicesClient.postRenderCall(() -> {
+            if (initialized) {
+                loader.setup(this);
+                spinner.setVisible(true);
+            }
+        });
     }
 
     /// Sets the alpha for this image. Must be in the range
@@ -353,23 +356,23 @@ public class Image extends Component {
     ///
     /// @param show should the border show
     public void setBorderVisible(boolean show) {
-        this.hasBorder = show;
-        this.borderThickness = show ? _pBorderThickness : 0;
+        hasBorder = show;
+        borderThickness = show ? _pBorderThickness : 0;
     }
 
     /// Sets the border color for this component
     ///
     /// @param color the border color
     private void setBorderColor(Color color) {
-        this.borderColor = color.getRGB();
+        borderColor = color.getRGB();
     }
 
     /// Sets the thickness of the border
     ///
     /// @param thickness how thick in pixels
     public void setBorderThickness(int thickness) {
-        this._pBorderThickness = thickness;
-        this.borderThickness = thickness;
+        _pBorderThickness = thickness;
+        borderThickness = thickness;
     }
 
     public void setDrawFull(boolean drawFull) {
@@ -396,7 +399,7 @@ public class Image extends Component {
         private final ResourceLocation resource;
 
         public StandardLoader(ResourceLocation resource) {
-            this.texture = new SimpleTexture(resource);
+            texture = new SimpleTexture(resource);
             this.resource = resource;
         }
 
@@ -598,7 +601,7 @@ public class Image extends Component {
         public void load(@NotNull ResourceManager resourceManager) throws IOException {
             NativeImage nativeImage = Image.read(in);
             Minecraft.getInstance().getTextureManager().register(UltreonDevices.res("dynamic_loaded/" + getId()), this);
-            this.upload(nativeImage);
+            upload(nativeImage);
         }
 
         private void upload(NativeImage nativeImage) {
@@ -615,7 +618,7 @@ public class Image extends Component {
 
         private ImageCache(final int capacity) {
             super(capacity, 1f, true);
-            this.CAPACITY = capacity;
+            CAPACITY = capacity;
         }
 
         @Override

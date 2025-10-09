@@ -92,4 +92,18 @@ public interface OperatingSystem {
     NetworkManagerImpl getNetwork();
 
     <T extends Driver> T[] getDrivers(Class<T> wifiDriverClass);
+
+    void logCritical(String message, Throwable throwable);
+
+    void logCritical(String message);
+
+    void logError(String message, Throwable throwable);
+
+    void logError(String message);
+
+    void logWarning(String message);
+
+    void logInfo(String message);
+
+    void logDebug(String message);
 }

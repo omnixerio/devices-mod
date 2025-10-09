@@ -1,5 +1,6 @@
 package dev.ultreon.devices.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.ultreon.devices.api.device.RemoteDevice;
 import dev.ultreon.devices.api.hardware.Callbacks;
 import dev.ultreon.devices.core.UltreonDevicesConn;
@@ -8,6 +9,7 @@ import dev.ultreon.mods.xinexlib.Env;
 import dev.ultreon.mods.xinexlib.client.event.LocalPlayerJoinEvent;
 import dev.ultreon.mods.xinexlib.client.event.LocalPlayerQuitEvent;
 import dev.ultreon.mods.xinexlib.event.system.EventSystem;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.ApiStatus;
 
 public abstract class UltreonDevicesClient implements UltreonDevicesConn {
@@ -31,6 +33,15 @@ public abstract class UltreonDevicesClient implements UltreonDevicesConn {
 
     public static UltreonDevicesClient getInstance() {
         return instance;
+    }
+
+    public static boolean isOnRenderThread() {
+        return RenderSystem.isOnRenderThread();
+    }
+
+    public static void postRenderCall(Runnable task) {
+        if (UltreonDevicesClient.isOnRenderThread()) task.run();
+        else RenderSystem.recordRenderCall(task::run);
     }
 
     @Override

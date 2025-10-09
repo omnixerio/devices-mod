@@ -37,7 +37,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public abstract class Dialog extends Wrappable {
-    protected final ColorScheme colorScheme = ComputerScreen.getInstance().getSettings().getColorScheme();
     protected final Layout defaultLayout;
     private String title = "Message";
     private int width;

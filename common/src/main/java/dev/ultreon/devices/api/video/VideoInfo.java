@@ -13,6 +13,8 @@ import java.util.Collection;
 public class VideoInfo {
     private DisplayResolution resolution = PredefinedResolution.PREDEFINED_384x216;
 
+    public VideoInfo() { }
+
     public VideoInfo(CompoundTag videoInfoData) {
         if (videoInfoData.contains("resolution"))
             resolution = DisplayResolution.load(videoInfoData.getCompound("resolution"));

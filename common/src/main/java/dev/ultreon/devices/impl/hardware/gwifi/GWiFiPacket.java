@@ -11,6 +11,7 @@ import dev.ultreon.devices.core.UltreonDevicesConn;
 import dev.ultreon.devices.core.jobs.HardwareRequest;
 import dev.ultreon.devices.core.jobs.Jobs;
 import dev.ultreon.devices.core.network.NetworkState;
+import dev.ultreon.devices.core.network.WiFiNetwork;
 import dev.ultreon.devices.impl.hardware.HardwarePacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -74,7 +75,7 @@ public record GWiFiPacket(Type type, Object... data) implements HardwarePacket<G
     }
 
     private GWiFiResponse receiveScan(RegistryFriendlyByteBuf registryFriendlyByteBuf) {
-        return new Scan(registryFriendlyByteBuf.readList(FriendlyByteBuf::readUtf));
+        return new Scan(registryFriendlyByteBuf.readList(WiFiNetwork::read));
     }
 
     private GWiFiResponse receiveConnect(RegistryFriendlyByteBuf registryFriendlyByteBuf) {
@@ -222,23 +223,23 @@ public record GWiFiPacket(Type type, Object... data) implements HardwarePacket<G
         }
     }
 
-    public record Scan(List<String> names) implements GWiFiResponse {
+    public record Scan(List<WiFiNetwork> names) implements GWiFiResponse {
         @Override
         public void encode(RegistryFriendlyByteBuf buffer) {
             buffer.writeEnum(Type.SCAN);
             buffer.writeVarInt(names.size());
-            for (String name : names) {
-                buffer.writeUtf(name);
+            for (WiFiNetwork network : names) {
+                network.write(buffer);
             }
         }
 
         public static Scan process(RegistryFriendlyByteBuf buffer) {
             int size = buffer.readVarInt();
-            List<String> names = new ArrayList<>(size);
+            List<WiFiNetwork> networks = new ArrayList<>(size);
             for (int i = 0; i < size; i++) {
-                names.set(i, buffer.readUtf());
+                networks.add(WiFiNetwork.read(buffer));
             }
-            return new Scan(names);
+            return new Scan(networks);
         }
     }
 }

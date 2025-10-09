@@ -1,8 +1,10 @@
 package dev.ultreon.devices.impl.driver;
 
+import dev.ultreon.devices.api.app.OperatingSystem;
 import dev.ultreon.devices.api.driver.*;
 import dev.ultreon.devices.client.UltreonDevicesClient;
 import dev.ultreon.devices.core.network.NetworkState;
+import dev.ultreon.devices.core.network.WiFiNetwork;
 import dev.ultreon.devices.core.network.WifiStrength;
 import dev.ultreon.devices.impl.hardware.gwifi.GWiFiPacket;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +24,7 @@ public class GenericWifiDriver implements WifiDriver {
     private String connectedSSID = null;
     private WifiStrength strength = WifiStrength.NONE;
     private NetworkState state = NetworkState.DISCONNECTED;
+    private boolean initialized;
 
     public GenericWifiDriver(Hardware<GWiFiPacket.GWiFiResponse, GWiFiPacket> hardware) {
         this.hardware = hardware;
@@ -58,7 +61,7 @@ public class GenericWifiDriver implements WifiDriver {
     }
 
     @Override
-    public CompletableFuture<List<String>> scan() {
+    public CompletableFuture<List<WiFiNetwork>> scan() {
         return hardware.send(new GWiFiPacket(GWiFiPacket.Type.SCAN), UltreonDevicesClient.getInstance()).thenApply(packet -> {
             if (packet instanceof GWiFiPacket.Scan) return ((GWiFiPacket.Scan) packet).names();
             return Collections.emptyList();
@@ -91,8 +94,9 @@ public class GenericWifiDriver implements WifiDriver {
     }
 
     @Override
-    public void init() throws DriverException {
-        hardware.send(new GWiFiPacket(GWiFiPacket.Type.INITIALIZE, (Runnable) this::disconnected, (Consumer<Integer>) this::onLevel), UltreonDevicesClient.getInstance()).join();
+    public void init(Hardware<?, ?> hardware) throws DriverException {
+        initialized = true;
+        this.hardware.send(new GWiFiPacket(GWiFiPacket.Type.INITIALIZE, (Runnable) this::disconnected, (Consumer<Integer>) this::onLevel), UltreonDevicesClient.getInstance()).join();
     }
 
     private void onLevel(@Nullable Integer level) {
@@ -103,6 +107,7 @@ public class GenericWifiDriver implements WifiDriver {
         connectedSSID = null;
         state = NetworkState.DISCONNECTED;
         strength = WifiStrength.NONE;
+        initialized = false;
     }
 
     private void onConnected(String ssid) {
@@ -121,6 +126,24 @@ public class GenericWifiDriver implements WifiDriver {
 
     @Override
     public boolean isInitialized() {
-        return false;
+        return initialized;
+    }
+
+    @Override
+    public void load(OperatingSystem system, Hardware<?, ?> hardware) {
+        if (hardware instanceof GenericWifiDriver) {
+            try {
+                init(hardware);
+            } catch (DriverException e) {
+                system.logError("Failed to initialize GWiFi driver, likely an incompatible device.", e);
+                try {
+                    close();
+                } catch (DriverException ex) {
+                    system.logError("Failed to close GWiFi driver.", ex);
+                }
+
+                initialized = false;
+            }
+        }
     }
 }

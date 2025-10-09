@@ -22,10 +22,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.apache.commons.lang3.EnumUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author MrCrayfish
@@ -34,6 +35,8 @@ public class TrayItemWifi extends TrayItem {
     private final OperatingSystem system;
     private int pingTimer;
     private WifiStrength strength = WifiStrength.NONE;
+    private ItemList<WiFiNetwork> wifiNetworks;
+    private @Nullable CompletableFuture<List<WiFiNetwork>> scanFuture;
 
     public TrayItemWifi(OperatingSystem system) {
         super(Icons.WIFI_NONE, UltreonDevices.res("wifi"));
@@ -44,7 +47,7 @@ public class TrayItemWifi extends TrayItem {
         Layout layout = new Layout.Context(100, 100);
         layout.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) -> graphics.fill(x, y, x + width, y + height, new Color(0.65f, 0.65f, 0.65f, 0.9f).getRGB()));
 
-        ItemList<Device> itemListRouters = createRouterList();
+        @NotNull ItemList<WiFiNetwork> itemListRouters = createRouterList();
         layout.addComponent(itemListRouters);
 
         Button buttonConnect = new Button(79, 79, Icons.CHECK);
@@ -54,7 +57,7 @@ public class TrayItemWifi extends TrayItem {
         return layout;
     }
 
-    private void connect(TrayItem item, int mouseButton, ItemList<Device> itemListRouters) {
+    private void connect(TrayItem item, int mouseButton, @NotNull ItemList<WiFiNetwork> itemListRouters) {
         if (mouseButton == 0) {
             if (itemListRouters.getSelectedItem() != null) {
                 NetworkManagerImpl network = system.getNetwork();
@@ -62,71 +65,53 @@ public class TrayItemWifi extends TrayItem {
         }
     }
 
-    private static @NotNull ItemList<Device> createRouterList() {
-        ItemList<Device> itemListRouters = getRouterList();
+    private @NotNull ItemList<WiFiNetwork> createRouterList() {
+        @NotNull ItemList<WiFiNetwork> itemListRouters = getRouterList();
         itemListRouters.sortBy((o1, o2) -> {
-            BlockPos laptopPos = ComputerScreen.getPos();
-            assert o1.getPos() != null;
-            assert laptopPos != null;
-            double distance1 = Math.sqrt(o1.getPos().distToCenterSqr(laptopPos.getX() + 0.5, laptopPos.getY() + 0.5, laptopPos.getZ() + 0.5));
-            assert o2.getPos() != null;
-            double distance2 = Math.sqrt(o2.getPos().distToCenterSqr(laptopPos.getX() + 0.5, laptopPos.getY() + 0.5, laptopPos.getZ() + 0.5));
-            return Double.compare(distance1, distance2);
+            if (o1.strength() == null) return -1;
+            if (o2.strength() == null) return 1;
+            return o1.strength().compareTo(o2.strength());
         });
         return itemListRouters;
     }
 
-    private static @NotNull ItemList<Device> getRouterList() {
-        ItemList<Device> itemListRouters = new ItemList<>(5, 5, 90, 4);
-        itemListRouters.setItems(getRouters());
-        itemListRouters.setListItemRenderer(new ListItemRenderer<>(16) {
+    private @NotNull ItemList<WiFiNetwork> getRouterList() {
+        wifiNetworks = new ItemList<>(5, 5, 90, 4);
+        scan();
+        wifiNetworks.setListItemRenderer(new ListItemRenderer<>(16) {
             @Override
-            public void render(GuiGraphics graphics, Device device, Minecraft mc, int x, int y, int width, int height, boolean selected) {
+            public void render(GuiGraphics graphics, WiFiNetwork device, Minecraft mc, int x, int y, int width, int height, boolean selected) {
                 graphics.fill(x, y, x + width, y + height, selected ? Color.DARK_GRAY.getRGB() : Color.GRAY.getRGB());
-                RenderUtil.drawStringClipped(graphics, device.getName(), x + 16, y + 4, 70, Color.WHITE.getRGB(), false);
+                RenderUtil.drawStringClipped(graphics, device.ssid(), x + 16, y + 4, 70, Color.WHITE.getRGB(), false);
 
-                if (device.getPos() == null) return;
+                if (device.strength() == null) return;
 
                 BlockPos laptopPos = ComputerScreen.getPos();
                 assert laptopPos != null;
-                double distance = Math.sqrt(device.getPos().distToCenterSqr(laptopPos.getX() + 0.5, laptopPos.getY() + 0.5, laptopPos.getZ() + 0.5));
-                if (distance > 20) {
-                    Icons.WIFI_LOW.draw(graphics, mc, x + 3, y + 3);
-                } else if (distance > 10) {
-                    Icons.WIFI_MED.draw(graphics, mc, x + 3, y + 3);
-                } else {
-                    Icons.WIFI_HIGH.draw(graphics, mc, x + 3, y + 3);
+                WifiStrength strength = device.strength();
+                switch (strength) {
+                    case LOW -> setIcon(Icons.WIFI_LOW);
+                    case MED -> setIcon(Icons.WIFI_MED);
+                    case HIGH -> setIcon(Icons.WIFI_HIGH);
+                    default -> setIcon(Icons.WIFI_NONE);
                 }
             }
         });
-        return itemListRouters;
+        return wifiNetworks;
     }
 
-    private static List<Device> getRouters() {
-        List<Device> routers = new ArrayList<>();
-
-        Level level = Minecraft.getInstance().level;
+    private void scan() {
         if (ComputerScreen.isWorldLess()) {
-            return new ArrayList<>();
+            return;
         }
 
-        BlockPos laptopPos = ComputerScreen.getPos();
-        int range = DeviceConfig.SIGNAL_RANGE.get();
-
-        for (int y = -range; y < range + 1; y++) {
-            for (int z = -range; z < range + 1; z++) {
-                for (int x = -range; x < range + 1; x++) {
-                    assert laptopPos != null;
-                    BlockPos pos = new BlockPos(laptopPos.getX() + x, laptopPos.getY() + y, laptopPos.getZ() + z);
-                    assert level != null;
-                    BlockEntity tileEntity = level.getBlockEntity(pos);
-                    if (tileEntity instanceof RouterBlockEntity) {
-                        routers.add(new Device((DeviceBlockEntity) tileEntity));
-                    }
-                }
-            }
+        if (scanFuture != null && !scanFuture.isDone()) {
+            return;
         }
-        return routers;
+        scanFuture = system.getNetwork().scan().thenApply(networks -> {
+            wifiNetworks.setItems(networks);
+            return networks;
+        });
     }
 
     @Override
@@ -161,4 +146,16 @@ public class TrayItemWifi extends TrayItem {
         return tag;
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+
+        WifiStrength strength1 = system.getNetwork().getStrength();
+        switch (strength1) {
+            case LOW -> setIcon(Icons.WIFI_LOW);
+            case MED -> setIcon(Icons.WIFI_MED);
+            case HIGH -> setIcon(Icons.WIFI_HIGH);
+            case NONE -> setIcon(Icons.WIFI_NONE);
+        }
+    }
 }

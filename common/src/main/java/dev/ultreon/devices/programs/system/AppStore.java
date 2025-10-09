@@ -49,7 +49,7 @@ public class AppStore extends SystemApp {
     public void init(@Nullable CompoundTag intent) {
         ComputerScreen laptop = getLaptop();
         layoutMain = new Layout(LAYOUT_WIDTH, LAYOUT_HEIGHT);
-        if (laptop == null || laptop.getNetwork().isConnected()) {
+        if (laptop == null || !laptop.getNetwork().isConnected()) {
             layoutMain.addComponent(new Label("No internet connection", 10, 10));
             return;
         }
