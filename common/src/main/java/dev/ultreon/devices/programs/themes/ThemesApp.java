@@ -2,7 +2,7 @@ package dev.ultreon.devices.programs.themes;
 
 import dev.ultreon.devices.api.app.Component;
 import dev.ultreon.devices.api.app.Dialog;
-import dev.ultreon.devices.api.app.System;
+import dev.ultreon.devices.api.app.OperatingSystem;
 import dev.ultreon.devices.api.app.*;
 import dev.ultreon.devices.api.app.component.Button;
 import dev.ultreon.devices.api.app.component.TextField;
@@ -19,7 +19,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 public class ThemesApp extends Application implements SystemAccessor {
-    private System system;
+    private OperatingSystem system;
     private int[] lastMousePositionsX = null;
     private int[] lastMousePositionsY = null;
 
@@ -41,7 +41,7 @@ public class ThemesApp extends Application implements SystemAccessor {
     }
 
     @Override
-    public void sendSystem(System system) {
+    public void sendSystem(OperatingSystem system) {
         this.system = system;
     }
 

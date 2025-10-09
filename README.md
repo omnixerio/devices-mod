@@ -21,4 +21,4 @@ Some code is used from other projects with other licenses.
 ## Related repos
 * [GitWeb Sites](https://github.com/Ultreon/gitweb-sites) (Websites for the GitWeb application)
 * [GitWeb Test Sites](https://github.com/Jab125/gitweb-sites) (Testing sites for the GitWeb application)
-* [App Certificates](https://github.com/Ultreon/device-mod-certificates) (Certificates for the applications)
+* [App Certificates](https://github.com/Ultreon/deviceOrigin-mod-certificates) (Certificates for the applications)

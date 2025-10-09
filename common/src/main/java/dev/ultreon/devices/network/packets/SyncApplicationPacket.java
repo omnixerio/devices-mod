@@ -1,4 +1,4 @@
-package dev.ultreon.devices.network.task;
+package dev.ultreon.devices.network.packets;
 
 import com.google.common.collect.ImmutableList;
 import dev.ultreon.devices.UltreonDevices;

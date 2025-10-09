@@ -1,6 +1,6 @@
 package dev.ultreon.devices.programs.gitweb;
 
-import dev.ultreon.devices.api.app.System;
+import dev.ultreon.devices.api.app.OperatingSystem;
 import dev.ultreon.devices.api.app.*;
 import dev.ultreon.devices.api.app.component.Button;
 import dev.ultreon.devices.api.app.component.Spinner;
@@ -32,9 +32,9 @@ public class GitWebApp extends Application implements SystemAccessor, DataHandle
     private Spinner spinnerLoading;
     private TextLayout scrollable;
 
-    private System system;
+    private OperatingSystem system;
 
-    public Optional<System> getSystem() {
+    public Optional<OperatingSystem> getSystem() {
         return Optional.ofNullable(system);
     }
 
@@ -129,7 +129,7 @@ public class GitWebApp extends Application implements SystemAccessor, DataHandle
     }
 
     @Override
-    public void sendSystem(System system) {
+    public void sendSystem(OperatingSystem system) {
         this.system = system;
     }
 }

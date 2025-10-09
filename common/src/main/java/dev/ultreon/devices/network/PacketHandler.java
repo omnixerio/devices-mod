@@ -3,7 +3,7 @@ package dev.ultreon.devices.network;
 import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.core.laptop.common.C2SUpdatePacket;
 import dev.ultreon.devices.core.laptop.common.S2CUpdatePacket;
-import dev.ultreon.devices.network.task.*;
+import dev.ultreon.devices.network.packets.*;
 import dev.ultreon.mods.xinexlib.network.Networker;
 import dev.ultreon.mods.xinexlib.network.packet.PacketToClient;
 import dev.ultreon.mods.xinexlib.network.packet.PacketToServer;

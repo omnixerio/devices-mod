@@ -6,9 +6,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.ApplicationManager;
 import dev.ultreon.devices.api.app.Dialog;
-import dev.ultreon.devices.api.app.System;
+import dev.ultreon.devices.api.app.OperatingSystem;
 import dev.ultreon.devices.api.app.*;
 import dev.ultreon.devices.api.app.component.Image;
+import dev.ultreon.devices.api.driver.Driver;
 import dev.ultreon.devices.api.io.Drive;
 import dev.ultreon.devices.api.task.Callback;
 import dev.ultreon.devices.api.task.Task;
@@ -18,6 +19,7 @@ import dev.ultreon.devices.api.video.VideoInfo;
 import dev.ultreon.devices.block.entity.computer.ComputerBlockEntity;
 import dev.ultreon.devices.core.io.Path;
 import dev.ultreon.devices.core.io.task.TaskGetMainDrive;
+import dev.ultreon.devices.core.network.NetworkManagerImpl;
 import dev.ultreon.devices.core.task.TaskInstallApp;
 import dev.ultreon.devices.object.AppInfo;
 import dev.ultreon.devices.programs.system.DiagnosticsApp;
@@ -52,6 +54,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Array;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.*;
@@ -61,7 +64,7 @@ import java.util.function.Consumer;
 /// Laptop GUI class.
 ///
 /// @author MrCrayfish, Qubix
-public class ComputerScreen extends Screen implements System {
+public class ComputerScreen extends Screen implements OperatingSystem {
     public static final int ID = 1;
     public static final ResourceLocation ICON_TEXTURES = ResourceLocation.fromNamespaceAndPath(UltreonDevices.MOD_ID, "textures/atlas/app_icons.png");
     public static final int ICON_SIZE = 14;
@@ -79,6 +82,8 @@ public class ComputerScreen extends Screen implements System {
     private Window<Dialog> systemDialogWindow = null;
     private static boolean loaded;
     private final Bios bios;
+    private final Map<Class<?>, List<?>> drivers = new HashMap<>();
+    private final NetworkManagerImpl networkManager = new NetworkManagerImpl(this);
 
     public static List<Application> getApplicationsForFabric() {
         return APPLICATIONS;
@@ -92,7 +97,7 @@ public class ComputerScreen extends Screen implements System {
 
     private static final int BORDER = 10;
     private static final List<Runnable> tasks = new CopyOnWriteArrayList<>();
-    private static System system;
+    private static OperatingSystem system;
     private static BlockPos pos;
     private static Drive mainDrive;
     private final Settings settings;
@@ -241,7 +246,7 @@ public class ComputerScreen extends Screen implements System {
         }
     }
 
-    public static System getSystem() {
+    public static OperatingSystem getSystem() {
         return system;
     }
 
@@ -382,6 +387,7 @@ public class ComputerScreen extends Screen implements System {
     @Override
     public void tick() {
         try {
+            networkManager.tick();
             bar.onTick();
 
             for (Window<?> window : List.copyOf(windows)) {
@@ -546,8 +552,6 @@ public class ComputerScreen extends Screen implements System {
 
         if (systemDialogWindow != null) {
             graphics.fill(posX + 10, posY + 10, posX + getDeviceWidth() - 10, posY + getDeviceHeight() - 10, 0x60000000);
-            int w = getScreenWidth() / 2 - systemDialog.getWidth() / 2;
-            int h = getScreenHeight() / 2 - systemDialog.getHeight() / 2;
             systemDialogWindow.render(graphics, this, minecraft, posX + BORDER, posY + BORDER, mouseX, mouseY, true, partialTicks);
         }
 
@@ -678,6 +682,17 @@ public class ComputerScreen extends Screen implements System {
                 callback.accept(result);
             });
         }, reason));
+    }
+
+    @Override
+    public NetworkManagerImpl getNetwork() {
+        return networkManager;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Driver> T[] getDrivers(Class<T> wifiDriverClass) {
+        return (T[]) drivers.get(wifiDriverClass).toArray((Object[])Array.newInstance(wifiDriverClass, 0));
     }
 
     private static final class BSOD {

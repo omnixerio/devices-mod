@@ -1,6 +1,8 @@
 package dev.ultreon.devices.api.app;
 
+import dev.ultreon.devices.api.driver.Driver;
 import dev.ultreon.devices.api.io.Drive;
+import dev.ultreon.devices.core.network.NetworkManagerImpl;
 import dev.ultreon.devices.core.Settings;
 import dev.ultreon.devices.core.Window;
 import dev.ultreon.devices.object.AppInfo;
@@ -12,7 +14,7 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 /// @author MrCrayfish
-public interface System {
+public interface OperatingSystem {
     /// Open a context on the screen
     void openContext(Layout layout, int x, int y);
 
@@ -87,4 +89,7 @@ public interface System {
 
     void openDialog(Dialog message);
 
+    NetworkManagerImpl getNetwork();
+
+    <T extends Driver> T[] getDrivers(Class<T> wifiDriverClass);
 }

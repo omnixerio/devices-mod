@@ -47,7 +47,12 @@ public class AppStore extends SystemApp {
 
     @Override
     public void init(@Nullable CompoundTag intent) {
+        ComputerScreen laptop = getLaptop();
         layoutMain = new Layout(LAYOUT_WIDTH, LAYOUT_HEIGHT);
+        if (laptop == null || laptop.getNetwork().isConnected()) {
+            layoutMain.addComponent(new Label("No internet connection", 10, 10));
+            return;
+        }
 
         var q = ApplicationManager.getAvailableApplications().size();
         var rows = (int)Math.round(Math.ceil(q/3D));

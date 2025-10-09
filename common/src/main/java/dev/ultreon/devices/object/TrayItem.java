@@ -1,6 +1,7 @@
 package dev.ultreon.devices.object;
 
 import dev.ultreon.devices.api.app.IIcon;
+import dev.ultreon.devices.api.app.OperatingSystem;
 import dev.ultreon.devices.api.app.listener.ClickListener;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -50,7 +51,7 @@ public class TrayItem {
         return new CompoundTag();
     }
 
-    public void deserialize(CompoundTag trayTag) {
+    public void deserialize(OperatingSystem system, CompoundTag trayTag) {
 
     }
 }

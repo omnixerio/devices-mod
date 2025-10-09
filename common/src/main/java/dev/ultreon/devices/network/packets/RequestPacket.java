@@ -1,4 +1,4 @@
-package dev.ultreon.devices.network.task;
+package dev.ultreon.devices.network.packets;
 
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.api.task.TaskManager;

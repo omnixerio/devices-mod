@@ -2,7 +2,7 @@ package dev.ultreon.devices.api.task;
 
 import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.network.PacketHandler;
-import dev.ultreon.devices.network.task.RequestPacket;
+import dev.ultreon.devices.network.packets.RequestPacket;
 import net.minecraft.client.Minecraft;
 
 import java.util.HashMap;

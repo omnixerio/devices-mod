@@ -4,17 +4,15 @@ import dev.ultreon.devices.DeviceConfig;
 import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.app.Icons;
 import dev.ultreon.devices.api.app.Layout;
+import dev.ultreon.devices.api.app.OperatingSystem;
 import dev.ultreon.devices.api.app.component.Button;
 import dev.ultreon.devices.api.app.component.ItemList;
 import dev.ultreon.devices.api.app.renderer.ListItemRenderer;
-import dev.ultreon.devices.api.task.TaskManager;
 import dev.ultreon.devices.api.utils.RenderUtil;
 import dev.ultreon.devices.block.entity.DeviceBlockEntity;
 import dev.ultreon.devices.block.entity.RouterBlockEntity;
 import dev.ultreon.devices.core.Device;
 import dev.ultreon.devices.core.ComputerScreen;
-import dev.ultreon.devices.core.network.task.TaskConnect;
-import dev.ultreon.devices.core.network.task.TaskPing;
 import dev.ultreon.devices.object.TrayItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -23,6 +21,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.apache.commons.lang3.EnumUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -32,17 +31,52 @@ import java.util.List;
  * @author MrCrayfish
  */
 public class TrayItemWifi extends TrayItem {
+    private final OperatingSystem system;
     private int pingTimer;
-    private Strength strength = Strength.NONE;
+    private WifiStrength strength = WifiStrength.NONE;
 
-    public TrayItemWifi() {
+    public TrayItemWifi(OperatingSystem system) {
         super(Icons.WIFI_NONE, UltreonDevices.res("wifi"));
+        this.system = system;
     }
 
-    private static Layout createWifiMenu(TrayItem item) {
+    private Layout createWifiMenu(TrayItem item) {
         Layout layout = new Layout.Context(100, 100);
         layout.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) -> graphics.fill(x, y, x + width, y + height, new Color(0.65f, 0.65f, 0.65f, 0.9f).getRGB()));
 
+        ItemList<Device> itemListRouters = createRouterList();
+        layout.addComponent(itemListRouters);
+
+        Button buttonConnect = new Button(79, 79, Icons.CHECK);
+        buttonConnect.setClickListener((mouseX, mouseY, mouseButton) -> connect(item, mouseButton, itemListRouters));
+        layout.addComponent(buttonConnect);
+
+        return layout;
+    }
+
+    private void connect(TrayItem item, int mouseButton, ItemList<Device> itemListRouters) {
+        if (mouseButton == 0) {
+            if (itemListRouters.getSelectedItem() != null) {
+                NetworkManagerImpl network = system.getNetwork();
+            }
+        }
+    }
+
+    private static @NotNull ItemList<Device> createRouterList() {
+        ItemList<Device> itemListRouters = getRouterList();
+        itemListRouters.sortBy((o1, o2) -> {
+            BlockPos laptopPos = ComputerScreen.getPos();
+            assert o1.getPos() != null;
+            assert laptopPos != null;
+            double distance1 = Math.sqrt(o1.getPos().distToCenterSqr(laptopPos.getX() + 0.5, laptopPos.getY() + 0.5, laptopPos.getZ() + 0.5));
+            assert o2.getPos() != null;
+            double distance2 = Math.sqrt(o2.getPos().distToCenterSqr(laptopPos.getX() + 0.5, laptopPos.getY() + 0.5, laptopPos.getZ() + 0.5));
+            return Double.compare(distance1, distance2);
+        });
+        return itemListRouters;
+    }
+
+    private static @NotNull ItemList<Device> getRouterList() {
         ItemList<Device> itemListRouters = new ItemList<>(5, 5, 90, 4);
         itemListRouters.setItems(getRouters());
         itemListRouters.setListItemRenderer(new ListItemRenderer<>(16) {
@@ -65,35 +99,7 @@ public class TrayItemWifi extends TrayItem {
                 }
             }
         });
-        itemListRouters.sortBy((o1, o2) -> {
-            BlockPos laptopPos = ComputerScreen.getPos();
-            assert o1.getPos() != null;
-            assert laptopPos != null;
-            double distance1 = Math.sqrt(o1.getPos().distToCenterSqr(laptopPos.getX() + 0.5, laptopPos.getY() + 0.5, laptopPos.getZ() + 0.5));
-            assert o2.getPos() != null;
-            double distance2 = Math.sqrt(o2.getPos().distToCenterSqr(laptopPos.getX() + 0.5, laptopPos.getY() + 0.5, laptopPos.getZ() + 0.5));
-            return Double.compare(distance1, distance2);
-        });
-        layout.addComponent(itemListRouters);
-
-        Button buttonConnect = new Button(79, 79, Icons.CHECK);
-        buttonConnect.setClickListener((mouseX, mouseY, mouseButton) -> {
-            if (mouseButton == 0) {
-                if (itemListRouters.getSelectedItem() != null) {
-                    TaskConnect connect = new TaskConnect(ComputerScreen.getPos(), itemListRouters.getSelectedItem().getPos());
-                    connect.setCallback((tag, success) -> {
-                        if (success) {
-                            item.setIcon(Icons.WIFI_HIGH);
-                            ComputerScreen.getSystem().closeContext();
-                        }
-                    });
-                    TaskManager.sendTask(connect);
-                }
-            }
-        });
-        layout.addComponent(buttonConnect);
-
-        return layout;
+        return itemListRouters;
     }
 
     private static List<Device> getRouters() {
@@ -125,61 +131,20 @@ public class TrayItemWifi extends TrayItem {
 
     @Override
     public void init() {
-        this.setClickListener((mouseX, mouseY, mouseButton) -> {
+        setClickListener((mouseX, mouseY, mouseButton) -> {
             if (ComputerScreen.getSystem().hasContext()) {
                 ComputerScreen.getSystem().closeContext();
             } else {
                 ComputerScreen.getSystem().openContext(createWifiMenu(this), mouseX - 100, mouseY - 100);
             }
         });
-
-        runPingTask();
     }
 
     @Override
-    public void tick() {
-        if (++pingTimer >= DeviceConfig.PING_RATE.get()) {
-            runPingTask();
-            pingTimer = 0;
-        }
-    }
-
-    private void runPingTask() {
-        TaskPing task = new TaskPing(ComputerScreen.getPos());
-        task.setCallback((tag, success) -> {
-            if (success) {
-                assert tag != null;
-                int strength = tag.getInt("strength");
-                switch (strength) {
-                    case 2 -> {
-                        this.strength = Strength.LOW;
-                        setIcon(Icons.WIFI_LOW);
-                    }
-                    case 1 -> {
-                        this.strength = Strength.MED;
-                        setIcon(Icons.WIFI_MED);
-                    }
-                    case 0 -> {
-                        this.strength = Strength.HIGH;
-                        setIcon(Icons.WIFI_HIGH);
-                    }
-                    default -> {
-                        this.strength = Strength.NONE;
-                        setIcon(Icons.WIFI_NONE);
-                    }
-                }
-            } else {
-                setIcon(Icons.WIFI_NONE);
-            }
-        });
-        TaskManager.sendTask(task);
-    }
-
-    @Override
-    public void deserialize(CompoundTag tag) {
-        super.deserialize(tag);
-        this.pingTimer = tag.getInt("pingTimer");
-        this.strength = EnumUtils.getEnum(Strength.class, tag.getString("strength"), Strength.NONE);
+    public void deserialize(OperatingSystem system, CompoundTag tag) {
+        super.deserialize(system, tag);
+        pingTimer = tag.getInt("pingTimer");
+        strength = EnumUtils.getEnum(WifiStrength.class, tag.getString("strength"), WifiStrength.NONE);
         switch (strength) {
             case LOW -> setIcon(Icons.WIFI_LOW);
             case MED -> setIcon(Icons.WIFI_MED);
@@ -196,7 +161,4 @@ public class TrayItemWifi extends TrayItem {
         return tag;
     }
 
-    public enum Strength {
-        LOW, MED, HIGH, NONE
-    }
 }

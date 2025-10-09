@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.ultreon.devices.UltreonDevices;
 import dev.ultreon.devices.api.TrayItemAdder;
 import dev.ultreon.devices.api.app.Application;
+import dev.ultreon.devices.api.app.OperatingSystem;
 import dev.ultreon.devices.api.event.client.ComputerTrayItemsEvent;
 import dev.ultreon.devices.api.utils.RenderUtil;
 import dev.ultreon.devices.core.network.TrayItemWifi;
@@ -36,41 +37,47 @@ public class TaskBar {
 
     private final CompoundTag tag;
 
-    private final ComputerScreen computerScreen;
+    private final OperatingSystem system;
 
     private final int offset = 0;
 
     private final List<TrayItem> trayItems = new ArrayList<>();
     private static final Marker MARKER = MarkerFactory.getMarker("TaskBar");
 
-    /// @deprecated use [#TaskBar(ComputerScreen ,CompoundTag)] instead.
+    /// @deprecated use [TaskBar#TaskBar(OperatingSystem, CompoundTag)] instead.
     @Deprecated
-    public TaskBar(ComputerScreen computerScreen) {
-        this(computerScreen, new CompoundTag());
+    public TaskBar(ComputerScreen system) {
+        this(system, new CompoundTag());
     }
 
-    public TaskBar(ComputerScreen computerScreen, CompoundTag tag) {
-        this.computerScreen = computerScreen;
+    /**
+     * Constructs a new TaskBar instance and initializes it with default tray items.
+     *
+     * @param system the operating system instance associated with this taskbar
+     * @param tag    the compound tag used for deserializing tray item data
+     */
+    public TaskBar(OperatingSystem system, CompoundTag tag) {
+        this.system = system;
         this.tag = tag;
 
         var trayItemsTag = tag.getCompound("TrayItems");
 
-        addTrayItem(new Vulnerability.VulnerabilityTrayItem(), trayItemsTag);
-        addTrayItem(new FileBrowserApp.FileBrowserTrayItem(), trayItemsTag);
-        addTrayItem(new SettingsApp.SettingsTrayItem(), trayItemsTag);
-        addTrayItem(new AppStore.StoreTrayItem(), trayItemsTag);
-        addTrayItem(new TrayItemWifi(), trayItemsTag);
+        addTrayItem(system, new Vulnerability.VulnerabilityTrayItem(), trayItemsTag);
+        addTrayItem(system, new FileBrowserApp.FileBrowserTrayItem(), trayItemsTag);
+        addTrayItem(system, new SettingsApp.SettingsTrayItem(), trayItemsTag);
+        addTrayItem(system, new AppStore.StoreTrayItem(), trayItemsTag);
+        addTrayItem(system, new TrayItemWifi(system), trayItemsTag);
 
         TrayItemAdder trayItemAdder = new TrayItemAdder(this.trayItems);
-        EventSystem.MAIN.publish(new ComputerTrayItemsEvent(computerScreen, trayItemAdder));
+        EventSystem.MAIN.publish(new ComputerTrayItemsEvent(system, trayItemAdder));
     }
 
-    public void addTrayItem(TrayItem trayItem, CompoundTag tag) {
+    public void addTrayItem(OperatingSystem system, TrayItem trayItem, CompoundTag tag) {
         this.trayItems.add(trayItem);
         String strId = trayItem.getId().toString();
         if (tag.contains(strId, Tag.TAG_COMPOUND)) {
             CompoundTag trayTag = tag.getCompound(strId);
-            trayItem.deserialize(trayTag);
+            trayItem.deserialize(system, trayTag);
         }
     }
 
@@ -191,8 +198,8 @@ public class TaskBar {
         return String.format("%02d:%02d", hours, minutes);
     }
 
-    public ComputerScreen getLaptop() {
-        return computerScreen;
+    public OperatingSystem getSystem() {
+        return system;
     }
 
     public CompoundTag getTag() {

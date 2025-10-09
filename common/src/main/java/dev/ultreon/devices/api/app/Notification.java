@@ -3,7 +3,7 @@ package dev.ultreon.devices.api.app;
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.client.ClientNotification;
 import dev.ultreon.devices.network.PacketHandler;
-import dev.ultreon.devices.network.task.NotificationPacket;
+import dev.ultreon.devices.network.packets.NotificationPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.commons.lang3.StringUtils;

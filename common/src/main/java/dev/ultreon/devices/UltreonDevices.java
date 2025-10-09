@@ -12,6 +12,7 @@ import dev.ultreon.devices.api.utils.OnlineRequest;
 import dev.ultreon.devices.core.ComputerScreen;
 import dev.ultreon.devices.client.ClientNotification;
 import dev.ultreon.devices.client.debug.ClientAppDebug;
+import dev.ultreon.devices.core.UltreonDevicesServerConn;
 import dev.ultreon.devices.core.io.task.*;
 import dev.ultreon.devices.core.network.task.TaskConnect;
 import dev.ultreon.devices.core.network.task.TaskGetDevices;
@@ -22,8 +23,8 @@ import dev.ultreon.devices.debug.DebugLog;
 import dev.ultreon.devices.event.InitializationEvent;
 import dev.ultreon.devices.event.WorldDataHandler;
 import dev.ultreon.devices.network.PacketHandler;
-import dev.ultreon.devices.network.task.SyncApplicationPacket;
-import dev.ultreon.devices.network.task.SyncConfigPacket;
+import dev.ultreon.devices.network.packets.SyncApplicationPacket;
+import dev.ultreon.devices.network.packets.SyncConfigPacket;
 import dev.ultreon.devices.object.AppInfo;
 import dev.ultreon.devices.object.TrayItem;
 import dev.ultreon.devices.programs.IconsApp;
@@ -51,14 +52,12 @@ import dev.ultreon.mods.xinexlib.event.server.ServerStoppedEvent;
 import dev.ultreon.mods.xinexlib.event.system.EventSystem;
 import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import dev.ultreon.mods.xinexlib.registrar.RegistrarManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.ApiStatus;
@@ -69,6 +68,8 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -83,6 +84,7 @@ public abstract class UltreonDevices {
     public static final List<SiteRegistration> SITE_REGISTRATIONS = new ProtectedArrayList<>();
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static final DevicesEarlyConfig EARLY_CONFIG = new DevicesEarlyConfig();
+    public static final ExecutorService NETWORK_EXECUTOR = Executors.newVirtualThreadPerTaskExecutor();
     private static final Pattern DEV_PREVIEW_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+-dev\\d+");
     private static final boolean IS_DEV_PREVIEW = DEV_PREVIEW_PATTERN.matcher(Reference.VERSION).matches();
     private static final String GITWEB_REGISTER_URL = "https://ultreon.gitlab.io/gitweb/site_register.json";
@@ -96,7 +98,9 @@ public abstract class UltreonDevices {
     static List<AppInfo> allowedApps = new ArrayList<>();
     private static final List<Vulnerability> vulnerabilities = new ArrayList<>();
     private static UltreonDevices instance;
+    private static final UltreonDevicesRegistries registries = new UltreonDevicesRegistries(REGISTRIES);
     private ArrayList<Application> apps;
+    private final Map<UUID, UltreonDevicesServerConn> players = new HashMap<>();
 
     public static List<Vulnerability> getVulnerabilities() {
         return vulnerabilities;
@@ -110,6 +114,10 @@ public abstract class UltreonDevices {
 
     public static UltreonDevices getInstance() {
         return instance;
+    }
+
+    public static UltreonDevicesRegistries getRegistries() {
+        return registries;
     }
 
     public void init() {
@@ -260,6 +268,10 @@ public abstract class UltreonDevices {
     }
 
     public abstract String getVersion();
+
+    public UltreonDevicesServerConn getPlayer(ServerPlayer serverPlayer) {
+        return players.computeIfAbsent(serverPlayer.getUUID(), (uuid) -> new UltreonDevicesServerConn(serverPlayer));
+    }
 
     public interface ApplicationSupplier {
 
