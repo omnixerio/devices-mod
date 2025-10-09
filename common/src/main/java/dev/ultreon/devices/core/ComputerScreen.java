@@ -89,7 +89,7 @@ public class ComputerScreen extends Screen implements OperatingSystem {
     private static boolean loaded;
     private final Bios bios;
     private final Map<Class<?>, List<? extends Driver>> drivers = new HashMap<>();
-    private final NetworkManagerImpl networkManager = new NetworkManagerImpl(this);
+    private NetworkManagerImpl networkManager;
     private float tickTime;
 
     public static List<Application> getApplicationsForFabric() {
@@ -153,6 +153,8 @@ public class ComputerScreen extends Screen implements OperatingSystem {
         videoInfo.setResolution(new CustomResolution(320, 240));
 
         loadDrivers().thenRun(() -> {
+            networkManager = new NetworkManagerImpl(this);
+
             // Laptop data.
             appData = laptop.getApplicationData();
             systemData = laptop.getSystemData();
@@ -243,6 +245,11 @@ public class ComputerScreen extends Screen implements OperatingSystem {
                         o.load(this, hardware1);
                     }
                 }
+            }
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                return;
             }
         }, UltreonDevices.OS_EXECUTOR);
     }
@@ -435,17 +442,20 @@ public class ComputerScreen extends Screen implements OperatingSystem {
     @Override
     public void tick() {
         try {
-            networkManager.tick();
-            bar.onTick();
+            if (networkManager != null) networkManager.tick();
+            if (bar != null) bar.onTick();
 
-            for (Window<?> window : List.copyOf(windows)) {
-                window.onTick();
-                if (window.removed) {
-                    windows.remove(window);
+            if (windows != null) {
+                for (Window<?> window : List.copyOf(windows)) {
+                    window.onTick();
+                    if (window.removed) {
+                        windows.remove(window);
+                    }
                 }
             }
 
-            FileBrowser.refreshList = false;
+            if (booted)
+                FileBrowser.refreshList = false;
         } catch (Exception e) {
             bsod(e);
         }
@@ -581,16 +591,16 @@ public class ComputerScreen extends Screen implements OperatingSystem {
             tickTime += frameTime;
             int h = resolution.height();
             int w = resolution.width();
-            graphics.fill(posX + w / 2 - 10, posY + h / 3 - 10, posX + w / 2 - 10 + 20, posY + h / 3 - 10 + 20, 0xFFFFFFFF);
-            graphics.fill(posX + w / 2 - 10, posY + h / 3 + 12, posX + w / 2 - 10 + 20, posY + h / 3 + 12 + 4, 0xFFFFFFFF);
+            graphics.fill(posX + w / 2 - 17, posY + h / 3 - 17, posX + w / 2 - 10 + 34, posY + h / 3 - 10 + 26, 0xFFFFFFFF);
+            graphics.fill(posX + w / 2 - 17, posY + h / 3 - 10 + 30, posX + w / 2 - 10 + 34, posY + h / 3 - 10 + 34, 0xFFFFFFFF);
 
-            int v = (int) ((tickTime * 10) % 4);
+            int v = (int) ((tickTime / 10) % 4);
             graphics.fill(posX + w / 2 - 5, posY + h / 3 + h / 3 - 5, posX + w / 2 - 5 + 4, posY + h / 3 + h / 3 - 5 + 4, v == 0 ? 0xFF303030 : 0xFF101010);
             graphics.fill(posX + w / 2 + 1, posY + h / 3 + h / 3 - 5, posX + w / 2 + 1 + 4, posY + h / 3 + h / 3 - 5 + 4, v == 1 ? 0xFF303030 : 0xFF101010);
-            graphics.fill(posX + w / 2 - 5, posY + h / 3 + h / 3 + 1, posX + w / 2 - 5 + 4, posY + h / 3 + h / 3 + 1 + 4, v == 2 ? 0xFF303030 : 0xFF101010);
-            graphics.fill(posX + w / 2 + 1, posY + h / 3 + h / 3 + 1, posX + w / 2 + 1 + 4, posY + h / 3 + h / 3 + 1 + 4, v == 3 ? 0xFF303030 : 0xFF101010);
+            graphics.fill(posX + w / 2 - 5, posY + h / 3 + h / 3 + 1, posX + w / 2 - 5 + 4, posY + h / 3 + h / 3 + 1 + 4, v == 3 ? 0xFF303030 : 0xFF101010);
+            graphics.fill(posX + w / 2 + 1, posY + h / 3 + h / 3 + 1, posX + w / 2 + 1 + 4, posY + h / 3 + h / 3 + 1 + 4, v == 2 ? 0xFF303030 : 0xFF101010);
 
-            graphics.drawString(getFont(), "Loading...", posX + w / 2 - 10, posY + h / 3 + 10, 0xFFFFFFFF);
+            graphics.drawCenteredString(getFont(), "Loading...", posX + w / 2, posY + h / 3 + h / 3 + 20, 0xFFFFFFFF);
             return;
         }
 

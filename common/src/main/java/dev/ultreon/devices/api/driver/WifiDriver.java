@@ -25,4 +25,6 @@ public interface WifiDriver extends NetworkDriver {
     CompletableFuture<Void> disconnect();
 
     CompletableFuture<List<WiFiNetwork>> scan();
+
+    CompletableFuture<WiFiNetwork> ping();
 }

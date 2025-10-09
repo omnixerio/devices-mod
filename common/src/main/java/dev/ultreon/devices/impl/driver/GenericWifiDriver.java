@@ -69,6 +69,14 @@ public class GenericWifiDriver implements WifiDriver {
     }
 
     @Override
+    public CompletableFuture<WiFiNetwork> ping() {
+        return hardware.send(new GWiFiPacket(GWiFiPacket.Type.PING), UltreonDevicesClient.getInstance()).thenApply(packet -> {
+            if (packet instanceof GWiFiPacket.Ping) return ((GWiFiPacket.Ping) packet).network();
+            return null;
+        });
+    }
+
+    @Override
     public NetworkState getNetworkState() {
         return state;
     }

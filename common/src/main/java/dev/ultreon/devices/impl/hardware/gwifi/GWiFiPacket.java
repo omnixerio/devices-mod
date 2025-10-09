@@ -40,7 +40,8 @@ public record GWiFiPacket(Type type, Object... data) implements HardwarePacket<G
         CONNECT(Connect::process, GWiFiPacket::sendConnect, GWiFiPacket::receiveConnect),
         DISCONNECT(Disconnect::process, GWiFiPacket::sendDisconnect, GWiFiPacket::receiveClose),
         INITIALIZE(Initialize::process, GWiFiPacket::sendInitialize, GWiFiPacket::receiveInitialize),
-        SCAN(Scan::process, GWiFiPacket::sendScan, GWiFiPacket::receiveScan);
+        SCAN(Scan::process, GWiFiPacket::sendScan, GWiFiPacket::receiveScan),
+        PING(Ping::process, GWiFiPacket::sendPing, GWiFiPacket::receivePing);
         private final Function<RegistryFriendlyByteBuf, GWiFiResponse> processor;
         private final Function<GWiFiPacket, CompletableFuture<GWiFiResponse>> sender;
 
@@ -76,6 +77,10 @@ public record GWiFiPacket(Type type, Object... data) implements HardwarePacket<G
 
     private GWiFiResponse receiveScan(RegistryFriendlyByteBuf registryFriendlyByteBuf) {
         return new Scan(registryFriendlyByteBuf.readList(WiFiNetwork::read));
+    }
+
+    private GWiFiResponse receivePing(RegistryFriendlyByteBuf registryFriendlyByteBuf) {
+        return new Ping(WiFiNetwork.read(registryFriendlyByteBuf));
     }
 
     private GWiFiResponse receiveConnect(RegistryFriendlyByteBuf registryFriendlyByteBuf) {
@@ -134,6 +139,18 @@ public record GWiFiPacket(Type type, Object... data) implements HardwarePacket<G
         RemoteDevice openDevice = client.getOpenDevice();
         int requestId = client.getJobs().requestId();
         return client.sendJob(Jobs.HW_GWIFI_SCAN, new HardwareRequest<>(requestId, KnownVendorIDs.UltreonStudios, KnownProductIDs.GWiFi, Either.left(openDevice.getOrigin()), null))
+                .thenApply(response -> {
+                    client.getJobs().freeId(requestId);
+                    if (response == null) return null;
+                    return response.data();
+                });
+    }
+
+    private CompletableFuture<GWiFiResponse> sendPing() {
+        UltreonDevicesClient client = UltreonDevicesClient.getInstance();
+        RemoteDevice openDevice = client.getOpenDevice();
+        int requestId = client.getJobs().requestId();
+        return client.sendJob(Jobs.HW_GWIFI_PING, new HardwareRequest<>(requestId, KnownVendorIDs.UltreonStudios, KnownProductIDs.GWiFi, Either.left(openDevice.getOrigin()), null))
                 .thenApply(response -> {
                     client.getJobs().freeId(requestId);
                     if (response == null) return null;
@@ -240,6 +257,18 @@ public record GWiFiPacket(Type type, Object... data) implements HardwarePacket<G
                 networks.add(WiFiNetwork.read(buffer));
             }
             return new Scan(networks);
+        }
+    }
+
+    public record Ping(WiFiNetwork network) implements GWiFiResponse {
+        @Override
+        public void encode(RegistryFriendlyByteBuf buffer) {
+            buffer.writeEnum(Type.PING);
+            network.write(buffer);
+        }
+
+        public static Ping process(RegistryFriendlyByteBuf buffer) {
+            return new Ping(WiFiNetwork.read(buffer));
         }
     }
 }

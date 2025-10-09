@@ -18,6 +18,7 @@ public class NetworkManagerImpl implements NetworkManager {
     private final OperatingSystem system;
     private int pingTimer;
     private WifiStrength strength;
+    private boolean pinging;
 
     public NetworkManagerImpl(OperatingSystem system) {
         this.system = system;
@@ -42,35 +43,35 @@ public class NetworkManagerImpl implements NetworkManager {
     }
 
     public void tick() {
-        if (++pingTimer >= DeviceConfig.PING_RATE.get()) {
-            runPingTask();
+        if (++pingTimer >= DeviceConfig.PING_RATE.get() && !pinging) {
+            pinging = true;
+            runPingTask().thenAccept(network -> {
+                if (network != null) {
+                    strength = network.strength();
+                } else {
+                    strength = WifiStrength.NONE;
+                }
+                pinging = false;
+            }).exceptionally(throwable -> {
+                system.logError("Failed to ping network!", throwable);
+                pinging = false;
+                return null;
+            });
             pingTimer = 0;
         }
     }
 
-    private void runPingTask() {
-        TaskPing task = new TaskPing(ComputerScreen.getPos());
-        task.setCallback((tag, success) -> {
-            if (success) {
-                assert tag != null;
-                int strength = tag.getInt("strength");
-                switch (strength) {
-                    case 2 -> {
-                        this.strength = WifiStrength.LOW;
-                    }
-                    case 1 -> {
-                        this.strength = WifiStrength.MED;
-                    }
-                    case 0 -> {
-                        this.strength = WifiStrength.HIGH;
-                    }
-                    default -> {
-                        this.strength = WifiStrength.NONE;
-                    }
-                }
+    private CompletableFuture<WiFiNetwork> runPingTask() {
+        try {
+            WifiDriver[] drivers = system.getDrivers(WifiDriver.class);
+            for (WifiDriver driver : drivers) {
+                if (driver.isConnected())
+                    return driver.ping();
             }
-        });
-        TaskManager.sendTask(task);
+            return CompletableFuture.completedFuture(null);
+        } catch (Exception e) {
+            return CompletableFuture.failedFuture(e);
+        }
     }
 
     public WifiStrength getStrength() {

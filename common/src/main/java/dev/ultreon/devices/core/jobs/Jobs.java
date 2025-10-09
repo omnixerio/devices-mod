@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Either;
 import dev.ultreon.devices.api.device.Device;
 import dev.ultreon.devices.api.device.DeviceOrigin;
 import dev.ultreon.devices.api.device.DeviceSerializer;
+import dev.ultreon.devices.core.network.WiFiNetwork;
 import dev.ultreon.devices.impl.hardware.gwifi.GWiFiPacket;
 import dev.ultreon.devices.impl.hardware.gwifi.GWiFiPacket.GWiFiResponse;
 import io.netty.handler.codec.DecoderException;
@@ -70,5 +71,16 @@ public class Jobs {
             })
             .sendReply((data, buf) -> data.write(buf, (writeBuf, response) -> response.encode(writeBuf)))
             .receiveReply(buf -> HardwareResponse.read(buf, (RegistryFriendlyByteBuf buffer) -> (GWiFiPacket.Scan) GWiFiResponse.decode(buffer)))
+            .build();
+    public static final SimpleJob<HardwareRequest<Void>, HardwareResponse<GWiFiPacket.Ping>> HW_GWIFI_PING = new SimpleJobBuilder<HardwareRequest<Void>, HardwareResponse<GWiFiPacket.Ping>>()
+            .sendData((request, buf) -> request.writeRemote(buf, (writeBuf, network) -> {}))
+            .receiveData(buf -> HardwareRequest.read(buf, readBuf -> null))
+            .reply((data, player) -> {
+                DeviceOrigin deviceOrigin = data.origin().right().orElseThrow(() -> new DecoderException("Device origin is not a remote device"));
+                Device device = deviceOrigin.locate(player.server, player.serverLevel(), player);
+                return device.onHardwareRequest(data, GWiFiPacket.Ping.class);
+            })
+            .sendReply((data, buf) -> data.write(buf, (writeBuf, response) -> response.encode(writeBuf)))
+            .receiveReply(buf -> HardwareResponse.read(buf, (RegistryFriendlyByteBuf buffer) -> (GWiFiPacket.Ping) GWiFiResponse.decode(buffer)))
             .build();
 }
