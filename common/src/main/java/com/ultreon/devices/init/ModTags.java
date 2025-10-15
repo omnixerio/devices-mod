@@ -34,6 +34,8 @@ public final class ModTags {
 
     public static final class BlockEntityTypes {
         public static final TagKey<BlockEntityType<?>> NETWORK_DEVICES = createTag("network_devices");
+        public static final TagKey<BlockEntityType<?>> COMPUTERS = createTag("computers");
+        public static final TagKey<BlockEntityType<?>> PRINTERS = createTag("printers");
 
         private static TagKey<BlockEntityType<?>> createTag(String name) {
             return TagKey.create(Registries.BLOCK_ENTITY_TYPE, Devices.id(name));

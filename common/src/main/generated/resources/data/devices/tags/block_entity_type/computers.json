@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "devices:laptop",
+      "required": false
+    },
+    {
+      "id": "devices:mac_max_x",
+      "required": false
+    }
+  ]
+}

@@ -40,7 +40,21 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
+    modImplementation "com.github.Ultreon.advanced-debug:advanced-debug-forge:$advanced_debug_version", {
+        transitive = false
+    }
+    modImplementation "com.github.Ultreon.ultreonlib:ultreon-lib-forge:$ultreonlib_version"
+    forgeRuntimeLibrary "com.github.Ultreon.ultreonlib:ultreon-lib-forge:$ultreonlib_version"
+    forgeRuntimeLibrary "io.github.spair:imgui-java-binding:1.86.10" // FIXME make dep an api(...) in advanced debug.
+    forgeRuntimeLibrary "io.github.spair:imgui-java-lwjgl3:1.86.10" // FIXME make dep an api(...) in advanced debug.
+    implementation "io.github.spair:imgui-java-lwjgl3:1.86.10" // FIXME make dep an api(...) in advanced debug.
+    minecraftNatives "io.github.spair:imgui-java-natives-linux:1.86.10" // FIXME make dep an api(...) in advanced debug.
+    minecraftNatives "io.github.spair:imgui-java-natives-macos:1.86.10" // FIXME make dep an api(...) in advanced debug.
+    minecraftNatives "io.github.spair:imgui-java-natives-windows:1.86.10" // FIXME make dep an api(...) in advanced debug.
+
 //    forgeRuntimeLibrary "com.ultreon:ultranlang:0.1.0+6"
+//    forgeRuntimeLibrary "com.jab125:apoint:1.0.0"
+
 //    implementation include("com.ultreon:ultranlang:0.1.0+6")
 }
 

@@ -1,5 +1,6 @@
 package com.ultreon.devices.network.task;
 
+import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.api.task.TaskManager;
 import com.ultreon.devices.network.Packet;
@@ -7,6 +8,7 @@ import com.ultreon.devices.network.PacketHandler;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Objects;
@@ -41,10 +43,10 @@ public class RequestPacket extends Packet<RequestPacket> {
 
     @Override
     public boolean onMessage(Supplier<NetworkManager.PacketContext> ctx) {
-        //DebugLog.log("RECEIVED from " + ctx.get().getPlayer().getUUID());
-        request.processRequest(tag, Objects.requireNonNull(ctx.get().getPlayer()).level(), ctx.get().getPlayer());
-        if (ctx.get().getPlayer() instanceof ServerPlayer player)
-        PacketHandler.sendToClient(new ResponsePacket(id, request), player);
+        ctx.get().getPlayer().level().getServer().submit(() -> request.processRequest(tag, Objects.requireNonNull(ctx.get().getPlayer()).level(), ctx.get().getPlayer())).join();
+        if (ctx.get().getPlayer() instanceof ServerPlayer player) {
+            PacketHandler.sendToClient(new ResponsePacket(id, request), player);
+        }
         return true;
     }
 

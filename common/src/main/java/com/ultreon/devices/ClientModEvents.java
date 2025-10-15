@@ -14,6 +14,7 @@ import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.programs.system.object.ColorSchemePresets;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.ReloadListenerRegistry;
+import dev.architectury.registry.client.level.entity.EntityModelLayerRegistry;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.architectury.registry.registries.RegistrarManager;
@@ -40,7 +41,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-
 
 public class ClientModEvents {
     private static final Marker SETUP = MarkerFactory.getMarker("SETUP");
@@ -71,17 +71,17 @@ public class ClientModEvents {
         registerRenderLayers();
         registerRenderers();
         registerLayerDefinitions();
+        registerBlockRenderTypes();
+
         if (Platform.isForge()) { // Note: Forge requires the icon atlas to be generator beforehand.
             generateIconAtlas();
         }
 
-        registerOSContent();
-
         ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new ReloaderListener());
     }
 
-    private static void registerOSContent() {
-        ColorSchemePresets.init();
+    private static void registerBlockRenderTypes() {
+        DeviceBlocks.getAllLaptops().forEach(it -> RenderTypeRegistry.register(RenderType.cutout(), it));
     }
 
     @ApiStatus.Internal
@@ -237,13 +237,6 @@ public class ClientModEvents {
         imageWriter.finish();
     }
 
-//    @ExpectPlatform
-//    private static void.json updateIcon(AppInfo info, int iconU, int iconV) {
-//        throw new AssertionError();
-////        ObfuscationReflectionHelper.setPrivateValue(AppInfo.class, info, iconU, "iconU");
-////        ObfuscationReflectionHelper.setPrivateValue(AppInfo.class, info, iconV, "iconV");
-//    }
-
     public static void setRenderLayer(Block block, RenderType type) {
         RenderRegistry.register(block, type
         );
@@ -261,6 +254,6 @@ public class ClientModEvents {
 
     public static void registerLayerDefinitions() {
         LOGGER.info("Registering layer definitions.");
-//        EntityModelLayerRegistry.register(PrinterRenderer.PaperModel.LAYER_LOCATION, PrinterRenderer.PaperModel::createBodyLayer);
+        EntityModelLayerRegistry.register(PrinterRenderer.PaperModel.LAYER_LOCATION, PrinterRenderer.PaperModel::createBodyLayer);
     }
 }

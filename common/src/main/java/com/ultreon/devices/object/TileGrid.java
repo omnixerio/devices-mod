@@ -1,7 +1,6 @@
 package com.ultreon.devices.object;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.Icons;
@@ -143,7 +142,7 @@ public class TileGrid extends Component
 		Tile.Category category = Tile.Category.values()[currentCategory];
 		labelCurrentCategory.setText(category.name);
 		
-		for(Tile tile : Game.getRegisteredtiles().values())
+		for(Tile tile : Game.getRegisteredTiles().values())
 		{
 			if(tile.getCategory() == category)
 			{

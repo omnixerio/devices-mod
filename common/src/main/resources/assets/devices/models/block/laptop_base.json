@@ -1,11 +1,11 @@
 {
     "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
     "textures": {
-        "particle": "block/anvil",
+        "particle": "devices:block/laptop2",
         "0": "devices:block/laptop1",
         "1": "devices:block/laptop2",
         "2": "block/red_wool",
-        "3": "devices:model/usb"
+        "3": "devices:block/usb"
     },
     "elements": [
         {

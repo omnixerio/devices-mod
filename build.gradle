@@ -1,6 +1,6 @@
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.2-SNAPSHOT" apply false
+    id "dev.architectury.loom" version "1.4-SNAPSHOT" apply false
     id "org.jetbrains.kotlin.jvm" version "1.7.10"
 }
 repositories {
@@ -67,6 +67,9 @@ subprojects {
             }
         }
         maven {
+            url "https://jitpack.io"
+        }
+        maven {
             // location of the maven that hosts JEI files
             name = "Progwml6 maven"
             url = "https://dvs1.progwml6.com/files/maven/"
@@ -75,7 +78,9 @@ subprojects {
     }
 
     dependencies {
-        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}", {
+            transitive = false
+        }
         // The following line declares the mojmap mappings, you may use other mappings as well
         mappings loom.layered() {
             officialMojangMappings()

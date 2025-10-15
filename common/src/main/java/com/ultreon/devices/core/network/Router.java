@@ -2,10 +2,12 @@ package com.ultreon.devices.core.network;
 
 import com.ultreon.devices.DeviceConfig;
 import com.ultreon.devices.block.entity.NetworkDeviceBlockEntity;
+import com.ultreon.devices.debug.DebugLog;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -18,6 +20,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
 
+/**
+ * Author: MrCrayfish
+ */
 public class Router {
     private final Map<UUID, NetworkDevice> NETWORK_DEVICES = new HashMap<>();
 
@@ -103,7 +108,7 @@ public class Router {
             BlockEntity blockEntity = level.getBlockEntity(networkDevice.getPos());
 
             if (blockEntity instanceof NetworkDeviceBlockEntity device) {
-                return BuiltInRegistries.BLOCK_ENTITY_TYPE.wrapAsHolder(blockEntity.getType()).is(targetType);
+                return BuiltInRegistries.BLOCK_ENTITY_TYPE.wrapAsHolder(device.getType()).is(targetType);
             }
             return false;
         };
@@ -115,21 +120,27 @@ public class Router {
             return;
 
         NETWORK_DEVICES.forEach((uuid, device) -> device.setPos(null));
+
         int range = DeviceConfig.SIGNAL_RANGE.get();
         for (int x = -range; x <= range; x++) {
             for (int y = -range; y <= range; y++) {
                 for (int z = -range; z <= range; z++) {
-                    BlockPos currentPos = new BlockPos(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
-                    BlockEntity blockEntity = level.getBlockEntity(currentPos);
-                    if (blockEntity instanceof NetworkDeviceBlockEntity device) {
-                        if (!NETWORK_DEVICES.containsKey(device.getId()))
-                            continue;
-                        if (device.receiveBeacon(this)) {
-                            NETWORK_DEVICES.get(device.getId()).setPos(currentPos);
-                        }
-                    }
+                    sendBeaconAt(level, x, y, z);
                 }
             }
+        }
+    }
+
+    private void sendBeaconAt(Level level, int x, int y, int z) {
+        BlockPos currentPos = new BlockPos(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
+        BlockEntity blockEntity = level.getBlockEntity(currentPos);
+
+        if (!(blockEntity instanceof NetworkDeviceBlockEntity device) || !NETWORK_DEVICES.containsKey(device.getId()))
+            return;
+
+        if (device.receiveBeacon(this)) {
+            ResourceLocation id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(device.getType());
+            NETWORK_DEVICES.get(device.getId()).setPos(currentPos);
         }
     }
 
@@ -153,9 +164,7 @@ public class Router {
         tag.putUUID("id", getId());
 
         ListTag deviceList = new ListTag();
-        NETWORK_DEVICES.forEach((id, device) -> {
-            deviceList.add(device.toTag(includePos));
-        });
+        NETWORK_DEVICES.forEach((id, device) -> deviceList.add(device.toTag(includePos)));
         tag.put("network_devices", deviceList);
 
         return tag;
@@ -180,5 +189,10 @@ public class Router {
         if (!(obj instanceof Router router))
             return false;
         return router.getId().equals(getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getId().hashCode();
     }
 }

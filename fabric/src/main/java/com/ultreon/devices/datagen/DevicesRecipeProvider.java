@@ -31,84 +31,11 @@ public class DevicesRecipeProvider extends FabricRecipeProvider {
     public void buildRecipes(Consumer<FinishedRecipe> exporter) {
         DeviceBlocks.LAPTOPS.getMap().forEach(((dyeColor, blockRegistrySupplier) -> laptop(exporter, blockRegistrySupplier.get(), dyeColor)));
 
-        //***********************//
-        //      Flash Drives     //
-        //***********************//
-        for (FlashDriveItem flashDrive : DeviceItems.getAllFlashDrives()) {
-            DyeColor color = flashDrive.getColor();
-            new ShapedRecipeBuilder(RecipeCategory.TOOLS, flashDrive, 1)
-                    .pattern("did")
-                    .pattern("pfp")
-                    .pattern("pcp")
-                    .define('d', DyeItem.byColor(color))
-                    .define('i', Items.IRON_INGOT)
-                    .define('p', DeviceItems.PLASTIC_FRAME.get())
-                    .define('f', DeviceItems.COMPONENT_FLASH_CHIP.get())
-                    .define('c', DeviceItems.COMPONENT_CIRCUIT_BOARD.get())
-                    .unlockedBy("has_flash_chip", has(DeviceItems.COMPONENT_FLASH_CHIP.get()))
-                    .group(Devices.MOD_ID + ":laptop")
-                    .save(exporter);
-        }
+        DeviceItems.getAllFlashDrives().forEach(flashDrive -> flashDrive(exporter, flashDrive, flashDrive.getColor()));
+        DeviceBlocks.getAllPrinters().forEach(printer -> printer(exporter, printer));
+        DeviceBlocks.getAllRouters().forEach(router -> router(exporter, router));
 
-        //******************//
-        //     Printers     //
-        //******************//
-        for (PrinterBlock printer : DeviceBlocks.getAllPrinters()) {
-            new ShapedRecipeBuilder(RecipeCategory.TOOLS, printer, 1)
-                    .pattern("psp")
-                    .pattern("mcb")
-                    .pattern("pdp")
-                    .define('d', DyeItem.byColor(printer.getColor()))
-                    .define('p', DeviceItems.PLASTIC_FRAME.get())
-                    .define('s', DeviceItems.COMPONENT_SCREEN.get())
-                    .define('m', DeviceItems.COMPONENT_SMALL_ELECTRIC_MOTOR.get())
-                    .define('c', DeviceItems.COMPONENT_CARRIAGE.get())
-                    .define('b', DeviceItems.COMPONENT_CONTROLLER_UNIT.get())
-                    .unlockedBy("has_carriage", has(DeviceItems.COMPONENT_CARRIAGE.get()))
-                    .group(Devices.MOD_ID + ":printer")
-                    .save(exporter);
-        }
-
-        //*****************//
-        //     Routers     //
-        //*****************//
-        for (RouterBlock router : DeviceBlocks.getAllRouters()) {
-            new ShapedRecipeBuilder(RecipeCategory.TOOLS, router, 1)
-                    .pattern("rdr")
-                    .pattern("ppp")
-                    .pattern("wcb")
-                    .define('d', DyeItem.byColor(router.getColor()))
-                    .define('r', Items.END_ROD)
-                    .define('p', DeviceItems.PLASTIC_FRAME.get())
-                    .define('w', DeviceItems.COMPONENT_WIFI.get())
-                    .define('c', DeviceItems.COMPONENT_CIRCUIT_BOARD.get())
-                    .define('b', DeviceItems.COMPONENT_BATTERY.get())
-                    .unlockedBy("has_circuit_board", has(DeviceItems.COMPONENT_CIRCUIT_BOARD.get()))
-                    .group(Devices.MOD_ID + ":router")
-                    .save(exporter);
-        }
-
-        //*****************//
-        //     Routers     //
-        //*****************//
-        for (OfficeChairBlock router : DeviceBlocks.getAllOfficeChairs()) {
-            new ShapedRecipeBuilder(RecipeCategory.TOOLS, router, 1)
-                    .pattern("cdc")
-                    .pattern("clc")
-                    .pattern("wfw")
-                    .define('d', ItemColors.woolByColor(router.getColor()))
-                    .define('c', Items.GRAY_CONCRETE)
-                    .define('l', Items.LEATHER)
-                    .define('w', DeviceItems.WHEEL.get())
-                    .define('f', Items.COBBLESTONE_WALL)
-                    .unlockedBy("has_wheel", has(DeviceItems.WHEEL.get()))
-                    .group(Devices.MOD_ID + ":office_chair")
-                    .save(exporter);
-        }
-
-        //*************************//
-        //     Component Items     //
-        //*************************//
+        // region <ComponentItems()>
         new ShapedRecipeBuilder(RecipeCategory.MISC, DeviceItems.COMPONENT_FLASH_CHIP.get(), 1)
                 .pattern("iri")
                 .pattern("ppp")
@@ -126,6 +53,54 @@ public class DevicesRecipeProvider extends FabricRecipeProvider {
                 .requires(DeviceItems.COMPONENT_WIFI.get(), 1)
                 .requires(DeviceItems.COMPONENT_MOTHERBOARD.get(), 1)
                 .unlockedBy("has_motherboard", has(DeviceItems.COMPONENT_MOTHERBOARD.get()))
+                .save(exporter);
+        // endregion
+    }
+
+    private static void router(Consumer<FinishedRecipe> exporter, RouterBlock router) {
+        new ShapedRecipeBuilder(RecipeCategory.TOOLS, router, 1)
+                .pattern("rdr")
+                .pattern("ppp")
+                .pattern("wcb")
+                .define('d', DyeItem.byColor(router.getColor()))
+                .define('r', Items.END_ROD)
+                .define('p', DeviceItems.PLASTIC_FRAME.get())
+                .define('w', DeviceItems.COMPONENT_WIFI.get())
+                .define('c', DeviceItems.COMPONENT_CIRCUIT_BOARD.get())
+                .define('b', DeviceItems.COMPONENT_BATTERY.get())
+                .unlockedBy("has_circuit_board", has(DeviceItems.COMPONENT_CIRCUIT_BOARD.get()))
+                .group(Devices.MOD_ID + ":router")
+                .save(exporter);
+    }
+
+    private static void printer(Consumer<FinishedRecipe> exporter, PrinterBlock printer) {
+        new ShapedRecipeBuilder(RecipeCategory.TOOLS, printer, 1)
+                .pattern("psp")
+                .pattern("mcb")
+                .pattern("pdp")
+                .define('d', DyeItem.byColor(printer.getColor()))
+                .define('p', DeviceItems.PLASTIC_FRAME.get())
+                .define('s', DeviceItems.COMPONENT_SCREEN.get())
+                .define('m', DeviceItems.COMPONENT_SMALL_ELECTRIC_MOTOR.get())
+                .define('c', DeviceItems.COMPONENT_CARRIAGE.get())
+                .define('b', DeviceItems.COMPONENT_CONTROLLER_UNIT.get())
+                .unlockedBy("has_carriage", has(DeviceItems.COMPONENT_CARRIAGE.get()))
+                .group(Devices.MOD_ID + ":printer")
+                .save(exporter);
+    }
+
+    private static void flashDrive(Consumer<FinishedRecipe> exporter, FlashDriveItem flashDrive, DyeColor color) {
+        new ShapedRecipeBuilder(RecipeCategory.TOOLS, flashDrive, 1)
+                .pattern("did")
+                .pattern("pfp")
+                .pattern("pcp")
+                .define('d', DyeItem.byColor(color))
+                .define('i', Items.IRON_INGOT)
+                .define('p', DeviceItems.PLASTIC_FRAME.get())
+                .define('f', DeviceItems.COMPONENT_FLASH_CHIP.get())
+                .define('c', DeviceItems.COMPONENT_CIRCUIT_BOARD.get())
+                .unlockedBy("has_flash_chip", has(DeviceItems.COMPONENT_FLASH_CHIP.get()))
+                .group(Devices.MOD_ID + ":laptop")
                 .save(exporter);
         new ShapedRecipeBuilder(RecipeCategory.MISC, DeviceItems.WHEEL.get(), 1)
                 .pattern("p p")

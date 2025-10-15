@@ -65,7 +65,6 @@ dependencies {
     }
 
     include "org.apache.commons:commons-lang3:3.11"
-  //  modApi "curse.maven:emojiful-284324:4672307"
 }
 
 configurations.configureEach {

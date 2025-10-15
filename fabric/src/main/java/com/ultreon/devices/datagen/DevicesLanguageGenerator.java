@@ -119,7 +119,7 @@ public class DevicesLanguageGenerator extends FabricLanguageProvider {
         } catch (Exception e) {e.printStackTrace();}
         createTranslationsFromTemplate(translationBuilder, "en");
     }
-    
+
     private String get(DyeColor dye) {
         if(differentLanguageCode()) {
             return grabIt("color.minecraft." + dye.getName());
@@ -129,7 +129,6 @@ public class DevicesLanguageGenerator extends FabricLanguageProvider {
 
     private String grabIt(String key) {
         try {
-            String string = String.format("/assets/minecraft/lang/%s.json", this.languageCode);
             var d = Paths.get("lang/" + this.languageCode + ".json").toFile();
             var q = new BufferedReader(new FileReader(d));
             var gg = new Gson().fromJson(q, JsonObject.class);

@@ -130,6 +130,10 @@ public class PrinterBlockEntity extends NetworkDeviceBlockEntity.Colored {
         return tag;
     }
 
+    public State getState() {
+        return state;
+    }
+
     public void setState(State newState) {
         if (newState == null) return;
 

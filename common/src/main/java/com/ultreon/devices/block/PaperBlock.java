@@ -6,7 +6,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -18,25 +17,24 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("NullableProblems")
 public class PaperBlock extends HorizontalDirectionalBlock implements EntityBlock {
     private static final VoxelShape SELECTION_BOUNDS = box(15, 0, 0, 16, 16, 16);
 
-    private static final VoxelShape SELECTION_BOX_NORTH = box(15, 0, 0, 16, 16, 16);
-    private static final VoxelShape SELECTION_BOX_SOUTH = box(0, 0, 0, 1, 16, 16);
-    private static final VoxelShape SELECTION_BOX_WEST = box(0, 0, 15, 16, 16, 16);
-    private static final VoxelShape SELECTION_BOX_EAST = box(0, 0, 0, 16, 16, 1);
+    private static final VoxelShape SELECTION_BOX_NORTH = box(0, 0, 0, 16, 16, 1);
+    private static final VoxelShape SELECTION_BOX_SOUTH = box(0, 0, 15, 16, 16, 16);
+    private static final VoxelShape SELECTION_BOX_EAST = box(15, 0, 0, 16, 16, 16);
+    private static final VoxelShape SELECTION_BOX_WEST = box(0, 0, 0, 1, 16, 16);
     private static final VoxelShape[] SELECTION_BOUNDING_BOX = {SELECTION_BOX_SOUTH, SELECTION_BOX_WEST, SELECTION_BOX_NORTH, SELECTION_BOX_EAST};
 
     public PaperBlock() {
@@ -51,8 +49,8 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
         return switch (pState.getValue(FACING)) {
             case NORTH -> SELECTION_BOX_NORTH;
             case SOUTH -> SELECTION_BOX_SOUTH;
-            case WEST -> SELECTION_BOX_WEST;
             case EAST -> SELECTION_BOX_EAST;
+            case WEST -> SELECTION_BOX_WEST;
             default -> throw new IllegalStateException("Unexpected value: " + pState.getValue(FACING));
         };
     }
@@ -77,19 +75,14 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
 
     @Override
     public List<ItemStack> getDrops(BlockState pState, LootParams.Builder pBuilder) {
-        return new ArrayList<>();
-    }
+        BlockEntity blockEntity = pBuilder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
 
-    @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!level.isClientSide) {
-            BlockEntity tileEntity = level.getBlockEntity(pos);
-            if (tileEntity instanceof PaperBlockEntity paper) {
-                ItemStack drop = IPrint.generateItem(paper.getPrint());
-                level.addFreshEntity(new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop));
-            }
+        if (blockEntity instanceof PaperBlockEntity paper) {
+            ItemStack drop = IPrint.generateItem(paper.getPrint());
+            return List.of(drop);
         }
-        super.onRemove(state, level, pos, newState, isMoving);
+
+        return super.getDrops(pState, pBuilder);
     }
 
     @Override

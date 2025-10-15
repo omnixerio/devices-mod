@@ -51,7 +51,7 @@ public class Game extends Component {
         registeredTiles.put(id, tile);
     }
 
-    public static Map<Integer, Tile> getRegisteredtiles() {
+    public static Map<Integer, Tile> getRegisteredTiles() {
         return registeredTiles;
     }
 

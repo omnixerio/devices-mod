@@ -1,6 +1,5 @@
 package com.ultreon.devices.api.app;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.component.Button;
 import com.ultreon.devices.api.app.component.ItemList;
 import com.ultreon.devices.api.app.component.Text;
@@ -11,19 +10,18 @@ import com.ultreon.devices.api.print.IPrint;
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.api.task.TaskManager;
 import com.ultreon.devices.api.utils.RenderUtil;
-import com.ultreon.devices.block.entity.PrinterBlockEntity;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.core.Wrappable;
 import com.ultreon.devices.core.io.FileSystem;
 import com.ultreon.devices.core.network.NetworkDevice;
 import com.ultreon.devices.core.network.task.TaskGetDevices;
 import com.ultreon.devices.core.print.task.TaskPrint;
+import com.ultreon.devices.init.ModTags;
 import com.ultreon.devices.programs.system.component.FileBrowser;
 import com.ultreon.devices.programs.system.object.ColorScheme;
 import com.ultreon.devices.util.GLHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -31,6 +29,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.awt.*;
 import java.util.function.Predicate;
 
@@ -44,7 +43,7 @@ public abstract class Dialog extends Wrappable {
     private boolean pendingLayoutUpdate = true;
     private boolean pendingClose = false;
 
-    public Dialog() {
+    protected Dialog() {
         this.defaultLayout = new Layout(150, 40);
     }
 
@@ -165,6 +164,7 @@ public abstract class Dialog extends Wrappable {
 
     @Override
     public void onClose() {
+        super.onClose();
     }
 
     public void close() {
@@ -490,10 +490,8 @@ public abstract class Dialog extends Wrappable {
             browser.openFolder(FileSystem.DIR_HOME);
             browser.setFilter(file -> filter == null || filter.test(file) || file.isFolder());
             browser.setItemClickListener((file, index, mouseButton) -> {
-                if (mouseButton == 0) {
-                    if (!file.isFolder()) {
-                        buttonPositive.setEnabled(true);
-                    }
+                if (mouseButton == 0 && !file.isFolder()) {
+                    buttonPositive.setEnabled(true);
                 }
             });
             main.addComponent(browser);
@@ -622,44 +620,42 @@ public abstract class Dialog extends Wrappable {
 
             buttonPositive = new com.ultreon.devices.api.app.component.Button(172, 125, positiveText);
             buttonPositive.setClickListener((mouseX, mouseY, mouseButton) -> {
-                if (mouseButton == 0) {
-                    if (!textFieldFileName.getText().isEmpty()) {
-                        if (!FileSystem.PATTERN_FILE_NAME.matcher(textFieldFileName.getText()).matches()) {
-                            Message dialog = new Message("File name may only contain letters, numbers, underscores and spaces.");
-                            app.openDialog(dialog);
-                            return;
-                        }
-
-                        File file;
-                        if (name != null) {
-                            file = File.fromTag(textFieldFileName.getText(), data);
-                        } else {
-                            file = new File(textFieldFileName.getText(), app, data.copy());
-                        }
-
-                        browser.addFile(file, (response, success) -> {
-                            assert response != null;
-                            if (response.getStatus() == FileSystem.Status.FILE_EXISTS) {
-                                Confirmation dialog = new Confirmation("A file with that name already exists. Are you sure you want to override it?");
-                                dialog.setPositiveText("Override");
-                                dialog.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> browser.addFile(file, true, (response1, success1) -> {
-                                    dialog.close();
-
-                                    //TODO Look into better handling. Get response from parent if should close. Maybe a response interface w/ generic
-                                    if (responseHandler != null) {
-                                        responseHandler.onResponse(success1, file);
-                                    }
-                                    SaveFile.this.close();
-                                }));
-                                app.openDialog(dialog);
-                            } else {
-                                if (responseHandler != null) {
-                                    responseHandler.onResponse(true, file);
-                                }
-                                close();
-                            }
-                        });
+                if (mouseButton == 0 && !textFieldFileName.getText().isEmpty()) {
+                    if (!FileSystem.PATTERN_FILE_NAME.matcher(textFieldFileName.getText()).matches()) {
+                        Message dialog = new Message("File name may only contain letters, numbers, underscores and spaces.");
+                        app.openDialog(dialog);
+                        return;
                     }
+
+                    File file;
+                    if (name != null) {
+                        file = File.fromTag(textFieldFileName.getText(), data);
+                    } else {
+                        file = new File(textFieldFileName.getText(), app, data.copy());
+                    }
+
+                    browser.addFile(file, (response, success) -> {
+                        assert response != null;
+                        if (response.getStatus() == FileSystem.Status.FILE_EXISTS) {
+                            Confirmation dialog = new Confirmation("A file with that name already exists. Are you sure you want to override it?");
+                            dialog.setPositiveText("Override");
+                            dialog.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> browser.addFile(file, true, (response1, success1) -> {
+                                dialog.close();
+
+                                //TODO Look into better handling. Get response from parent if should close. Maybe a response interface w/ generic
+                                if (responseHandler != null) {
+                                    responseHandler.onResponse(success1, file);
+                                }
+                                SaveFile.this.close();
+                            }));
+                            app.openDialog(dialog);
+                        } else {
+                            if (responseHandler != null) {
+                                responseHandler.onResponse(true, file);
+                            }
+                            close();
+                        }
+                    });
                 }
             });
             main.addComponent(buttonPositive);
@@ -861,7 +857,7 @@ public abstract class Dialog extends Wrappable {
         private void getPrinters(ItemList<NetworkDevice> itemList) {
             itemList.removeAll();
             itemList.setLoading(true);
-            Task task = new TaskGetDevices(Laptop.getPos(), PrinterBlockEntity.class);
+            Task task = new TaskGetDevices(Laptop.getPos(), ModTags.BlockEntityTypes.PRINTERS);
             task.setCallback((tag, success) -> {
                 if (success) {
                     assert tag != null;

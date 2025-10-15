@@ -3,10 +3,6 @@ package com.ultreon.devices.datagen;
 import com.ultreon.devices.init.DeviceBlocks;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.storage.loot.LootTable;
-
-import java.util.function.BiConsumer;
 
 public class DevicesBlockLootTableGenerator extends FabricBlockLootTableProvider {
     public DevicesBlockLootTableGenerator(FabricDataOutput output) {

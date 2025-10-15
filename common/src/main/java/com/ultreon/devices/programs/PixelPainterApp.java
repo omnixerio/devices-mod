@@ -1,9 +1,11 @@
 package com.ultreon.devices.programs;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.ultreon.devices.Reference;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.Dialog;
@@ -24,16 +26,17 @@ import com.ultreon.devices.object.ColorGrid;
 import com.ultreon.devices.object.Picture;
 import com.ultreon.devices.programs.system.layout.StandardLayout;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import org.joml.Quaternionf;
-
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+
 import java.awt.*;
-import java.lang.System;
 import java.util.Objects;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
@@ -488,10 +491,11 @@ public class PixelPainterApp extends Application {
 
     public static class PictureRenderer implements IPrint.Renderer {
         public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/model/paper.png");
+        public static final int MAX_COLOR = 0xFFFFFF;
 
         @SuppressWarnings("resource")
         @Override
-        public boolean render(PoseStack pose, CompoundTag data) {
+        public boolean render(PoseStack pose, VertexConsumer buffer, CompoundTag data, int packedLight, int packedOverlay, Direction direction) {
             if (data.contains("pixels", Tag.TAG_INT_ARRAY) && data.contains("resolution", Tag.TAG_INT)) {
                 int[] pixels = data.getIntArray("pixels");
                 int resolution = data.getInt("resolution");
@@ -501,38 +505,56 @@ public class PixelPainterApp extends Application {
                     return false;
 
                 RenderSystem.enableBlend();
-                RenderSystem.blendFuncSeparate(770, 771, 1, 0);
-//                GlStateManager.disableLighting();
-                pose.mulPose(new Quaternionf(0, 1, 0, 180));
+                RenderSystem.enableDepthTest();
+                pose.mulPose(new Quaternionf(0, 0, 0, 180));
 
                 // This is for the paper background
                 if (!cut) {
                     RenderSystem.setShaderTexture(0, TEXTURE);
-                    RenderUtil.drawRectWithTexture(TEXTURE, pose, -1, 0, 0, 0, 1, 1, resolution, resolution, resolution, resolution);
+                    RenderUtil.drawRectWithTexture2(TEXTURE, pose, 0, 0, 0, 0, 1, 1, resolution, resolution, resolution, resolution);
                 }
 
                 // This creates a flipped copy of the pixel array
                 // as it otherwise would be mirrored
+                // TODO This is not the best way to do it, causes performance issues. Consider caching native images.
                 NativeImage image = new NativeImage(resolution, resolution, false);
                 for (int i = 0; i < resolution; i++) {
                     for (int j = 0; j < resolution; j++) {
-                        image.setPixelRGBA(resolution - i - 1, resolution - j - 1, pixels[i + j * resolution]);
+                        image.setPixelRGBA(resolution - i - 1, resolution - j - 1, getPx(pixels, i, j, resolution));
                     }
                 }
 
                 int textureId = TextureUtil.generateTextureId();
                 TextureUtil.prepareImage(textureId, resolution, resolution);
+                if (!RenderSystem.isOnRenderThreadOrInit()) {
+                    RenderSystem.recordRenderCall(() -> GlStateManager._bindTexture(textureId));
+                } else {
+                    GlStateManager._bindTexture(textureId);
+                }
+                image.upload(0, 0, 0, false);
 
                 RenderSystem.setShaderTexture(0, textureId);
-                RenderUtil.drawRectWithTexture(null, pose, -1, 0, 0, 0, 1, 1, resolution, resolution, resolution, resolution);
+                Matrix3f poseNormal = pose.last().normal();
+                Vector3f transformedNor = poseNormal.transform(new Vector3f());
+                float norX = transformedNor.x();
+                float norY = transformedNor.y();
+                float norZ = transformedNor.z();
+                pose.translate(0, 0, 0.01);
+                RenderUtil.drawRectWithTexture2(null, pose, 1, 0, 0, 0, -1, 1, resolution, resolution, resolution, resolution, packedLight, packedOverlay, norX, norY, norZ);
                 RenderSystem.deleteTexture(textureId);
 
-//                RenderSystem.disableRescaleNormal();
                 RenderSystem.disableBlend();
-//                RenderSystem.enableLighting();
                 return true;
             }
             return false;
+        }
+
+        private static int getPx(int[] pixels, int i, int j, int resolution) {
+            int pixel = pixels[i + j * resolution];
+            int r = 255 - (pixel & 255);
+            int g = 255 - (pixel >> 8 & 255);
+            int b = 255 - (pixel >> 16 & 255);
+            return MAX_COLOR - (r << 16 | g << 8 | b) & MAX_COLOR | (pixel >> 24 & 0xFF) << 24;
         }
     }
 }

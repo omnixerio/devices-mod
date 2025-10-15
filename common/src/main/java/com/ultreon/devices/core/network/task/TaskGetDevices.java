@@ -1,5 +1,6 @@
 package com.ultreon.devices.core.network.task;
 
+import com.mojang.datafixers.util.Either;
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.block.entity.NetworkDeviceBlockEntity;
 import com.ultreon.devices.core.network.NetworkDevice;
@@ -8,11 +9,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.chunk.LevelChunk;
 
 import java.util.Collection;
 
@@ -20,6 +23,7 @@ import java.util.Collection;
  * @author MrCrayfish
  */
 public class TaskGetDevices extends Task {
+    private TagKey<BlockEntityType<?>> targetTypes;
     private BlockPos devicePos;
     private BlockEntityType<?> targetType;
 
@@ -41,6 +45,12 @@ public class TaskGetDevices extends Task {
         this.targetType = targetType;
     }
 
+    public TaskGetDevices(BlockPos devicePos, TagKey<BlockEntityType<?>> targetTypes) {
+        this();
+        this.devicePos = devicePos;
+        this.targetTypes = targetTypes;
+    }
+
     /**
      * @deprecated Use {@link #TaskGetDevices(BlockPos, BlockEntityType)} instead.
      */
@@ -55,40 +65,59 @@ public class TaskGetDevices extends Task {
         tag.putLong("devicePos", devicePos.asLong());
         if (targetType != null) {
             tag.putInt("targetType", BuiltInRegistries.BLOCK_ENTITY_TYPE.getId(targetType));
+        } else if (targetTypes != null) {
+            tag.putString("targetTypes", this.targetTypes.location().toString());
         }
     }
 
     @Override
     public void processRequest(CompoundTag tag, Level level, Player player) {
         BlockPos devicePos = BlockPos.of(tag.getLong("devicePos"));
-        BlockEntityType<?> targetType;
-        int typeId = tag.getInt("targetType");
-        if (typeId < 0) {
-            this.reason = "Invalid target ID received: " + typeId;
-            return;
+        Either<BlockEntityType<?>, TagKey<BlockEntityType<?>>> targetTypes = null;
+        if (tag.contains("targetType", Tag.TAG_INT)) {
+            int typeId = tag.getInt("targetType");
+            if (typeId < 0) {
+                this.reason = "Invalid target ID received: " + typeId;
+                return;
+            }
+
+            targetTypes = Either.left(BuiltInRegistries.BLOCK_ENTITY_TYPE.byId(typeId));
+        } else if (tag.contains("targetTypes", Tag.TAG_STRING)) {
+            ResourceLocation tagKeyId = ResourceLocation.tryParse(tag.getString("targetTypes"));
+            var tagPair = BuiltInRegistries.BLOCK_ENTITY_TYPE.getTags()
+                    .filter(pair -> pair.getFirst().location().equals(tagKeyId))
+                    .findFirst();
+
+            if (tagPair.isPresent()) {
+                targetTypes = Either.right(tagPair.get().getFirst());
+            }
         }
 
-        targetType = BuiltInRegistries.BLOCK_ENTITY_TYPE.byId(typeId);
+        BlockEntity blockEntity = level.getBlockEntity(devicePos);
 
-        BlockEntity tileEntity = level.getChunkAt(devicePos).getBlockEntity(devicePos, LevelChunk.EntityCreationType.IMMEDIATE);
-
-        if (!(tileEntity instanceof NetworkDeviceBlockEntity tileEntityNetworkDevice)) {
+        if (!(blockEntity instanceof NetworkDeviceBlockEntity networkDevice)) {
             this.reason = "Not a network device";
             return;
         }
 
-        if (!tileEntityNetworkDevice.isConnected()) {
+        if (!networkDevice.isConnected()) {
             this.reason = "Not connected to router";
             return;
         }
 
-        Router router = tileEntityNetworkDevice.getRouter();
+        Router router = networkDevice.getRouter();
         if (router == null) {
             this.reason = "No internet access";
             return;
         }
 
-        this.foundDevices = targetType != null ? router.getConnectedDevices(level) : router.getConnectedDevices(level, targetType);
+        if (targetTypes != null) {
+            targetTypes.ifLeft(type -> this.foundDevices = router.getConnectedDevices(level, type));
+            targetTypes.ifRight(tagKey -> this.foundDevices = router.getConnectedDevices(level, tagKey));
+        } else {
+            this.foundDevices = router.getConnectedDevices(level);
+        }
+
         this.setSuccessful();
     }
 

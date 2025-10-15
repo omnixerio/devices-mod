@@ -7,6 +7,8 @@
 *.ipr
 *.iws
 
+local/
+
 # IntelliJ
 out/
 # mpeltonen/sbt-idea plugin
@@ -137,3 +139,6 @@ run/
 /fabric/runs/
 /fabric/run/
 /forge/runs/
+
+/*/bin/
+/.vscode/

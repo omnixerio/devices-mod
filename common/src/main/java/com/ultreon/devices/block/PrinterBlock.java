@@ -104,10 +104,11 @@ public class PrinterBlock extends DeviceBlock.Colored implements Colored {
                 return super.use(state, level, pos, player, hand, hit);
             }
         }
+
         ItemStack heldItem = player.getItemInHand(hand);
         BlockEntity tileEntity = level.getChunkAt(pos).getBlockEntity(pos, LevelChunk.EntityCreationType.IMMEDIATE);
-        if (tileEntity instanceof PrinterBlockEntity) {
-            return ((PrinterBlockEntity) tileEntity).addPaper(heldItem, player.isCrouching()) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
+        if (tileEntity instanceof PrinterBlockEntity printer) {
+            return printer.addPaper(heldItem, player.isCrouching()) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
         }
         return InteractionResult.PASS;
     }

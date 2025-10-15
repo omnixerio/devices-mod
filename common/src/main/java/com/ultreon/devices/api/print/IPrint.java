@@ -1,13 +1,15 @@
 package com.ultreon.devices.api.print;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.ultreon.devices.init.DeviceBlocks;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-
 import org.jetbrains.annotations.Nullable;
 
 //printing somethings takes makes ink cartridge take damage. cartridge can only stack to one
@@ -78,6 +80,10 @@ public interface IPrint {
     Class<? extends Renderer> getRenderer();
 
     interface Renderer {
-        boolean render(PoseStack pose, CompoundTag data);
+        default boolean render(PoseStack pose, CompoundTag data) {
+            return render(pose, Tesselator.getInstance().getBuilder(), data, 0, 0, Direction.NORTH);
+        }
+
+        boolean render(PoseStack pose, VertexConsumer buffer, CompoundTag data, int packedLight, int packedOverlay, Direction direction);
     }
 }
