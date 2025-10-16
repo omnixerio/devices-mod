@@ -49,7 +49,7 @@ public class GLHelper {
             double scale = resolution.getScaleFactor();
             GlStateManager._scissorBox((int) (scissor.x * scale), (int) (mc.getWindow().getHeight() - scissor.y * scale - scissor.height * scale), (int) Math.max(0, scissor.width * scale), (int) Math.max(0, scissor.height * scale));
         } else {
-            GlStateManager._disableScissorTest();
+            RenderSystem.disableScissor();
         }
     }
 
@@ -62,6 +62,7 @@ public class GLHelper {
      */
     public static void clearScissorStack() {
         scissorStack.clear();
+//        RenderSystem.disableScissor();
     }
 
     public static Color getPixel(int x, int y) {

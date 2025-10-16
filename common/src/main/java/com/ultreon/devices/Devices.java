@@ -1,7 +1,6 @@
 package com.ultreon.devices;
 
 import com.google.common.base.Suppliers;
-import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import com.mojang.serialization.Lifecycle;
 import com.ultreon.devices.api.ApplicationManager;
@@ -39,7 +38,6 @@ import com.ultreon.devices.programs.example.task.TaskNotificationTest;
 import com.ultreon.devices.programs.system.SystemApp;
 import com.ultreon.devices.programs.system.task.*;
 import com.ultreon.devices.util.SiteRegistration;
-import com.ultreon.devices.util.Vulnerability;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
@@ -86,7 +84,6 @@ public abstract class Devices {
     private static final Pattern DEV_PREVIEW_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+-dev\\d+");
     private static final boolean IS_DEV_PREVIEW = DEV_PREVIEW_PATTERN.matcher(Reference.VERSION).matches();
     private static final String GITWEB_REGISTER_URL = "https://ultreon.gitlab.io/gitweb/site_register.json";
-    public static final String VULNERABILITIES_URL = "https://jab125.com/gitweb/vulnerabilities.php";
     private static final boolean PROTECT_FROM_LAUNCH = false;
 //    private static final Logger ULTRAN_LANG_LOGGER = LoggerFactory.getLogger("UltranLang");
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
@@ -97,12 +94,8 @@ public abstract class Devices {
     //---- Registry : End ----//
 
     static List<AppInfo> allowedApps = new ArrayList<>();
-    private static List<Vulnerability> vulnerabilities = new ArrayList<>();
     private static Devices instance;
 
-    public static List<Vulnerability> getVulnerabilities() {
-        return vulnerabilities;
-    }
     private static MinecraftServer server;
     private static TestManager tests;
 
@@ -140,7 +133,6 @@ public abstract class Devices {
             ClientAppDebug.register();
             ClientModEvents.clientSetup();
             Devices.setupSiteRegistrations();
-            Devices.checkForVulnerabilities();
         });
 
         setupEvents();
@@ -401,24 +393,6 @@ public abstract class Devices {
 
     private static void setupSiteRegistrations() {
         setupSiteRegistration(GITWEB_REGISTER_URL);
-    }
-
-    private static void checkForVulnerabilities() {
-        OnlineRequest.getInstance().make(VULNERABILITIES_URL, ((success, response) -> {
-            if (!success) {
-                LOGGER.error("Could not access vulnerabilities!");
-                vulnerabilities = ImmutableList.of();
-                return;
-            }
-
-            JsonArray array = JsonParser.parseString(response).getAsJsonArray();
-            vulnerabilities = Vulnerability.parseArray(array);
-            vulnerabilities.forEach(vul -> {
-                String s = vul.toPrettyString();
-                s.lines().toList().forEach(line -> LOGGER.debug("[VulChecker] {}", line));
-                LOGGER.debug("[VulChecker]");
-            });
-        }));
     }
 
     private static CompletableFuture<Void> setupSiteRegistration(String url) {

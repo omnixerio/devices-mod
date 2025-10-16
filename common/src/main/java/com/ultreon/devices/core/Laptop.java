@@ -1,6 +1,7 @@
 package com.ultreon.devices.core;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.Devices;
@@ -30,6 +31,7 @@ import com.ultreon.devices.programs.system.task.TaskUpdateSystemData;
 import com.ultreon.devices.util.GLHelper;
 import dev.architectury.injectables.annotations.PlatformOnly;
 import dev.architectury.platform.Mod;
+import dev.architectury.platform.Platform;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import net.minecraft.client.Minecraft;
@@ -397,18 +399,12 @@ public class Laptop extends Screen implements System {
 
         try {
             renderLaptop(graphics, mouseX, mouseY, partialTicks);
-        } catch (NullPointerException e) {
+        } catch (Throwable throwable) {
             while (graphics.pose().last() != last) {
                 graphics.pose().popPose();
             }
             RenderSystem.disableScissor();
-            bsod(e);// null
-        } catch (Exception e) {
-            while (graphics.pose().last() != last) {
-                graphics.pose().popPose();
-            }
-            RenderSystem.disableScissor();
-            bsod(e);
+            bsod(throwable);
         }
     }
 
@@ -416,7 +412,7 @@ public class Laptop extends Screen implements System {
         renderBezels(graphics, mouseX, mouseY, partialTicks);
         int posX = (width - getDeviceWidth()) / 2;
         int posY = (height - getDeviceHeight()) / 2;
-        graphics.fill(posX+10, posY+10, posX + getDeviceWidth()-10, posY + getDeviceHeight()-10, new Color(0, 0, 255).getRGB());
+        graphics.fill(posX + 10, posY + 10, posX + getDeviceWidth() - 10, posY + getDeviceHeight() - 10, new Color(0, 0, 255).getRGB());
         var bo = new ByteArrayOutputStream();
 
         double scale = Minecraft.getInstance().getWindow().getGuiScale();
@@ -424,10 +420,10 @@ public class Laptop extends Screen implements System {
         var b = new PrintStream(bo);
         bsod.throwable.printStackTrace(b);
         var str = bo.toString();
-        drawLines(graphics, Laptop.getFont(), str, posX+10, posY+10+getFont().lineHeight*2, (int) ((getDeviceWidth() - 10) * scale), new Color(255, 255, 255).getRGB());
+        drawLines(graphics, Laptop.getFont(), str, posX + 10, posY + 10 + getFont().lineHeight * 2, (int) ((getDeviceWidth() - 10) * scale), new Color(255, 255, 255).getRGB());
         graphics.pose().pushPose();
         graphics.pose().scale(2, 2, 0);
-        graphics.pose().translate((posX+10)/2f,(posY+10)/2f,0);
+        graphics.pose().translate((posX + 10) / 2f, (posY + 10) / 2f, 0);
         graphics.drawString(getFont(), "System has crashed!", 0, 0, new Color(255, 255, 255).getRGB());
         graphics.pose().popPose();
     }
@@ -435,13 +431,13 @@ public class Laptop extends Screen implements System {
     public static void drawLines(GuiGraphics graphics, Font font, String text, int x, int y, int width, int color) {
         var lines = new ArrayList<String>();
         font.getSplitter().splitLines(FormattedText.of(text.replaceAll("\r\n", "\n").replaceAll("\r", "\n")), width, Style.EMPTY).forEach(b -> lines.add(b.getString()));
-        var totalTextHeight = font.lineHeight*lines.size();
-        var textScale = (instance.videoInfo.getResolution().height()-20-(getFont().lineHeight*2))/(float)totalTextHeight;
+        var totalTextHeight = font.lineHeight * lines.size();
+        var textScale = (instance.videoInfo.getResolution().height() - 20 - (getFont().lineHeight * 2)) / (float) totalTextHeight;
         textScale = (float) (1f / Minecraft.getInstance().getWindow().getGuiScale());
         textScale = Math.max(0.5f, textScale);
         graphics.pose().pushPose();
         graphics.pose().scale(textScale, textScale, 1);
-        graphics.pose().translate(x / textScale, (y+3)/textScale, 0);
+        graphics.pose().translate(x / textScale, (y + 3) / textScale, 0);
         //poseStack.translate();
         var lineNr = 0;
         for (String s : lines) {
@@ -500,72 +496,51 @@ public class Laptop extends Screen implements System {
         for (Runnable task : tasks) {
             task.run();
         }
-        
+
         renderBezels(graphics, mouseX, mouseY, partialTicks);
 
         GLHelper.pushScissor(posX, posY, videoInfo.getResolution().width() + BORDER, videoInfo.getResolution().height() + BORDER);
-        //*******************//
-        //     Wallpaper     //
-        //*******************//
-        //RenderSystem.setShaderTexture(0, WALLPAPERS.get(currentWallpaper));
-        //RenderUtil.drawRectWithTexture(pose, posX + 10, posY + 10, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 512, 288);
-        Image.CACHE.forEach((s, cachedImage) -> cachedImage.delete());
-        this.wallpaperLayout.render(graphics, this, this.minecraft, posX+10, posY+10, mouseX, mouseY, true, partialTicks);
-        boolean insideContext = false;
-        if (context != null) {
-            insideContext = isMouseInside(mouseX, mouseY, context.xPosition, context.yPosition, context.xPosition + context.width, context.yPosition + context.height);
-        }
-
-        //****************//
-        //     Window     //
-        //****************//
-        graphics.pose().pushPose();
-        {
-         //   Window<?>[] windows1 = Arrays.stream(windows.toArray()).filter(Objects::nonNull).toArray(Window<?>[]::new);
-            for (int i = windows.size() - 1; i >= 0; i--) {
-                var window = windows.get(i);
-                if (window != null) {
-                    PoseStack.Pose last = graphics.pose().last();
-                    try {
-                        if (i == 0) {
-                            window.render(graphics, this, minecraft, posX + BORDER, posY + BORDER, mouseX, mouseY, !insideContext, partialTicks);
-                        } else {
-                            window.render(graphics, this, minecraft, posX + BORDER, posY + BORDER, Integer.MAX_VALUE, Integer.MAX_VALUE, false, partialTicks);
-                        }
-                    } catch (Exception e) {
-                        while (graphics.pose().last() != last) {
-                            graphics.pose().popPose();
-                        }
-                        RenderSystem.disableScissor();
-                        e.printStackTrace();
-                        Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
-                        message.setTitle("Error");
-                        CompoundTag intent = new CompoundTag();
-                        if (window.content instanceof Application app) {
-                            AppInfo info = app.getInfo();
-                            if (info != null) {
-                                intent.putString("name", info.getName());
-                            }
-                            openApplication(ApplicationManager.getApplication(Devices.id("diagnostics")), intent);
-                            closeApplication(app);
-                        }
-                    }
-                    graphics.pose().translate(0, 0, 400);
-                }
+        try {
+            // Wallpaper
+            Image.CACHE.forEach((s, cachedImage) -> cachedImage.delete());
+            this.wallpaperLayout.render(graphics, this, this.minecraft, posX + 10, posY + 10, mouseX, mouseY, true, partialTicks);
+            boolean insideContext = false;
+            if (context != null) {
+                insideContext = isMouseInside(mouseX, mouseY, context.xPosition, context.yPosition, context.xPosition + context.width, context.yPosition + context.height);
             }
+
+            graphics.pose().pushPose();
+            try {
+                // Render all windows
+                renderWindows(graphics, mouseX, mouseY, partialTicks, posX, posY, insideContext);
+
+                // Render the task bar
+                bar.render(graphics, this, minecraft, posX + 10, posY + getDeviceHeight() - 28, mouseX, mouseY, frameTime);
+
+                graphics.pose().translate(0, 0, 100);
+
+                // Render the context menu
+                if (context != null) {
+                    context.render(graphics, this, minecraft, context.xPosition, context.yPosition, mouseX, mouseY, true, frameTime);
+                }
+            } finally {
+                // Pop the pose stack that we pushed before.
+                graphics.pose().popPose();
+            }
+
+            // Render the Application Bar
+            clearImageCache();
+
+            // Render the rest of the GUI
+            super.render(graphics, mouseX, mouseY, frameTime);
+        } finally {
+            // Pop the scissor stack that we pushed before, to prevent scissoring the entire display by accident.
+            GLHelper.popScissor();
+            GLHelper.clearScissorStack();
         }
-        bar.render(graphics, this, minecraft, posX + 10, posY + getDeviceHeight() - 28, mouseX, mouseY, frameTime);
+    }
 
-        graphics.pose().translate(0, 0, 100);
-        if (context != null) {
-            context.render(graphics, this, minecraft, context.xPosition, context.yPosition, mouseX, mouseY, true, frameTime);
-        }
-
-        graphics.pose().popPose();
-
-        //****************************//
-        // Render the Application Bar //
-        //****************************//
+    private static void clearImageCache() {
         Image.CACHE.entrySet().removeIf(entry -> {
             Image.CachedImage cachedImage = entry.getValue();
             if (cachedImage.isDynamic() && cachedImage.isPendingDeletion()) {
@@ -577,11 +552,63 @@ public class Laptop extends Screen implements System {
             }
             return false;
         });
+    }
 
-        super.render(graphics, mouseX, mouseY, frameTime);
-        GLHelper.popScissor();
+    private void renderWindows(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, int posX, int posY, boolean insideContext) {
+        //   Window<?>[] windows1 = Arrays.stream(windows.toArray()).filter(Objects::nonNull).toArray(Window<?>[]::new);
+        for (int i = windows.size() - 1; i >= 0; i--) {
+            var window = windows.get(i);
+            if (window == null) continue;
 
-        GLHelper.clearScissorStack();
+            PoseStack.Pose last = graphics.pose().last();
+            try {
+                GLHelper.pushScissor(posX + BORDER + window.offsetX, posY + BORDER + window.offsetY, window.width, window.height);
+                renderWindow(graphics, mouseX, mouseY, partialTicks, posX, posY, insideContext, i, window);
+                if (Platform.isDevelopmentEnvironment()) {
+                    long windowHandle = Minecraft.getInstance().getWindow().getWindow();
+                    if (InputConstants.isKeyDown(windowHandle, InputConstants.KEY_LALT)) {
+                        // Debug Commands
+                        if (InputConstants.isKeyDown(windowHandle, InputConstants.KEY_C)) {
+                            throw new RuntimeException("Debug Command: Crash application");
+                        }
+                        if (InputConstants.isKeyDown(windowHandle, InputConstants.KEY_X)) {
+                            throw new Error("Debug Command: Crash laptop");
+                        }
+                    }
+                }
+                GLHelper.popScissor();
+            } catch (Exception e) {
+                handleWindowError(graphics, e, last, window);
+            }
+            graphics.pose().translate(0, 0, 400);
+        }
+    }
+
+    private void handleWindowError(@NotNull GuiGraphics graphics, Exception e, PoseStack.Pose last, Window<?> window) {
+        while (graphics.pose().last() != last) {
+            graphics.pose().popPose();
+        }
+        RenderSystem.disableScissor();
+        Devices.LOGGER.error("An error has occurred while rendering the window.", e);
+
+        Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
+        message.setTitle("Error");
+        CompoundTag intent = new CompoundTag();
+        if (!(window.content instanceof Application app)) return;
+
+        AppInfo info = app.getInfo();
+        if (info != null) intent.putString("name", info.getName());
+
+        openApplication(ApplicationManager.getApplication(Devices.id("diagnostics")), intent);
+        closeApplication(app);
+    }
+
+    private void renderWindow(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, int posX, int posY, boolean insideContext, int i, Window<?> window) {
+        if (i == 0) {
+            window.render(graphics, this, minecraft, posX + BORDER, posY + BORDER, mouseX, mouseY, !insideContext, partialTicks);
+        } else {
+            window.render(graphics, this, minecraft, posX + BORDER, posY + BORDER, Integer.MAX_VALUE, Integer.MAX_VALUE, false, partialTicks);
+        }
     }
 
     private boolean isMouseInside(int mouseX, int mouseY, int startX, int startY, int endX, int endY) {
@@ -599,6 +626,7 @@ public class Laptop extends Screen implements System {
         }
         return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
+
     private void bsod(Throwable e) {
         this.bsod = new BSOD(e);
         e.printStackTrace();
@@ -620,10 +648,12 @@ public class Laptop extends Screen implements System {
 
     private static final class BSOD {
         private final Throwable throwable;
+
         public BSOD(Throwable e) {
             this.throwable = e;
         }
     }
+
     @SuppressWarnings("unchecked")
     public boolean mouseClickedInternal(double mouseX, double mouseY, int mouseButton) {
         this.lastMouseX = (int) mouseX;
@@ -1063,14 +1093,14 @@ public class Laptop extends Screen implements System {
     public void nextWallpaper() {
         if (!currentWallpaper.isBuiltIn()) return;
         if (currentWallpaper.location + 1 < WALLPAPERS.size()) {
-            this.currentWallpaper = new Wallpaper(currentWallpaper.location+1);
+            this.currentWallpaper = new Wallpaper(currentWallpaper.location + 1);
         }
         wallpaperUpdated();
     }
 
     public void prevWallpaper() {
         if (currentWallpaper.location - 1 >= 0) {
-            this.currentWallpaper = new Wallpaper(currentWallpaper.location-1);
+            this.currentWallpaper = new Wallpaper(currentWallpaper.location - 1);
         }
         wallpaperUpdated();
     }
@@ -1228,6 +1258,7 @@ public class Laptop extends Screen implements System {
                 this.location = location;
             }
         }
+
         private Wallpaper(String url) {
             this.url = url;
             this.location = -87;
