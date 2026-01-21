@@ -474,6 +474,7 @@ public class Image extends Component {
                         setup = true;
                     });
                 } catch (IOException e) {
+                    Devices.LOGGER.debug("Failed to load image: " + url);
                     texture = MissingTextureAtlasSprite.getTexture();
                     setup = true;
                     e.printStackTrace();

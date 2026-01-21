@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "id": "gitweb-builder",
+  "version": "${version}",
+  "name": "Gitweb Builder",
+  "description": "${description}",
+  "authors": [
+    "Ultreon Team"
+  ],
+  "contributors": [
+    "Jab125",
+    "Dv8FromTheCode (Mastef_Chief)"
+  ],
+  "contact": {
+    "repo": "https://github.com/Ultreon/devices-mod",
+    "issues": "https://github.com/Ultreon/devices-mod/issues",
+    "sources": "https://github.com/Ultreon/devices-mod"
+  },
+  "license": "GPL-3.0",
+  "icon": "gitwebbuilder.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "mastef_chief.gitwebbuilder.fabric.GitwebBuilderFabric"
+    ],
+    "devices:application_registration": [
+      "mastef_chief.gitwebbuilder.fabric.GitwebBuilderFabric"
+    ]
+  },
+  "mixins": [
+  ],
+  "depends": {
+    "fabricloader": "*",
+    "minecraft": "*",
+    "architectury": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/dtdc46g6ry",
+        "modmenu.youtube": "https://youtube.com/@ultreon",
+        "modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/devices-mod",
+        "modmenu.modrinth": "https://modrinth.com/mod/devices-mod"
+      }
+    }
+  }
+}

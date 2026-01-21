@@ -359,7 +359,7 @@ public abstract class Dialog extends Wrappable {
             int offset = 0;
 
             if (messageText != null) {
-                int lines = Minecraft.getInstance().font.wordWrapHeight(messageText, getWidth() - 10);
+                int lines = Minecraft.getInstance().font.wordWrapHeight(messageText, 300/*getWidth() - 10*/);
                 defaultLayout.height += lines * 9 + 10;
                 offset += lines * 9 + 5;
             }

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 2,
+  "name": "GitWeb Builder",
+  "authors": ["Mastef_Chief"],
+  "description": "${desc}",
+  "version": "1.0",
+  "icon": "gitwebbuilder:textures/app/icon/gitwebbuilder_app.png",
+  "screenshots": [
+    "http://mastefchief.com/mods/gitwebbuilder/screenshots/screenshot1.png",
+    "http://mastefchief.com/mods/gitwebbuilder/screenshots/screenshot2.png",
+    "http://mastefchief.com/mods/gitwebbuilder/screenshots/screenshot3.png"
+  ]
+}

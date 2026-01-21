@@ -60,7 +60,7 @@ hs_err_pid*
 # Icon must end with two \r
 Icon
 !common/src/main/resources/assets/devices/textures/app/icon
-
+!addon/gitweb-builder/common/src/resources/assets/gitwebbuilder/textures/app/icon
 
 !updater/updater.jar
 # Thumbnails

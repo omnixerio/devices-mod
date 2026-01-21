@@ -12,3 +12,19 @@ include("fabric")
 include("forge")
 include("fabric-datagen-helper")
 include("fabric-testmod")
+
+def addons = ["gitweb-builder"]
+addons.forEach { addon ->
+    include(":$addon-common")
+    include(":$addon-fabric")
+    include(":$addon-forge")
+
+    project(":$addon-common").projectDir = file("addon/$addon/common")
+    project(":$addon-common").buildFileName = "../../addon-common.build.gradle"
+
+    project(":$addon-fabric").projectDir = file("addon/$addon/fabric")
+    project(":$addon-fabric").buildFileName = "../../addon-fabric.build.gradle"
+
+    project(":$addon-forge").projectDir = file("addon/$addon/forge")
+    project(":$addon-forge").buildFileName = "../../addon-forge.build.gradle"
+}
