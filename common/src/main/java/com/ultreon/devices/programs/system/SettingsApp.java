@@ -25,7 +25,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.awt.*;
@@ -254,7 +254,7 @@ public class SettingsApp extends SystemApp {
         list.setListItemRenderer(new ListItemRenderer<>(20) {
             @Override
             public void render(GuiGraphics graphics, Preset scheme, Minecraft mc, int x, int y, int width, int height, boolean selected) {
-                ResourceLocation key = ColorSchemePresetRegistry.getKey(scheme);
+                Identifier key = ColorSchemePresetRegistry.getKey(scheme);
                 if (key == null) key = Devices.id("custom");
                 graphics.drawString(mc.font, CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, key.getPath()).replaceAll("[A-Z]", " $0").substring(1), x + 5, y + 5, Color.WHITE.getRGB());
             }

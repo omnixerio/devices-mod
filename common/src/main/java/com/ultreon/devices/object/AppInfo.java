@@ -9,7 +9,7 @@ import dev.architectury.injectables.annotations.PlatformOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.ApiStatus;
@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 public class AppInfo {
     public static final Comparator<AppInfo> SORT_NAME = Comparator.comparing(AppInfo::getName);
 
-    private transient final ResourceLocation APP_ID;
+    private transient final Identifier APP_ID;
 
     private final transient boolean systemApp;
 
@@ -71,7 +71,7 @@ public class AppInfo {
     private String[] screenshots;
     private Support support;
 
-    public AppInfo(ResourceLocation identifier, boolean isSystemApp) {
+    public AppInfo(Identifier identifier, boolean isSystemApp) {
         this.APP_ID = identifier;
         this.systemApp = isSystemApp;
     }
@@ -81,7 +81,7 @@ public class AppInfo {
      *
      * @return the app resource location
      */
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return APP_ID;
     }
 
@@ -157,19 +157,19 @@ public class AppInfo {
         Glyph overlay0;
         Glyph overlay1;
         public static class Glyph {
-            private ResourceLocation resourceLocation;
+            private Identifier Identifier;
             private int u = -1;
             private int v = -1;
             private int type;
-            private Glyph(ResourceLocation res) {
-                this.resourceLocation = res;
+            private Glyph(Identifier res) {
+                this.Identifier = res;
             }
-            private static Glyph of(ResourceLocation res) {
+            private static Glyph of(Identifier res) {
                 return new Glyph(res);
             }
 
-            public ResourceLocation getResourceLocation() {
-                return resourceLocation;
+            public Identifier getIdentifier() {
+                return Identifier;
             }
 
             public void setU(int u) {
@@ -194,11 +194,11 @@ public class AppInfo {
         }
 
         private Icon(AppInfo info) {
-            this.base = Glyph.of(new ResourceLocation(info.APP_ID.getNamespace(), "textures/app/icon/base/" + info.APP_ID.getPath() + ".png"));
+            this.base = Glyph.of(new Identifier(info.APP_ID.getNamespace(), "textures/app/icon/base/" + info.APP_ID.getPath() + ".png"));
             this.base.type = 0;
-            this.overlay0 = Glyph.of(new ResourceLocation(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/" + info.APP_ID.getPath() + ".png"));
+            this.overlay0 = Glyph.of(new Identifier(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/" + info.APP_ID.getPath() + ".png"));
             this.overlay0.type = 1;
-            this.overlay1 = Glyph.of(new ResourceLocation(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/" + info.APP_ID.getPath() + ".png"));
+            this.overlay1 = Glyph.of(new Identifier(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/" + info.APP_ID.getPath() + ".png"));
             this.overlay1.type = 2;
         }
 
@@ -245,7 +245,7 @@ public class AppInfo {
         resetInfo();
         if (Minecraft.getInstance().getResourceManager() == null) return;
         // TODO "Check if the resource manager can be used on client side."
-        Resource resource = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(APP_ID.getNamespace(), "/apps/" + APP_ID.getPath() + ".json")).orElse(null);
+        Resource resource = Minecraft.getInstance().getResourceManager().getResource(new Identifier(APP_ID.getNamespace(), "/apps/" + APP_ID.getPath() + ".json")).orElse(null);
 
         if (resource == null)
             throw new RuntimeException("Missing app info json for '" + APP_ID + "'");
@@ -319,11 +319,11 @@ public class AppInfo {
 
             if (json.getAsJsonObject().has("icon") && json.getAsJsonObject().get("icon").isJsonPrimitive()) {
                 info.icon = new Icon();
-                info.icon.base = Icon.Glyph.of(new ResourceLocation(json.getAsJsonObject().get("icon").getAsString()));
+                info.icon.base = Icon.Glyph.of(new Identifier(json.getAsJsonObject().get("icon").getAsString()));
                 info.icon.base.type = 0;
-                info.icon.overlay0 = Icon.Glyph.of(new ResourceLocation(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/empty.png"));
+                info.icon.overlay0 = Icon.Glyph.of(new Identifier(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/empty.png"));
                 info.icon.overlay0.type = 1;
-                info.icon.overlay1 = Icon.Glyph.of(new ResourceLocation(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/empty.png"));
+                info.icon.overlay1 = Icon.Glyph.of(new Identifier(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/empty.png"));
                 info.icon.overlay1.type = 2;
             }
 

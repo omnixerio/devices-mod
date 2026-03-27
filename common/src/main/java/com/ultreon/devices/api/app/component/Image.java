@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.SimpleTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -133,7 +133,7 @@ public class Image extends Component {
     }
 
     /**
-     * Creates a new Image using a ResourceLocation. This automatically sets the width and height of
+     * Creates a new Image using a Identifier. This automatically sets the width and height of
      * the component according to the width and height of the image.
      *
      * @param left        the amount of pixels to be offset from the left
@@ -144,14 +144,14 @@ public class Image extends Component {
      * @param imageHeight the image height
      * @param resource    the resource location of the image
      */
-    public Image(int left, int top, int imageU, int imageV, int imageWidth, int imageHeight, ResourceLocation resource) {
+    public Image(int left, int top, int imageU, int imageV, int imageWidth, int imageHeight, Identifier resource) {
         this(left, top, imageWidth, imageHeight, imageU, imageV, imageWidth, imageHeight, resource);
     }
 
     /**
-     * Creates a new Image using a ResourceLocation. This constructor allows the specification of
+     * Creates a new Image using a Identifier. This constructor allows the specification of
      * the width and height of the component instead of automatically unlike
-     * {@link Image#Image(int, int, int, int, int, int, ResourceLocation)}
+     * {@link Image#Image(int, int, int, int, int, int, Identifier)}
      *
      * @param left            the amount of pixels to be offset from the left
      * @param top             the amount of pixels to be offset from the top
@@ -163,11 +163,11 @@ public class Image extends Component {
      * @param imageHeight     the image height
      * @param resource        the resource location of the image
      */
-    public Image(int left, int top, int componentWidth, int componentHeight, int imageU, int imageV, int imageWidth, int imageHeight, ResourceLocation resource) {
+    public Image(int left, int top, int componentWidth, int componentHeight, int imageU, int imageV, int imageWidth, int imageHeight, Identifier resource) {
         this(left, top, componentWidth, componentHeight, imageU, imageV, imageWidth, imageHeight, 256, 256, resource);
     }
 
-    public Image(int left, int top, int componentWidth, int componentHeight, int imageU, int imageV, int imageWidth, int imageHeight, int sourceWidth, int sourceHeight, ResourceLocation resource) {
+    public Image(int left, int top, int componentWidth, int componentHeight, int imageU, int imageV, int imageWidth, int imageHeight, int sourceWidth, int sourceHeight, Identifier resource) {
         super(left, top);
         this.loader = new StandardLoader(resource);
         this.componentWidth = componentWidth;
@@ -308,7 +308,7 @@ public class Image extends Component {
         }
     }
 
-    public void setImage(ResourceLocation resource) {
+    public void setImage(Identifier resource) {
         setLoader(new StandardLoader(resource));
         this.drawFull = true;
     }
@@ -406,9 +406,9 @@ public class Image extends Component {
 
     private static class StandardLoader extends ImageLoader {
         private final AbstractTexture texture;
-        private final ResourceLocation resource;
+        private final Identifier resource;
 
-        public StandardLoader(ResourceLocation resource) {
+        public StandardLoader(Identifier resource) {
             this.texture = new SimpleTexture(resource);
             this.resource = resource;
         }

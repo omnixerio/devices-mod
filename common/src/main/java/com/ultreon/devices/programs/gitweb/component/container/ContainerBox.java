@@ -9,7 +9,7 @@ import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
@@ -22,7 +22,7 @@ import java.util.Optional;
  */
 public abstract class ContainerBox extends Component {
     public static final int WIDTH = 128;
-    protected static final ResourceLocation CONTAINER_BOXES_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/container_boxes.png");
+    protected static final Identifier CONTAINER_BOXES_TEXTURE = new Identifier(Reference.MOD_ID, "textures/gui/container_boxes.png");
     protected List<Slot> slots = new ArrayList<>();
     protected int boxU, boxV;
     protected int height;

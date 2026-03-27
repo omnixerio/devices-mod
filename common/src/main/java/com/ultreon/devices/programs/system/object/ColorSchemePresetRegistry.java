@@ -2,28 +2,28 @@ package com.ultreon.devices.programs.system.object;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class ColorSchemePresetRegistry {
-    private static final BiMap<ResourceLocation, Preset> PRESETS = HashBiMap.create();
+    private static final BiMap<Identifier, Preset> PRESETS = HashBiMap.create();
 
     private ColorSchemePresetRegistry() {
 
     }
 
-    public static Preset getPreset(ResourceLocation id) {
+    public static Preset getPreset(Identifier id) {
         return PRESETS.get(id);
     }
 
-    public static void register(ResourceLocation id, Preset colorScheme) {
+    public static void register(Identifier id, Preset colorScheme) {
         PRESETS.put(id, colorScheme);
     }
 
-    public static ResourceLocation getKey(Preset colorScheme) {
+    public static Identifier getKey(Preset colorScheme) {
         return PRESETS.inverse().get(colorScheme);
     }
 
-    public static Iterable<ResourceLocation> getKeys() {
+    public static Iterable<Identifier> getKeys() {
         return PRESETS.keySet();
     }
 

@@ -24,7 +24,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.awt.*;
 
@@ -64,14 +64,14 @@ public class LayoutAppPage extends Layout {
             graphics.fill(x, y + 60, x + width, y + 61, color.darker().getRGB());
         });
 
-        ResourceLocation resource = new ResourceLocation(entry.id());
+        Identifier resource = new Identifier(entry.id());
 
         imageBanner = new com.ultreon.devices.api.app.component.Image(0, 0, 250, 40);
         imageBanner.setDrawFull(true);
         imageBanner.setBorderVisible(true);
         imageBanner.setBorderThickness(0);
         if (entry instanceof LocalEntry) {
-            imageBanner.setImage(new ResourceLocation(resource.getNamespace(), "textures/app/banner/" + resource.getPath() + ".png"));
+            imageBanner.setImage(new Identifier(resource.getNamespace(), "textures/app/banner/" + resource.getPath() + ".png"));
         } else if (entry instanceof RemoteEntry) {
             imageBanner.setImage(AppStore.CERTIFICATES_BASE_URL + "/assets/" + resource.getNamespace() + "/" + resource.getPath() + "/banner.png");
         }
@@ -111,7 +111,7 @@ public class LayoutAppPage extends Layout {
                     if (image.startsWith("http://") || image.startsWith("https://")) {
                         slideShow.addImage(image);
                     } else {
-                        slideShow.addImage(new ResourceLocation(image));
+                        slideShow.addImage(new Identifier(image));
                     }
                 }
             }

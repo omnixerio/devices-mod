@@ -3,7 +3,7 @@ package com.ultreon.devices.api;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.object.AppInfo;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public final class ApplicationManager {
-    private static final Map<ResourceLocation, AppInfo> APP_INFO = new HashMap<>();
+    private static final Map<Identifier, AppInfo> APP_INFO = new HashMap<>();
     private static final Marker MARKER = MarkerFactory.getMarker("ApplicationManager");
 
     private ApplicationManager() {
@@ -28,14 +28,14 @@ public final class ApplicationManager {
      * <p>
      * The identifier parameter is simply just an id for the application.
      * <p>
-     * Example: {@code new ResourceLocation("modid:appid");}
+     * Example: {@code new Identifier("modid:appid");}
      *
      * @param identifier the
      * @param app      a supplier that provides an application
      * @param isSystem whether the application is a SystemApp (required as on the server, "Application" cannot instantiate)
      */
     @Nullable
-    public static Application registerApplication(ResourceLocation identifier, Supplier<Supplier<Application>> app, boolean isSystem) {
+    public static Application registerApplication(Identifier identifier, Supplier<Supplier<Application>> app, boolean isSystem) {
         Devices.LOGGER.debug(MARKER, "Registering application {}", identifier);
         @SuppressWarnings("deprecation")
         Application application = Devices.getInstance().registerApplication(identifier, new Devices.ApplicationSupplier() {
@@ -77,7 +77,7 @@ public final class ApplicationManager {
     }
 
     @Nullable
-    public static AppInfo getApplication(ResourceLocation appId) {
+    public static AppInfo getApplication(Identifier appId) {
         return APP_INFO.get(appId);
     }
 }

@@ -34,7 +34,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.awt.*;
 import java.lang.System;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("FieldCanBeLocal")
 public class FileBrowser extends Component {
-    private static final ResourceLocation ASSETS = new ResourceLocation("devices:textures/gui/file_browser.png");
+    private static final Identifier ASSETS = new Identifier("devices:textures/gui/file_browser.png");
 
     private static final Color HEADER_BACKGROUND = Color.decode("0x535861");
     private static final Color ITEM_BACKGROUND = Color.decode("0x9E9E9E");
@@ -69,7 +69,7 @@ public class FileBrowser extends Component {
                 RenderUtil.drawRectWithTexture(ASSETS, graphics, x + 3, y + 2, 0, 0, 14, 14, 14, 14);
             } else {
                 assert file.getOpeningApp() != null;
-                AppInfo info = ApplicationManager.getApplication(ResourceLocation.tryParse(file.getOpeningApp()));
+                AppInfo info = ApplicationManager.getApplication(Identifier.tryParse(file.getOpeningApp()));
                 RenderUtil.drawApplicationIcon(graphics, info, x + 3, y + 2);
             }
             graphics.drawString(Minecraft.getInstance().font, file.getName(), x + 22, y + 5, file.isProtected() ? PROTECTED_FILE.getRGB() : Laptop.getSystem().getSettings().getColorScheme().getTextColor());

@@ -27,7 +27,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import org.jetbrains.annotations.Nullable;
 import java.awt.*;
@@ -68,7 +68,7 @@ public class AppStore extends SystemApp {
         });
 
         com.ultreon.devices.api.app.component.Image imageBanner = new com.ultreon.devices.api.app.component.Image(0, 0, LAYOUT_WIDTH, 60);
-        imageBanner.setImage(new ResourceLocation(Reference.MOD_ID, "textures/gui/app_market_background.png"));
+        imageBanner.setImage(new Identifier(Reference.MOD_ID, "textures/gui/app_market_background.png"));
         imageBanner.setDrawFull(true);
         homePageLayout.addComponent(imageBanner);
 

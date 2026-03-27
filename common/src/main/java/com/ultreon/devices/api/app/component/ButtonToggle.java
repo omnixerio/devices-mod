@@ -2,7 +2,7 @@ package com.ultreon.devices.api.app.component;
 
 import com.ultreon.devices.api.app.IIcon;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 @SuppressWarnings("unused")
 public class ButtonToggle extends Button implements RadioGroup.Item {
@@ -48,7 +48,7 @@ public class ButtonToggle extends Button implements RadioGroup.Item {
      * @param left how many pixels from the left
      * @param top  how many pixels from the top
      */
-    public ButtonToggle(int left, int top, ResourceLocation iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
+    public ButtonToggle(int left, int top, Identifier iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
         super(left, top, iconResource, iconU, iconV, iconWidth, iconHeight);
     }
 
@@ -58,7 +58,7 @@ public class ButtonToggle extends Button implements RadioGroup.Item {
      * @param left how many pixels from the left
      * @param top  how many pixels from the top
      */
-    public ButtonToggle(int left, int top, String text, ResourceLocation iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
+    public ButtonToggle(int left, int top, String text, Identifier iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
         super(left, top, text, iconResource, iconU, iconV, iconWidth, iconHeight);
     }
 

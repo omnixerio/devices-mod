@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(FontSet.class)
 public class FontSetMixin {
-//    @Shadow @Final private ResourceLocation name;
+//    @Shadow @Final private Identifier name;
 //    private static final GlyphInfo DEVICES_TAB_INFO = () -> 16.0f;
 //
 //    @Inject(method = "getGlyphInfoForSpace", at = @At("HEAD"))

@@ -1,16 +1,16 @@
 package com.ultreon.devices.programs.system.object;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * @author MrCrayfish
  */
 public class ImageEntry {
     private final Type type;
-    private ResourceLocation resource;
+    private Identifier resource;
     private String url;
 
-    public ImageEntry(ResourceLocation resource) {
+    public ImageEntry(Identifier resource) {
         this.type = Type.LOCAL;
         this.resource = resource;
     }
@@ -24,7 +24,7 @@ public class ImageEntry {
         return type;
     }
 
-    public ResourceLocation getResource() {
+    public Identifier getResource() {
         return resource;
     }
 

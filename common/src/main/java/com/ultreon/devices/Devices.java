@@ -40,23 +40,10 @@ import com.ultreon.devices.programs.system.SystemApp;
 import com.ultreon.devices.programs.system.task.*;
 import com.ultreon.devices.util.SiteRegistration;
 import com.ultreon.devices.util.Vulnerability;
-import dev.architectury.event.EventResult;
-import dev.architectury.event.events.client.ClientPlayerEvent;
-import dev.architectury.event.events.common.InteractionEvent;
-import dev.architectury.event.events.common.LifecycleEvent;
-import dev.architectury.event.events.common.PlayerEvent;
-import dev.architectury.injectables.targets.ArchitecturyTarget;
-import dev.architectury.platform.Platform;
-import dev.architectury.registry.registries.DeferredSupplier;
-import dev.architectury.registry.registries.RegistrarManager;
-import dev.architectury.utils.Env;
-import dev.architectury.utils.EnvExecutor;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -233,15 +220,15 @@ public abstract class Devices {
 
         if (Platform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableDebugApps) {
             // Applications (Developers)
-            ApplicationManager.registerApplication(new ResourceLocation(Reference.MOD_ID, "example"), () -> ExampleApp::new, false);
-            ApplicationManager.registerApplication(new ResourceLocation(Reference.MOD_ID, "icons"), () -> IconsApp::new, false);
-            ApplicationManager.registerApplication(new ResourceLocation(Reference.MOD_ID, "text_area"), () -> TextAreaApp::new, false);
-            ApplicationManager.registerApplication(new ResourceLocation(Reference.MOD_ID, "test"), () -> TestApp::new, false);
+            ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "example"), () -> ExampleApp::new, false);
+            ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "icons"), () -> IconsApp::new, false);
+            ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "text_area"), () -> TextAreaApp::new, false);
+            ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "test"), () -> TestApp::new, false);
 
             TaskManager.registerTask(TaskNotificationTest::new);
         }
 
-        EnvExecutor.runInEnv(Env.CLIENT, () -> () -> PrintingManager.registerPrint(new ResourceLocation(Reference.MOD_ID, "picture"), PixelPainterApp.PicturePrint.class));
+        EnvExecutor.runInEnv(Env.CLIENT, () -> () -> PrintingManager.registerPrint(new Identifier(Reference.MOD_ID, "picture"), PixelPainterApp.PicturePrint.class));
     }
 
     public abstract int getBurnTime(ItemStack stack, RecipeType<?> type);
@@ -276,7 +263,7 @@ public abstract class Devices {
      */
     @Nullable
     @ApiStatus.Internal
-    public Application registerApplication(ResourceLocation identifier, ApplicationSupplier app) {
+    public Application registerApplication(Identifier identifier, ApplicationSupplier app) {
         if ("minecraft".equals(identifier.getNamespace())) {
             throw new IllegalArgumentException("Identifier cannot be \"minecraft\"!");
         }
@@ -307,7 +294,7 @@ public abstract class Devices {
 
     @NotNull
     @Environment(EnvType.CLIENT)
-    private static AppInfo generateAppInfo(ResourceLocation identifier, Class<? extends Application> clazz) {
+    private static AppInfo generateAppInfo(Identifier identifier, Class<? extends Application> clazz) {
         LOGGER.debug("Generating app info for " + identifier.toString());
 
         AppInfo info = new AppInfo(identifier, SystemApp.class.isAssignableFrom(clazz));
@@ -322,7 +309,7 @@ public abstract class Devices {
     protected abstract void setRegisteredRenders(Map<String, IPrint.Renderer> map);
 
     @Environment(EnvType.CLIENT)
-    public boolean registerPrint(ResourceLocation identifier, Class<? extends IPrint> classPrint) {
+    public boolean registerPrint(Identifier identifier, Class<? extends IPrint> classPrint) {
         LOGGER.debug("Registering print: " + identifier.toString());
 
         try {
@@ -369,8 +356,8 @@ public abstract class Devices {
         return Collections.unmodifiableList(allowedApps);
     }
 
-    public static ResourceLocation res(String path) {
-        return new ResourceLocation(Devices.MOD_ID, path);
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(Devices.MOD_ID, path);
     }
 
     private static void setupClientEvents() {
@@ -502,10 +489,6 @@ public abstract class Devices {
         }));
 
         return future;
-    }
-
-    public static ResourceLocation id(String id) {
-        return new ResourceLocation(MOD_ID, id);
     }
 
     private static class ProtectedArrayList<T> extends ArrayList<T> {

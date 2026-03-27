@@ -2,9 +2,9 @@ package com.ultreon.devices.programs.system.object;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
-public record Preset(ColorScheme colorScheme, ResourceLocation id) {
+public record Preset(ColorScheme colorScheme, Identifier id) {
 
     public Tag toTag() {
         CompoundTag tag = new CompoundTag();
@@ -13,7 +13,7 @@ public record Preset(ColorScheme colorScheme, ResourceLocation id) {
     }
 
     public static Preset fromTag(CompoundTag tag) {
-        ResourceLocation id = new ResourceLocation(tag.getString("id"));
+        Identifier id = new Identifier(tag.getString("id"));
         return ColorSchemePresetRegistry.getPreset(id);
     }
 }

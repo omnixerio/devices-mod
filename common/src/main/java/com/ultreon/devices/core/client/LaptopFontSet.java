@@ -5,7 +5,7 @@ import com.mojang.blaze3d.font.SheetGlyphInfo;
 import net.minecraft.client.gui.font.FontSet;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
@@ -26,7 +26,7 @@ public class LaptopFontSet extends FontSet {
 //        }
 //    };
 
-    public LaptopFontSet(TextureManager pTextureManager, ResourceLocation pName) {
+    public LaptopFontSet(TextureManager pTextureManager, Identifier pName) {
         super(pTextureManager, pName);
     }
 

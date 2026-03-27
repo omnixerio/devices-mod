@@ -8,14 +8,14 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
 
 public class ClientLaptopScreen extends Screen {
-    static final ResourceLocation LAPTOP_GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/laptop.png");
+    static final Identifier LAPTOP_GUI = new Identifier(Reference.MOD_ID, "textures/gui/laptop.png");
     private static final int BORDER = 10;
     private final ClientLaptop laptop;
 

@@ -12,7 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 
 /**
@@ -100,7 +100,7 @@ public class SlideShow extends Component {
         }
     }
 
-    public void addImage(ResourceLocation resource) {
+    public void addImage(Identifier resource) {
         IMAGES.add(new ImageEntry(resource));
         if (currentImage == -1) {
             this.setImage(0);

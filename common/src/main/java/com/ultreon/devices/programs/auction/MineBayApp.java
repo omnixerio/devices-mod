@@ -23,7 +23,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -35,8 +35,8 @@ import java.util.Objects;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class MineBayApp extends Application {
-    private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
-    private static final ResourceLocation MINEBAY_ASSETS = new ResourceLocation("devices:textures/gui/minebay.png");
+    private static final Identifier CHEST_GUI_TEXTURE = new Identifier("textures/gui/container/generic_54.png");
+    private static final Identifier MINEBAY_ASSETS = new Identifier("devices:textures/gui/minebay.png");
 
     private static final ItemStack EMERALD = new ItemStack(Items.EMERALD);
 

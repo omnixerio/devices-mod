@@ -45,7 +45,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -68,11 +68,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class Laptop extends Screen implements System {
     public static final int ID = 1;
-    public static final ResourceLocation ICON_TEXTURES = new ResourceLocation(Devices.MOD_ID, "textures/atlas/app_icons.png");
+    public static final Identifier ICON_TEXTURES = new Identifier(Devices.MOD_ID, "textures/atlas/app_icons.png");
     public static final int ICON_SIZE = 14;
-    private static final ResourceLocation LAPTOP_FONT = Devices.res("laptop");
+    private static final Identifier LAPTOP_FONT = Devices.id("laptop");
     private static Font font;
-    private static final ResourceLocation LAPTOP_GUI = new ResourceLocation(Devices.MOD_ID, "textures/gui/laptop.png");
+    private static final Identifier LAPTOP_GUI = new Identifier(Devices.MOD_ID, "textures/gui/laptop.png");
     private static final List<Application> APPLICATIONS = new ArrayList<>();
     private static boolean worldLess;
     private static Laptop instance;
@@ -85,11 +85,11 @@ public class Laptop extends Screen implements System {
         return APPLICATIONS;
     }
 
-    public static List<ResourceLocation> getWallpapers() {
+    public static List<Identifier> getWallpapers() {
         return ImmutableList.copyOf(WALLPAPERS);
     }
 
-    private static final List<ResourceLocation> WALLPAPERS = new ArrayList<>();
+    private static final List<Identifier> WALLPAPERS = new ArrayList<>();
 
     private static final int BORDER = 10;
     private static final List<Runnable> tasks = new CopyOnWriteArrayList<>();
@@ -237,7 +237,7 @@ public class Laptop extends Screen implements System {
      *
      * @param wallpaper location to the wallpaper texture, if null the wallpaper will not be added.
      */
-    public static void addWallpaper(ResourceLocation wallpaper) {
+    public static void addWallpaper(Identifier wallpaper) {
         if (wallpaper != null) {
             WALLPAPERS.add(wallpaper);
         }
@@ -279,7 +279,7 @@ public class Laptop extends Screen implements System {
         installedApps.clear();
         ListTag list = systemData.getList("InstalledApps", Tag.TAG_STRING);
         for (int i = 0; i < list.size(); i++) {
-            AppInfo info = ApplicationManager.getApplication(ResourceLocation.tryParse(list.getString(i)));
+            AppInfo info = ApplicationManager.getApplication(Identifier.tryParse(list.getString(i)));
             if (info != null) {
                 installedApps.add(info);
             }
@@ -1097,7 +1097,7 @@ public class Laptop extends Screen implements System {
         return currentWallpaper;
     }
 
-    public List<ResourceLocation> getWallapapers() {
+    public List<Identifier> getWallapapers() {
         return ImmutableList.copyOf(WALLPAPERS);
     }
 

@@ -18,7 +18,7 @@ import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -108,7 +108,7 @@ public class AppGrid extends Component {
     }
 
     private AppEntry adjustEntry(AppEntry entry) {
-        AppInfo info = ApplicationManager.getApplication(ResourceLocation.tryParse(entry.id()));
+        AppInfo info = ApplicationManager.getApplication(Identifier.tryParse(entry.id()));
         if (info != null) {
             return new LocalEntry(info);
         }
@@ -124,7 +124,7 @@ public class AppGrid extends Component {
          //   com.ultreon.devices.api.app.component.Image image = new com.ultreon.devices.api.app.component.Image(iconOffset, padding, 14 * 3, 14 * 3, localEntry.info().getIconU(), localEntry.info().getIconV(), 14, 14, 224, 224, Laptop.ICON_TEXTURES);
             layout.addComponent(appImage);
         } else if (entry instanceof RemoteEntry remoteEntry) {
-            ResourceLocation resource = new ResourceLocation(remoteEntry.id);
+            Identifier resource = new Identifier(remoteEntry.id);
             com.ultreon.devices.api.app.component.Image image = new com.ultreon.devices.api.app.component.Image(iconOffset, padding, 14 * 3, 14 * 3, AppStore.CERTIFICATES_BASE_URL + "/assets/" + resource.getNamespace() + "/" + resource.getPath() + "/icon.png");
             layout.addComponent(image);
         }

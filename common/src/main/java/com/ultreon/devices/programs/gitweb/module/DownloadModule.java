@@ -15,7 +15,7 @@ import com.ultreon.devices.programs.gitweb.component.GitWebFrame;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.awt.*;
 import java.util.Map;
@@ -42,7 +42,7 @@ public class DownloadModule extends Module {
     @Override
     public void generate(GitWebFrame frame, Layout layout, int width, Map<String, String> data) {
         int height = calculateHeight(data, width) - 5;
-        AppInfo info = ApplicationManager.getApplication(ResourceLocation.tryParse(data.get("file-app")));
+        AppInfo info = ApplicationManager.getApplication(Identifier.tryParse(data.get("file-app")));
         layout.setBackground((graphics, mc, x, y, width1, height1, mouseX, mouseY, windowActive) -> {
             int section = layout.width / 6;
             int subWidth = section * 4;

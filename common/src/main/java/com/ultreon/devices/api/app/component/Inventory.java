@@ -11,7 +11,7 @@ import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
@@ -25,7 +25,7 @@ import java.awt.*;
  * @author MrCrayfish
  */
 public class Inventory extends Component {
-    protected static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
+    protected static final Identifier CHEST_GUI_TEXTURE = new Identifier("textures/gui/container/generic_54.png");
 
     protected int selectedColor = new Color(1f, 1f, 0f, 0.15f).getRGB();
     protected int hoverColor = new Color(1f, 1f, 1f, 0.15f).getRGB();

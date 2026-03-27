@@ -3,10 +3,10 @@ package com.ultreon.devices.api.app;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface IIcon {
-    ResourceLocation getIconAsset();
+    Identifier getIconAsset();
 
     int getIconSize();
 

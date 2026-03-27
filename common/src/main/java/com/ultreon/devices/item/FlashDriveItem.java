@@ -12,7 +12,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.text.WordUtils;
@@ -42,10 +42,10 @@ public class FlashDriveItem extends Item implements Colored, SubItems, IDeviceTy
     }
 
     @Override
-    public NonNullList<ResourceLocation> getModels() {
-        NonNullList<ResourceLocation> modelLocations = NonNullList.create();
+    public NonNullList<Identifier> getModels() {
+        NonNullList<Identifier> modelLocations = NonNullList.create();
         for (DyeColor color : DyeColor.values())
-            modelLocations.add(new ResourceLocation(Reference.MOD_ID, Objects.requireNonNull(RegistrarManager.getId(this, Registries.ITEM)).getPath().substring(5) + "/" + color.getName()));
+            modelLocations.add(new Identifier(Reference.MOD_ID, Objects.requireNonNull(RegistrarManager.getId(this, Registries.ITEM)).getPath().substring(5) + "/" + color.getName()));
         return modelLocations;
     }
 

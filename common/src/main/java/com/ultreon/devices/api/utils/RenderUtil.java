@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import org.jetbrains.annotations.Nullable;
@@ -59,7 +59,7 @@ public class RenderUtil {
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
     }
 
-    public static void drawRectWithTexture(ResourceLocation location, GuiGraphics graphics, double x, double y, float u, float v, int width, int height, float textureWidth, float textureHeight) {
+    public static void drawRectWithTexture(Identifier location, GuiGraphics graphics, double x, double y, float u, float v, int width, int height, float textureWidth, float textureHeight) {
         drawRectWithTexture(location, graphics, x, y, 0, u, v, width, height, textureWidth, textureHeight);
         // Gui.blit(pose, (int) x, (int) y, width, height, u, v, width, height, (int) textureWidth, (int) textureHeight);
     }
@@ -78,11 +78,11 @@ public class RenderUtil {
      * @param textureWidth  the width of the texture
      * @param textureHeight the height of the texture
      */
-    public static void drawRectWithTexture(ResourceLocation location, GuiGraphics graphics, double x, double y, double z, float u, float v, int width, int height, float textureWidth, float textureHeight) {
+    public static void drawRectWithTexture(Identifier location, GuiGraphics graphics, double x, double y, double z, float u, float v, int width, int height, float textureWidth, float textureHeight) {
         drawRectWithTexture(location, graphics.pose(), x, y, z, u, v, width, height, textureWidth, textureHeight);
     }
 
-    public static void drawRectWithTexture(ResourceLocation location, PoseStack pose, double x, double y, double z, float u, float v, int width, int height, float textureWidth, float textureHeight) {
+    public static void drawRectWithTexture(Identifier location, PoseStack pose, double x, double y, double z, float u, float v, int width, int height, float textureWidth, float textureHeight) {
         //Gui.blit(pose, (int) x, (int) y, width, height, u, v, width, height, (int) textureWidth, (int) textureHeight);
         float scale = 0.00390625f;
         var e = pose.last().pose();
@@ -114,11 +114,11 @@ public class RenderUtil {
         BufferUploader.drawWithShader(buffer.end());
     }
 
-    public static void drawRectWithTexture(ResourceLocation location, GuiGraphics graphics, double x, double y, float u, float v, int width, int height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight) {
+    public static void drawRectWithTexture(Identifier location, GuiGraphics graphics, double x, double y, float u, float v, int width, int height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight) {
         drawRectWithTexture(location, graphics.pose(), x, y, u, v, width, height, textureWidth, textureHeight, sourceWidth, sourceHeight);
     }
 
-    public static void drawRectWithTexture(ResourceLocation location, PoseStack pose, double x, double y, float u, float v, int width, int height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight) {
+    public static void drawRectWithTexture(Identifier location, PoseStack pose, double x, double y, float u, float v, int width, int height, float textureWidth, float textureHeight, int sourceWidth, int sourceHeight) {
         //Gui.blit(pose, (int) x, (int) y, width, height, u, v, sourceWidth, sourceHeight, (int) textureWidth, (int) textureHeight);
         float scaleWidth = 1f / sourceWidth;
         float scaleHeight = 1f / sourceHeight;

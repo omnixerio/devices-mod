@@ -21,7 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
@@ -51,19 +51,19 @@ public class ClientModEvents {
 
         if (Devices.DEVELOPER_MODE) {
             LOGGER.info(SETUP, "Adding developer wallpaper.");
-            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/developer_wallpaper.png"));
+            Laptop.addWallpaper(new Identifier("devices:textures/gui/developer_wallpaper.png"));
         } else {
             LOGGER.info(SETUP, "Adding default wallpapers.");
-            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_1.png"));
-            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_2.png"));
-            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_3.png"));
-            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_4.png"));
-            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_5.png"));
-            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_6.png"));
-            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_7.png"));
-            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_8.png"));
-            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_9.png"));
-            Laptop.addWallpaper(new ResourceLocation("devices:textures/gui/laptop_wallpaper_10.png"));
+            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_1.png"));
+            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_2.png"));
+            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_3.png"));
+            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_4.png"));
+            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_5.png"));
+            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_6.png"));
+            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_7.png"));
+            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_8.png"));
+            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_9.png"));
+            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_10.png"));
         }
 
 
@@ -136,7 +136,7 @@ public class ClientModEvents {
             int mode = 0;
             ResourceManager rm = resourceManager;
 
-            public boolean writeImage(AppInfo info, ResourceLocation location) {
+            public boolean writeImage(AppInfo info, Identifier location) {
                 String path = "/assets/" + location.getNamespace() + "/" + location.getPath();
                 try {
                     if (rm == null) {
@@ -218,20 +218,20 @@ public class ClientModEvents {
             }
         };
 
-        imageWriter.writeImage(null, new ResourceLocation("devices", "textures/app/icon/base/missing.png"));
+        imageWriter.writeImage(null, new Identifier("devices", "textures/app/icon/base/missing.png"));
 
 
         for (AppInfo info : ApplicationManager.getAllApplications()) {
             if (info.getIcon() == null) continue;
 
-            //ResourceLocation identifier = info.getId();
-            //ResourceLocation iconResource = new ResourceLocation(info.getIcon());
+            //Identifier identifier = info.getId();
+            //Identifier iconResource = new Identifier(info.getIcon());
             imageWriter.mode = 0;
-            imageWriter.writeImage(info, info.getIcon().getBase().getResourceLocation());
+            imageWriter.writeImage(info, info.getIcon().getBase().getIdentifier());
             imageWriter.mode = 1;
-            imageWriter.writeImage(info, info.getIcon().getOverlay0().getResourceLocation());
+            imageWriter.writeImage(info, info.getIcon().getOverlay0().getIdentifier());
             imageWriter.mode = 2;
-            imageWriter.writeImage(info, info.getIcon().getOverlay1().getResourceLocation());
+            imageWriter.writeImage(info, info.getIcon().getOverlay1().getIdentifier());
         }
         imageWriter.mode = 0;
         imageWriter.finish();

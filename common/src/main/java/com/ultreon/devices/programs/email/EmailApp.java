@@ -29,7 +29,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import org.jetbrains.annotations.Nullable;
 import java.awt.*;
@@ -40,8 +40,8 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class EmailApp extends Application {
-    private static final ResourceLocation ENDER_MAIL_ICONS = Resources.ENDER_MAIL_ICONS;
-    private static final ResourceLocation ENDER_MAIL_BACKGROUND = Resources.ENDER_MAIL_BACKGROUND;
+    private static final Identifier ENDER_MAIL_ICONS = Resources.ENDER_MAIL_ICONS;
+    private static final Identifier ENDER_MAIL_BACKGROUND = Resources.ENDER_MAIL_BACKGROUND;
 
     private static final Pattern EMAIL = Pattern.compile("^([a-zA-Z\\d]{1,10})@endermail\\.official$");
     private final Color COLOR_EMAIL_CONTENT_BACKGROUND = new Color(160, 160, 160);
@@ -332,7 +332,7 @@ public class EmailApp extends Application {
         layoutNewEmail = new Layout(231, 148);
         layoutNewEmail.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) -> {
             if (attachedFile != null) {
-                AppInfo info = ApplicationManager.getApplication(Objects.requireNonNull(ResourceLocation.tryParse(attachedFile.getOpeningApp()), "Attached file has no opening app"));
+                AppInfo info = ApplicationManager.getApplication(Objects.requireNonNull(Identifier.tryParse(attachedFile.getOpeningApp()), "Attached file has no opening app"));
                 RenderUtil.drawApplicationIcon(graphics, info, x + 46, y + 130);
             }
         });
@@ -430,7 +430,7 @@ public class EmailApp extends Application {
 
             if (attachedFile != null) {
                 RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-                AppInfo info = ApplicationManager.getApplication(Objects.requireNonNull(ResourceLocation.tryParse(attachedFile.getOpeningApp()), "Attached file has no opening app"));
+                AppInfo info = ApplicationManager.getApplication(Objects.requireNonNull(Identifier.tryParse(attachedFile.getOpeningApp()), "Attached file has no opening app"));
                 RenderUtil.drawApplicationIcon(graphics, info, x + 204, y + 4);
             }
         });

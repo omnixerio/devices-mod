@@ -24,7 +24,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.SignRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
@@ -158,7 +158,7 @@ public record PrinterRenderer(
     }
 
     public static class PaperModel extends Model {
-        public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/model/paper.png");
+        public static final Identifier TEXTURE = new Identifier(Reference.MOD_ID, "textures/model/paper.png");
         public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Devices.id("paper_model"), "main");
         private final ModelPart root;
 //        private final ModelPart main;

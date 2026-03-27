@@ -26,7 +26,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.VillagerRenderer;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerData;
@@ -41,8 +41,8 @@ import java.awt.*;
 @SuppressWarnings("FieldCanBeLocal")
 public class BankApp extends Application {//The bank is not a system application
     private static final ItemStack EMERALD = new ItemStack(Items.EMERALD);
-    private static final ResourceLocation BANK_ASSETS = new ResourceLocation("devices:textures/gui/bank.png");
-    //    private static final ResourceLocation villagerTextures = new ResourceLocation("textures/entity/villager/villager.png");
+    private static final Identifier BANK_ASSETS = new Identifier("devices:textures/gui/bank.png");
+    //    private static final Identifier villagerTextures = new Identifier("textures/entity/villager/villager.png");
 //    private static final VillagerModel<Villager> villagerModel = new VillagerModel<Villager>();
     private Layout layoutStart;
     private Label labelTeller;

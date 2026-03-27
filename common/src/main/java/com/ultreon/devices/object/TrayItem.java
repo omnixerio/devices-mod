@@ -3,7 +3,7 @@ package com.ultreon.devices.object;
 import com.ultreon.devices.api.app.IIcon;
 import com.ultreon.devices.api.app.listener.ClickListener;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * @author MrCrayfish
@@ -11,9 +11,9 @@ import net.minecraft.resources.ResourceLocation;
 public class TrayItem {
     private IIcon icon;
     private ClickListener listener;
-    private final ResourceLocation id;
+    private final Identifier id;
 
-    public TrayItem(IIcon icon, ResourceLocation id) {
+    public TrayItem(IIcon icon, Identifier id) {
         this.icon = icon;
         this.id = id;
     }
@@ -42,7 +42,7 @@ public class TrayItem {
         }
     }
 
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return id;
     }
 

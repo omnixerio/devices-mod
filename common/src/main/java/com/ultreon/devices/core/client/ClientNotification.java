@@ -12,14 +12,14 @@ import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MrCrayfish
  */
 public class ClientNotification implements Toast {
-    private static final ResourceLocation TEXTURE_TOASTS = new ResourceLocation("devices:textures/gui/toast.png");
+    private static final Identifier TEXTURE_TOASTS = new Identifier("devices:textures/gui/toast.png");
 
     private IIcon icon;
     private String title;

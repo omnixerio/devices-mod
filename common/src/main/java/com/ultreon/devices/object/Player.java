@@ -14,14 +14,14 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.BoatRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.vehicle.Boat;
 import org.joml.Quaternionf;
 
 import java.util.Objects;
 
 public class Player {
-    private static final ResourceLocation boatTextures = new ResourceLocation("textures/entity/boat/oak.png");
+    private static final Identifier boatTextures = new Identifier("textures/entity/boat/oak.png");
     boolean canMove = false;
     private final Game game;
     private double posX, posY;

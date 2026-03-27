@@ -19,7 +19,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class TaskBar {
-    public static final ResourceLocation APP_BAR_GUI = new ResourceLocation("devices:textures/gui/application_bar.png");
+    public static final Identifier APP_BAR_GUI = new Identifier("devices:textures/gui/application_bar.png");
     public static final int BAR_HEIGHT = 18;
     private static final int APPS_DISPLAYED = Devices.DEVELOPER_MODE ? 18 : 10;
 

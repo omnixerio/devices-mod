@@ -1,138 +1,51 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id 'multiloader-loader'
+    id 'net.fabricmc.fabric-loom'
 }
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
-version rootProject.version
-
-architectury {
-    platformSetupLoomIde()
-    fabric()
+    implementation "dev.ultreon.mods:xinexlib-fabric-26.1:26.1.0.1"
 }
 
 loom {
-    accessWidenerPath = project(":common").loom.accessWidenerPath
+    def aw = project(':common').file("src/main/resources/${mod_id}.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
+    }
     runs {
-        data {
-            inherit client
-            name "Data Generation"
-            vmArg "-Dfabric-api.datagen"
-            vmArg "-Dfabric-api.datagen.output-dir=${file("../common/src/main/generated/resources")}"
-            vmArg "-Dfabric-api.datagen.modid=devices"
-   //         vmArg "-Dfabric-api.datagen.strict-validation"
-            runDir "build/datagen"
+        client {
+            client()
+            setConfigName('Fabric Client')
+            ideConfigGenerated(true)
+            runDir('runs/client')
+        }
+        server {
+            server()
+            setConfigName('Fabric Server')
+            ideConfigGenerated(true)
+            runDir('runs/server')
         }
     }
 }
 
-repositories {
-    maven { url = "https://cursemaven.com" }
-    maven { url "https://maven.terraformersmc.com/releases" }
-    mavenCentral()
-}
-
-configurations {
-    common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentFabric.extendsFrom common
-}
-
-dependencies {
-    modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
-    modApi "net.fabricmc.fabric-api:fabric-api:$fabric_api_version"
-    // Remove the next line if you don't want to depend on the API
-    modApi "dev.architectury:architectury-fabric:$architectury_version"
-
-    modApi "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:8.0.0"
-    modImplementation 'com.electronwill.night-config:core:3.6.5'
-    modImplementation 'com.electronwill.night-config:toml:3.6.5'
-
-//    include(implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.10"))
-//    include(implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10"))
-//    include(implementation("com.ultreon:ultranlang:0.1.0+6"))
-
-    //shadowCommon "org.jetbrains.kotlin:kotlin-reflect:1.7.10"
-    //shadowCommon "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10"
-//    shadowCommon "com.ultreon:ultranlang:0.1.0+6"
-
-    modApi include("net.fabricmc:fabric-language-kotlin:1.8.2+kotlin.1.7.10")
-
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
-
-    modCompileOnly "com.terraformersmc:modmenu:4.0.6", {
-        exclude module: "fabric-api"
-    }
-
-    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:12.0.684", {
-        exclude module: "fabric-api"
-    }
-
-  //  modApi "curse.maven:emojiful-284324:4672307"
-}
-
-configurations.all {
-    resolutionStrategy {
-        force("net.fabricmc:fabric-loader:$fabric_loader_version")
-    }
-}
-
-processResources {
-    inputs.property "version", rootProject.getIngameVersion()
-
-    filesMatching("fabric.mod.json") {
-        HashMap<String, ?> p = new HashMap<>()
-        p.put("version", rootProject.getIngameVersion())
-        p.put("description", rootProject.getModDescription())
-        p.put("loaderVersion", rootProject.fabric_loader_version)
-        p.put("minecraftVersion", rootProject.architectury.minecraft)
-        expand(p)
-    }
-}
-
-shadowJar {
-    configurations = [project.configurations.shadowCommon]
-    archiveClassifier = "dev-shadow"
-}
-
-remapJar {
-    injectAccessWidener = true
-    //noinspection GrDeprecatedAPIUsage
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    archiveClassifier = null
-}
-
-jar {
-    archiveClassifier = "dev"
-}
-
-sourcesJar {
-    def commonSources = project(":common").sourcesJar
-    dependsOn commonSources
-    from commonSources.archiveFile.map { zipTree(it) }
-}
-
-components.java {
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-        skip()
-    }
-}
-
-publishing {
-    publications {
-        mavenFabric(MavenPublication) {
-            System.out.println(artifactId)
-            artifactId = rootProject.archivesBaseName + "-fabric"
-            //artifactId = rootProject.archives_base_name + "-fabric" + //project.name
-            from components.java
+// Implement mcgradleconventions loader attribute
+def loaderAttribute = Attribute.of('io.github.mcgradleconventions.loader', String)
+['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements', 'includeInternal', 'modCompileClasspath'].each { variant ->
+    configurations.named("$variant") {
+        attributes {
+            attribute(loaderAttribute, 'fabric')
         }
     }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
+}
+sourceSets.configureEach {
+    [it.compileClasspathConfigurationName, it.runtimeClasspathConfigurationName].each { variant->
+        configurations.named("$variant") {
+            attributes {
+                attribute(loaderAttribute, 'fabric')
+            }
+        }
     }
-    rootProject.setupRepositories(repositories)
 }

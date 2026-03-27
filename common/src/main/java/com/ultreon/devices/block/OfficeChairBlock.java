@@ -9,7 +9,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -52,7 +52,7 @@ public class OfficeChairBlock extends DeviceBlock.Colored
 
 //    @Override
 //    public String getDescriptionId() {
-//        return Util.makeDescriptionId("block", new ResourceLocation("devices", "office_chair"));
+//        return Util.makeDescriptionId("block", new Identifier("devices", "office_chair"));
 //    }
 
     @Override

@@ -10,14 +10,14 @@ import com.ultreon.devices.object.tiles.Tile;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Game extends Component {
-    public static final ResourceLocation ICONS = new ResourceLocation("devices:textures/gui/mine_racer.png");
+    public static final Identifier ICONS = new Identifier("devices:textures/gui/mine_racer.png");
 
     private static final Map<Integer, Tile> registeredTiles = new HashMap<Integer, Tile>();
     private final Player player;

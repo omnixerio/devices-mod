@@ -5,7 +5,7 @@ import com.ultreon.devices.Devices;
 import dev.architectury.injectables.annotations.PlatformOnly;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.InvocationTargetException;
@@ -30,7 +30,7 @@ public class PrintingManager {
         PrintingManager.registeredRenders = registeredRenders;
     }
 
-    public static void registerPrint(ResourceLocation identifier, Class<? extends IPrint> classPrint) {
+    public static void registerPrint(Identifier identifier, Class<? extends IPrint> classPrint) {
         try {
             classPrint.getConstructor().newInstance();
             if (Devices.getInstance().registerPrint(identifier, classPrint)) {

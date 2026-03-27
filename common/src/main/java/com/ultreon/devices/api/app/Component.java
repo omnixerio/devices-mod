@@ -4,13 +4,13 @@ import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.programs.system.object.ColorScheme;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public abstract class Component {
     /**
      * The default components textures
      */
-    public static final ResourceLocation COMPONENTS_GUI = new ResourceLocation("devices:textures/gui/components.png");
+    public static final Identifier COMPONENTS_GUI = new Identifier("devices:textures/gui/components.png");
     public static final int ALIGN_LEFT = 0;
     public static final int ALIGN_RIGHT = 1;
     public static final int ALIGN_CENTER = 2;

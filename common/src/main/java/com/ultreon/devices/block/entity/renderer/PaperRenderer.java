@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -78,9 +78,9 @@ public record PaperRenderer(
                 d.getPixels().setPixelRGBA(i, j, new Color(r, g, b, a).getRGB());
             }
         }
-        ResourceLocation resourcelocation = Minecraft.getInstance().getTextureManager().register("map/" + AA, d);
+        Identifier Identifier = Minecraft.getInstance().getTextureManager().register("map/" + AA, d);
         Matrix4f matrix4f = poseStack.last().pose();
-        var vertexconsumer = bufferSource.getBuffer(RenderType.text(resourcelocation));
+        var vertexconsumer = bufferSource.getBuffer(RenderType.text(Identifier));
         vertexconsumer.vertex(matrix4f, 0.0f, 128.0f, -0.01f).color(255, 255, 255, 255).uv(0.0f, 1.0f).uv2(packedLight).endVertex();
         vertexconsumer.vertex(matrix4f, 128.0f, 128.0f, -0.01f).color(255, 255, 255, 255).uv(1.0f, 1.0f).uv2(packedLight).endVertex();
         vertexconsumer.vertex(matrix4f, 128.0f, 0.0f, -0.01f).color(255, 255, 255, 255).uv(1.0f, 0.0f).uv2(packedLight).endVertex();

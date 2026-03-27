@@ -14,7 +14,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 
 import java.awt.*;
@@ -22,7 +22,7 @@ import java.util.Arrays;
 
 @SuppressWarnings("unused")
 public class Button extends Component {
-    protected static final ResourceLocation BUTTON_TEXTURES = new ResourceLocation("textures/gui/widgets.png");
+    protected static final Identifier BUTTON_TEXTURES = new Identifier("textures/gui/widgets.png");
 
     protected static final int TOOLTIP_DELAY = 20;
 
@@ -35,7 +35,7 @@ public class Button extends Component {
     protected int width, height;
     protected boolean explicitSize = false;
 
-    protected ResourceLocation iconResource;
+    protected Identifier iconResource;
     protected int iconU, iconV;
     protected int iconWidth, iconHeight;
     protected int iconSourceWidth;
@@ -148,7 +148,7 @@ public class Button extends Component {
      * @param left how many pixels from the left
      * @param top  how many pixels from the top
      */
-    public Button(int left, int top, ResourceLocation iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
+    public Button(int left, int top, Identifier iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
         super(left, top);
         this.padding = 3;
         this.setIcon(iconResource, iconU, iconV, iconWidth, iconHeight);
@@ -160,7 +160,7 @@ public class Button extends Component {
      * @param left how many pixels from the left
      * @param top  how many pixels from the top
      */
-    public Button(int left, int top, int buttonWidth, int buttonHeight, ResourceLocation iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
+    public Button(int left, int top, int buttonWidth, int buttonHeight, Identifier iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
         super(left, top);
         this.explicitSize = true;
         this.width = buttonWidth;
@@ -174,7 +174,7 @@ public class Button extends Component {
      * @param left how many pixels from the left
      * @param top  how many pixels from the top
      */
-    public Button(int left, int top, String text, ResourceLocation iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
+    public Button(int left, int top, String text, Identifier iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
         super(left, top);
         this.text = text;
         this.setIcon(iconResource, iconU, iconV, iconWidth, iconHeight);
@@ -186,7 +186,7 @@ public class Button extends Component {
      * @param left how many pixels from the left
      * @param top  how many pixels from the top
      */
-    public Button(int left, int top, int buttonWidth, int buttonHeight, String text, ResourceLocation iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
+    public Button(int left, int top, int buttonWidth, int buttonHeight, String text, Identifier iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
         super(left, top);
         this.text = text;
         this.explicitSize = true;
@@ -359,7 +359,7 @@ public class Button extends Component {
         return height;
     }
 
-    public void setIcon(ResourceLocation iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
+    public void setIcon(Identifier iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
         this.iconU = iconU;
         this.iconV = iconV;
         this.iconResource = iconResource;

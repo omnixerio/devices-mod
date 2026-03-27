@@ -7,13 +7,13 @@ import com.ultreon.devices.gui.GuiButtonClose;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 
 public class Window<T extends Wrappable> {
-    public static final ResourceLocation WINDOW_GUI = new ResourceLocation("devices:textures/gui/application.png");
+    public static final Identifier WINDOW_GUI = new Identifier("devices:textures/gui/application.png");
 
     public static final int COLOR_WINDOW_DARK = new Color(0f, 0f, 0f, 0.25f).getRGB();
     final Laptop laptop;
