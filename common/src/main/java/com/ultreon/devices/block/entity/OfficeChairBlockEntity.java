@@ -18,8 +18,7 @@ import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
-public class OfficeChairBlockEntity extends SyncBlockEntity implements Colorable
-{
+public class OfficeChairBlockEntity extends SyncBlockEntity implements Colorable {
     private DyeColor color = DyeColor.RED;
 
     public OfficeChairBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
@@ -27,53 +26,42 @@ public class OfficeChairBlockEntity extends SyncBlockEntity implements Colorable
     }
 
     @Override
-    public DyeColor getColor()
-    {
+    public DyeColor getColor() {
         return color;
     }
 
     @Override
-    public void setColor(DyeColor color)
-    {
+    public void setColor(DyeColor color) {
         this.color = color;
     }
 
     @Override
-    public void load(CompoundTag compound)
-    {
+    public void load(CompoundTag compound) {
         super.load(compound);
-        if(compound.contains("color", Tag.TAG_BYTE))
-        {
+        if (compound.contains("color", Tag.TAG_BYTE)) {
             color = DyeColor.byId(compound.getByte("color"));
         }
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound)
-    {
+    public void saveAdditional(CompoundTag compound) {
         super.saveAdditional(compound);
         compound.putByte("color", (byte) color.getId());
     }
 
     @Override
-    public CompoundTag saveSyncTag()
-    {
+    public CompoundTag saveSyncTag() {
         CompoundTag tag = new CompoundTag();
         tag.putByte("color", (byte) color.getId());
         return tag;
     }
 
-    @Environment(EnvType.CLIENT)
-    public float getRotation()
-    {
+    public float getRotation() {
         List<SeatEntity> seats = level.getEntitiesOfClass(SeatEntity.class, new AABB(getBlockPos()));
-        if(!seats.isEmpty())
-        {
+        if (!seats.isEmpty()) {
             SeatEntity seat = seats.get(0);
-            if(seat.getControllingPassenger() != null)
-            {
-                if(seat.getControllingPassenger() instanceof LivingEntity)
-                {
+            if (seat.getControllingPassenger() != null) {
+                if (seat.getControllingPassenger() instanceof LivingEntity) {
                     LivingEntity living = (LivingEntity) seat.getControllingPassenger();
                     //living.yHeadRotO = living.yHeadRot;
                     //living.yRotO = living.yHeadRot;

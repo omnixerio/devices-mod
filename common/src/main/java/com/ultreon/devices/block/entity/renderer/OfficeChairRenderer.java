@@ -1,69 +1,57 @@
 package com.ultreon.devices.block.entity.renderer;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.ultreon.devices.block.OfficeChairBlock;
 import com.ultreon.devices.block.entity.OfficeChairBlockEntity;
-import com.ultreon.devices.init.DeviceBlocks;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.block.BlockModelResolver;
+import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-public class OfficeChairRenderer implements BlockEntityRenderer<OfficeChairBlockEntity> {
-    private Minecraft mc = Minecraft.getInstance();
+public class OfficeChairRenderer implements BlockEntityRenderer<OfficeChairBlockEntity, OfficeChairRenderState> {
+    private final BlockModelResolver blockModelResolver;
 
     public OfficeChairRenderer(BlockEntityRendererProvider.Context context) {
-
+        blockModelResolver = context.blockModelResolver();
     }
 
     @Override
-    public void render(OfficeChairBlockEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay)
-    {
-        BlockPos pos = blockEntity.getBlockPos();
-        BlockState tempState = blockEntity.getLevel().getBlockState(pos);
-        if(!(tempState.getBlock() instanceof OfficeChairBlock))
-        {
-            return;
-        }
+    public @NonNull OfficeChairRenderState createRenderState() {
+        return new OfficeChairRenderState();
+    }
 
-        var x = pos.getX();
-        var y = pos.getY();
-        var z = pos.getZ();
+    @Override
+    public void extractRenderState(@NonNull OfficeChairBlockEntity blockEntity, @NonNull OfficeChairRenderState state, float partialTicks, @NonNull Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
+
+        state.seat = new BlockModelRenderState();
+        state.legs = new BlockModelRenderState();
+        blockModelResolver.update(state.seat, blockEntity.getBlockState().setValue(OfficeChairBlock.TYPE, OfficeChairBlock.Type.SEAT), BlockDisplayContext.create());
+        blockModelResolver.update(state.legs, blockEntity.getBlockState().setValue(OfficeChairBlock.TYPE, OfficeChairBlock.Type.LEGS), BlockDisplayContext.create());
+
+        state.rotationDeg = blockEntity.getRotation();
+    }
+
+    @Override
+    public void submit(OfficeChairRenderState state, @NonNull PoseStack poseStack, @NonNull SubmitNodeCollector submitNodeCollector, @NonNull CameraRenderState camera) {
+        state.legs.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
 
         poseStack.pushPose();
         {
-           // poseStack.translate(x, y, z);
-
             poseStack.translate(0.5, 0, 0.5);
-            poseStack.mulPose(Axis.YP.rotationDegrees(-blockEntity.getRotation() + 180));
+            poseStack.mulPose(Axis.YP.rotationDegrees(-state.rotationDeg + 180));
             poseStack.translate(-0.5, 0, -0.5);
 
-            BlockState state = tempState.setValue(OfficeChairBlock.FACING, Direction.NORTH).setValue(OfficeChairBlock.TYPE, OfficeChairBlock.Type.SEAT);
-
-            Lighting.setupForFlatItems();
-            //GlStateManager.enableTexture2D();
-
-            RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
-
-            //Tessellator tessellator = Tessellator.getInstance();
-
-            //BufferBuilder buffer = tessellator.getBuffer();
-            //buffer.begin(7, DefaultVertexFormats.BLOCK);
-            //buffer.setTranslation(-te.getPos().getX(), -te.getPos().getY(), -te.getPos().getZ());
-
-            BlockRenderDispatcher blockrendererdispatcher = Minecraft.getInstance().getBlockRenderer();
-            blockrendererdispatcher.renderSingleBlock(state, poseStack, bufferSource, packedLight, packedOverlay);
-
-            Lighting.setupFor3DItems();
+            state.seat.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
         }
         poseStack.popPose();
     }
