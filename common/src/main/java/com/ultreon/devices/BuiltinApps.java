@@ -10,28 +10,27 @@ import com.ultreon.devices.programs.gitweb.GitWebApp;
 import com.ultreon.devices.programs.snake.SnakeApp;
 import com.ultreon.devices.programs.system.*;
 import com.ultreon.devices.programs.themes.ThemesApp;
-import dev.architectury.platform.Platform;
-import net.minecraft.resources.Identifier;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 
 public class BuiltinApps {
     public static void registerBuiltinApps() {
-        ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "diagnostics"), () -> DiagnosticsApp::new, true);
-        ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "settings"), () -> SettingsApp::new, true);
-        ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "file_browser"), () -> FileBrowserApp::new, true);
-        ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "gitweb"), () -> GitWebApp::new, false);
-        ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "note_stash"), () -> NoteStashApp::new, false);
-        ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "pixel_painter"), () -> PixelPainterApp::new, false);
-        ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "ender_mail"), () -> EmailApp::new, false);
-        ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "app_store"), () -> AppStore::new, true);
+        ApplicationManager.registerApplication(Devices.id("diagnostics"), () -> DiagnosticsApp::new, true);
+        ApplicationManager.registerApplication(Devices.id("settings"), () -> SettingsApp::new, true);
+        ApplicationManager.registerApplication(Devices.id("file_browser"), () -> FileBrowserApp::new, true);
+        ApplicationManager.registerApplication(Devices.id("gitweb"), () -> GitWebApp::new, false);
+        ApplicationManager.registerApplication(Devices.id("note_stash"), () -> NoteStashApp::new, false);
+        ApplicationManager.registerApplication(Devices.id("pixel_painter"), () -> PixelPainterApp::new, false);
+        ApplicationManager.registerApplication(Devices.id("ender_mail"), () -> EmailApp::new, false);
+        ApplicationManager.registerApplication(Devices.id("app_store"), () -> AppStore::new, true);
 
-        if (Platform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableBetaApps) {
-            ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "bank"), () -> BankApp::new, false);
-            ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "boat_racers"), () -> BoatRacersApp::new, false);
-            ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "mine_bay"), () -> MineBayApp::new, false);
-            ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "snake"), () -> SnakeApp::new, false);
-            ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "themes"), () -> ThemesApp::new, false);
+        if (XinexPlatform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableBetaApps) {
+            ApplicationManager.registerApplication(Devices.id("bank"), () -> BankApp::new, false);
+            ApplicationManager.registerApplication(Devices.id("boat_racers"), () -> BoatRacersApp::new, false);
+            ApplicationManager.registerApplication(Devices.id("mine_bay"), () -> MineBayApp::new, false);
+            ApplicationManager.registerApplication(Devices.id("snake"), () -> SnakeApp::new, false);
+            ApplicationManager.registerApplication(Devices.id("themes"), () -> ThemesApp::new, false);
         }
 
-        ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "vulnerability"), () -> VulnerabilityApp::new, true);
+        ApplicationManager.registerApplication(Devices.id("vulnerability"), () -> VulnerabilityApp::new, true);
     }
 }

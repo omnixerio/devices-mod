@@ -1,38 +1,32 @@
 package com.ultreon.devices;
 
-import com.ultreon.devices.init.DeviceBlocks;
 import com.ultreon.devices.init.DeviceItems;
-import dev.architectury.registry.CreativeTabRegistry;
-import dev.architectury.registry.registries.DeferredSupplier;
-import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.network.chat.Component;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
+import dev.ultreon.mods.xinexlib.registrar.RegistrarManager;
+import dev.ultreon.mods.xinexlib.registrar.RegistrySupplier;
+import dev.ultreon.mods.xinexlib.tabs.CreativeModeTabBuilder;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-
-import static com.ultreon.devices.Devices.id;
 
 public class DeviceTab {
-    @SuppressWarnings("UnstableApiUsage")
-    public static DeferredSupplier<CreativeModeTab> create() {
+    public static CreativeModeTab create() {
         Devices.LOGGER.info("Creating Creative Tab...");
-        DeferredSupplier<CreativeModeTab> devicesTabDevice = CreativeTabRegistry.defer(id("devices_tab_device")); //TODO () -> new ItemStack(DeviceBlocks.LAPTOPS.of(DyeColor.RED).get()
-        CreativeTabRegistry.modify(devicesTabDevice, (flags, output, canUseGameMasterBlocks) -> {
-            for (RegistrySupplier<Item> laptop : DeviceItems.LAPTOPS) {
+        CreativeModeTabBuilder creativeModeTabBuilder = XinexPlatform.creativeTabBuilder();
+        creativeModeTabBuilder.displayItems((itemDisplayParameters, output) -> {
+            for (RegistrySupplier<?, Item> laptop : DeviceItems.LAPTOPS) {
                 output.accept(laptop.get());
             }
             output.accept(DeviceItems.MAC_MAX_X.get());
-            for (RegistrySupplier<Item> printer : DeviceItems.PRINTERS) {
+            for (RegistrySupplier<?, Item> printer : DeviceItems.PRINTERS) {
                 output.accept(printer.get());
             }
-            for (RegistrySupplier<Item> router : DeviceItems.ROUTERS) {
+            for (RegistrySupplier<?, Item> router : DeviceItems.ROUTERS) {
                 output.accept(router.get());
             }
-            for (RegistrySupplier<Item> office_chair : DeviceItems.OFFICE_CHAIRS) {
+            for (RegistrySupplier<?, Item> office_chair : DeviceItems.OFFICE_CHAIRS) {
                 output.accept(office_chair.get());
             }
-            for (RegistrySupplier<Item> flashdrive : DeviceItems.FLASH_DRIVE) {
+            for (RegistrySupplier<?, Item> flashdrive : DeviceItems.FLASH_DRIVE) {
                 output.accept(flashdrive.get());
             }
             output.accept(DeviceItems.COMPONENT_CPU.get());
@@ -50,6 +44,6 @@ public class DeviceTab {
             output.accept(DeviceItems.COMPONENT_SMALL_ELECTRIC_MOTOR.get());
             output.accept(DeviceItems.COMPONENT_MOTHERBOARD.get());
         });
-        return devicesTabDevice;
+        return creativeModeTabBuilder.build();
     }
 }

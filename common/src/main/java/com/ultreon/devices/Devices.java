@@ -10,7 +10,6 @@ import com.ultreon.devices.api.print.IPrint;
 import com.ultreon.devices.api.print.PrintingManager;
 import com.ultreon.devices.api.task.TaskManager;
 import com.ultreon.devices.api.utils.OnlineRequest;
-import com.ultreon.devices.block.PrinterBlock;
 import com.ultreon.devices.core.client.ClientNotification;
 import com.ultreon.devices.core.client.debug.ClientAppDebug;
 import com.ultreon.devices.core.io.task.*;
@@ -40,16 +39,25 @@ import com.ultreon.devices.programs.system.SystemApp;
 import com.ultreon.devices.programs.system.task.*;
 import com.ultreon.devices.util.SiteRegistration;
 import com.ultreon.devices.util.Vulnerability;
+import dev.ultreon.mods.xinexlib.Env;
+import dev.ultreon.mods.xinexlib.EnvExecutor;
+import dev.ultreon.mods.xinexlib.ModPlatform;
+import dev.ultreon.mods.xinexlib.client.event.LocalPlayerQuitEvent;
+import dev.ultreon.mods.xinexlib.event.server.ServerPlayerJoinEvent;
+import dev.ultreon.mods.xinexlib.event.server.ServerStartingEvent;
+import dev.ultreon.mods.xinexlib.event.server.ServerStoppedEvent;
+import dev.ultreon.mods.xinexlib.event.system.EventSystem;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
+import dev.ultreon.mods.xinexlib.registrar.RegistrarManager;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,12 +73,12 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 public abstract class Devices {
-    public static final boolean DEVELOPER_MODE = Platform.isDevelopmentEnvironment();
+    public static final boolean DEVELOPER_MODE = XinexPlatform.isDevelopmentEnvironment();
     public static final String MOD_ID = "devices";
     public static final Logger LOGGER = LoggerFactory.getLogger("Devices Mod");
 
-    public static final DeferredSupplier<CreativeModeTab> TAB_DEVICE = DeviceTab.create();
-    public static final Supplier<RegistrarManager> REGISTRIES = Suppliers.memoize(() -> RegistrarManager.get(MOD_ID));
+    public static final CreativeModeTab TAB_DEVICE = DeviceTab.create();
+    public static final Supplier<RegistrarManager> REGISTRIES = Suppliers.memoize(() -> XinexPlatform.getRegistrarManager(MOD_ID));
     public static final List<SiteRegistration> SITE_REGISTRATIONS = new ProtectedArrayList<>();
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static final DevicesEarlyConfig EARLY_CONFIG = DevicesEarlyConfig.load();
@@ -105,7 +113,7 @@ public abstract class Devices {
     }
 
     public void init() {
-        if (ArchitecturyTarget.getCurrentTarget().equals("fabric")) {
+        if (XinexPlatform.getPlatformName() == ModPlatform.Fabric) {
             preInit();
             serverSetup();
         }
@@ -138,13 +146,13 @@ public abstract class Devices {
         setupEvents();
 
         EnvExecutor.runInEnv(Env.CLIENT, () -> Devices::setupClientEvents); //todo
-        if (!ArchitecturyTarget.getCurrentTarget().equals("forge")) {
+        if (XinexPlatform.getPlatformName() != ModPlatform.NeoForge && XinexPlatform.getPlatformName() != ModPlatform.Forge) {
             loadComplete();
         }
     }
 
     public static void preInit() {
-        if (DEVELOPER_MODE && !Platform.isDevelopmentEnvironment()) {
+        if (DEVELOPER_MODE && !XinexPlatform.isDevelopmentEnvironment()) {
             throw new LaunchException();
         }
 
@@ -203,7 +211,7 @@ public abstract class Devices {
         TaskManager.registerTask(TaskDeleteEmail::new);
         TaskManager.registerTask(TaskViewEmail::new);
 
-        if (Platform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableBetaApps) {
+        if (XinexPlatform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableBetaApps) {
             // Auction
             TaskManager.registerTask(TaskAddAuction::new);
             TaskManager.registerTask(TaskGetAuctions::new);
@@ -218,24 +226,23 @@ public abstract class Devices {
             TaskManager.registerTask(TaskRemove::new);
         }
 
-        if (Platform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableDebugApps) {
+        if (XinexPlatform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableDebugApps) {
             // Applications (Developers)
-            ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "example"), () -> ExampleApp::new, false);
-            ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "icons"), () -> IconsApp::new, false);
-            ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "text_area"), () -> TextAreaApp::new, false);
-            ApplicationManager.registerApplication(new Identifier(Reference.MOD_ID, "test"), () -> TestApp::new, false);
+            ApplicationManager.registerApplication(Devices.id("example"), () -> ExampleApp::new, false);
+            ApplicationManager.registerApplication(Devices.id("icons"), () -> IconsApp::new, false);
+            ApplicationManager.registerApplication(Devices.id("text_area"), () -> TextAreaApp::new, false);
+            ApplicationManager.registerApplication(Devices.id("test"), () -> TestApp::new, false);
 
             TaskManager.registerTask(TaskNotificationTest::new);
         }
 
-        EnvExecutor.runInEnv(Env.CLIENT, () -> () -> PrintingManager.registerPrint(new Identifier(Reference.MOD_ID, "picture"), PixelPainterApp.PicturePrint.class));
+        EnvExecutor.runInEnv(Env.CLIENT, () -> () -> PrintingManager.registerPrint(Devices.id("picture"), PixelPainterApp.PicturePrint.class));
     }
 
     public abstract int getBurnTime(ItemStack stack, RecipeType<?> type);
 
     protected abstract void registerApplicationEvent();
 
-    @Environment(EnvType.CLIENT)
     protected abstract List<Application> getApplications();
 
     public static void setAllowedApps(List<AppInfo> allowedApps) {
@@ -243,7 +250,7 @@ public abstract class Devices {
     }
 
     public static String getModVersion() {
-        return Platform.getMod(MOD_ID).getVersion();
+        return XinexPlatform.getMod(MOD_ID).orElseThrow().getVersion();
     }
 
     public interface ApplicationSupplier {
@@ -293,7 +300,6 @@ public abstract class Devices {
     }
 
     @NotNull
-    @Environment(EnvType.CLIENT)
     private static AppInfo generateAppInfo(Identifier identifier, Class<? extends Application> clazz) {
         LOGGER.debug("Generating app info for " + identifier.toString());
 
@@ -302,13 +308,10 @@ public abstract class Devices {
         return info;
     }
 
-    @Environment(EnvType.CLIENT)
     protected abstract Map<String, IPrint.Renderer> getRegisteredRenders();
 
-    @Environment(EnvType.CLIENT)
     protected abstract void setRegisteredRenders(Map<String, IPrint.Renderer> map);
 
-    @Environment(EnvType.CLIENT)
     public boolean registerPrint(Identifier identifier, Class<? extends IPrint> classPrint) {
         LOGGER.debug("Registering print: " + identifier.toString());
 
@@ -361,36 +364,40 @@ public abstract class Devices {
     }
 
     private static void setupClientEvents() {
-        ClientPlayerEvent.CLIENT_PLAYER_QUIT.register((player -> {
+        EventSystem .MAIN.on(LocalPlayerQuitEvent.class, _ -> {
             LOGGER.debug("Client disconnected from server");
 
             allowedApps = null;
             DeviceConfig.restore();
-        }));
+        });
     }
 
     private static void setupEvents() {
-        LifecycleEvent.SERVER_STARTING.register((instance -> server = instance));
-        LifecycleEvent.SERVER_STOPPED.register(instance -> server = null);
-        InteractionEvent.RIGHT_CLICK_BLOCK.register(((player, hand, pos, face) -> {
-            Level level = player.level();
-            if (!player.getItemInHand(hand).isEmpty() && player.getItemInHand(hand).getItem() == Items.PAPER) {
-                if (level.getBlockState(pos).getBlock() instanceof PrinterBlock) {
-                    return EventResult.interruptTrue();
-                    //event.setUseBlock(Event.Result.ALLOW); //todo
-                }
-            }
-            return EventResult.pass();
-        }));
+        EventSystem.MAIN.on(ServerStartingEvent.class, event -> server = event.getServer());
+        EventSystem.MAIN.on(ServerStoppedEvent.class, _ -> server = null);
 
-        PlayerEvent.PLAYER_JOIN.register((player -> {
+        // TODO Fix this for 26.1 if needed
+//        InteractionEvent.RIGHT_CLICK_BLOCK.register(((player, hand, pos, face) -> {
+//            Level level = player.level();
+//            if (!player.getItemInHand(hand).isEmpty() && player.getItemInHand(hand).getItem() == Items.PAPER) {
+//                if (level.getBlockState(pos).getBlock() instanceof PrinterBlock) {
+//                    return EventResult.interruptTrue();
+//                    //event.setUseBlock(Event.Result.ALLOW); //todo
+//                }
+//            }
+//            return EventResult.pass();
+//        }));
+
+        EventSystem.MAIN.on(ServerPlayerJoinEvent.class, event -> {
+            ServerPlayer player = event.getPlayer();
+
             LOGGER.info("Player logged in: " + player.getName());
 
             if (allowedApps != null) {
                 PacketHandler.sendToClient(new SyncApplicationPacket(allowedApps), player);
             }
             PacketHandler.sendToClient(new SyncConfigPacket(), player);
-        }));
+        });
     }
 
     private static void setupSiteRegistrations() {

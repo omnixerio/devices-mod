@@ -5,8 +5,6 @@ import com.ultreon.devices.programs.system.object.ColorScheme;
 import com.ultreon.devices.programs.system.object.Preset;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.Identifier;
-import org.intellij.lang.annotations.Identifier;
 
 /**
  * @author MrCrayfish

@@ -2,8 +2,8 @@ package com.ultreon.devices.util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import dev.architectury.registry.registries.Registrar;
-import dev.architectury.registry.registries.RegistrySupplier;
+import dev.ultreon.mods.xinexlib.registrar.Registrar;
+import dev.ultreon.mods.xinexlib.registrar.RegistrySupplier;
 import net.minecraft.world.item.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,9 +12,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class DyeableRegistration<T> implements Iterable<RegistrySupplier<T>> {
-    private final HashMap<DyeColor, RegistrySupplier<T>> map = new HashMap<>();
-    private final List<RegistrySupplier<T>> l = new ArrayList<>();
+public abstract class DyeableRegistration<T> implements Iterable<RegistrySupplier<?, T>> {
+    private final HashMap<DyeColor, RegistrySupplier<?, T>> map = new HashMap<>();
+    private final List<RegistrySupplier<?, T>> l = new ArrayList<>();
     public DyeableRegistration() {
         var registrar = this.autoInit();
         if (registrar != null) {
@@ -49,9 +49,9 @@ public abstract class DyeableRegistration<T> implements Iterable<RegistrySupplie
                 DyeColor.PINK
         );
     }
-    public abstract RegistrySupplier<T> register(Registrar<T> registrar, DyeColor color);
+    public abstract <C extends T> RegistrySupplier<C, T> register(Registrar<T> registrar, DyeColor color);
 
-    public ImmutableMap<DyeColor, RegistrySupplier<T>> getMap() {
+    public ImmutableMap<DyeColor, RegistrySupplier<?, T>> getMap() {
         return ImmutableMap.copyOf(map);
     }
 
@@ -59,13 +59,13 @@ public abstract class DyeableRegistration<T> implements Iterable<RegistrySupplie
         return null;
     }
 
-    public RegistrySupplier<T> of(DyeColor dyeColor) {
+    public RegistrySupplier<?, T> of(DyeColor dyeColor) {
         return map.get(dyeColor);
     }
 
     @NotNull
     @Override
-    public Iterator<RegistrySupplier<T>> iterator() {
+    public Iterator<RegistrySupplier<?, T>> iterator() {
         return l.iterator();
     }
 }

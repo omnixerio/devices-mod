@@ -4,9 +4,8 @@ import com.ultreon.devices.Devices;
 import com.ultreon.devices.ModDeviceTypes;
 import com.ultreon.devices.item.*;
 import com.ultreon.devices.util.DyeableRegistration;
-import dev.architectury.platform.Platform;
-import dev.architectury.registry.registries.Registrar;
-import dev.architectury.registry.registries.RegistrySupplier;
+import dev.ultreon.mods.xinexlib.registrar.Registrar;
+import dev.ultreon.mods.xinexlib.registrar.RegistrySupplier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -25,9 +24,9 @@ public class DeviceItems {
     private static final Registrar<Item> REGISTER = Devices.REGISTRIES.get().get(Registries.ITEM);
 
     // Laptops
-    public static final DyeableRegistration<Item> LAPTOPS = new DyeableRegistration<>() {
+    public static final DyeableRegistration<Item> LAPTOPS = new DyeableRegistration<Item>() {
         @Override
-        public RegistrySupplier<Item> register(Registrar<Item> registrar, DyeColor color) {
+        public RegistrySupplier<Item, Item> register(Registrar<Item> registrar, DyeColor color) {
             return registrar.register(Devices.id(color.getName() + "_laptop"), () -> new ColoredDeviceItem(DeviceBlocks.LAPTOPS.of(color).get(), new Item.Properties(), color, ModDeviceTypes.COMPUTER));
         }
 
