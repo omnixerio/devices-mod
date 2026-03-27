@@ -4,7 +4,6 @@ import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.programs.system.object.ColorScheme;
 import com.ultreon.devices.programs.system.object.Preset;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 
 /**
  * @author MrCrayfish
@@ -61,8 +60,8 @@ public class Settings {
         //showAllApps = tag.getBoolean("showAllApps");
 
         Settings settings = new Settings();
-        settings.colorScheme = ColorScheme.fromTag(tag.getCompound("colorScheme"));
-        settings.preset = tag.contains("preset", Tag.TAG_COMPOUND) ? Preset.fromTag(tag.getCompound("preset")) : null;
+        settings.colorScheme = ColorScheme.fromTag(tag.getCompoundOrEmpty("colorScheme"));
+        settings.preset = tag.contains("preset") ? Preset.fromTag(tag.getCompoundOrEmpty("preset")) : null;
 
         return settings;
     }
