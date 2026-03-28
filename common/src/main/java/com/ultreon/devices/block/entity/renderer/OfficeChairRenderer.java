@@ -45,7 +45,7 @@ public class OfficeChairRenderer implements BlockEntityRenderer<OfficeChairBlock
     public void submit(OfficeChairRenderState state, @NonNull PoseStack poseStack, @NonNull SubmitNodeCollector submitNodeCollector, @NonNull CameraRenderState camera) {
         state.legs.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
 
-        poseStack.pushMatrix();
+        poseStack.pushPose();
         {
             poseStack.translate(0.5, 0, 0.5);
             poseStack.mulPose(Axis.YP.rotationDegrees(-state.rotationDeg + 180));
@@ -53,6 +53,6 @@ public class OfficeChairRenderer implements BlockEntityRenderer<OfficeChairBlock
 
             state.seat.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
         }
-        poseStack.popMatrix();
+        poseStack.popPose();
     }
 }

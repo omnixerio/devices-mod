@@ -1,6 +1,5 @@
 package com.ultreon.devices.programs.system.component;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.ultreon.devices.api.ApplicationManager;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.Dialog;
@@ -16,6 +15,7 @@ import com.ultreon.devices.api.io.Folder;
 import com.ultreon.devices.api.task.Callback;
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.api.task.TaskManager;
+import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.core.Window;
 import com.ultreon.devices.core.Wrappable;
@@ -32,7 +32,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 
 import java.awt.*;
@@ -49,7 +48,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("FieldCanBeLocal")
 public class FileBrowser extends Component {
-    private static final Identifier ASSETS = new Identifier("devices:textures/gui/file_browser.png");
+    private static final Identifier ASSETS = Identifier.parse("devices:textures/gui/file_browser.png");
 
     private static final Color HEADER_BACKGROUND = Color.decode("0x535861");
     private static final Color ITEM_BACKGROUND = Color.decode("0x9E9E9E");
@@ -62,10 +61,8 @@ public class FileBrowser extends Component {
             Color bgColor = new Color(Laptop.getSystem().getSettings().getColorScheme().getBackgroundColor());
             graphics.fill(x, y, x + width, y + height, selected ? bgColor.brighter().brighter().getRGB() : bgColor.brighter().getRGB());
 
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-            RenderSystem.setShaderTexture(0, ASSETS);
             if (file.isFolder()) {
-                RenderUtil.drawRectWithTexture(ASSETS, graphics, x + 3, y + 2, 0, 0, 14, 14, 14, 14);
+                graphics.blit(ASSETS, x + 3, y + 2, 0, 0, 14, 14, 14, 14);
             } else {
                 assert file.getOpeningApp() != null;
                 AppInfo info = ApplicationManager.getApplication(Identifier.tryParse(file.getOpeningApp()));
@@ -135,7 +132,7 @@ public class FileBrowser extends Component {
     @Override
     public void init(Layout layout) {
         layoutMain = new Layout(mode.getWidth(), mode.getHeight());
-        layoutMain.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) -> {
+        layoutMain.setBackground((graphics, _, x, y, width, _, _, _, _) -> {
             Color color = new Color(Laptop.getSystem().getSettings().getColorScheme().getHeaderColor());
             graphics.fill(x, y, x + width, y + 20, color.getRGB());
             graphics.fill(x, y + 20, x + width, y + 21, color.darker().getRGB());
@@ -143,7 +140,7 @@ public class FileBrowser extends Component {
 
         btnPreviousFolder = new Button(5, 2, Icons.ARROW_LEFT);
         btnPreviousFolder.setClickListener((event) -> {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 goToPreviousFolder();
             }
         });
@@ -155,7 +152,7 @@ public class FileBrowser extends Component {
 
         btnNewFolder = new Button(5, 25, Icons.NEW_FOLDER);
         btnNewFolder.setClickListener((event) -> {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 createFolder();
             }
         });
@@ -166,7 +163,7 @@ public class FileBrowser extends Component {
 
         btnRename = new Button(5, 25 + btnIndex * 20, Icons.RENAME);
         btnRename.setClickListener((event) -> {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 renameSelectedFile();
             }
         });
@@ -179,7 +176,7 @@ public class FileBrowser extends Component {
 
             btnCopy = new Button(5, 25 + btnIndex * 20, Icons.COPY);
             btnCopy.setClickListener((event) -> {
-                if (mouseButton == 0) {
+                if (event.button() == 0) {
                     setClipboardFileToSelected();
                 }
             });
@@ -191,7 +188,7 @@ public class FileBrowser extends Component {
 
             btnCut = new Button(5, 25 + btnIndex * 20, Icons.CUT);
             btnCut.setClickListener((event) -> {
-                if (mouseButton == 0) {
+                if (event.button() == 0) {
                     cutSelectedFile();
                 }
             });
@@ -203,7 +200,7 @@ public class FileBrowser extends Component {
 
             btnPaste = new Button(5, 25 + btnIndex * 20, Icons.CLIPBOARD);
             btnPaste.setClickListener((event) -> {
-                if (mouseButton == 0) {
+                if (event.button() == 0) {
                     pasteClipboardFile();
                 }
             });
@@ -216,7 +213,7 @@ public class FileBrowser extends Component {
 
         btnDelete = new Button(5, 25 + btnIndex * 20, Icons.TRASH);
         btnDelete.setClickListener((event) -> {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 deleteSelectedFile();
             }
         });
@@ -238,7 +235,7 @@ public class FileBrowser extends Component {
                 if (System.currentTimeMillis() - this.lastClick <= 200) {
                     if (file.isFolder()) {
                         fileList.setSelectedIndex(-1);
-                        openFolder((Folder) file, true, (folder, success) -> {
+                        openFolder((Folder) file, true, (_, _) -> {
                             if (mode == Mode.FULL) {
                                 btnRename.setEnabled(false);
                                 btnCopy.setEnabled(false);
@@ -276,15 +273,13 @@ public class FileBrowser extends Component {
         layoutMain.addComponent(fileList);
 
         comboBoxDrive = new ComboBox.List<>(26, 3, 44, 100, new Drive[]{});
-        comboBoxDrive.setChangeListener((oldValue, newValue) -> openDrive(newValue));
+        comboBoxDrive.setChangeListener((_, newValue) -> openDrive(newValue));
         comboBoxDrive.setListItemRenderer(new ListItemRenderer<>(12) {
             @Override
             public void render(GuiGraphicsExtractor graphics, Drive drive, Minecraft mc, int x, int y, int width, int height, boolean selected) {
                 Color bgColor = new Color(getColorScheme().getBackgroundColor());
                 graphics.fill(x, y, x + width, y + height, selected ? bgColor.brighter().brighter().getRGB() : bgColor.brighter().getRGB());
-                RenderSystem.setShaderTexture(0, ASSETS);
-                RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-                RenderUtil.drawRectWithTexture(ASSETS, graphics, x + 2, y + 2, drive.getType().ordinal() * 8, 30, 8, 8, 8, 8);
+                graphics.blit(ASSETS, x + 2, y + 2, drive.getType().ordinal() * 8, 30, 8, 8, 8, 8);
 
                 String text = drive.getName();
                 if (mc.font.width(text) > 87) {
@@ -300,7 +295,7 @@ public class FileBrowser extends Component {
         layout.addComponent(layoutMain);
 
         layoutLoading = new Layout(mode.getOffset(), 25, fileList.getWidth(), fileList.getHeight());
-        layoutLoading.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) -> graphics.fill(x, y, x + width, y + height, Window.COLOR_WINDOW_DARK));
+        layoutLoading.setBackground((graphics, _, x, y, width, height, _, _, _) -> graphics.fill(x, y, x + width, y + height, Window.COLOR_WINDOW_DARK));
         layoutLoading.setVisible(false);
 
         spinnerLoading = new Spinner((layoutLoading.width - 12) / 2, (layoutLoading.height - 12) / 2);
@@ -318,19 +313,19 @@ public class FileBrowser extends Component {
                 if (success) {
                     if (Laptop.getMainDrive() == null) {
                         assert tag != null;
-                        CompoundTag structureTag = tag.getCompound("structure");
-                        Drive drive = new Drive(tag.getCompound("main_drive"));
+                        CompoundTag structureTag = tag.getCompound("structure").orElseThrow();
+                        Drive drive = new Drive(tag.getCompound("main_drive").orElseThrow());
                         drive.syncRoot(Folder.fromTag(FileSystem.LAPTOP_DRIVE_NAME, structureTag));
                         drive.getRoot().validate();
                         Laptop.setMainDrive(drive);
                     }
 
                     assert tag != null;
-                    ListTag driveList = tag.getList("available_drives", Tag.TAG_COMPOUND);
+                    ListTag driveList = tag.getList("available_drives").orElseThrow();
                     Drive[] drives = new Drive[driveList.size() + 1];
                     drives[0] = currentDrive = Laptop.getMainDrive();
                     for (int i = 0; i < driveList.size(); i++) {
-                        CompoundTag driveTag = driveList.getCompound(i);
+                        CompoundTag driveTag = driveList.getCompound(i).orElseThrow();
                         drives[i + 1] = new Drive(driveTag);
                     }
                     comboBoxDrive.setItems(drives);
@@ -338,14 +333,14 @@ public class FileBrowser extends Component {
                     Folder folder = currentDrive.getFolder(initialFolder);
                     if (folder != null) {
                         pushPredecessors(folder);
-                        openFolder(folder, false, (folder1, success1) -> {
+                        openFolder(folder, false, (_, success1) -> {
                             if (!success1) {
                                 createErrorDialog("A critical error occurred while initializing.");
                             }
                         });
                         return;
                     } else {
-                        openFolder(currentDrive.getRoot(), false, (folder12, success12) -> {
+                        openFolder(currentDrive.getRoot(), false, (_, _) -> {
                             if (success) {
                                 createErrorDialog("Unable to open directory '" + initialFolder + "'");
                             } else {
@@ -378,7 +373,7 @@ public class FileBrowser extends Component {
     private void openDrive(Drive drive) {
         predecessor.clear();
         if (drive.isSynced()) {
-            openFolder(drive.getRoot(), false, (folder, success) -> {
+            openFolder(drive.getRoot(), false, (_, success) -> {
                 if (!success) {
                     createErrorDialog("Unable to open drive '" + drive.getName() + "'");
                 }
@@ -390,9 +385,9 @@ public class FileBrowser extends Component {
                 setLoading(false);
                 if (success) {
                     assert tag != null;
-                    Folder folder = Folder.fromTag(tag.getString("file_name"), tag.getCompound("structure"));
+                    Folder folder = Folder.fromTag(tag.getString("file_name").orElseThrow(), tag.getCompound("structure").orElseThrow());
                     drive.syncRoot(folder);
-                    openFolder(drive.getRoot(), false, (folder1, success1) -> {
+                    openFolder(drive.getRoot(), false, (_, success1) -> {
                         if (!success1) {
                             createErrorDialog("Unable to open drive '" + drive.getName() + "'");
                         }
@@ -422,8 +417,8 @@ public class FileBrowser extends Component {
             task.setCallback((tag, success) -> {
                 if (success) {
                     assert tag != null;
-                    if (tag.contains("files", Tag.TAG_LIST)) {
-                        ListTag files = tag.getList("files", Tag.TAG_COMPOUND);
+                    if (tag.contains("files")) {
+                        ListTag files = tag.getList("files").orElseThrow();
                         folder.syncFiles(files);
                         setCurrentFolder(folder, push);
                     }
@@ -470,7 +465,7 @@ public class FileBrowser extends Component {
         }
         Collections.reverse(predecessors);
         predecessors.forEach(predecessor::push);
-        if (predecessor.size() > 0) {
+        if (!predecessor.isEmpty()) {
             btnPreviousFolder.setEnabled(true);
         }
     }
@@ -489,10 +484,10 @@ public class FileBrowser extends Component {
     }
 
     private void goToPreviousFolder() {
-        if (predecessor.size() > 0) {
+        if (!predecessor.isEmpty()) {
             setLoading(true);
             Folder folder = predecessor.pop();
-            openFolder(folder, false, (folder2, success) -> {
+            openFolder(folder, false, (_, success) -> {
                 if (success) {
                     if (isRootFolder()) {
                         btnPreviousFolder.setEnabled(false);
@@ -566,7 +561,7 @@ public class FileBrowser extends Component {
             dialog.setMessageText(builder.toString());
             dialog.setTitle("Delete");
             dialog.setPositiveText("Yes");
-            dialog.setPositiveListener((event) -> {
+            dialog.setPositiveListener((_) -> {
                 removeFile(fileList.getSelectedIndex());
                 btnRename.setEnabled(false);
                 btnDelete.setEnabled(false);
@@ -589,7 +584,7 @@ public class FileBrowser extends Component {
                 return;
             }
             setLoading(true);
-            currentFolder.delete(file, (response, success) -> {
+            currentFolder.delete(file, (_, success) -> {
                 if (success) {
                     fileList.removeItem(index);
                     FileBrowser.refreshList = true;
@@ -609,7 +604,7 @@ public class FileBrowser extends Component {
                 return;
             }
             setLoading(true);
-            currentFolder.delete(file, (o, success) -> {
+            currentFolder.delete(file, (_, success) -> {
                 if (success) {
                     int index = fileList.getItems().indexOf(file);
                     fileList.removeItem(index);
@@ -669,13 +664,13 @@ public class FileBrowser extends Component {
     }
 
     private void handleCopyCut(boolean override) {
-        final Callback<FileSystem.Response> CALLBACK = (response, success) -> {
+        final Callback<FileSystem.Response> CALLBACK = (response, _) -> {
             assert response != null;
             if (response.getStatus() == FileSystem.Status.FILE_EXISTS) {
                 Dialog.Confirmation dialog = new Dialog.Confirmation("A file with the same name already exists in this directory. Do you want to override it?");
                 dialog.setPositiveText("Override");
                 dialog.setPositiveListener((event) -> {
-                    if (mouseButton == 0) {
+                    if (event.button() == 0) {
                         handleCopyCut(true);
                     }
                 });
@@ -704,7 +699,7 @@ public class FileBrowser extends Component {
             btnPaste.setEnabled(false);
         }
         currentFolder.refresh();
-        openFolder(currentFolder, false, (folder, success) -> {
+        openFolder(currentFolder, false, (_, _) -> {
             if (mode == Mode.FULL) {
                 btnRename.setEnabled(false);
                 btnCopy.setEnabled(false);
@@ -724,7 +719,7 @@ public class FileBrowser extends Component {
     }
 
     private boolean isRootFolder() {
-        return predecessor.size() == 0;
+        return predecessor.isEmpty();
     }
 
     private void updatePath() {
@@ -785,7 +780,7 @@ public class FileBrowser extends Component {
             dialog.setResponseHandler((success, s) -> {
                 if (success) {
                     setLoading(true);
-                    file.rename(s, (response, success1) -> {
+                    file.rename(s, (response, _) -> {
                         assert response != null;
                         if (response.getStatus() == FileSystem.Status.SUCCESSFUL) {
                             dialog.close();

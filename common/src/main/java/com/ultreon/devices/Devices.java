@@ -393,9 +393,9 @@ public abstract class Devices {
             LOGGER.info("Player logged in: " + player.getName());
 
             if (allowedApps != null) {
-                DevicesNetworker.networker.sendToClient(new SyncApplicationPacket(allowedApps), player);
+                DevicesNetworker.INSTANCE.sendToClient(new SyncApplicationPacket(allowedApps), player);
             }
-            DevicesNetworker.networker.sendToClient(new SyncConfigPacket(), player);
+            DevicesNetworker.INSTANCE.sendToClient(new SyncConfigPacket(), player);
         });
     }
 

@@ -3,10 +3,14 @@ package com.ultreon.devices.api.print;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.init.DeviceBlocks;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 
+import net.minecraft.world.level.storage.ValueInput;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
+
+import java.util.Optional;
 
 //printing somethings takes makes ink cartridge take damage. cartridge can only stack to one
 
@@ -22,10 +26,10 @@ public interface IPrint {
     }
 
     @Nullable
-    static IPrint load(CompoundTag tag) {
+    static IPrint load(ValueInput tag) {
         IPrint print = PrintingManager.getPrint(tag.getStringOr("type", "default"));
         if (print != null) {
-            print.fromTag(tag.getCompoundOrEmpty("data"));
+            print.fromTag(tag.read("data", ExtraCodecs.NBT).orElseThrow().asCompound().orElseThrow());
             return print;
         }
         return null;
@@ -39,11 +43,11 @@ public interface IPrint {
         itemTag.put("BlockEntityTag", blockEntityTag);
 
         ItemStack stack = new ItemStack(DeviceBlocks.PAPER.get());
-        stack.setTag(itemTag);
-
-        if (print.getName() != null && !print.getName().isEmpty()) {
-            stack.setHoverName(Component.literal(print.getName()));
-        }
+//        stack.setTag(itemTag);
+//
+//        if (print.getName() != null && !print.getName().isEmpty()) {
+//            stack.setHoverName(Component.literal(print.getName()));
+//        }
         return stack;
     }
 

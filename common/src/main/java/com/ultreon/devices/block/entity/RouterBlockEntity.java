@@ -5,6 +5,7 @@ import com.ultreon.devices.init.DeviceBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueOutput;
 
 @SuppressWarnings("unused")
 public class RouterBlockEntity extends DeviceBlockEntity.Colored {
@@ -50,7 +51,7 @@ public class RouterBlockEntity extends DeviceBlockEntity.Colored {
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
+    public void saveAdditional(ValueOutput tag) {
         super.saveAdditional(tag);
         if (tag.contains("router")) {
             router = Router.fromTag(worldPosition, tag.getCompoundOrEmpty("router"));

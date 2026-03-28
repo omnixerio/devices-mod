@@ -36,7 +36,7 @@ public class RequestPacket implements PacketToServer<RequestPacket> {
     public void handle(Networker connection, ServerPlayer player) {
         //DebugLog.log("RECEIVED from " + ctx.get().getPlayer().getUUID());
         request.processRequest(tag, player.level(), player);
-        DevicesNetworker.networker.sendToClient(new ResponsePacket(id, request), player);
+        DevicesNetworker.INSTANCE.sendToClient(new ResponsePacket(id, request), player);
     }
 
     @Override

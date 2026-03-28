@@ -4,12 +4,14 @@ import com.ultreon.devices.api.print.IPrint;
 import com.ultreon.devices.init.DeviceBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.block.state.BlockState;
 
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -43,21 +45,17 @@ public class PaperBlockEntity extends SyncBlockEntity {
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
-        if (compound.contains("print", Tag.TAG_COMPOUND)) {
-            print = IPrint.load(compound.getCompound("print"));
-        }
-        if (compound.contains("rotation", Tag.TAG_BYTE)) {
-            rotation = compound.getByte("rotation");
-        }
+    public void loadAdditional(ValueInput compound) {
+        super.loadAdditional(compound);
+        print = compound.child("print").map(IPrint::load).orElse(null);
+        rotation = compound.getByteOr("rotation", (byte) 0);
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
+    public void saveAdditional(ValueOutput compound) {
         super.saveAdditional(compound);
         if (print != null) {
-            compound.put("print", IPrint.save(print));
+            compound.store("print", ExtraCodecs.NBT, IPrint.save(print));
         }
         compound.putByte("rotation", rotation);
     }

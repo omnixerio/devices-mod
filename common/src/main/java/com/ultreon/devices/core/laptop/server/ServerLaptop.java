@@ -15,7 +15,7 @@ public class ServerLaptop {
     ;
 
     public void sendPacket(ServerPlayer player, String type, CompoundTag nbt) {
-        DevicesNetworker.networker.sendToClient(new S2CUpdatePacket(this.uuid, type, nbt), player);
+        DevicesNetworker.INSTANCE.sendToClient(new S2CUpdatePacket(this.uuid, type, nbt), player);
     }
 
     public UUID getUuid() {

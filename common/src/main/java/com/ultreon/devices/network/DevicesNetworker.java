@@ -10,7 +10,7 @@ import dev.ultreon.mods.xinexlib.network.Networker;
 import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 
 public class DevicesNetworker {
-    public static final Networker networker = XinexPlatform.createNetworker("main", networkRegistry -> {
+    public static final Networker INSTANCE = XinexPlatform.createNetworker("main", networkRegistry -> {
         networkRegistry.registerServer("c2s_update", C2SUpdatePacket.class, C2SUpdatePacket::new);
         networkRegistry.registerClient("s2c_update", S2CUpdatePacket.class, S2CUpdatePacket::new);
         networkRegistry.registerClient("notification", NotificationPacket.class, NotificationPacket::new);

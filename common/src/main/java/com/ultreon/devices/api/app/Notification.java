@@ -2,6 +2,7 @@ package com.ultreon.devices.api.app;
 
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.core.client.ClientNotification;
+import com.ultreon.devices.network.DevicesNetworker;
 import com.ultreon.devices.network.task.NotificationPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
  * The notification class for the notification system.
  * <p>
  * This class is intended to be used only on the server (logical and physical) side only. Typically,
- * you'd want to be able to send a notification to anyone on the server. There is two options to
+ * you'd want to be able to send a notification to anyone on the server. There are two options to
  * perform this, either create a background task on the server (a tick event) or send a
  * {@link Task} from the client to the server. It is not possible to
  * do this from the client side alone.
@@ -75,6 +76,6 @@ public class Notification {
      * @param player the target player
      */
     public void pushTo(ServerPlayer player) {
-        PacketHandler.sendToClient(new NotificationPacket(this), player);
+        DevicesNetworker.INSTANCE.sendToClient(new NotificationPacket(this), player);
     }
 }

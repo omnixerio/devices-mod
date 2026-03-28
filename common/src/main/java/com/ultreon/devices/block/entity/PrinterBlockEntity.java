@@ -1,5 +1,6 @@
 package com.ultreon.devices.block.entity;
 
+import com.mojang.serialization.Codec;
 import com.ultreon.devices.DeviceConfig;
 import com.ultreon.devices.api.print.IPrint;
 import com.ultreon.devices.init.DeviceBlockEntities;
@@ -10,10 +11,13 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,7 +46,7 @@ public class PrinterBlockEntity extends NetworkDeviceBlockEntity.Colored {
     @Override
     public void tick() {
         assert level != null;
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             if (remainingPrintTime > 0) {
                 if (remainingPrintTime % 20 == 0 || state == LOADING_PAPER) {
                     pipeline.putInt("remainingPrintTime", remainingPrintTime);
@@ -58,7 +62,7 @@ public class PrinterBlockEntity extends NetworkDeviceBlockEntity.Colored {
         }
 
         if (state == IDLE && remainingPrintTime == 0 && currentPrint != null) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
 //                BlockState state = level.getBlockState(worldPosition);
 //                double[] fixedPosition = CollisionHelper.fixRotation(state.getValue(PrinterBlock.FACING), 0.15, 0.5, 0.15, 0.5);
                 ItemEntity entity = new ItemEntity(level, worldPosition.getX(), worldPosition.getY() + 0.0625, worldPosition.getZ(), IPrint.generateItem(currentPrint));
@@ -79,47 +83,35 @@ public class PrinterBlockEntity extends NetworkDeviceBlockEntity.Colored {
     }
 
     @Override
-    public void load(@NotNull CompoundTag compound) {
-        super.load(compound);
-        if (compound.contains("currentPrint", Tag.TAG_COMPOUND)) {
-            currentPrint = IPrint.load(compound.getCompound("currentPrint"));
-        }
-        if (compound.contains("totalPrintTime", Tag.TAG_INT)) {
-            totalPrintTime = compound.getInt("totalPrintTime");
-        }
-        if (compound.contains("remainingPrintTime", Tag.TAG_INT)) {
-            remainingPrintTime = compound.getInt("remainingPrintTime");
-        }
-        if (compound.contains("state", Tag.TAG_INT)) {
-            state = State.values()[compound.getInt("state")];
-        }
-        if (compound.contains("paperCount", Tag.TAG_INT)) {
-            paperCount = compound.getInt("paperCount");
-        }
-        if (compound.contains("queue", Tag.TAG_LIST)) {
-            printQueue.clear();
-            ListTag queue = compound.getList("queue", Tag.TAG_COMPOUND);
-            for (int i = 0; i < queue.size(); i++) {
-                IPrint print = IPrint.load(queue.getCompound(i));
+    public void loadAdditional(@NotNull ValueInput compound) {
+        super.loadAdditional(compound);
+        compound.child("currentPrint").ifPresent(tag -> currentPrint = IPrint.load(tag));
+        compound.getInt("paperCount").ifPresent(count -> paperCount = count);
+        compound.getInt("totalPrintTime").ifPresent(time -> totalPrintTime = time);
+        compound.getInt("remainingPrintTime").ifPresent(time -> remainingPrintTime = time);
+        compound.getInt("state").ifPresent(state -> this.state = State.values()[state]);
+        compound.childrenList("queue").ifPresent(tag -> {
+            for (ValueInput child : tag) {
+                IPrint print = IPrint.load(child);
                 printQueue.offer(print);
             }
-        }
+        });
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag tag) {
+    public void saveAdditional(@NotNull ValueOutput tag) {
         super.saveAdditional(tag);
         tag.putInt("totalPrintTime", totalPrintTime);
         tag.putInt("remainingPrintTime", remainingPrintTime);
         tag.putInt("state", state.ordinal());
         tag.putInt("paperCount", paperCount);
         if (currentPrint != null) {
-            tag.put("currentPrint", IPrint.save(currentPrint));
+            tag.store("currentPrint", ExtraCodecs.NBT, IPrint.save(currentPrint));
         }
         if (!printQueue.isEmpty()) {
             ListTag queue = new ListTag();
             printQueue.forEach(print -> queue.add(IPrint.save(print)));
-            tag.put("queue", queue);
+            tag.store("queue", ExtraCodecs.NBT, queue);
         }
     }
 

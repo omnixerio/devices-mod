@@ -1,6 +1,7 @@
 package com.ultreon.devices.api.task;
 
 import com.ultreon.devices.Devices;
+import com.ultreon.devices.network.DevicesNetworker;
 import com.ultreon.devices.network.task.RequestPacket;
 import net.minecraft.client.Minecraft;
 
@@ -11,8 +12,8 @@ import java.util.function.Supplier;
 public final class TaskManager {
     private static TaskManager instance = null;
 
-    private final Map<String, Task> registeredRequests = new HashMap<String, Task>();
-    private final Map<Integer, Task> requests = new HashMap<Integer, Task>();
+    private final Map<String, Task> registeredRequests = new HashMap<>();
+    private final Map<Integer, Task> requests = new HashMap<>();
     private int currentId = 0;
 
     private TaskManager() {
@@ -44,7 +45,7 @@ public final class TaskManager {
         int requestId = manager.currentId++;
         manager.requests.put(requestId, task);
         if(Minecraft.getInstance().getConnection() != null)
-        PacketHandler.INSTANCE.sendToServer(new RequestPacket(requestId, task));
+            DevicesNetworker.INSTANCE.sendToServer(new RequestPacket(requestId, task));
     }
 
     public static Task getTask(String name) {
