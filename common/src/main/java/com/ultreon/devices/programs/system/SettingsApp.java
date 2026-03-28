@@ -459,7 +459,7 @@ public class SettingsApp extends SystemApp {
         Settings.setShowAllApps(checkBoxShowApps.isSelected());
         Laptop laptop = getLaptop();
         assert laptop != null;
-        laptop.getTaskBar().setupApplications(laptop.getApplications());
+        laptop.getTaskBar().setupApplications();
     }
 
     public static class Menu extends Layout {

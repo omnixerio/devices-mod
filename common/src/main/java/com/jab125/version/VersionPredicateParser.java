@@ -78,7 +78,7 @@ public final class VersionPredicateParser {
 		if (predicateList.isEmpty()) {
 			return AnyVersionPredicate.INSTANCE;
 		} else if (predicateList.size() == 1) {
-			return predicateList.get(0);
+			return predicateList.getFirst();
 		} else {
 			return new MultiVersionPredicate(predicateList);
 		}
@@ -220,7 +220,7 @@ public final class VersionPredicateParser {
 		public VersionInterval getInterval() {
 			if (predicates.isEmpty()) return AnyVersionPredicate.INSTANCE.getInterval();
 
-			VersionInterval ret = predicates.get(0).getInterval();
+			VersionInterval ret = predicates.getFirst().getInterval();
 
 			for (int i = 1; i < predicates.size(); i++) {
 				ret = VersionIntervalImpl.and(ret, predicates.get(i).getInterval());

@@ -35,12 +35,12 @@ public class Label extends Component {
         if (this.visible) {
             graphics.pose().pushMatrix();
             {
-                graphics.pose().translate(xPosition, yPosition, 0);
-                graphics.pose().scale((float) scale, (float) scale, (float) scale);
+                graphics.pose().translate(xPosition, yPosition);
+                graphics.pose().scale((float) scale, (float) scale);
                 if (alignment == ALIGN_RIGHT)
-                    graphics.pose().translate((int) -(mc.font.width(text) * scale), 0, 0);
+                    graphics.pose().translate((int) -(mc.font.width(text) * scale), 0);
                 if (alignment == ALIGN_CENTER)
-                    graphics.pose().translate((float) ((int) -(mc.font.width(text) * scale) / (int) (2 * scale)), 0, 0);
+                    graphics.pose().translate((float) ((int) -(mc.font.width(text) * scale) / (int) (2 * scale)), 0);
                 if (shadow) {
                     graphics.text(mc.font, text, 0, 0, textColor);
                 } else {

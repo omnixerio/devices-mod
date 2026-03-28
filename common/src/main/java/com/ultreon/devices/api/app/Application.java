@@ -1,6 +1,5 @@
 package com.ultreon.devices.api.app;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.io.File;
 import com.ultreon.devices.core.Laptop;
@@ -12,6 +11,8 @@ import com.ultreon.devices.util.DataHandler;
 import com.ultreon.devices.util.GLHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -205,40 +206,21 @@ public abstract class Application extends Wrappable implements DataHandler {
      * sure you call this super method.
      *
      * @param character the typed character
-     * @param code      the typed character code
-     */
-    @Deprecated
-    @Override
-    public void handleKeyTyped(char character, int code) {
-        currentLayout.handleKeyTyped(character, code);
-    }
-
-    @Deprecated
-    @Override
-    public void handleKeyReleased(char character, int code) {
-        currentLayout.handleKeyReleased(character, code);
-    }
-
-    /**
-     * Called when a key is typed from your keyboard. Note if you override, make
-     * sure you call this super method.
-     *
-     * @param character the typed character
      * @param modifiers the typed character modifiers
      */
     @Override
-    public void handleCharTyped(char character, int modifiers) {
-        currentLayout.handleCharTyped(character, modifiers);
+    public void handleCharTyped(CharacterEvent event) {
+        currentLayout.handleCharTyped(event);
     }
 
     @Override
-    public void handleKeyPressed(int keyCode, int scanCode, int modifiers) {
-        currentLayout.handleKeyPressed(keyCode, scanCode, modifiers);
+    public void handleKeyPressed(KeyEvent event) {
+        currentLayout.handleKeyPressed(event);
     }
 
     @Override
-    public void handleKeyReleased(int keyCode, int scanCode, int modifiers) {
-        currentLayout.handleKeyReleased(keyCode, scanCode, modifiers);
+    public void handleKeyReleased(KeyEvent event) {
+        currentLayout.handleKeyReleased(event);
     }
 
     // TODO: Remove from here and put into core

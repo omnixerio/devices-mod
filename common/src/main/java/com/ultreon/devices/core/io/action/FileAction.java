@@ -24,8 +24,8 @@ public class FileAction {
     }
 
     public static FileAction fromTag(CompoundTag tag) {
-        Type type = Type.values()[tag.getInt("type")];
-        CompoundTag data = tag.getCompound("data");
+        Type type = Type.values()[tag.getIntOr("type", 0)];
+        CompoundTag data = tag.getCompoundOrEmpty("data");
         return new FileAction(type, data);
     }
 

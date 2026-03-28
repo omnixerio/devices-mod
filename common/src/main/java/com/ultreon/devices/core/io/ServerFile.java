@@ -59,14 +59,14 @@ public sealed class ServerFile permits ServerFolder {
     }
 
     private ServerFile(String name, boolean protect, CompoundTag tag) {
-        this.openingApp = tag.getString("openingApp");
+        this.openingApp = tag.getString("openingApp").orElseThrow();
         this.name = name;
-        this.data = tag.getCompound("data");
-        this.creationTime = tag.getLong("creationTime");
-        this.lastModified = tag.getLong("lastModified");
-        this.lastAccessed = tag.getLong("lastAccessed");
+        this.data = tag.getCompound("data").orElseThrow();
+        this.creationTime = tag.getLong("creationTime").orElseThrow();
+        this.lastModified = tag.getLong("lastModified").orElseThrow();
+        this.lastAccessed = tag.getLong("lastAccessed").orElseThrow();
         this.protect = protect;
-        this.mimeType = MimeType.of(tag.getCompound("mimeType"));
+        this.mimeType = MimeType.of(tag.getCompound("mimeType").orElseThrow());
     }
 
     public String getName() {

@@ -13,7 +13,7 @@ public record Preset(ColorScheme colorScheme, Identifier id) {
     }
 
     public static Preset fromTag(CompoundTag tag) {
-        Identifier id = new Identifier(tag.getString("id"));
+        Identifier id = Identifier.tryParse(tag.getStringOr("id", "minecraft:"));
         return ColorSchemePresetRegistry.getPreset(id);
     }
 }

@@ -1,7 +1,6 @@
 package com.ultreon.devices.api.app.component;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.platform.TextureUtil;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.IIcon;
@@ -12,13 +11,11 @@ import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.object.AppInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.resources.ResourceManager;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
@@ -28,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -115,6 +113,10 @@ public class Image extends Component {
         int r;
         int g;
         int b;
+
+        public int toRGB() {
+            return (r << 16) | (g << 8) | b;
+        }
     }
 
     public void setTint(Supplier<ColorSupplier> colorSupplier) {
@@ -262,42 +264,17 @@ public class Image extends Component {
 
 //            RenderSystem.setShaderColor(tint.get().r/255f, tint.get().g/255f, tint.get().b/255f, alpha);
 
-            if (image != null && image.texture != -1) {
+            if (image != null && image.texture != null) {
                 image.restore();
 
-//                RenderSystem.setShaderColor(tint.get().r/255f, tint.get().g/255f, tint.get().b/255f, alpha);
-//                RenderSystem.enableBlend();
-//                RenderSystem.setShaderTexture(0, image.textureId);
-
-                if (/*hasBorder*/true) {
-                    if (drawFull) {
-                        //DebugLog.log("Rendering image");
-                        RenderUtil.drawRectWithTexture(null, graphics, x + borderThickness, y + borderThickness, 0, imageU, imageV, componentWidth - borderThickness * 2, componentHeight - borderThickness * 2, 256, 256);
-                        //GuiComponent.blit(pose, x + borderThickness, y + borderThickness, imageU, imageV, componentWidth - borderThickness * 2, componentHeight - borderThickness * 2, 256, 256);
-                    } else {
-                        //DebugLog.log("Rendering image");
-                        RenderUtil.drawRectWithTexture(null, graphics, x + borderThickness, y + borderThickness, imageU, imageV, componentWidth - borderThickness * 2, componentHeight - borderThickness * 2, imageWidth, imageHeight, sourceWidth, sourceHeight);
-                        //GuiComponent.blit(pose, x + borderThickness, y + borderThickness, componentWidth - borderThickness * 2, imageU, imageV, componentHeight - borderThickness * 2, sourceWidth, sourceHeight, imageWidth, imageHeight);
-                    }
+                if (drawFull) {
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, Identifier.withDefaultNamespace(""), x + borderThickness, y + borderThickness, 0, imageU, imageV, componentWidth - borderThickness * 2, componentHeight - borderThickness * 2, 256, 256, tint.get().toRGB());
                 } else {
-                    if (drawFull) {
-                        //DebugLog.log("Rendering image");
-                        RenderUtil.drawRectWithTexture(null, graphics, x, y, componentWidth, componentHeight, imageU, imageV, 256, 256);
-//                        GuiComponent.blit(pose, x, y, componentWidth, componentHeight, imageU, imageV, 256, 256);
-                    } else {
-                        //DebugLog.log("Rendering image");
-                        RenderUtil.drawRectWithTexture(null, graphics, x, y, componentWidth, componentHeight, imageU, imageV, imageWidth, imageHeight, sourceWidth, sourceHeight);
-                        //GuiComponent.blit(pose, x, y, componentWidth, componentHeight, imageU, imageV, sourceWidth, sourceHeight, imageWidth, imageHeight);
-                    }
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, Identifier.withDefaultNamespace(""), x + borderThickness, y + borderThickness, imageU, imageV, componentWidth - borderThickness * 2, componentHeight - borderThickness * 2, imageWidth, imageHeight, sourceWidth, sourceHeight);
                 }
             } else {
-                if (/*hasBorder*/true) {
-                    graphics.fill(x + borderThickness, y + borderThickness, x + componentWidth - borderThickness, y + componentHeight - borderThickness, Color.LIGHT_GRAY.getRGB());
-                } else {
-                    graphics.fill(x, y, x + componentWidth, y + componentHeight, Color.LIGHT_GRAY.getRGB());
-                }
+                graphics.fill(x + borderThickness, y + borderThickness, x + componentWidth - borderThickness, y + componentHeight - borderThickness, Color.LIGHT_GRAY.getRGB());
             }
-//            RenderSystem.setShaderColor(1f, 1f, 1f, alpha);
         }
     }
 
@@ -451,9 +428,9 @@ public class Image extends Component {
             }
             Runnable r = () -> {
                 try {
-                    URL url = new URL(this.url);
-                    OnlineRequest.checkURLForSuspicions(url);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    URI url = URI.create(this.url);
+                    OnlineRequest.checkURLForSuspicions(url.toURL());
+                    HttpURLConnection conn = (HttpURLConnection) url.toURL().openConnection();
                     conn.setRequestProperty("User-Agent", "Mozilla/5.0");
                     conn.setRequestProperty("Accept", "image/png");
                     InputStream connIn = conn.getInputStream();
@@ -473,7 +450,7 @@ public class Image extends Component {
                         setup = true;
                     });
                 } catch (IOException e) {
-                    texture = MissingTextureAtlasSprite.getTexture();
+//                    texture = MissingTextureAtlasSprite.getTexture();
                     setup = true;
                     e.printStackTrace();
                 }
@@ -491,42 +468,10 @@ public class Image extends Component {
                 return cachedImage;
             }
 
-            try {
-                texture.load(Minecraft.getInstance().getResourceManager());
-                CachedImage cachedImage = new CachedImage(texture.getId(), image.imageWidth, image.imageHeight, true);
-                if (texture != MissingTextureAtlasSprite.getTexture())
-                    CACHE.put(url, cachedImage);
-                return cachedImage;
-            } catch (IOException e) {
-                return new CachedImage(MissingTextureAtlasSprite.getTexture().getId(), 0, 0, true);
-            }
-        }
-    }
-
-    private static class DynamicLoadedTexture extends AbstractTexture {
-        private final InputStream in;
-        private final BufferedImage image;
-
-        private DynamicLoadedTexture(InputStream in, BufferedImage image) {
-            this.in = in;
-
-            this.image = image;
-            TextureUtil.prepareImage(getId(), this.image.getWidth(), this.image.getHeight());
-        }
-
-        @Override
-        public void load(@NotNull ResourceManager resourceManager) throws IOException {
-            NativeImage nativeImage = NativeImage.read(in);
-            Minecraft.getInstance().getTextureManager().register(Devices.id("dynamic_loaded/" + getId()), this);
-            this.upload(nativeImage);
-        }
-
-        private void upload(NativeImage nativeImage) {
-            nativeImage.upload(0, 0, 0, mipmap);
-        }
-
-        public BufferedImage getImage() {
-            return image;
+            CachedImage cachedImage = new CachedImage(texture, image.imageWidth, image.imageHeight, true);
+            if (texture != null)
+                CACHE.put(url, cachedImage);
+            return cachedImage;
         }
     }
 

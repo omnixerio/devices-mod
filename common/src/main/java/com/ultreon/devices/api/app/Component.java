@@ -4,6 +4,8 @@ import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.programs.system.object.ColorScheme;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.resources.Identifier;
 
@@ -126,56 +128,23 @@ public abstract class Component {
     }
 
     /**
-     * Called when a key is typed from your keyboard.
-     *
-     * @param character the typed character
-     * @param code      the typed character code
-     */
-    @Deprecated
-    protected void handleKeyTyped(char character, int code) {
-
-    }
-
-    /**
-     * Called when a key is released from your keyboard.
-     *
-     * @param character the released character
-     * @param code      the released character code
-     */
-    @Deprecated
-    protected void handleKeyReleased(char character, int code) {
-
-    }
-
-    /**
      * Called when a character is typed from your keyboard.
      *
      * @param codePoint the typed character
      * @param modifiers the typed character modifiers
      */
-    public void handleCharTyped(char codePoint, int modifiers) {
+    public void handleCharTyped(CharacterEvent event) {
 
     }
 
     /**
      * Called when a key is pressed from your keyboard.
-     *
-     * @param keyCode   the pressed key code
-     * @param scanCode  the pressed key scan code
-     * @param modifiers the pressed key modifiers
      */
-    public void handleKeyPressed(int keyCode, int scanCode, int modifiers) {
+    public void handleKeyPressed(KeyEvent event) {
 
     }
 
-    /**
-     * Called when a key is released from your keyboard.
-     *
-     * @param keyCode   the released key code
-     * @param scanCode  the released key scan code
-     * @param modifiers the released key modifiers
-     */
-    public void handleKeyReleased(int keyCode, int scanCode, int modifiers) {
+    protected void handleKeyReleased(KeyEvent event) {
 
     }
 

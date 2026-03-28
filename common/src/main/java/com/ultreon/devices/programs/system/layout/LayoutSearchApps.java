@@ -8,7 +8,6 @@ import com.ultreon.devices.api.app.component.Button;
 import com.ultreon.devices.api.app.component.ItemList;
 import com.ultreon.devices.api.app.component.TextField;
 import com.ultreon.devices.api.app.renderer.ListItemRenderer;
-import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.programs.system.AppStore;
 import com.ultreon.devices.programs.system.object.LocalEntry;

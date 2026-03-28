@@ -6,7 +6,6 @@ import com.ultreon.devices.api.app.Dialog;
 import com.ultreon.devices.api.app.System;
 import com.ultreon.devices.api.app.component.Button;
 import com.ultreon.devices.api.app.component.TextField;
-import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.object.AppInfo;
 import net.minecraft.client.Minecraft;

@@ -343,7 +343,7 @@ public class GitWebFrame extends Component {
             }
 
             if (modules.size() > 0) {
-                ModuleEntry entry = modules.get(modules.size() - 1);
+                ModuleEntry entry = modules.getLast();
                 Module module = entry.getModule();
                 int height = module.calculateHeight(entry.getData(), width);
                 //if (height == 0)

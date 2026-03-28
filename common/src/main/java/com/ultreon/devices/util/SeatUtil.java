@@ -14,7 +14,7 @@ public class SeatUtil {
     public static void createSeatAndSit(Level worldIn, BlockPos pos, Player playerIn, double yOffset) {
         List<SeatEntity> seats = worldIn.getEntitiesOfClass(SeatEntity.class, new AABB(pos));
         if(!seats.isEmpty()) {
-            SeatEntity seat = seats.get(0);
+            SeatEntity seat = seats.getFirst();
             if(seat.getFirstPassenger() == null) {
                 playerIn.startRiding(seat);
             }

@@ -25,7 +25,7 @@ public class EmailManager implements WorldSavedData {
 
     public boolean addEmailToInbox(Email email, String to) {
         if (nameToInbox.containsKey(to)) {
-            nameToInbox.get(to).add(0, email);
+            nameToInbox.get(to).addFirst(email);
             sendNotification(to, email);
             return true;
         }

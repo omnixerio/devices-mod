@@ -242,7 +242,7 @@ public final class VersionIntervalImpl implements VersionInterval {
 		}
 
 		if (out.size() == 1) {
-			VersionInterval e = out.get(0);
+			VersionInterval e = out.getFirst();
 
 			if (e.getMin() == null && e.getMax() == null) {
 				return;

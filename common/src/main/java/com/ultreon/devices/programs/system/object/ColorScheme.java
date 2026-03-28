@@ -29,45 +29,19 @@ public class ColorScheme {
 
     public static ColorScheme fromTag(CompoundTag tag) {
         ColorScheme scheme = new ColorScheme();
-        if (tag.contains("buttonColor", Tag.TAG_INT)) {
-            scheme.buttonColor = tag.getInt("buttonColor");
-        }
-        if (tag.contains("textColor", Tag.TAG_INT)) {
-            scheme.textColor = tag.getInt("textColor");
-        }
-        if (tag.contains("textSecondaryColor", Tag.TAG_INT)) {
-            scheme.textSecondaryColor = tag.getInt("textSecondaryColor");
-        }
-        if (tag.contains("headerColor", Tag.TAG_INT)) {
-            scheme.headerColor = tag.getInt("headerColor");
-        }
-        if (tag.contains("backgroundColor", Tag.TAG_INT)) {
-            scheme.backgroundColor = tag.getInt("backgroundColor");
-        }
-        if (tag.contains("backgroundSecondaryColor", Tag.TAG_INT)) {
-            scheme.backgroundSecondaryColor = tag.getInt("backgroundSecondaryColor");
-        }
-        if (tag.contains("itemBackgroundColor", Tag.TAG_INT)) {
-            scheme.itemBackgroundColor = tag.getInt("itemBackgroundColor");
-        }
-        if (tag.contains("itemHighlightColor", Tag.TAG_INT)) {
-            scheme.itemHighlightColor = tag.getInt("itemHighlightColor");
-        }
-        if (tag.contains("buttonOutlineColor", Tag.TAG_INT)) {
-            scheme.buttonOutlineColor = tag.getInt("buttonOutlineColor");
-        }
-        if (tag.contains("windowBackgroundColor", Tag.TAG_INT)) {
-            scheme.windowBackgroundColor = tag.getInt("windowBackgroundColor");
-        }
-        if (tag.contains("windowOutlineColor", Tag.TAG_INT)) {
-            scheme.windowOutlineColor = tag.getInt("windowOutlineColor");
-        }
-        if (tag.contains("iconColor", Tag.TAG_INT)) {
-            scheme.iconColor = tag.getInt("iconColor");
-        }
-        if (tag.contains("iconSecondaryColor", Tag.TAG_INT)) {
-            scheme.iconSecondaryColor = tag.getInt("iconSecondaryColor");
-        }
+        tag.getInt("buttonColor").ifPresent(c -> scheme.buttonColor = c);
+        tag.getInt("textColor").ifPresent(c -> scheme.textColor = c);
+        tag.getInt("textSecondaryColor").ifPresent(c -> scheme.textSecondaryColor = c);
+        tag.getInt("headerColor").ifPresent(c -> scheme.headerColor = c);
+        tag.getInt("backgroundColor").ifPresent(c -> scheme.backgroundColor = c);
+        tag.getInt("backgroundSecondaryColor").ifPresent(c -> scheme.backgroundSecondaryColor = c);
+        tag.getInt("itemBackgroundColor").ifPresent(c -> scheme.itemBackgroundColor = c);
+        tag.getInt("itemHighlightColor").ifPresent(c -> scheme.itemHighlightColor = c);
+        tag.getInt("buttonOutlineColor").ifPresent(c -> scheme.buttonOutlineColor = c);
+        tag.getInt("windowBackgroundColor").ifPresent(c -> scheme.windowBackgroundColor = c);
+        tag.getInt("windowOutlineColor").ifPresent(c -> scheme.windowOutlineColor = c);
+        tag.getInt("iconColor").ifPresent(c -> scheme.iconColor = c);
+        tag.getInt("iconSecondaryColor").ifPresent(c -> scheme.iconSecondaryColor = c);
         return scheme;
     }
 

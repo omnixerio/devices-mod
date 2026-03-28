@@ -8,7 +8,6 @@ import com.ultreon.devices.api.app.Icons;
 import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.api.app.component.Button;
 import com.ultreon.devices.api.io.File;
-import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.programs.gitweb.component.GitWebFrame;
 import net.minecraft.nbt.CompoundTag;

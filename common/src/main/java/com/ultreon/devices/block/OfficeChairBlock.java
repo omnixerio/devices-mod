@@ -32,6 +32,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 public class OfficeChairBlock extends DeviceBlock.Colored
 {
@@ -95,7 +96,7 @@ public class OfficeChairBlock extends DeviceBlock.Colored
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
+    public BlockEntity newBlockEntity(@NonNull BlockPos pos, @NonNull BlockState state)
     {
         return new OfficeChairBlockEntity(pos, state);
     }

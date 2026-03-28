@@ -16,9 +16,9 @@ public class Drive {
     private boolean synced = false;
 
     public Drive(CompoundTag driveTag) {
-        this.name = driveTag.getString("name");
-        this.uuid = UUID.fromString(driveTag.getString("uuid"));
-        this.type = Type.fromString(driveTag.getString("type"));
+        this.name = driveTag.getString("name").orElseThrow();
+        this.uuid = UUID.fromString(driveTag.getString("uuid").orElseThrow());
+        this.type = Type.fromString(driveTag.getString("type").orElseThrow());
     }
 
     /**

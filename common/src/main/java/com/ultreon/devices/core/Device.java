@@ -3,7 +3,6 @@ package com.ultreon.devices.core;
 import com.ultreon.devices.block.entity.DeviceBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
@@ -81,10 +80,10 @@ public class Device {
 
     public static Device fromTag(CompoundTag tag) {
         Device device = new Device();
-        device.id = UUID.fromString(tag.getString("id"));
-        device.name = tag.getString("name");
-        if (tag.contains("pos", Tag.TAG_LONG)) {
-            device.pos = BlockPos.of(tag.getLong("pos"));
+        device.id = UUID.fromString(tag.getString("id").orElseThrow());
+        device.name = tag.getString("name").orElseThrow();
+        if (tag.contains("pos")) {
+            device.pos = BlockPos.of(tag.getLong("pos").orElseThrow());
         }
         return device;
     }

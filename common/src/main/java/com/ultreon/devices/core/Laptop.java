@@ -1,5 +1,6 @@
 package com.ultreon.devices.core;
 
+import ca.weblite.objc.Client;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.ultreon.devices.Devices;
@@ -34,6 +35,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.AbstractTexture;
@@ -48,6 +54,7 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2f;
@@ -636,31 +643,31 @@ public class Laptop extends Screen implements System {
             }
         }
 
-        this.bar.handleClick(this, posX, posY + getScreenHeight() - TaskBar.BAR_HEIGHT, (int) mouseX, (int) mouseY, mouseButton);
+        this.bar.handleClick(this, posX, posY + getScreenHeight() - TaskBar.BAR_HEIGHT, event);
 
         for (int i = 0; i < windows.size(); i++) {
             Window<Application> window = (Window<Application>) windows.get(i);
             if (window != null) {
                 try {
                     Window<Dialog> dialogWindow = window.getContent().getActiveDialog();
-                    if (isMouseWithinWindow((int) mouseX, (int) mouseY, window) || isMouseWithinWindow((int) mouseX, (int) mouseY, dialogWindow)) {
+                    if (isMouseWithinWindow((int) event.x(), (int) event.y(), window) || isMouseWithinWindow((int) event.x(), (int) event.y(), dialogWindow)) {
                         windows.remove(i);
                         i--;
                         updateWindowStack();
-                        windows.add(0, window);
+                        windows.addFirst(window);
 
-                        windows.get(0).handleMouseClick(this, posX, posY, (int) mouseX, (int) mouseY, mouseButton);
+                        windows.getFirst().handleMouseClick(this, posX, posY, event);
 
-                        if (isMouseWithinWindowBar((int) mouseX, (int) mouseY, dialogWindow)) {
-                            dragWindowFromX = mouseX - dialogWindow.offsetX;
-                            dragWindowFromY = mouseY - dialogWindow.offsetY;
+                        if (isMouseWithinWindowBar((int) event.x(), (int) event.y(), dialogWindow)) {
+                            dragWindowFromX = event.x() - dialogWindow.offsetX;
+                            dragWindowFromY = event.y() - dialogWindow.offsetY;
                             this.dragging = true;
                             return false;
                         }
 
-                        if (isMouseWithinWindowBar((int) mouseX, (int) mouseY, window) && dialogWindow == null) {
-                            dragWindowFromX = mouseX - window.offsetX;
-                            dragWindowFromY = mouseY - window.offsetY;
+                        if (isMouseWithinWindowBar((int) event.x(), (int) event.y(), window) && dialogWindow == null) {
+                            dragWindowFromX = event.x() - window.offsetX;
+                            dragWindowFromY = event.y() - window.offsetY;
                             this.dragging = true;
                             return false;
                         }
@@ -670,7 +677,7 @@ public class Laptop extends Screen implements System {
                     e.printStackTrace();
                     Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
                     message.setTitle("Error");
-                    if (windows.size() == 0 || windows.get(0) == null) {
+                    if (windows.size() == 0 || windows.getFirst() == null) {
                         CompoundTag intent = new CompoundTag();
                         AppInfo info = window.content.getInfo();
                         if (info != null) {
@@ -678,18 +685,18 @@ public class Laptop extends Screen implements System {
                         }
                         openApplication(ApplicationManager.getApplication(Devices.id("diagnostics")), intent);
                     } else {
-                        windows.get(0).openDialog(message);
+                        windows.getFirst().openDialog(message);
                     }
                 }
             }
         }
 
-        return super.mouseClicked(event);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int state) {
-        super.mouseReleased(mouseX, mouseY, state);
+    public boolean mouseReleased(MouseButtonEvent event) {
+        super.mouseReleased(event);
         this.dragging = false;
         dragWindowFromX = null;
         dragWindowFromY = null;
@@ -697,17 +704,17 @@ public class Laptop extends Screen implements System {
             if (this.context != null) {
                 int dropdownX = context.xPosition;
                 int dropdownY = context.yPosition;
-                if (isMouseInside((int) mouseX, (int) mouseY, dropdownX, dropdownY, dropdownX + context.width, dropdownY + context.height)) {
-                    this.context.handleMouseRelease((int) mouseX, (int) mouseY, state);
+                if (isMouseInside((int) event.x(), (int) event.y(), dropdownX, dropdownY, dropdownX + context.width, dropdownY + context.height)) {
+                    this.context.handleMouseRelease(event);
                 }
-            } else if (windows.get(0) != null) {
-                windows.get(0).handleMouseRelease((int) mouseX, (int) mouseY, state);
+            } else if (windows.getFirst() != null) {
+                windows.getFirst().handleMouseRelease(event);
             }
         } catch (Exception e) {
             e.printStackTrace();
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
-            windows.get(0).openDialog(message);
+            windows.getFirst().openDialog(message);
         }
         return true;
     }
@@ -731,61 +738,61 @@ public class Laptop extends Screen implements System {
     }
 
     @Override
-    public boolean charTyped(char codePoint, int modifiers) {
-        boolean override = super.charTyped(codePoint, modifiers);
+    public boolean charTyped(CharacterEvent event) {
+        boolean override = super.charTyped(event);
         try {
-            if (!override && windows.get(0) != null)
-                windows.get(0).handleCharTyped(codePoint, modifiers);
+            if (!override && windows.getFirst() != null)
+                windows.getFirst().handleCharTyped(event);
         } catch (Exception e) {
             e.printStackTrace();
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
-            windows.get(0).openDialog(message);
+            windows.getFirst().openDialog(message);
         }
         return override;
     }
 
     @Override
-    public boolean keyPressed(final int keyCode, final int scanCode, final int modifiers) {
-        final boolean override = super.keyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(KeyEvent event) {
+        final boolean override = super.keyPressed(event);
 
         try {
-            if (!pressed.contains(keyCode) && !override && windows.get(0) != null) {
-                windows.get(0).handleKeyPressed(keyCode, scanCode, modifiers);
+            if (!pressed.contains(event.key()) && !override && windows.getFirst() != null) {
+                windows.getFirst().handleKeyPressed(event);
             }
         } catch (Exception e) {
             e.printStackTrace();
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
-            windows.get(0).openDialog(message);
+            windows.getFirst().openDialog(message);
         }
-        pressed.add(keyCode);
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        pressed.add(event.key());
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        pressed.remove(keyCode);
+    public boolean keyReleased(KeyEvent event) {
+        pressed.remove(event.key());
 
-        boolean b = super.keyReleased(keyCode, scanCode, modifiers);
+        boolean b = super.keyReleased(event);
 
         try {
-            if (keyCode >= 32 && keyCode < 256 && windows.get(0) != null) {
-                windows.get(0).handleKeyReleased(keyCode, scanCode, modifiers);
+            if (event.key() >= 32 && event.key() < 256 && windows.getFirst() != null) {
+                windows.getFirst().handleKeyReleased(event);
                 return true;
             }
         } catch (Exception e) {
             e.printStackTrace();
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
-            windows.get(0).openDialog(message);
+            windows.getFirst().openDialog(message);
         }
         return b;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
         int posX = (width - getScreenWidth()) / 2;
         int posY = (height - getScreenHeight()) / 2;
 
@@ -793,24 +800,24 @@ public class Laptop extends Screen implements System {
             if (this.context != null) {
                 int dropdownX = context.xPosition;
                 int dropdownY = context.yPosition;
-                if (isMouseInside((int) mouseX, (int) mouseY, dropdownX, dropdownY, dropdownX + context.width, dropdownY + context.height)) {
-                    this.context.handleMouseDrag((int) mouseX, (int) mouseY, button);
+                if (isMouseInside((int) event.x(), (int) event.y(), dropdownX, dropdownY, dropdownX + context.width, dropdownY + context.height)) {
+                    this.context.handleMouseDrag(event);
                 }
                 return true;
             }
 
-            if (windows.get(0) != null) {
-                Window<Application> window = (Window<Application>) windows.get(0);
+            if (windows.getFirst() != null) {
+                Window<Application> window = (Window<Application>) windows.getFirst();
                 Window<Dialog> dialogWindow = window.getContent().getActiveDialog();
                 if (dragging) {
-                    if (isMouseOnScreen((int) mouseX, (int) mouseY) && dragWindowFromX != null && dragWindowFromY != null) {
-                        Objects.requireNonNullElse(dialogWindow, window).handleWindowMove(posX, posY, (int) ((dragX + mouseX) - dragWindowFromX), (int) ((dragY + mouseY) - dragWindowFromY));
+                    if (isMouseOnScreen((int) event.x(), (int) event.y()) && dragWindowFromX != null && dragWindowFromY != null) {
+                        Objects.requireNonNullElse(dialogWindow, window).handleWindowMove(posX, posY, (int) ((dx + event.x()) - dragWindowFromX), (int) ((dy + event.y()) - dragWindowFromY));
                     } else {
                         dragging = false;
                     }
                 } else {
-                    if (isMouseWithinWindow((int) mouseX, (int) mouseY, window) || isMouseWithinWindow((int) mouseX, (int) mouseY, dialogWindow)) {
-                        window.handleMouseDrag((int) mouseX, (int) mouseY, button);
+                    if (isMouseWithinWindow((int) event.x(), (int) event.y(), window) || isMouseWithinWindow((int) event.x(), (int) event.y(), dialogWindow)) {
+                        window.handleMouseDrag(event);
                     }
                 }
             }
@@ -818,10 +825,10 @@ public class Laptop extends Screen implements System {
             e.printStackTrace();
             Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
             message.setTitle("Error");
-            windows.get(0).openDialog(message);
+            windows.getFirst().openDialog(message);
         }
-        this.lastMouseX = (int) mouseX;
-        this.lastMouseY = (int) mouseY;
+        this.lastMouseX = (int) event.x();
+        this.lastMouseY = (int) event.y();
         return true;
     }
 
@@ -831,24 +838,25 @@ public class Laptop extends Screen implements System {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        if (delta != 0) {
+    public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
+        if (scrollY != 0) {
             try {
-                if (windows.get(0) != null) {
-                    windows.get(0).handleMouseScroll((int) mouseX, (int) mouseY, delta, delta >= 0);
+                if (windows.getFirst() != null) {
+                    windows.getFirst().handleMouseScroll((int) x, (int) y, scrollY, scrollY >= 0);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 Dialog.Message message = new Dialog.Message("An error has occurred.\nSend logs to devs.");
                 message.setTitle("Error");
-                windows.get(0).openDialog(message);
+                windows.getFirst().openDialog(message);
             }
         }
         return true;
     }
 
     public void renderComponentTooltip(@NotNull GuiGraphicsExtractor graphics, @NotNull List<Component> tooltips, int x, int y) {
-        graphics.renderComponentTooltip(minecraft.font, tooltips, x, y);
+        List<ClientTooltipComponent> tooltipComponents = tooltips.stream().map(component -> ClientTooltipComponent.create(component.getVisualOrderText())).toList();
+        graphics.tooltip(minecraft.font, tooltipComponents, x, y, DefaultTooltipPositioner.INSTANCE, null);
     }
 
     @SuppressWarnings("ReassignedVariable")
@@ -859,7 +867,7 @@ public class Laptop extends Screen implements System {
             if (window != null && window.content instanceof Application && ((Application) window.content).getInfo() == info) {
                 windows.remove(i);
                 updateWindowStack();
-                windows.add(0, window);
+                windows.addFirst(window);
                 i--;
                 return Pair.of((Application) window.content, true);
             }
@@ -906,7 +914,7 @@ public class Laptop extends Screen implements System {
             window.init((width - getScreenWidth()) / 2, (height - getScreenHeight()) / 2, intent);
 
             if (appData.contains(app.getInfo().getFormattedId())) {
-                app.load(appData.getCompound(app.getInfo().getFormattedId()));
+                app.load(appData.getCompoundOrEmpty(app.getInfo().getFormattedId()));
             }
 
             if (app.getCurrentLayout() == null) {
@@ -993,7 +1001,7 @@ public class Laptop extends Screen implements System {
             return;
 
         updateWindowStack();
-        windows.add(0, window);
+        windows.addFirst(window);
     }
 
     private void updateWindowStack() {
@@ -1205,9 +1213,9 @@ public class Laptop extends Screen implements System {
         }
 
         private Wallpaper(CompoundTag tag) {
-            var url = tag.getString("url");
+            var url = tag.getString("url").orElse(null);
             var location = tag.getInt("location");
-            if (tag.contains("url", 8)) {
+            if (tag.contains("url")) {
                 if (!OnlineRequest.isSafeAddress(url)) {
                     // Reset to default wallpaper.
                     this.url = null;
@@ -1218,7 +1226,7 @@ public class Laptop extends Screen implements System {
                 }
             } else {
                 this.url = null;
-                this.location = location;
+                this.location = location.orElse(0);
             }
         }
         private Wallpaper(String url) {

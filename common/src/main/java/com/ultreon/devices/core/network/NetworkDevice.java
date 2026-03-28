@@ -62,11 +62,11 @@ public class NetworkDevice extends Device {
 
     public static NetworkDevice fromTag(CompoundTag tag) {
         NetworkDevice device = new NetworkDevice();
-        device.id = UUID.fromString(tag.getString("id"));
-        device.name = tag.getString("name");
+        device.id = UUID.fromString(tag.getString("id").orElseThrow());
+        device.name = tag.getString("name").orElseThrow();
 
-        if (tag.contains("pos", Tag.TAG_LONG)) {
-            device.pos = BlockPos.of(tag.getLong("pos"));
+        if (tag.contains("pos")) {
+            device.pos = BlockPos.of(tag.getLong("pos").orElseThrow());
         }
         return device;
     }

@@ -112,12 +112,6 @@ public class GitWebApp extends Application implements SystemAccessor, DataHandle
         layoutPref.addComponent(backBtn);
     }
 
-    @Override
-    @Deprecated
-    public void handleKeyTyped(char character, int code) {
-        super.handleKeyTyped(character, code);
-    }
-
     private String getAddress() {
         return textFieldAddress.getText().replace("\\s+", "");
     }

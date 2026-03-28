@@ -1,7 +1,6 @@
 package com.ultreon.devices.api.app.component;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.interfaces.IHighlight;
 import com.ultreon.devices.api.app.listener.KeyListener;
@@ -14,7 +13,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.util.Mth;
 
@@ -97,14 +97,11 @@ public class TextArea extends Component {
     @Override
     public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (this.visible) {
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-
             Color bgColor = new Color(backgroundColor);
             graphics.fill(x, y, x + width, y + height, bgColor.darker().darker().getRGB());
             graphics.fill(x + 1, y + 1, x + width - 1, y + height - 1, bgColor.getRGB());
 
-            if (!isFocused && placeholder != null && (lines.isEmpty() || (lines.size() == 1 && lines.get(0).isEmpty()))) {
-                RenderSystem.enableBlend();
+            if (!isFocused && placeholder != null && (lines.isEmpty() || (lines.size() == 1 && lines.getFirst().isEmpty()))) {
                 RenderUtil.drawStringClipped(graphics, placeholder, x + padding, y + padding, width - padding * 2, placeholderColor, false);
             }
 
@@ -178,23 +175,23 @@ public class TextArea extends Component {
     public void handleMouseClick(MouseButtonEvent event) {
         if (!this.visible || !this.enabled) return;
 
-        ScrollBar scrollBar = isMouseInsideScrollBar(mouseX, mouseY);
+        ScrollBar scrollBar = isMouseInsideScrollBar((int) event.x(), (int) event.y());
         if (scrollBar != null) {
             this.scrollBar = scrollBar;
             switch (scrollBar) {
-                case HORIZONTAL -> clickedX = mouseX;
-                case VERTICAL -> clickedY = mouseY;
+                case HORIZONTAL -> clickedX = (int) event.x();
+                case VERTICAL -> clickedY = (int) event.y();
             }
             return;
         }
 
         if (!this.editable) return;
 
-        this.isFocused = GuiHelper.isMouseInside(mouseX, mouseY, xPosition, yPosition, xPosition + width, yPosition + height);
+        this.isFocused = GuiHelper.isMouseInside((int) event.x(), (int) event.y(), xPosition, yPosition, xPosition + width, yPosition + height);
 
-        if (GuiHelper.isMouseWithin(mouseX, mouseY, xPosition + padding, yPosition + padding, width - padding * 2, height - padding * 2)) {
-            int lineX = mouseX - xPosition - padding + horizontalScroll;
-            int lineY = (mouseY - yPosition - padding) / font.lineHeight + verticalScroll;
+        if (GuiHelper.isMouseWithin((int) event.x(), (int) event.y(), xPosition + padding, yPosition + padding, width - padding * 2, height - padding * 2)) {
+            int lineX = (int) (event.x() - xPosition - padding + horizontalScroll);
+            int lineY = (int) ((event.y() - yPosition - padding) / font.lineHeight + verticalScroll);
             if (lineY >= lines.size()) {
                 cursorX = lines.get(Math.max(0, lines.size() - 1)).length();
                 cursorY = lines.size() - 1;
@@ -242,35 +239,31 @@ public class TextArea extends Component {
     }
 
     @Override
-    public void handleCharTyped(char codePoint, int modifiers) {
+    public void handleCharTyped(CharacterEvent event) {
         if (!this.visible || !this.enabled || !this.isFocused || !this.editable) return;
 
-        DebugLog.log("TextArea.handleCharTyped: codePoint = " + codePoint + ", modifiers = " + modifiers);
-
-        if (codePoint == '\\') performBackspace();
-        else if (Character.isDefined(codePoint)) writeText(codePoint);
+        if (event.codepoint() == '\\') performBackspace();
+        else if (Character.isDefined(event.codepoint())) writeText(event.codepointAsString());
 
         if (keyListener != null) {
-            keyListener.onCharTyped(codePoint);
+            keyListener.onCharTyped(event);
         }
         updateScroll();
     }
 
     @Override
-    public void handleKeyPressed(int keyCode, int scanCode, int modifiers) {
+    public void handleKeyPressed(KeyEvent event) {
         if (!this.visible || !this.enabled || !this.isFocused || !this.editable) return;
 
-        DebugLog.log("TextArea.handleKeyPressed: keyCode = " + keyCode + ", scanCode = " + scanCode + ", modifiers = " + modifiers);
-
-        if (Screen.isPaste(keyCode)) {
+        if (event.isPaste()) {
             String[] lines = Minecraft.getInstance().keyboardHandler.getClipboard().split("\n");
             for (int i = 0; i < lines.length - 1; i++) {
                 writeText(lines[i] + "\n");
             }
             writeText(lines[lines.length - 1]);
         } else {
-            DebugLog.log("TextArea.handleKeyTypes: keyCode = " + keyCode);
-            switch (keyCode) {
+            DebugLog.log("TextArea.handleKeyTypes: keyCode = " + event.key());
+            switch (event.key()) {
                 case InputConstants.KEY_BACKSPACE -> performBackspace(); // TODO: Make delete actually work
                 case InputConstants.KEY_RETURN -> performReturn();
                 case InputConstants.KEY_TAB -> writeText('\t');
@@ -407,15 +400,6 @@ public class TextArea extends Component {
             return;
         }
 
-		/*if(activeLine.isEmpty() || (activeLine.length() == 1 && activeLine.charAt(0) == '\n'))
-		{
-			if(verticalScroll > 0)
-			{
-				scroll(-1);
-				moveYCursor(1);
-			}
-		}*/
-
         if (wrapText) {
             if (activeLine.isEmpty()) {
                 lines.remove(cursorY);
@@ -468,23 +452,11 @@ public class TextArea extends Component {
         if (wrapText) {
             if (text.endsWith("\n")) {
                 String result = head + text;
-                if (font.width(result) > width - padding * 2) {
-                    String trimmed = font.plainSubstrByWidth(result, width - padding * 2);
-                    lines.set(cursorY, trimmed);
-                    prependToLine(cursorY + 1, result.substring(trimmed.length()));
-                } else {
-                    lines.set(cursorY, result);
-                }
+                updateLineContent(result, cursorY);
                 prependToLine(cursorY + 1, tail);
             } else {
                 String result = head + text + tail;
-                if (font.width(result) > width - padding * 2) {
-                    String trimmed = font.plainSubstrByWidth(result, width - padding * 2);
-                    lines.set(cursorY, trimmed);
-                    prependToLine(cursorY + 1, result.substring(trimmed.length()));
-                } else {
-                    lines.set(cursorY, result);
-                }
+                updateLineContent(result, cursorY);
             }
         } else {
             if (text.endsWith("\n")) {
@@ -498,10 +470,20 @@ public class TextArea extends Component {
         recalculateMaxWidth();
     }
 
+    private void updateLineContent(String result, int cursorY) {
+        if (font.width(result) > width - padding * 2) {
+            String trimmed = font.plainSubstrByWidth(result, width - padding * 2);
+            lines.set(cursorY, trimmed);
+            prependToLine(cursorY + 1, result.substring(trimmed.length()));
+        } else {
+            lines.set(cursorY, result);
+        }
+    }
+
     private void prependToLine(int lineIndex, String text) {
         if (lineIndex == lines.size()) lines.add("");
 
-        if (text.length() <= 0) return;
+        if (text.isEmpty()) return;
 
         if (lineIndex < lines.size()) {
             if (text.charAt(Math.max(0, text.length() - 1)) == '\n') {
@@ -509,13 +491,7 @@ public class TextArea extends Component {
                 return;
             }
             String result = text + lines.get(lineIndex);
-            if (font.width(result) > width - padding * 2) {
-                String trimmed = font.plainSubstrByWidth(result, width - padding * 2);
-                lines.set(lineIndex, trimmed);
-                prependToLine(lineIndex + 1, result.substring(trimmed.length()));
-            } else {
-                lines.set(lineIndex, result);
-            }
+            updateLineContent(result, lineIndex);
         }
     }
 
@@ -605,7 +581,7 @@ public class TextArea extends Component {
             cursorX = 0;
         }
         if (cursorY >= lines.size()) {
-            cursorX = lines.get(lines.size() - 1).length();
+            cursorX = lines.getLast().length();
             cursorY = lines.size() - 1;
         }
     }
@@ -636,17 +612,17 @@ public class TextArea extends Component {
                 for (int j = 0; j < split.size() - 1; j++) {
                     updatedLines.add(split.get(j));
                 }
-                if (split.size() > 0) {
-                    updatedLines.add(split.get(split.size() - 1) + "\n");
+                if (!split.isEmpty()) {
+                    updatedLines.add(split.getLast() + "\n");
                 }
             }
 
-            List<String> split = font.plainSubstrByWidth(lines.get(lines.size() - 1), width - padding * 2).lines().toList();
+            List<String> split = font.plainSubstrByWidth(lines.getLast(), width - padding * 2).lines().toList();
             for (int i = 0; i < split.size() - 1; i++) {
                 updatedLines.add(split.get(i));
             }
-            if (split.size() > 0) {
-                updatedLines.add(split.get(split.size() - 1));
+            if (!split.isEmpty()) {
+                updatedLines.add(split.getLast());
             }
 
             List<String> activeLine = font.plainSubstrByWidth(lines.get(cursorY), width - padding * 2).lines().toList();
@@ -708,9 +684,9 @@ public class TextArea extends Component {
         }
 
         if (cursorY < verticalScroll) {
-            verticalScroll = Math.min(Math.max(0, cursorY - 1), Math.max(0, lines.size() - visibleLines));
+            verticalScroll = Math.clamp(lines.size() - visibleLines, 0, Math.max(0, cursorY - 1));
         } else if (cursorY >= verticalScroll + visibleLines) {
-            verticalScroll = Math.max(0, Math.min(cursorY + 1 - (visibleLines - 1), lines.size() - visibleLines));
+            verticalScroll = Math.clamp(lines.size() - visibleLines, 0, cursorY + 1 - (visibleLines - 1));
         }
     }
 
@@ -765,7 +741,7 @@ public class TextArea extends Component {
         for (int i = 0; i < lines.size() - 1; i++) {
             builder.append(lines.get(i));
         }
-        builder.append(lines.get(lines.size() - 1));
+        builder.append(lines.getLast());
         return builder.toString();
     }
 
@@ -796,9 +772,9 @@ public class TextArea extends Component {
     }
 
     /**
-     * Sets whether or not the text area should wrap it's contents.
+     * Sets whether the text area should wrap its contents.
      *
-     * @param wrapText if should wrap text
+     * @param wrapText if it should wrap text
      */
     public void setWrapText(boolean wrapText) {
         this.wrapText = wrapText;
@@ -807,7 +783,7 @@ public class TextArea extends Component {
     }
 
     /**
-     * Sets whether or not the scroll bar should be visible
+     * Sets whether the scroll bar should be visible
      *
      * @param scrollBarVisible the scroll bar visibility
      */
@@ -891,18 +867,18 @@ public class TextArea extends Component {
     /**
      * Sets whether the user can edit the text
      *
-     * @param editable is this component editable
+     * @param editable is this component editable?
      */
     public void setEditable(boolean editable) {
         this.editable = editable;
     }
 
     /**
-     * Sets the maximum amount of lines that the text area can have. If the maximum lines is set to
+     * Sets the maximum number of lines that the text area can have. If the maximum lines are set to
      * zero or below, the text area will ignore the max line property. It's suggested that this
      * method should not be called in any other place besides the initialization of the component.
      *
-     * @param maxLines the maximum amount of lines for the text area
+     * @param maxLines the maximum number of lines for the text area
      */
     public void setMaxLines(int maxLines) {
         if (maxLines < 0) maxLines = 0;

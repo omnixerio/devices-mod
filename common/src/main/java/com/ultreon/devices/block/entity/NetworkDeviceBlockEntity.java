@@ -7,15 +7,17 @@ import com.ultreon.devices.util.Colorable;
 import com.ultreon.devices.util.Tickable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @SuppressWarnings("unused")
 public abstract class NetworkDeviceBlockEntity extends DeviceBlockEntity implements Tickable {
@@ -28,7 +30,7 @@ public abstract class NetworkDeviceBlockEntity extends DeviceBlockEntity impleme
 
     public void tick() {
         assert level != null;
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         if (connection != null) {
@@ -100,19 +102,18 @@ public abstract class NetworkDeviceBlockEntity extends DeviceBlockEntity impleme
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag tag) {
+    public void saveAdditional(@NotNull ValueOutput tag) {
         super.saveAdditional(tag);
         if (connection != null) {
-            tag.put("connection", connection.toTag());
+            connection.save(tag.child("connection"));
         }
     }
 
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
-        if (tag.contains("connection", Tag.TAG_COMPOUND)) {
-            connection = Connection.fromTag(tag.getCompound("connection"));
-        }
+    public void loadAdditional(@NotNull ValueInput tag) {
+        super.loadAdditional(tag);
+        Optional<ValueInput> connection1 = tag.child("connection");
+        connection1.ifPresent(valueInput -> connection = Connection.load(valueInput));
     }
 
     public static abstract class Colored extends NetworkDeviceBlockEntity implements Colorable {
@@ -123,15 +124,13 @@ public abstract class NetworkDeviceBlockEntity extends DeviceBlockEntity impleme
         }
 
         @Override
-        public void load(@NotNull CompoundTag tag) {
-            super.load(tag);
-            if (tag.contains("color", Tag.TAG_STRING)) {
-                color = DyeColor.byId(tag.getByte("color"));
-            }
+        public void loadAdditional(@NotNull ValueInput tag) {
+            super.loadAdditional(tag);
+            color = DyeColor.byId(tag.getByteOr("color", (byte) color.getId()));
         }
 
         @Override
-        public void saveAdditional(@NotNull CompoundTag tag) {
+        public void saveAdditional(@NotNull ValueOutput tag) {
             super.saveAdditional(tag);
             tag.putByte("color", (byte) color.getId());
         }

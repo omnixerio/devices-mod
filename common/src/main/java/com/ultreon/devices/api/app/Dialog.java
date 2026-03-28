@@ -23,11 +23,13 @@ import com.ultreon.devices.util.GLHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.FormattedText;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.awt.*;
@@ -109,18 +111,18 @@ public abstract class Dialog extends Wrappable {
     }
 
     @Override
-    public void handleKeyPressed(int keyCode, int scanCode, int modifiers) {
-        customLayout.handleKeyPressed(keyCode, scanCode, modifiers);
+    public void handleKeyPressed(KeyEvent event) {
+        customLayout.handleKeyPressed(event);
     }
 
     @Override
-    public void handleKeyReleased(int keyCode, int scanCode, int modifiers) {
-        customLayout.handleKeyReleased(keyCode, scanCode, modifiers);
+    public void handleKeyReleased(KeyEvent event) {
+        customLayout.handleKeyReleased(event);
     }
 
     @Override
-    public void handleCharTyped(char character, int modifiers) {
-        customLayout.handleCharTyped(character, modifiers);
+    public void handleCharTyped(CharacterEvent event) {
+        customLayout.handleCharTyped(event);
     }
 
     public void setTitle(String title) {
@@ -200,7 +202,7 @@ public abstract class Dialog extends Wrappable {
         public void init(@Nullable CompoundTag intent) {
             super.init(intent);
 
-            int textHeight = Minecraft.getInstance().font.wordWrapHeight(messageText, getWidth() - 10);
+            int textHeight = Minecraft.getInstance().font.wordWrapHeight(FormattedText.of(messageText), getWidth() - 10);
             defaultLayout.height += textHeight;
 
             super.init(intent);
@@ -256,7 +258,7 @@ public abstract class Dialog extends Wrappable {
         public void init(@Nullable CompoundTag intent) {
             super.init(intent);
 
-            int lines = Minecraft.getInstance().font.wordWrapHeight(messageText, getWidth() - 10);
+            int lines = Minecraft.getInstance().font.wordWrapHeight(FormattedText.of(messageText), getWidth() - 10);
             defaultLayout.height += (lines - 1) ;
 
             super.init(intent);
@@ -358,7 +360,7 @@ public abstract class Dialog extends Wrappable {
             int offset = 0;
 
             if (messageText != null) {
-                int lines = Minecraft.getInstance().font.wordWrapHeight(messageText, getWidth() - 10);
+                int lines = Minecraft.getInstance().font.wordWrapHeight(FormattedText.of(messageText), getWidth() - 10);
                 defaultLayout.height += lines * 9 + 10;
                 offset += lines * 9 + 5;
             }
@@ -502,7 +504,7 @@ public abstract class Dialog extends Wrappable {
             buttonPositive.setSize(positiveWidth + 10, 16);
             buttonPositive.setEnabled(false);
             buttonPositive.setClickListener((event) -> {
-                if (mouseButton == 0) {
+                if (event.button() == 0) {
                     File file = browser.getSelectedFile();
                     if (file != null) {
                         boolean close = true;
@@ -621,7 +623,7 @@ public abstract class Dialog extends Wrappable {
 
             buttonPositive = new com.ultreon.devices.api.app.component.Button(172, 125, positiveText);
             buttonPositive.setClickListener((event) -> {
-                if (mouseButton == 0) {
+                if (event.button() == 0) {
                     if (!textFieldFileName.getText().isEmpty()) {
                         if (!FileSystem.PATTERN_FILE_NAME.matcher(textFieldFileName.getText()).matches()) {
                             Message dialog = new Message("File name may only contain letters, numbers, underscores and spaces.");
@@ -641,7 +643,7 @@ public abstract class Dialog extends Wrappable {
                             if (response.getStatus() == FileSystem.Status.FILE_EXISTS) {
                                 Confirmation dialog = new Confirmation("A file with that name already exists. Are you sure you want to override it?");
                                 dialog.setPositiveText("Override");
-                                dialog.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> browser.addFile(file, true, (response1, success1) -> {
+                                dialog.setPositiveListener((event1) -> browser.addFile(file, true, (response1, success1) -> {
                                     dialog.close();
 
                                     //TODO Look into better handling. Get response from parent if should close. Maybe a response interface w/ generic
@@ -771,7 +773,7 @@ public abstract class Dialog extends Wrappable {
             buttonRefresh.setPadding(2);
             buttonRefresh.setToolTip("Refresh", "Retrieve an updated list of printers");
             buttonRefresh.setClickListener((event) -> {
-                if (mouseButton == 0) {
+                if (event.button() == 0) {
                     itemListPrinters.setSelectedIndex(-1);
                     getPrinters(itemListPrinters);
                 }
@@ -814,7 +816,7 @@ public abstract class Dialog extends Wrappable {
             buttonPrint.setPadding(5);
             buttonPrint.setEnabled(false);
             buttonPrint.setClickListener((event) -> {
-                if (mouseButton == 0) {
+                if (event.button() == 0) {
                     NetworkDevice networkDevice = itemListPrinters.getSelectedItem();
                     if (networkDevice != null) {
                         TaskPrint task = new TaskPrint(Laptop.getPos(), networkDevice, print);
@@ -832,7 +834,7 @@ public abstract class Dialog extends Wrappable {
             buttonCancel = new com.ultreon.devices.api.app.component.Button(74, 108, Icons.CROSS);
             buttonCancel.setPadding(5);
             buttonCancel.setClickListener((event) -> {
-                if (mouseButton == 0) {
+                if (event.button() == 0) {
                     close();
                 }
             });
@@ -842,7 +844,7 @@ public abstract class Dialog extends Wrappable {
             buttonInfo.setEnabled(false);
             buttonInfo.setPadding(5);
             buttonInfo.setClickListener((event) -> {
-                if (mouseButton == 0) {
+                if (event.button() == 0) {
                     NetworkDevice printerEntry = itemListPrinters.getSelectedItem();
                     if (printerEntry != null) {
                         Info info = new Info(printerEntry);
@@ -864,13 +866,13 @@ public abstract class Dialog extends Wrappable {
             task.setCallback((tag, success) -> {
                 if (success) {
                     assert tag != null;
-                    ListTag list = tag.getList("network_devices", Tag.TAG_COMPOUND);
+                    ListTag list = tag.getListOrEmpty("network_devices");
                     for (int i = 0; i < list.size(); i++) {
-                        itemList.addItem(NetworkDevice.fromTag(list.getCompound(i)));
+                        itemList.addItem(NetworkDevice.fromTag(list.getCompoundOrEmpty(i)));
                     }
                     itemList.setLoading(false);
                 } else {
-                    String reason = tag == null ? "${null}" : tag.getString("reason");
+                    String reason = tag == null ? "${null}" : tag.getStringOr("reason",  "${null}");
                     openDialog(new Message("Failed to load printers: " + reason));
                 }
             });
@@ -915,7 +917,7 @@ public abstract class Dialog extends Wrappable {
 
                 buttonClose = new Button(5, 49, "Close");
                 buttonClose.setClickListener((event) -> {
-                    if (mouseButton == 0) {
+                    if (event.button() == 0) {
                         close();
                     }
                 });

@@ -10,7 +10,6 @@ import com.ultreon.devices.api.app.component.*;
 import com.ultreon.devices.api.app.renderer.ListItemRenderer;
 import com.ultreon.devices.api.task.TaskManager;
 import com.ultreon.devices.api.utils.BankUtil;
-import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.programs.auction.object.AuctionItem;
 import com.ultreon.devices.programs.auction.task.TaskAddAuction;
 import com.ultreon.devices.programs.auction.task.TaskBuyItem;
@@ -338,7 +337,7 @@ public class MineBayApp extends Application {
                 {
                     if (success) {
                         List<AuctionItem> auctionItems = AuctionManager.INSTANCE.getItems();
-                        items.addItem(auctionItems.get(auctionItems.size() - 1));
+                        items.addItem(auctionItems.getLast());
                     }
                 });
                 TaskManager.sendTask(task);

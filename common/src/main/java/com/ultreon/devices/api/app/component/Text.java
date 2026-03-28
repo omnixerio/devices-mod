@@ -102,7 +102,7 @@ public class Text extends Component {
     @Override
     protected void handleMouseClick(MouseButtonEvent event) {
         if (GuiHelper.isMouseWithin((int) event.x(), (int) event.y(), xPosition + padding, yPosition + padding, width - padding * 2, getHeight() - padding * 2)) {
-            if (this.wordListener != null && lines.size() > 0) {
+            if (this.wordListener != null && !lines.isEmpty()) {
                 int lineIndex = (int) ((event.y() - (yPosition + padding)) / 10);
                 if (lineIndex < lines.size()) {
                     int cursorX = (int) (event.x() - (xPosition + padding));
@@ -110,7 +110,7 @@ public class Text extends Component {
                     int index = Laptop.getFontStatic().plainSubstrByWidth(line, cursorX).length();
                     String clickedWord = getWord(line, index);
                     if (clickedWord != null) {
-                        this.wordListener.onWordClicked(clickedWord, mouseButton);
+                        this.wordListener.onWordClicked(clickedWord, event.button());
                     }
                 }
             }

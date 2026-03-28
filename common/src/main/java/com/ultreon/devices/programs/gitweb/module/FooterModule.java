@@ -3,7 +3,6 @@ package com.ultreon.devices.programs.gitweb.module;
 import com.ultreon.devices.api.app.Icons;
 import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.api.app.component.Button;
-import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.programs.gitweb.component.GitWebFrame;
 
 import java.awt.*;

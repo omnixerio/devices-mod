@@ -4,12 +4,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.listener.ClickListener;
 import com.ultreon.devices.api.task.Task;
-import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
@@ -24,7 +24,7 @@ import java.awt.*;
  * @author MrCrayfish
  */
 public class Inventory extends Component {
-    protected static final Identifier CHEST_GUI_TEXTURE = new Identifier("textures/gui/container/generic_54.png");
+    protected static final Identifier CHEST_GUI_TEXTURE = Identifier.withDefaultNamespace("textures/gui/container/generic_54.png");
 
     protected int selectedColor = new Color(1f, 1f, 0f, 0.15f).getRGB();
     protected int hoverColor = new Color(1f, 1f, 1f, 0.15f).getRGB();
@@ -40,9 +40,7 @@ public class Inventory extends Component {
     @Override
     public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (this.visible) {
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-            RenderSystem.setShaderTexture(0, CHEST_GUI_TEXTURE);
-            RenderUtil.drawRectWithTexture(CHEST_GUI_TEXTURE, graphics, xPosition, yPosition, 7, 139, 162, 54, 162, 54);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, CHEST_GUI_TEXTURE, xPosition, yPosition, 7, 139, 162, 54, 162, 54, 256, 256);
 
             assert mc.player != null;
             net.minecraft.world.entity.player.Inventory inventory = mc.player.getInventory();
@@ -60,7 +58,7 @@ public class Inventory extends Component {
 
                 ItemStack stack = inventory.getItem(i);
                 if (!stack.isEmpty()) {
-                    RenderUtil.renderItem(graphics, xPosition + offsetX + 1, yPosition + offsetY + 1, stack, true);
+                    graphics.item(stack, xPosition + offsetX + 1, yPosition + offsetY + 1 );
                 }
             }
         }
@@ -76,7 +74,7 @@ public class Inventory extends Component {
                     if (GuiHelper.isMouseInside(mouseX, mouseY, x, y, x + 18, y + 18)) {
                         ItemStack stack = mc.player.getInventory().getItem((i * 9) + j + 9);
                         if (!stack.isEmpty()) {
-                            graphics.renderTooltip(mc.font, stack, mouseX, mouseY);
+                            graphics.setTooltipForNextFrame(mc.font, stack, mouseX, mouseY);
                         }
                         return;
                     }

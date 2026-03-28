@@ -28,7 +28,6 @@ public class TextField extends TextArea {
     @Override
     public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (icon != null) {
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
             Color bgColor = new Color(color(backgroundColor, getColorScheme().getBackgroundColor()));
             graphics.fill(x, y, x + 15, y + 16, bgColor.darker().darker().getRGB());
             graphics.fill(x + 1, y + 1, x + 15, y + 15, bgColor.brighter().getRGB());
@@ -39,17 +38,17 @@ public class TextField extends TextArea {
 
     @Override
     public void handleMouseClick(MouseButtonEvent event) {
-        super.handleMouseClick(mouseX - (icon != null ? 15 : 0), mouseY, mouseButton);
+        super.handleMouseClick(new MouseButtonEvent(event.x() - (icon != null ? 15 : 0), event.y(), event.buttonInfo()));
     }
 
     @Override
     protected void handleMouseDrag(MouseButtonEvent event) {
-        super.handleMouseDrag(mouseX - (icon != null ? 15 : 0), mouseY, mouseButton);
+        super.handleMouseDrag(new MouseButtonEvent(event.x() - (icon != null ? 15 : 0), event.y(), event.buttonInfo()));
     }
 
     @Override
     protected void handleMouseRelease(MouseButtonEvent event) {
-        super.handleMouseRelease(mouseX - (icon != null ? 15 : 0), mouseY, mouseButton);
+        super.handleMouseRelease(new MouseButtonEvent(event.x() - (icon != null ? 15 : 0), event.y(), event.buttonInfo()));
     }
 
     public void setIcon(IIcon icon) {

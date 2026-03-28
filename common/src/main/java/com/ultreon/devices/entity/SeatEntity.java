@@ -71,7 +71,7 @@ public class SeatEntity extends Entity
     public LivingEntity getControllingPassenger()
     {
         List<Entity> list = this.getPassengers();
-        return list.isEmpty() ? null : list.get(0) instanceof LivingEntity livingEntity ? livingEntity : null;
+        return list.isEmpty() ? null : list.getFirst() instanceof LivingEntity livingEntity ? livingEntity : null;
     }
 
     @Override

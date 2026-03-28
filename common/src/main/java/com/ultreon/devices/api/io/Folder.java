@@ -13,7 +13,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,11 +51,11 @@ public class Folder extends File {
     public static Folder fromTag(String name, CompoundTag folderTag) {
         Folder folder = new Folder(name);
 
-        if (folderTag.contains("protected", Tag.TAG_BYTE)) folder.protect = folderTag.getBoolean("protected");
+        if (folderTag.contains("protected")) folder.protect = folderTag.getBooleanOr("protected", false);
 
-        CompoundTag fileList = folderTag.getCompound("files");
-        for (String fileName : fileList.getAllKeys()) {
-            CompoundTag fileTag = fileList.getCompound(fileName);
+        CompoundTag fileList = folderTag.getCompound("files").orElseThrow();
+        for (String fileName : fileList.keySet()) {
+            CompoundTag fileTag = fileList.getCompound(fileName).orElseThrow();
             if (fileTag.contains("files")) {
                 File file = Folder.fromTag(fileName, fileTag);
                 file.parent = folder;
@@ -442,8 +441,8 @@ public class Folder extends File {
     public void syncFiles(ListTag list) {
         files.removeIf(f -> !f.isFolder());
         for (int i = 0; i < list.size(); i++) {
-            CompoundTag fileTag = list.getCompound(i);
-            File file = File.fromTag(fileTag.getString("file_name"), fileTag.getCompound("data"));
+            CompoundTag fileTag = list.getCompound(i).orElseThrow();
+            File file = File.fromTag(fileTag.getString("file_name").orElseThrow(), fileTag.getCompound("data").orElseThrow());
             file.drive = drive;
             file.valid = true;
             file.parent = this;
@@ -466,8 +465,8 @@ public class Folder extends File {
 
             Task task = new TaskGetFiles(this, pos);
             task.setCallback((tag, success) -> {
-                if (success && Objects.requireNonNull(tag).contains("files", Tag.TAG_LIST)) {
-                    ListTag files = tag.getList("files", Tag.TAG_COMPOUND);
+                if (success && Objects.requireNonNull(tag).contains("files")) {
+                    ListTag files = tag.getList("files").orElseThrow();
                     syncFiles(files);
                     if (callback != null) {
                         callback.execute(this, true);

@@ -3,6 +3,8 @@ package com.ultreon.devices.core;
 import com.ultreon.devices.api.app.Dialog;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
@@ -47,51 +49,20 @@ public abstract class Wrappable {
      * sure you call this super method.
      *
      * @param character the typed character
-     * @param code      the typed character code
      */
-    @Deprecated
-    public void handleKeyTyped(char character, int code) {
-
-    }
-
-    /**
-     * Called when a key is released from your keyboard.
-     *
-     * @param character the released character
-     * @param code      the released character code
-     */
-    @Deprecated
-    public void handleKeyReleased(char character, int code) {
-
-    }
-
-    /**
-     * Called when a key is typed from your keyboard. Note if you override, make
-     * sure you call this super method.
-     *
-     * @param character the typed character
-     */
-    public abstract void handleCharTyped(char character, int modifiers);
+    public abstract void handleCharTyped(CharacterEvent event);
 
     /**
      * Called when a key is pressed from your keyboard. Note if you override, make
      * sure you call this super method.
-     *
-     * @param keyCode   the pressed key code
-     * @param scanCode  the pressed key scan code
-     * @param modifiers the pressed key modifiers
      */
-    public abstract void handleKeyPressed(int keyCode, int scanCode, int modifiers);
+    public abstract void handleKeyPressed(KeyEvent event);
 
     /**
      * Called when a key is pressed from your keyboard. Note if you override, make
      * sure you call this super method.
-     *
-     * @param keyCode   the released key code
-     * @param scanCode  the released key scan code
-     * @param modifiers the released key modifiers
      */
-    public abstract void handleKeyReleased(int keyCode, int scanCode, int modifiers);
+    public abstract void handleKeyReleased(KeyEvent event);
 
     /**
      * Called when you press a mouse button.

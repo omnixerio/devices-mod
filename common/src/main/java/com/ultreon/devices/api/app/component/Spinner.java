@@ -5,6 +5,7 @@ import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.core.Laptop;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 
 import java.awt.*;
 
@@ -35,14 +36,10 @@ public class Spinner extends Component {
     @Override
     public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (this.visible) {
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
             Color bgColor = new Color(getColorScheme().getBackgroundColor()).brighter().brighter();
             float[] hsb = Color.RGBtoHSB(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), null);
             bgColor = new Color(Color.HSBtoRGB(hsb[0], hsb[1], 1f));
-            RenderSystem.setShaderColor(bgColor.getRed() / 255f, bgColor.getGreen() / 255f, bgColor.getBlue() / 255f, 1f);
-            RenderSystem.setShaderTexture(0, Component.COMPONENTS_GUI);
-            graphics.blit(Component.COMPONENTS_GUI, xPosition, yPosition, (currentProgress % 8) * 12, 12 + 12 * (int) Math.floor((double) currentProgress / 8), 12, 12);
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, xPosition, yPosition, (currentProgress % 8) * 12, 12 + 12 * (int) Math.floor((double) currentProgress / 8), 12, 12, 256, 256, bgColor.getRGB());
         }
     }
 }

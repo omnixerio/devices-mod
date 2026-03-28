@@ -1,6 +1,5 @@
 package com.ultreon.devices.api.app.component;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.listener.ClickListener;
 import com.ultreon.devices.core.Laptop;
@@ -8,6 +7,7 @@ import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 
 import java.awt.*;
 
@@ -70,9 +70,7 @@ public class CheckBox extends Component implements RadioGroup.Item {
                 Color bgColor = new Color(getColorScheme().getBackgroundColor()).brighter().brighter();
                 float[] hsb = Color.RGBtoHSB(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), null);
                 bgColor = new Color(Color.HSBtoRGB(hsb[0], hsb[1], 1f));
-                RenderSystem.setShaderColor(bgColor.getRed() / 255f, bgColor.getGreen() / 255f, bgColor.getBlue() / 255f, 1f);
-                RenderSystem.setShaderTexture(0, COMPONENTS_GUI);
-                graphics.blit(COMPONENTS_GUI, xPosition, yPosition, checked ? 10 : 0, 60, 10, 10);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, COMPONENTS_GUI, xPosition, yPosition, checked ? 10 : 0, 60, 10, 10, 256, 256, bgColor.getRGB());
             }
             graphics.text(mc.font, name, xPosition + 12, yPosition + 1, color(textColor, getColorScheme().getTextColor()));
         }

@@ -111,7 +111,7 @@ public class Router {
     }
 
     private void sendBeacon(Level level) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
 
         NETWORK_DEVICES.forEach((uuid, device) -> device.setPos(null));
@@ -150,7 +150,7 @@ public class Router {
 
     public CompoundTag toTag(boolean includePos) {
         CompoundTag tag = new CompoundTag();
-        tag.putUUID("id", getId());
+        tag.putString("id", getId().toString());
 
         ListTag deviceList = new ListTag();
         NETWORK_DEVICES.forEach((id, device) -> {
@@ -163,11 +163,11 @@ public class Router {
 
     public static Router fromTag(BlockPos pos, CompoundTag tag) {
         Router router = new Router(pos);
-        router.routerId = tag.getUUID("id");
+        router.routerId = UUID.fromString(tag.getString("id").orElseThrow());
 
-        ListTag deviceList = tag.getList("network_devices", 10);
+        ListTag deviceList = tag.getList("network_devices").orElseThrow();
         for (int i = 0; i < deviceList.size(); i++) {
-            NetworkDevice device = NetworkDevice.fromTag(deviceList.getCompound(i));
+            NetworkDevice device = NetworkDevice.fromTag(deviceList.getCompound(i).orElseThrow());
             router.NETWORK_DEVICES.put(device.getId(), device);
         }
         return router;

@@ -1,6 +1,5 @@
 package com.ultreon.devices.api.app.component;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.IIcon;
 import com.ultreon.devices.api.app.listener.ClickListener;
@@ -12,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.resources.Identifier;
@@ -212,38 +212,28 @@ public class Button extends Component {
     @Override
     public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (this.visible) {
-            RenderSystem.setShaderTexture(0, Component.COMPONENTS_GUI);
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-
             Color color = new Color(Laptop.getSystem().getSettings().getColorScheme().getButtonColor());
-            RenderSystem.setShaderColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1);
 
             this.hovered = GuiHelper.isMouseWithin(mouseX, mouseY, x, y, width, height) && windowActive;
             int i = this.getHoverState(this.hovered);
 
-            RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(770, 771, 1, 0);
-            RenderSystem.blendFunc(770, 771);
-
             /* Corners */
-            graphics.blit(Component.COMPONENTS_GUI, x, y, 2, 2, 96 + i * 5, 12, 2, 2, 256, 256);
-            graphics.blit(Component.COMPONENTS_GUI, x + width - 2, y, 2, 2, 99 + i * 5, 12, 2, 2, 256, 256);
-            graphics.blit(Component.COMPONENTS_GUI, x + width - 2, y + height - 2, 2, 2, 99 + i * 5, 15, 2, 2, 256, 256);
-            graphics.blit(Component.COMPONENTS_GUI, x, y + height - 2, 2, 2, 96 + i * 5, 15, 2, 2, 256, 256);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x, y, 2, 2, 96 + i * 5, 12, 2, 2, 256, 256, color.getRGB());
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x + width - 2, y, 2, 2, 99 + i * 5, 12, 2, 2, 256, 256, color.getRGB());
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x + width - 2, y + height - 2, 2, 2, 99 + i * 5, 15, 2, 2, 256, 256, color.getRGB());
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x, y + height - 2, 2, 2, 96 + i * 5, 15, 2, 2, 256, 256, color.getRGB());
 
             /* Middles */
-            graphics.blit(Component.COMPONENTS_GUI, x + 2, y, width - 4, 2, 98 + i * 5, 12, 1, 2, 256, 256);
-            graphics.blit(Component.COMPONENTS_GUI, x + width - 2, y + 2, 2, height - 4, 99 + i * 5, 14, 2, 1, 256, 256);
-            graphics.blit(Component.COMPONENTS_GUI, x + 2, y + height - 2, width - 4, 2, 98 + i * 5, 15, 1, 2, 256, 256);
-            graphics.blit(Component.COMPONENTS_GUI, x, y + 2, 2, height - 4, 96 + i * 5, 14, 2, 1, 256, 256);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x + 2, y, width - 4, 2, 98 + i * 5, 12, 1, 2, 256, 256, color.getRGB());
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x + width - 2, y + 2, 2, height - 4, 99 + i * 5, 14, 2, 1, 256, 256, color.getRGB());
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x + 2, y + height - 2, width - 4, 2, 98 + i * 5, 15, 1, 2, 256, 256, color.getRGB());
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x, y + 2, 2, height - 4, 96 + i * 5, 14, 2, 1, 256, 256, color.getRGB());
 
             /* Center */
-            graphics.blit(Component.COMPONENTS_GUI, x + 2, y + 2, width - 4, height - 4, 98 + i * 5, 14, 1, 1, 256, 256);
-
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x + 2, y + 2, width - 4, height - 4, 98 + i * 5, 14, 1, 1, 256, 256, color.getRGB());
 
             if (this.hovered) {
-                graphics.renderOutline(x, y, width, height, Laptop.getSystem().getSettings().getColorScheme().getButtonOutlineColor());
+                graphics.outline(x, y, width, height, Laptop.getSystem().getSettings().getColorScheme().getButtonOutlineColor());
             }
 
             int contentWidth = (iconResource != null ? iconWidth : 0) + getTextWidth(text);
@@ -252,8 +242,7 @@ public class Button extends Component {
 
             if (iconResource != null) {
                 int iconY = (height - iconHeight) / 2;
-                RenderSystem.setShaderTexture(0, iconResource);
-                graphics.blit(iconResource, x + contentX, y + iconY, iconWidth, iconHeight, iconU, iconV, iconVWidth, iconUHeight, iconSourceWidth, iconSourceHeight);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, iconResource, x + contentX, y + iconY, iconWidth, iconHeight, iconU, iconV, iconVWidth, iconUHeight, iconSourceWidth, iconSourceHeight);
             }
 
             if (!StringUtils.isNullOrEmpty(text)) {

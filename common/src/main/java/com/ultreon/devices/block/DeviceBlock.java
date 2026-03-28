@@ -6,8 +6,10 @@ import com.ultreon.devices.block.entity.DeviceBlockEntity;
 import com.ultreon.devices.util.BlockEntityUtil;
 import com.ultreon.devices.util.Colorable;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.DyeColor;
@@ -24,6 +26,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -65,7 +68,7 @@ public abstract class DeviceBlock extends HorizontalDirectionalBlock implements 
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof DeviceBlockEntity deviceBlockEntity) {
-            if (stack.hasCustomHoverName()) {
+            if (stack.has(DataComponents.CUSTOM_NAME)) {
                 deviceBlockEntity.setCustomName(stack.getHoverName().getString());
             }
         }
@@ -77,8 +80,9 @@ public abstract class DeviceBlock extends HorizontalDirectionalBlock implements 
         if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof DeviceBlockEntity device) {
-                CompoundTag blockEntityTag = new CompoundTag();
-                blockEntity.saveWithoutMetadata();
+                TagValueOutput withContext = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, level.registryAccess());
+                blockEntity.saveWithoutMetadata(withContext);
+                CompoundTag blockEntityTag = withContext.buildResult();
                 blockEntityTag.remove("id");
 
                 removeTagsForDrop(blockEntityTag);
@@ -92,14 +96,12 @@ public abstract class DeviceBlock extends HorizontalDirectionalBlock implements 
                 } else {
                     drop = new ItemStack(this);
                 }
-                drop.setTag(tag);
 
                 if (device.hasCustomName()) {
-                    drop.setHoverName(Component.literal(device.getCustomName()));
+                    drop.set(DataComponents.CUSTOM_NAME, Component.literal(device.getCustomName()));
                 }
 
                 level.addFreshEntity(new ItemEntity((Level) level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop));
-
                 level.removeBlock(pos, false);
                 return;
             }

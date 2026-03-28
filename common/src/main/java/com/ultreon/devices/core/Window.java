@@ -1,12 +1,14 @@
 package com.ultreon.devices.core;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.app.Dialog;
 import com.ultreon.devices.gui.GuiButtonClose;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 
@@ -14,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 
 public class Window<T extends Wrappable> {
-    public static final Identifier WINDOW_GUI = new Identifier("devices:textures/gui/application.png");
+    public static final Identifier WINDOW_GUI = Identifier.parse("devices:textures/gui/application.png");
 
     public static final int COLOR_WINDOW_DARK = new Color(0f, 0f, 0f, 0.25f).getRGB();
     final Laptop laptop;
@@ -88,26 +90,20 @@ public class Window<T extends Wrappable> {
         graphics.pose().pushMatrix();
 
         Color color = new Color(Laptop.getSystem().getSettings().getColorScheme().getWindowBackgroundColor());
-        RenderSystem.enableBlend();
-        RenderSystem.setShaderTexture(0, WINDOW_GUI);
-        RenderSystem.setShaderColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1);
-
         /* Corners */
-        graphics.blit(WINDOW_GUI,x + offsetX, y + offsetY, 0, 0, 1, 1);
-        graphics.blit(WINDOW_GUI,x + offsetX + width - 13, y + offsetY, 2, 0, 13, 13);
-        graphics.blit(WINDOW_GUI,x + offsetX + width - 1, y + offsetY + height - 1, 14, 14, 1, 1);
-        graphics.blit(WINDOW_GUI,x + offsetX, y + offsetY + height - 1, 0, 14, 1, 1);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX, y + offsetY, 0, 0, 1, 1, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX + width - 13, y + offsetY, 2, 0, 13, 13, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX + width - 1, y + offsetY + height - 1, 14, 14, 1, 1, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX, y + offsetY + height - 1, 0, 14, 1, 1, 256, 256);
 
         /* Edges */
-        graphics.blit(WINDOW_GUI,x + offsetX + 1, y + offsetY, width - 14, 13, 1, 0, 1, 13, 256, 256);
-        graphics.blit(WINDOW_GUI,x + offsetX + width - 1, y + offsetY + 13, 1, height - 14, 14, 13, 1, 1, 256, 256);
-        graphics.blit(WINDOW_GUI,x + offsetX + 1, y + offsetY + height - 1, width - 2, 1, 1, 14, 13, 1, 256, 256);
-        graphics.blit(WINDOW_GUI,x + offsetX, y + offsetY + 13, 1, height - 14, 0, 13, 1, 1, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX + 1, y + offsetY, width - 14, 13, 1, 0, 1, 13, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX + width - 1, y + offsetY + 13, 1, height - 14, 14, 13, 1, 1, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX + 1, y + offsetY + height - 1, width - 2, 1, 1, 14, 13, 1, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX, y + offsetY + 13, 1, height - 14, 0, 13, 1, 1, 256, 256);
 
         /* Center */
-        graphics.blit(WINDOW_GUI, x + offsetX + 1, y + offsetY + 13, width - 2, height - 14, 1, 13, 13, 1, 256, 256);
-
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI, x + offsetX + 1, y + offsetY + 13, width - 2, height - 14, 1, 13, 13, 1, 256, 256);
 
         String windowTitle = content.getWindowTitle();
         if (mc.font.width(windowTitle) > width - 2 - 13 - 3) { // window width, border, close button, padding, padding
@@ -115,15 +111,12 @@ public class Window<T extends Wrappable> {
         }
         graphics.text(mc.font, windowTitle, x + offsetX + 3, y + offsetY + 3, Color.WHITE.getRGB(), true);
 
-        btnClose.renderWidget(graphics, mouseX, mouseY, partialTicks);
-
-        RenderSystem.disableBlend();
+        btnClose.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
         /* Render content */
         content.render(graphics, gui, mc, x + offsetX + 1, y + offsetY + 13, mouseX, mouseY, active && dialogWindow == null, partialTicks);
 
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-        graphics.pose().translate(0, 0, 200);
+        graphics.pose().translate(0, 0);
 
         if (dialogWindow != null) {
             graphics.fill(x + offsetX, y + offsetY, x + offsetX + width, y + offsetY + height, COLOR_WINDOW_DARK);
@@ -133,46 +126,28 @@ public class Window<T extends Wrappable> {
         graphics.pose().popMatrix();
     }
 
-    @Deprecated
-    public void handleKeyTyped(char character, int code) {
+    public void handleCharTyped(CharacterEvent event) {
         if (dialogWindow != null) {
-            dialogWindow.handleKeyTyped(character, code);
+            dialogWindow.handleCharTyped(event);
             return;
         }
-        content.handleKeyTyped(character, code);
+        content.handleCharTyped(event);
     }
 
-    @Deprecated
-    public void handleKeyReleased(char character, int code) {
+    public void handleKeyPressed(KeyEvent event) {
         if (dialogWindow != null) {
-            dialogWindow.handleKeyReleased(character, code);
+            dialogWindow.handleKeyPressed(event);
             return;
         }
-        content.handleKeyReleased(character, code);
+        content.handleKeyPressed(event);
     }
 
-    public void handleCharTyped(char codePoint, int modifiers) {
+    public void handleKeyReleased(KeyEvent event) {
         if (dialogWindow != null) {
-            dialogWindow.handleCharTyped(codePoint, modifiers);
+            dialogWindow.handleKeyReleased(event);
             return;
         }
-        content.handleCharTyped(codePoint, modifiers);
-    }
-
-    public void handleKeyPressed(int keyCode, int scanCode, int modifiers) {
-        if (dialogWindow != null) {
-            dialogWindow.handleKeyPressed(keyCode, scanCode, modifiers);
-            return;
-        }
-        content.handleKeyPressed(keyCode, scanCode, modifiers);
-    }
-
-    public void handleKeyReleased(int keyCode, int scanCode, int modifiers) {
-        if (dialogWindow != null) {
-            dialogWindow.handleKeyReleased(keyCode, scanCode, modifiers);
-            return;
-        }
-        content.handleKeyReleased(keyCode, scanCode, modifiers);
+        content.handleKeyReleased(event);
     }
 
     public void handleWindowMove(int screenStartX, int screenStartY, int newX, int newY) {

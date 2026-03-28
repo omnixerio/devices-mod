@@ -6,6 +6,8 @@ import com.ultreon.devices.core.Wrappable;
 import com.ultreon.devices.util.GLHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.nbt.CompoundTag;
 
@@ -188,55 +190,33 @@ public class Layout extends com.ultreon.devices.api.app.Component {
         }
     }
 
-    @Deprecated
     @Override
-    public void handleKeyTyped(char character, int code) {
+    public void handleCharTyped(CharacterEvent event) {
         if (!visible || !enabled)
             return;
 
         for (var c : components) {
-            c.handleKeyTyped(character, code);
-        }
-    }
-
-    @Deprecated
-    @Override
-    public void handleKeyReleased(char character, int code) {
-        if (!visible || !enabled)
-            return;
-
-        for (var c : components) {
-            c.handleKeyReleased(character, code);
+            c.handleCharTyped(event);
         }
     }
 
     @Override
-    public void handleCharTyped(char codePoint, int modifiers) {
+    public void handleKeyPressed(KeyEvent event) {
         if (!visible || !enabled)
             return;
 
         for (var c : components) {
-            c.handleCharTyped(codePoint, modifiers);
+            c.handleKeyPressed(event);
         }
     }
 
     @Override
-    public void handleKeyPressed(int keyCode, int scanCode, int modifiers) {
+    public void handleKeyReleased(KeyEvent event) {
         if (!visible || !enabled)
             return;
 
         for (var c : components) {
-            c.handleKeyPressed(keyCode, scanCode, modifiers);
-        }
-    }
-
-    @Override
-    public void handleKeyReleased(int keyCode, int scanCode, int modifiers) {
-        if (!visible || !enabled)
-            return;
-
-        for (var c : components) {
-            c.handleKeyReleased(keyCode, scanCode, modifiers);
+            c.handleKeyReleased(event);
         }
     }
 
@@ -360,7 +340,7 @@ public class Layout extends com.ultreon.devices.api.app.Component {
         /**
          * The render method
          *
-         * @param graphics
+         * @param graphics gui graphics helper
          * @param mc     A Minecraft instance
          * @param x      the starting x rendering position (left most)
          * @param y      the starting y rendering position (top most)

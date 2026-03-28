@@ -5,12 +5,13 @@ import com.ultreon.devices.util.Colorable;
 import com.ultreon.devices.util.Tickable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,30 +53,24 @@ public abstract class DeviceBlockEntity extends SyncBlockEntity implements Ticka
     }
 
     @Override
-    protected void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
 
-        tag.putString("deviceId", getId().toString());
+        output.putString("deviceId", getId().toString());
         if (hasCustomName()) {
-            tag.putString("name", name);
+            output.putString("name", name);
         }
 
-        tag.putByte("color", (byte) color.getId());
+        output.putByte("color", (byte) color.getId());
     }
 
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(@NotNull ValueInput tag) {
+        super.loadAdditional(tag);
 
-        if (tag.contains("deviceId", Tag.TAG_STRING)) {
-            deviceId = UUID.fromString(tag.getString("deviceId"));
-        }
-        if (tag.contains("name", Tag.TAG_STRING)) {
-            name = tag.getString("name");
-        }
-        if (tag.contains("color", Tag.TAG_BYTE)) {
-            color = DyeColor.byId(tag.getByte("color"));
-        }
+        deviceId = UUID.fromString(tag.getStringOr("deviceId", getId().toString()));
+        name = tag.getStringOr("name", name);
+        color = DyeColor.byId(tag.getByteOr("color", (byte) color.getId()));
     }
 
     @Override
@@ -110,15 +105,13 @@ public abstract class DeviceBlockEntity extends SyncBlockEntity implements Ticka
         }
 
         @Override
-        public void load(@NotNull CompoundTag tag) {
-            super.load(tag);
-            if (tag.contains("color", Tag.TAG_BYTE)) {
-                color = DyeColor.byId(tag.getByte("color"));
-            }
+        public void loadAdditional(@NotNull ValueInput tag) {
+            super.loadAdditional(tag);
+            color = DyeColor.byId(tag.getByteOr("color", (byte) color.getId()));
         }
 
         @Override
-        protected void saveAdditional(@NotNull CompoundTag tag) {
+        protected void saveAdditional(@NotNull ValueOutput tag) {
             super.saveAdditional(tag);
             tag.putByte("color", (byte) color.getId());
         }

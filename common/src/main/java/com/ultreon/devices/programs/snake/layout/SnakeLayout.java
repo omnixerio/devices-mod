@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 /**
@@ -157,10 +158,11 @@ public class SnakeLayout extends Layout {
             }
             //Gui.fill(pose, x+pos.x*10, y+pos.y*10, x+pos.x*10+10, y+pos.y*10+10, color);
         }
+
         @Override
-        public void handleKeyPressed(int keyCode, int scanCode, int modifiers) {
-            super.handleKeyPressed(keyCode, scanCode, modifiers);
-            switch (keyCode) {
+        public void handleKeyPressed(KeyEvent event) {
+            super.handleKeyPressed(event);
+            switch (event.getKeyCode()) {
                 case InputConstants.KEY_W -> {
                     if (direction2d != Direction2d.DOWN) up();
                 }
@@ -203,7 +205,7 @@ public class SnakeLayout extends Layout {
                 tick = 0;
                 Pos2d newPos = null;
                 Pos2d newLastPos = null;
-                var first = snakePos.get(snakePos.size() - 1);
+                var first = snakePos.getLast();
                 newPos = first.dir(direction2d);
                 for (var pos : snakePos) {
                     if (newPos.samePos(pos)) {
@@ -234,18 +236,18 @@ public class SnakeLayout extends Layout {
                 assert newPos != null;
                 snakePos.add(newPos);
                 //snakePos.add(0, newLastPos);
-                if (applePos.samePos(snakePos.get(snakePos.size()-1))) {
+                if (applePos.samePos(snakePos.getLast())) {
                     newApplePos();
                     var newLast = new Pos2d(newLastPos.x, newLastPos.y);
                     newLast.setLast();
-                    snakePos.add(0, newLast);
+                    snakePos.addFirst(newLast);
                 }
             }
             tick++;
         }
 
         private Pos2d findLastPos() {
-            return snakePos.get(0);
+            return snakePos.getFirst();
         }
 
         private void newApplePos() {

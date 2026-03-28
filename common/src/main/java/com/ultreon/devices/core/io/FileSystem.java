@@ -18,10 +18,12 @@ import com.ultreon.devices.core.io.task.TaskGetMainDrive;
 import com.ultreon.devices.core.io.task.TaskSendAction;
 import com.ultreon.devices.debug.DebugLog;
 import com.ultreon.devices.init.DeviceItems;
+import com.ultreon.devices.item.DeviceDataComponents;
+import com.ultreon.devices.item.DriveComponent;
 import com.ultreon.devices.item.FlashDriveItem;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -86,7 +88,7 @@ public class FileSystem {
 
         if (Laptop.getMainDrive() == null) {
             Task task = new TaskGetMainDrive(Laptop.getPos());
-            task.setCallback((tag, success) -> {
+            task.setCallback((_, success) -> {
                 if (success) {
                     setupApplicationFolder(app, callback);
                 } else {
@@ -113,8 +115,8 @@ public class FileSystem {
                     Task task = new TaskGetFiles(appFolder, Laptop.getPos());
                     task.setCallback((tag, success) -> {
                         assert tag != null;
-                        if (success && tag.contains("files", Tag.TAG_LIST)) {
-                            ListTag files = tag.getList("files", Tag.TAG_COMPOUND);
+                        if (success && tag.contains("files")) {
+                            ListTag files = tag.getList("files").orElseThrow();
                             appFolder.syncFiles(files);
                             callback.execute(appFolder, true);
                         } else {
@@ -125,7 +127,7 @@ public class FileSystem {
                 }
             } else {
                 Folder appFolder = new Folder(app.getInfo().getFormattedId());
-                folder.add(appFolder, (response, success) -> {
+                folder.add(appFolder, (response, _) -> {
                     if (response != null && response.getStatus() == Status.SUCCESSFUL) {
                         callback.execute(appFolder, true);
                     } else {
@@ -148,20 +150,20 @@ public class FileSystem {
     }
 
     private void load(CompoundTag tag) {
-        if (tag.contains("main_drive", Tag.TAG_COMPOUND))
-            mainDrive = InternalDrive.fromTag(tag.getCompound("main_drive"));
-        if (tag.contains("drives", Tag.TAG_LIST)) {
-            ListTag list = tag.getList("drives", Tag.TAG_COMPOUND);
+        if (tag.contains("main_drive"))
+            mainDrive = InternalDrive.fromTag(tag.getCompound("main_drive").orElseThrow());
+        if (tag.contains("drives")) {
+            ListTag list = tag.getList("drives").orElseThrow();
             for (int i = 0; i < list.size(); i++) {
-                CompoundTag driveTag = list.getCompound(i);
-                AbstractDrive drive = InternalDrive.fromTag(driveTag.getCompound("drive"));
+                CompoundTag driveTag = list.getCompound(i).orElseThrow();
+                AbstractDrive drive = InternalDrive.fromTag(driveTag.getCompound("drive").orElseThrow());
                 additionalDrives.put(drive.getUuid(), drive);
             }
         }
-        if (tag.contains("external_drive", Tag.TAG_COMPOUND))
-            attachedDrive = ExternalDrive.fromTag(tag.getCompound("external_drive"));
-        if (tag.contains("external_drive_color", Tag.TAG_BYTE))
-            attachedDriveColor = DyeColor.byId(tag.getByte("external_drive_color"));
+        if (tag.contains("external_drive"))
+            attachedDrive = ExternalDrive.fromTag(tag.getCompound("external_drive").orElseThrow());
+        if (tag.contains("external_drive_color"))
+            attachedDriveColor = DyeColor.byId(tag.getByte("external_drive_color").orElseThrow());
 
         setupDefault();
     }
@@ -206,7 +208,7 @@ public class FileSystem {
         return mainDrive;
     }
 
-    public Map<UUID, AbstractDrive> getAvailableDrives(@Nullable Level level, boolean includeMain) {
+    public Map<UUID, AbstractDrive> getAvailableDrives(@Nullable Level ignoredLevel, boolean includeMain) {
         Map<UUID, AbstractDrive> drives = new LinkedHashMap<>();
 
         if (includeMain && this.mainDrive != null) drives.put(this.mainDrive.getUuid(), this.mainDrive);
@@ -252,8 +254,8 @@ public class FileSystem {
     public ItemStack detachDrive() {
         if (attachedDrive != null) {
             ItemStack stack = new ItemStack(DeviceItems.getFlashDriveByColor(attachedDriveColor), 1);
-            stack.setHoverName(Component.literal(attachedDrive.getName()));
-            stack.getOrCreateTag().put("drive", attachedDrive.toTag());
+            stack.set(DataComponents.CUSTOM_NAME, Component.literal(attachedDrive.getName()));
+            stack.set(DeviceDataComponents.DRIVE.get(), new DriveComponent(attachedDrive.toTag()));
             attachedDrive = null;
             return stack;
         }
@@ -261,28 +263,22 @@ public class FileSystem {
     }
 
     public static CompoundTag getExternalDriveTag(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag == null) tag = new CompoundTag();
-
-        if (!tag.contains("drive", Tag.TAG_COMPOUND)) {
-            tag.put("drive", new ExternalDrive(stack.getDisplayName().getString()).toTag());
-            stack.setTag(tag);
+        if (!stack.has(DeviceDataComponents.DRIVE.get())) {
+            DriveComponent driveComponent = new DriveComponent(new ExternalDrive(stack.getDisplayName().getString()).toTag());
+            stack.set(DeviceDataComponents.DRIVE.get(), driveComponent);
         }
-        return tag;
+
+        return stack.get(DeviceDataComponents.DRIVE.get()).tag().asCompound().orElseThrow();
     }
 
     public static ExternalDrive getExternalDrive(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag == null) tag = new CompoundTag();
-
-        if (!tag.contains("drive", Tag.TAG_COMPOUND)) {
+        if (!stack.has(DeviceDataComponents.DRIVE.get())) {
             ExternalDrive externalDrive = new ExternalDrive(stack.getDisplayName().getString());
-            tag.put("drive", externalDrive.toTag());
-            stack.setTag(tag);
+            stack.set(DataComponents.CUSTOM_NAME, Component.literal(externalDrive.getName()));
+            stack.set(DeviceDataComponents.DRIVE.get(), new DriveComponent(externalDrive.toTag()));
             return externalDrive;
-        } else {
-            return ExternalDrive.fromTag(tag.getCompound("drive"));
         }
+        return ExternalDrive.fromTag(stack.get(DeviceDataComponents.DRIVE.get()).tag().asCompound().orElseThrow());
     }
 
     public CompoundTag toTag() {
@@ -292,7 +288,7 @@ public class FileSystem {
             fileSystemTag.put("main_drive", mainDrive.toTag());
 
         ListTag list = new ListTag();
-        additionalDrives.forEach((k, v) -> list.add(v.toTag()));
+        additionalDrives.forEach((_, v) -> list.add(v.toTag()));
         fileSystemTag.put("drives", list);
 
         if (attachedDrive != null) {
@@ -317,7 +313,7 @@ public class FileSystem {
         }
 
         public static Response fromTag(CompoundTag responseTag) {
-            return new Response(responseTag.getInt("status"), responseTag.getString("message"));
+            return new Response(responseTag.getInt("status").orElseThrow(), responseTag.getString("message").orElseThrow());
         }
 
         public int getStatus() {

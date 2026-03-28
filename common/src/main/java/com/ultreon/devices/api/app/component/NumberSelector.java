@@ -5,6 +5,8 @@ import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.core.Laptop;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 
 import java.text.DecimalFormat;
 
@@ -77,8 +79,8 @@ public class NumberSelector extends Component {
     public void handleTick() {
         if (Minecraft.getInstance().mouseHandler.isLeftPressed()) {
             if (holding) {
-                btnUp.handleMouseClick(0, 0, 0);
-                btnDown.handleMouseClick(0, 0, 0);
+                btnUp.handleMouseClick(new MouseButtonEvent(0, 0, new MouseButtonInfo(0, 0)));
+                btnDown.handleMouseClick(new MouseButtonEvent(0, 0, new MouseButtonInfo(0, 0)));
             } else {
                 holdCount++;
                 if (holdCount > 10) {

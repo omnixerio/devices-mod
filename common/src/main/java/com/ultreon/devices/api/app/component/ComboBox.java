@@ -1,6 +1,5 @@
 package com.ultreon.devices.api.app.component;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.api.app.listener.ChangeListener;
@@ -12,6 +11,7 @@ import net.minecraft.client.Minecraft;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.awt.*;
@@ -55,40 +55,31 @@ public abstract class ComboBox<T> extends Component {
     @Override
     public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (this.visible) {
-            RenderSystem.setShaderTexture(0, Component.COMPONENTS_GUI);
-
-            RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(770, 771, 1, 0);
-            RenderSystem.blendFunc(770, 771);
-
             Color bgColor = new Color(getColorScheme().getBackgroundColor()).brighter().brighter();
             float[] hsb = Color.RGBtoHSB(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), null);
             bgColor = new Color(Color.HSBtoRGB(hsb[0], hsb[1], 1f));
-            RenderSystem.setShaderColor(bgColor.getRed() / 255f, bgColor.getGreen() / 255f, bgColor.getBlue() / 255f, 1f);
 
             this.hovered = isInside(mouseX, mouseY) && windowActive;
             int i = this.getHoverState(this.hovered);
             int xOffset = width - height;
 
             /* Corners */
-            RenderUtil.drawRectWithTexture(Component.COMPONENTS_GUI, graphics, xPosition + xOffset, yPosition, 96 + i * 5, 12, 2, 2, 2, 2);
-            RenderUtil.drawRectWithTexture(Component.COMPONENTS_GUI, graphics, xPosition + height - 2 + xOffset, yPosition, 99 + i * 5, 12, 2, 2, 2, 2);
-            RenderUtil.drawRectWithTexture(Component.COMPONENTS_GUI, graphics, xPosition + height - 2 + xOffset, yPosition + height - 2, 99 + i * 5, 15, 2, 2, 2, 2);
-            RenderUtil.drawRectWithTexture(Component.COMPONENTS_GUI, graphics, xPosition + xOffset, yPosition + height - 2, 96 + i * 5, 15, 2, 2, 2, 2);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, xPosition + xOffset, yPosition, 96 + i * 5, 12, 2, 2, 2, 2, 256, 256, bgColor.getRGB());
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, xPosition + height - 2 + xOffset, yPosition, 99 + i * 5, 12, 2, 2, 2, 2, 256, 256, bgColor.getRGB());
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, xPosition + height - 2 + xOffset, yPosition + height - 2, 99 + i * 5, 15, 2, 2, 2, 2, 256, 256, bgColor.getRGB());
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, xPosition + xOffset, yPosition + height - 2, 96 + i * 5, 15, 2, 2, 2, 2, 256, 256, bgColor.getRGB());
 
             /* Middles */
-            RenderUtil.drawRectWithTexture(Component.COMPONENTS_GUI, graphics, xPosition + 2 + xOffset, yPosition, 98 + i * 5, 12, height - 4, 2, 1, 2);
-            RenderUtil.drawRectWithTexture(Component.COMPONENTS_GUI, graphics, xPosition + height - 2 + xOffset, yPosition + 2, 99 + i * 5, 14, 2, height - 4, 2, 1);
-            RenderUtil.drawRectWithTexture(Component.COMPONENTS_GUI, graphics, xPosition + 2 + xOffset, yPosition + height - 2, 98 + i * 5, 15, height - 4, 2, 1, 2);
-            RenderUtil.drawRectWithTexture(Component.COMPONENTS_GUI, graphics, xPosition + xOffset, yPosition + 2, 96 + i * 5, 14, 2, height - 4, 2, 1);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, xPosition + 2 + xOffset, yPosition, 98 + i * 5, 12, height - 4, 2, 1, 2, 256, 256, bgColor.getRGB());
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, xPosition + height - 2 + xOffset, yPosition + 2, 99 + i * 5, 14, 2, height - 4, 2, 1, 256, 256, bgColor.getRGB());
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, xPosition + 2 + xOffset, yPosition + height - 2, 98 + i * 5, 15, height - 4, 2, 1, 2, 256, 256, bgColor.getRGB());
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, xPosition + xOffset, yPosition + 2, 96 + i * 5, 14, 2, height - 4, 2, 1, 256, 256, bgColor.getRGB());
 
             /* Center */
-            RenderUtil.drawRectWithTexture(Component.COMPONENTS_GUI, graphics, xPosition + 2 + xOffset, yPosition + 2, 98 + i * 5, 14, height - 4, height - 4, 1, 1);
-
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, xPosition + 2 + xOffset, yPosition + 2, 98 + i * 5, 14, height - 4, height - 4, 1, 1, 256, 256, bgColor.getRGB());
 
             /* Icons */
-            RenderUtil.drawRectWithTexture(Component.COMPONENTS_GUI, graphics, xPosition + xOffset + 3, yPosition + 5, 111, 12, 8, 5, 8, 5);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, xPosition + xOffset + 3, yPosition + 5, 111, 12, 8, 5, 8, 5, 256, 256);
 
             Color boxColor = new Color(getColorScheme().getBackgroundColor());
             Color borderColor = boxColor.darker().darker();
@@ -104,8 +95,6 @@ public abstract class ComboBox<T> extends Component {
             } else if (value != null) {
                 RenderUtil.drawStringClipped(graphics, value.toString(), xPosition + 3, yPosition + 3, width - 15, Color.WHITE.getRGB(), true);
             }
-
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         }
     }
 
@@ -186,7 +175,7 @@ public abstract class ComboBox<T> extends Component {
         }
 
         private static int getListHeight(ItemList<?> list) {
-            int size = Math.max(1, Math.min(list.visibleItems, list.getItems().size()));
+            int size = Math.clamp(list.visibleItems, 1, list.getItems().size());
             return (list.renderer != null ? list.renderer.getHeight() : 13) * size + size + 1;
         }
 

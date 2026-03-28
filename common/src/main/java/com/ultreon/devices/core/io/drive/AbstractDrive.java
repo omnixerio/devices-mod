@@ -5,7 +5,6 @@ import com.ultreon.devices.core.io.ServerFile;
 import com.ultreon.devices.core.io.ServerFolder;
 import com.ultreon.devices.core.io.action.FileAction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,36 +60,36 @@ public abstract class AbstractDrive {
 
     public FileSystem.Response handleFileAction(FileSystem fileSystem, FileAction action, Level level) {
         CompoundTag actionData = action.getData();
-        ServerFolder folder = getFolder(actionData.getString("directory"));
+        ServerFolder folder = getFolder(actionData.getString("directory").orElseThrow());
         if (folder != null) {
-            CompoundTag data = actionData.getCompound("data");
+            CompoundTag data = actionData.getCompound("data").orElseThrow();
             switch (action.getType()) {
                 case NEW:
-                    if (data.contains("files", Tag.TAG_COMPOUND)) {
-                        return folder.add(ServerFolder.fromTag(actionData.getString("file_name"), data), actionData.getBoolean("override"));
+                    if (data.contains("files")) {
+                        return folder.add(ServerFolder.fromTag(actionData.getString("file_name").orElseThrow(), data), actionData.getBoolean("override").orElseThrow());
                     }
-                    return folder.add(ServerFile.fromTag(actionData.getString("file_name"), data), data.getBoolean("override"));
+                    return folder.add(ServerFile.fromTag(actionData.getString("file_name").orElseThrow(), data), data.getBoolean("override").orElseThrow());
                 case DELETE:
-                    return folder.delete(actionData.getString("file_name"));
+                    return folder.delete(actionData.getString("file_name").orElseThrow());
                 case RENAME:
-                    ServerFile file = folder.getFile(actionData.getString("file_name"));
+                    ServerFile file = folder.getFile(actionData.getString("file_name").orElseThrow());
                     if (file != null) {
-                        return file.rename(actionData.getString("new_file_name"));
+                        return file.rename(actionData.getString("new_file_name").orElseThrow());
                     }
                     return FileSystem.createResponse(FileSystem.Status.FILE_INVALID, "File not found on server. Please refresh!");
                 case DATA:
-                    file = folder.getFile(actionData.getString("file_name"));
+                    file = folder.getFile(actionData.getString("file_name").orElseThrow());
                     if (file != null) {
-                        return file.setData(actionData.getCompound("data"));
+                        return file.setData(actionData.getCompound("data").orElseThrow());
                     }
                     return FileSystem.createResponse(FileSystem.Status.FILE_INVALID, "File not found on server. Please refresh!");
                 case COPY_CUT:
-                    file = folder.getFile(actionData.getString("file_name"));
+                    file = folder.getFile(actionData.getString("file_name").orElseThrow());
                     if (file != null) {
-                        UUID uuid = UUID.fromString(actionData.getString("destination_drive"));
+                        UUID uuid = UUID.fromString(actionData.getString("destination_drive").orElseThrow());
                         AbstractDrive drive = fileSystem.getAvailableDrives(level, true).get(uuid);
                         if (drive != null) {
-                            ServerFolder destination = drive.getFolder(actionData.getString("destination_folder"));
+                            ServerFolder destination = drive.getFolder(actionData.getString("destination_folder").orElseThrow());
                             if (destination != null) {
                                 ServerFolder temp = destination;
                                 while (temp != null) {
@@ -99,11 +98,11 @@ public abstract class AbstractDrive {
                                     temp = temp.getParent();
                                 }
 
-                                FileSystem.Response response = destination.add(file.copy(), actionData.getBoolean("override"));
+                                FileSystem.Response response = destination.add(file.copy(), actionData.getBoolean("override").orElseThrow());
                                 if (response.getStatus() != FileSystem.Status.SUCCESSFUL) {
                                     return response;
                                 }
-                                if (actionData.getBoolean("cut")) {
+                                if (actionData.getBoolean("cut").orElseThrow()) {
                                     return file.delete();
                                 }
                                 return FileSystem.createSuccessResponse();

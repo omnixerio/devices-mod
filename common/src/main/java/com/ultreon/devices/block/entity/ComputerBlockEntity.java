@@ -5,12 +5,15 @@ import com.ultreon.devices.core.io.FileSystem;
 import com.ultreon.devices.util.BlockEntityUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,47 +66,37 @@ public abstract class ComputerBlockEntity extends NetworkDeviceBlockEntity.Color
     }
 
     @Override
-    public void load(@NotNull CompoundTag compound) {
-        super.load(compound);
-        if (compound.contains("open")) {
-            this.open = compound.getBooleanOr("open", false);
-            Level level = getLevel();
-            if (level != null) {
-                level.setBlock(getBlockPos(), this.getBlockState().setValue(LaptopBlock.OPEN, open), 2);
-            }
+    public void loadAdditional(@NotNull ValueInput compound) {
+        super.loadAdditional(compound);
+        this.open = compound.getBooleanOr("open", false);
+        Level level = getLevel();
+        if (level != null) {
+            level.setBlock(getBlockPos(), this.getBlockState().setValue(LaptopBlock.OPEN, open), 2);
         }
-        if (compound.contains("system_data")) {
-            this.systemData = compound.getCompoundOrEmpty("system_data");
-        }
-        if (compound.contains("application_data")) {
-            this.applicationData = compound.getCompoundOrEmpty("application_data");
-        }
-        if (compound.contains("file_system")) {
-            this.fileSystem = new FileSystem(this, compound.getCompoundOrEmpty("file_system"));
-        }
-        if (compound.contains("external_drive_color")) {
-            this.externalDriveColor = null;
-            if (compound.getByteOr("external_drive_color", (byte) -1) != -1) {
-                this.externalDriveColor = DyeColor.byId(compound.getByteOr("external_drive_color", (byte) 0));
-            }
+        compound.read("system_data", ExtraCodecs.NBT).ifPresent(tag -> systemData = tag.asCompound().orElseThrow());
+        compound.read("application_data", ExtraCodecs.NBT).ifPresent(tag -> applicationData = tag.asCompound().orElseThrow());
+        compound.read("file_system", ExtraCodecs.NBT).ifPresent(tag -> fileSystem = new FileSystem(this, tag.asCompound().orElseThrow()));
+        this.externalDriveColor = null;
+        if (compound.getByteOr("external_drive_color", (byte) -1) != -1) {
+            this.externalDriveColor = DyeColor.byId(compound.getByteOr("external_drive_color", (byte) 0));
         }
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag compound) {
+    public void saveAdditional(@NotNull ValueOutput compound) {
         super.saveAdditional(compound);
         compound.putBoolean("open", open);
 
         if (systemData != null) {
-            compound.put("system_data", systemData);
+            compound.store("system_data", ExtraCodecs.NBT, systemData);
         }
 
         if (applicationData != null) {
-            compound.put("application_data", applicationData);
+            compound.store("application_data", ExtraCodecs.NBT, applicationData);
         }
 
         if (fileSystem != null) {
-            compound.put("file_system", fileSystem.toTag());
+            compound.store("file_system", ExtraCodecs.NBT, fileSystem.toTag());
         }
     }
 

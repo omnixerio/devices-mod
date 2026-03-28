@@ -1,7 +1,6 @@
 package com.ultreon.devices.programs.system;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.Tesselator;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.app.Dialog;
 import com.ultreon.devices.api.app.Layout;
@@ -12,16 +11,13 @@ import com.ultreon.devices.api.app.component.TextField;
 import com.ultreon.devices.api.task.Callback;
 import com.ultreon.devices.api.task.TaskManager;
 import com.ultreon.devices.api.utils.BankUtil;
-import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.programs.system.task.TaskDeposit;
 import com.ultreon.devices.programs.system.task.TaskWithdraw;
 import com.ultreon.devices.util.InventoryUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
