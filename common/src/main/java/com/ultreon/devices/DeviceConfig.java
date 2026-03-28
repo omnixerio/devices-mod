@@ -1,10 +1,7 @@
 package com.ultreon.devices;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
-import dev.architectury.platform.Platform;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraftforge.common.ForgeConfigSpec;
 
 public class DeviceConfig {
     private static final String CATEGORY_LAPTOP = "laptopSettings";
