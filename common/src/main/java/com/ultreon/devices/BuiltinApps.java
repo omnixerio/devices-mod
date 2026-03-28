@@ -1,7 +1,6 @@
 package com.ultreon.devices;
 
 import com.ultreon.devices.api.ApplicationManager;
-import com.ultreon.devices.programs.BoatRacersApp;
 import com.ultreon.devices.programs.NoteStashApp;
 import com.ultreon.devices.programs.PixelPainterApp;
 import com.ultreon.devices.programs.auction.MineBayApp;

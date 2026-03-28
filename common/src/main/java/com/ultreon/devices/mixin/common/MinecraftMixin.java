@@ -1,9 +1,5 @@
 package com.ultreon.devices.mixin.common;
 
-import com.ultreon.devices.ClientModEvents;
-import com.ultreon.devices.Devices;
-import com.ultreon.devices.api.ApplicationManager;
-import com.ultreon.devices.object.AppInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
 import org.slf4j.Logger;

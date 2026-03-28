@@ -1,7 +1,6 @@
 package com.ultreon.devices.programs.gitweb.component.container;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.Reference;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.utils.RenderUtil;
@@ -44,7 +43,7 @@ public abstract class ContainerBox extends Component {
         RenderUtil.drawRectWithTexture(CONTAINER_BOXES_TEXTURE, graphics, x, y + 12, boxU, boxV, WIDTH, height, WIDTH, height, 256, 256);
         //Gui.blit(pose, x, y + 12, WIDTH, height, boxU, boxV, 256, 256, WIDTH, height);
 
-        int contentOffset = (WIDTH - (Laptop.getFont().width(title) + 8 + 4)) / 2;
+        int contentOffset = (WIDTH - (Laptop.getFontStatic().width(title) + 8 + 4)) / 2;
         graphics.pose().pushMatrix();
         {
             graphics.pose().translate(x + contentOffset, y, 0);

@@ -10,7 +10,6 @@ import com.ultreon.devices.debug.DebugUtils;
 import com.ultreon.devices.debug.DumpType;
 import com.ultreon.devices.init.DeviceBlockEntities;
 import com.ultreon.devices.init.DeviceBlocks;
-import com.ultreon.devices.init.DeviceEntities;
 import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.programs.system.object.ColorSchemePresets;
 import dev.ultreon.mods.xinexlib.platform.XinexPlatform;

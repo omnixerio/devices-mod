@@ -1,6 +1,6 @@
 package com.ultreon.devices;
 
-import dev.architectury.platform.Platform;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 
 import java.io.*;
 
@@ -11,7 +11,7 @@ import java.io.*;
  * @author <a href="https://github.com/XyperCode">XyperCode</a>
  */
 public class DevicesEarlyConfig {
-    private static final File FILE = Platform.getConfigFolder().resolve("devices-early-config.json").toFile();
+    private static final File FILE = XinexPlatform.getConfigDir().resolve("devices-early-config.json").toFile();
     public boolean enableBetaApps = false;
     public boolean enableDebugApps = false;
 

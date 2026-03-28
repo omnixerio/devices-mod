@@ -1,33 +1,34 @@
 package com.ultreon.devices;
 
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class DeviceConfig {
     private static final String CATEGORY_LAPTOP = "laptopSettings";
-    public static final ForgeConfigSpec.IntValue PING_RATE;
+    public static final ModConfigSpec.IntValue PING_RATE;
 
     private static final String CATEGORY_ROUTER = "routerSettings";
-    public static final ForgeConfigSpec.IntValue SIGNAL_RANGE;
-    public static final ForgeConfigSpec.IntValue BEACON_INTERVAL;
-    public static final ForgeConfigSpec.IntValue MAX_DEVICES;
+    public static final ModConfigSpec.IntValue SIGNAL_RANGE;
+    public static final ModConfigSpec.IntValue BEACON_INTERVAL;
+    public static final ModConfigSpec.IntValue MAX_DEVICES;
 
     private static final String CATEGORY_PRINTING = "printerSettings";
-    public static final ForgeConfigSpec.BooleanValue OVERRIDE_PRINT_SPEED;
-    public static final ForgeConfigSpec.IntValue CUSTOM_PRINT_SPEED;
-    public static final ForgeConfigSpec.IntValue MAX_PAPER_COUNT;
+    public static final ModConfigSpec.BooleanValue OVERRIDE_PRINT_SPEED;
+    public static final ModConfigSpec.IntValue CUSTOM_PRINT_SPEED;
+    public static final ModConfigSpec.IntValue MAX_PAPER_COUNT;
 
     private static final String CATEGORY_PIXEL_PAINTER = "pixelPainter";
-    public static final ForgeConfigSpec.BooleanValue PIXEL_PAINTER_ENABLE;
-    public static final ForgeConfigSpec.BooleanValue RENDER_PRINTED_3D;
+    public static final ModConfigSpec.BooleanValue PIXEL_PAINTER_ENABLE;
+    public static final ModConfigSpec.BooleanValue RENDER_PRINTED_3D;
 
     public static final String CATEGORY_DEBUG = "debug";
-    public static final ForgeConfigSpec.BooleanValue DEBUG_BUTTON;
+    public static final ModConfigSpec.BooleanValue DEBUG_BUTTON;
 
-    public static final ForgeConfigSpec CONFIG;
+    public static final ModConfigSpec CONFIG;
 
     static {
-        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
         PING_RATE = builder.comment("The amount of ticks the laptop waits until sending another ping to it's connected router.")
                 .defineInRange(CATEGORY_LAPTOP + ".pingRate", 20, 1, 200);
 
@@ -51,7 +52,7 @@ public class DeviceConfig {
                 .define(CATEGORY_PIXEL_PAINTER + ".renderPrintedIn3d", false);
 
         DEBUG_BUTTON = builder.comment("Display a button to access a worldless laptop")
-                .define(CATEGORY_DEBUG + ".debugButton", Platform.isDevelopmentEnvironment());
+                .define(CATEGORY_DEBUG + ".debugButton", XinexPlatform.isDevelopmentEnvironment());
 
         CONFIG = builder.build();
     }
@@ -59,8 +60,8 @@ public class DeviceConfig {
     // TODO *** Add read/write of synchronization tags of the config file if needed ***
 
     public static void readSyncTag(CompoundTag tag) {
-        if (tag.contains("pingRate", Tag.TAG_INT)) PING_RATE.set(tag.getInt("pingRate"));
-        if (tag.contains("signalRange", Tag.TAG_INT)) SIGNAL_RANGE.set(tag.getInt("signalRange"));
+        if (tag.contains("pingRate")) PING_RATE.set(tag.getIntOr("pingRate", PING_RATE.get()));
+        if (tag.contains("signalRange")) SIGNAL_RANGE.set(tag.getIntOr("signalRange", SIGNAL_RANGE.get()));
     }
 
     public static CompoundTag writeSyncTag() {

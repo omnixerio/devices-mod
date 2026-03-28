@@ -1,11 +1,10 @@
 package com.ultreon.devices.util;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
-import dev.architectury.platform.Platform;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 
 public class ArchUtils {
     @Deprecated
     public static boolean isProduction() {
-        return Platform.isDevelopmentEnvironment();
+        return XinexPlatform.isDevelopmentEnvironment();
     }
 }

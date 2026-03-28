@@ -1,12 +1,12 @@
 package com.ultreon.devices.object;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.component.Slider;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 
 import java.awt.*;
 
@@ -53,9 +53,9 @@ public class ColorGrid extends Component {
     public void handleMouseClick(MouseButtonEvent event) {
         int endX = xPosition + width + 2;
         int endY = yPosition + (colors.length / 5) * 10 + 2;
-        if (GuiHelper.isMouseInside(mouseX, mouseY, xPosition + 1, yPosition + 1, endX - 2, endY - 2)) {
-            int boxX = (mouseX - xPosition - 1) / 10;
-            int boxY = (mouseY - yPosition - 1) / 10;
+        if (GuiHelper.isMouseInside((int) event.x(), (int) event.y(), xPosition + 1, yPosition + 1, endX - 2, endY - 2)) {
+            int boxX = (int) ((event.x() - xPosition - 1) / 10);
+            int boxY = (int) ((event.y() - yPosition - 1) / 10);
             int index = boxX + boxY * 5;
             redSlider.setPercentage(colors[index].getRed() / 255F);
             greenSlider.setPercentage(colors[index].getGreen() / 255F);

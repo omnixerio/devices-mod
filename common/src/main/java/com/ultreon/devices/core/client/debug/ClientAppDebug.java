@@ -1,6 +1,5 @@
 package com.ultreon.devices.core.client.debug;
 
-import com.ultreon.devices.DeviceConfig;
 import com.ultreon.devices.block.entity.LaptopBlockEntity;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.core.laptop.client.ClientLaptop;

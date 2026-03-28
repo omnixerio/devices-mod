@@ -72,7 +72,6 @@ public interface IPrint {
 
     void fromTag(CompoundTag tag);
 
-    @Environment(EnvType.CLIENT)
     Class<? extends Renderer> getRenderer();
 
     interface Renderer {

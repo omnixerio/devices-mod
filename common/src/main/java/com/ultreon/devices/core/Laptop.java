@@ -36,6 +36,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -111,7 +112,7 @@ public class Laptop extends Screen implements System {
     private final Layout wallpaperLayout;
     private BSOD bsod;
 
-    public static Font getFont() {
+    public static Font getFontStatic() {
         if (font == null) {
             font = Minecraft.getInstance().font;
         }
@@ -171,7 +172,7 @@ public class Laptop extends Screen implements System {
         this.bar = new TaskBar(this, taskBarTag);
 
         // Wallpaper stuff
-        this.currentWallpaper = systemData.contains("CurrentWallpaper", 10) ? new Wallpaper(systemData.getCompoundOrEmpty("CurrentWallpaper")) : null;
+        this.currentWallpaper = systemData.contains("CurrentWallpaper") ? new Wallpaper(systemData.getCompoundOrEmpty("CurrentWallpaper")) : null;
         if (this.currentWallpaper == null) this.currentWallpaper = new Wallpaper(0);
         Laptop.system = this;
         Laptop.pos = laptop.getBlockPos();
@@ -332,7 +333,6 @@ public class Laptop extends Screen implements System {
     /**
      * Handles Minecraft GUI resizing.
      *
-     * @param minecraft the Minecraft instance
      * @param width     the new width
      * @param height    the new height
      */
@@ -424,11 +424,11 @@ public class Laptop extends Screen implements System {
         var b = new PrintStream(bo);
         bsod.throwable.printStackTrace(b);
         var str = bo.toString();
-        drawLines(graphics, Laptop.getFont(), str, posX+10, posY+10+getFont().lineHeight*2, (int) ((getDeviceWidth() - 10) * scale), new Color(255, 255, 255).getRGB());
+        drawLines(graphics, Laptop.getFontStatic(), str, posX+10, posY+10+ getFontStatic().lineHeight*2, (int) ((getDeviceWidth() - 10) * scale), new Color(255, 255, 255).getRGB());
         graphics.pose().popMatrix();
-        graphics.pose().scale(2, 2, 0);
-        graphics.pose().translate((posX+10)/2f,(posY+10)/2f,0);
-        graphics.text(getFont(), "System has crashed!", 0, 0, new Color(255, 255, 255).getRGB());
+        graphics.pose().scale(2, 2);
+        graphics.pose().translate((posX+10)/2f,(posY+10)/2f);
+        graphics.text(getFontStatic(), "System has crashed!", 0, 0, new Color(255, 255, 255).getRGB());
         graphics.pose().popMatrix();
     }
 
@@ -436,12 +436,12 @@ public class Laptop extends Screen implements System {
         var lines = new ArrayList<String>();
         font.getSplitter().splitLines(FormattedText.of(text.replaceAll("\r\n", "\n").replaceAll("\r", "\n")), width, Style.EMPTY).forEach(b -> lines.add(b.getString()));
         var totalTextHeight = font.lineHeight*lines.size();
-        var textScale = (instance.videoInfo.getResolution().height()-20-(getFont().lineHeight*2))/(float)totalTextHeight;
+        var textScale = (instance.videoInfo.getResolution().height()-20-(getFontStatic().lineHeight*2))/(float)totalTextHeight;
         textScale = (float) (1f / Minecraft.getInstance().getWindow().getGuiScale());
         textScale = Math.max(0.5f, textScale);
         graphics.pose().pushMatrix();
-        graphics.pose().scale(textScale, textScale, 1);
-        graphics.pose().translate(x / textScale, (y+3)/textScale, 0);
+        graphics.pose().scale(textScale, textScale);
+        graphics.pose().translate(x / textScale, (y+3)/textScale);
         //poseStack.translate();
         var lineNr = 0;
         for (String s : lines) {
@@ -564,10 +564,8 @@ public class Laptop extends Screen implements System {
         Image.CACHE.entrySet().removeIf(entry -> {
             Image.CachedImage cachedImage = entry.getValue();
             if (cachedImage.isDynamic() && cachedImage.isPendingDeletion()) {
-                int texture = cachedImage.getTexture();
-                if (texture != -1) {
-                    GlStateManager._deleteTexture(texture);
-                }
+                @Nullable AbstractTexture texture = cachedImage.getTexture();
+                texture.close();
                 return true;
             }
             return false;
@@ -631,7 +629,7 @@ public class Laptop extends Screen implements System {
             int dropdownX = context.xPosition;
             int dropdownY = context.yPosition;
             if (isMouseInside((int) event.x(), (int) event.y(), dropdownX, dropdownY, dropdownX + context.width, dropdownY + context.height)) {
-                this.context.handleMouseClick(event, doubleClick);
+                this.context.handleMouseClick(event);
                 return false;
             } else {
                 this.context = null;

@@ -7,7 +7,6 @@ import com.ultreon.devices.api.app.component.Text;
 import com.ultreon.devices.api.app.listener.ClickListener;
 import com.ultreon.devices.object.AppInfo;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 

@@ -11,7 +11,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 public class S2CUpdatePacket implements PacketToClient<S2CUpdatePacket> {
     private final CompoundTag nbt;

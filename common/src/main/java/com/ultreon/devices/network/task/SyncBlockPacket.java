@@ -1,9 +1,7 @@
 package com.ultreon.devices.network.task;
 
 import com.ultreon.devices.block.entity.RouterBlockEntity;
-import dev.architectury.networking.NetworkManager;
 import dev.ultreon.mods.xinexlib.network.Networker;
-import dev.ultreon.mods.xinexlib.network.packet.PacketToEither;
 import dev.ultreon.mods.xinexlib.network.packet.PacketToServer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -12,9 +10,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
-
-import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * @author MrCrayfish

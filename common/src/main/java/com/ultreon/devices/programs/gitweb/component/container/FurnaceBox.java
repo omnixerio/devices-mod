@@ -1,12 +1,11 @@
 package com.ultreon.devices.programs.gitweb.component.container;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.core.Laptop;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
@@ -48,13 +47,11 @@ public class FurnaceBox extends ContainerBox {
     protected void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         super.render(graphics, laptop, mc, x, y, mouseX, mouseY, windowActive, partialTicks);
 
-        RenderSystem.setShaderTexture(0, CONTAINER_BOXES_TEXTURE);
-
         int burnProgress = this.getBurnLeftScaled(13);
-        graphics.blit(CONTAINER_BOXES_TEXTURE, x + 26, y + 52 - burnProgress, 128, 238 - burnProgress, 14, burnProgress + 1);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_BOXES_TEXTURE, x + 26, y + 52 - burnProgress, 128, 238 - burnProgress, 14, burnProgress + 1, 256, 256);
 
         int cookProgress = this.getCookProgressScaled(24);
-        graphics.blit(CONTAINER_BOXES_TEXTURE, x + 49, y + 37, 128, 239, cookProgress + 1, 16);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_BOXES_TEXTURE, x + 49, y + 37, 128, 239, cookProgress + 1, 16, 256, 256);
     }
 
     private int getCookProgressScaled(int pixels) {

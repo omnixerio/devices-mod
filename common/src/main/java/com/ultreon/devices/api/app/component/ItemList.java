@@ -143,7 +143,7 @@ public class ItemList<E> extends Component implements Iterable<E> {
                     drawHorizontalLine(graphics, xPosition + 1, xPosition + width - 1, yPosition + (i * height) + i + height + 1, borderColor.getRGB());
                 } else {
                     graphics.fill(xPosition + 1, yPosition + (i * 14) + 1, xPosition + width - 1, yPosition + 13 + (i * 14) + 1, (i + offset) != selected ? bgColor.brighter().getRGB() : bgColor.brighter().brighter().getRGB());
-                    graphics.text(Laptop.getFont(), item.toString(), xPosition + 3, yPosition + 3 + (i * 14), textColor);
+                    graphics.text(Laptop.getFontStatic(), item.toString(), xPosition + 3, yPosition + 3 + (i * 14), textColor);
                 }
             }
 

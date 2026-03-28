@@ -8,6 +8,7 @@ dependencies {
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
     implementation "dev.ultreon.mods:xinexlib-fabric-26.1:26.1.0.1"
+    implementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:26.1.0.2"
 }
 
 loom {

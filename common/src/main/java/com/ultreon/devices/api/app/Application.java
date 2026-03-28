@@ -1,7 +1,6 @@
 package com.ultreon.devices.api.app;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.io.File;
 import com.ultreon.devices.core.Laptop;
@@ -151,7 +150,7 @@ public abstract class Application extends Wrappable implements DataHandler {
 
         currentLayout.renderOverlay(graphics, laptop, mc, mouseX, mouseY, active);
 
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+//        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
         // TODO Port this to 1.18.2 if possible
 //        Lighting.turnOff();

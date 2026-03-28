@@ -2,7 +2,6 @@ package com.ultreon.devices.datagen;
 
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.init.DeviceItems;
-import com.ultreon.devices.init.DeviceTags;
 import com.ultreon.devices.init.ModTags;
 import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.RegistrySupplier;

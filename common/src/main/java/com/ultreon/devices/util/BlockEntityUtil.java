@@ -1,7 +1,6 @@
 package com.ultreon.devices.util;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;

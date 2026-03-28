@@ -9,6 +9,7 @@ import com.ultreon.devices.core.io.FileSystem;
 import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.object.TrayItem;
 import com.ultreon.devices.programs.system.component.FileBrowser;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.nbt.CompoundTag;
 
 import org.jetbrains.annotations.Nullable;

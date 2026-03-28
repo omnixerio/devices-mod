@@ -1,6 +1,5 @@
 package com.ultreon.devices.core.network;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.DeviceConfig;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.app.Icons;
@@ -18,7 +17,6 @@ import com.ultreon.devices.core.network.task.TaskConnect;
 import com.ultreon.devices.core.network.task.TaskPing;
 import com.ultreon.devices.object.TrayItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

@@ -19,6 +19,7 @@ dependencies {
     annotationProcessor "io.github.llamalad7:mixinextras-common:0.3.5"
 
     implementation "dev.ultreon.mods:xinexlib-common-26.1:26.1.0.1"
+    implementation "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:26.1.0.2"
 }
 
 configurations {

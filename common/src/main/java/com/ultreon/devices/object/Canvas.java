@@ -1,6 +1,5 @@
 package com.ultreon.devices.object;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.core.Laptop;
@@ -11,8 +10,10 @@ import com.ultreon.devices.object.tools.ToolPencil;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 
 import java.awt.*;
+import java.util.Arrays;
 
 public class Canvas extends Component {
     public static final Tool PENCIL = new ToolPencil();
@@ -73,10 +74,10 @@ public class Canvas extends Component {
         int startY = yPosition + 1;
         int endX = startX + picture.getWidth() * picture.getPixelWidth() - 1;
         int endY = startY + picture.getHeight() * picture.getPixelHeight() - 1;
-        if (GuiHelper.isMouseInside(mouseX, mouseY, startX, startY, endX, endY)) {
+        if (GuiHelper.isMouseInside((int) event.x(), (int) event.y(), startX, startY, endX, endY)) {
             this.drawing = true;
-            int pixelX = (mouseX - startX) / picture.getPixelWidth();
-            int pixelY = (mouseY - startY) / picture.getPixelHeight();
+            int pixelX = (int) ((event.x() - startX) / picture.getPixelWidth());
+            int pixelY = (int) ((event.y() - startY) / picture.getPixelHeight());
             this.currentTool.handleClick(this, pixelX, pixelY);
         }
     }
@@ -89,9 +90,9 @@ public class Canvas extends Component {
         int startY = yPosition + 1;
         int endX = startX + picture.getWidth() * picture.getPixelWidth() - 1;
         int endY = startY + picture.getHeight() * picture.getPixelHeight() - 1;
-        if (GuiHelper.isMouseInside(mouseX, mouseY, startX, startY, endX, endY)) {
-            int pixelX = (mouseX - startX) / picture.getPixelWidth();
-            int pixelY = (mouseY - startY) / picture.getPixelHeight();
+        if (GuiHelper.isMouseInside((int) event.x(), (int) event.y(), startX, startY, endX, endY)) {
+            int pixelX = (int) ((event.x() - startX) / picture.getPixelWidth());
+            int pixelY = (int) ((event.y() - startY) / picture.getPixelHeight());
             this.currentTool.handleRelease(this, pixelX, pixelY);
         }
     }
@@ -102,9 +103,9 @@ public class Canvas extends Component {
         int startY = yPosition + 1;
         int endX = startX + picture.getWidth() * picture.getPixelWidth() - 1;
         int endY = startY + picture.getHeight() * picture.getPixelHeight() - 1;
-        if (GuiHelper.isMouseInside(mouseX, mouseY, startX, startY, endX, endY)) {
-            int pixelX = (mouseX - startX) / picture.getPixelWidth();
-            int pixelY = (mouseY - startY) / picture.getPixelHeight();
+        if (GuiHelper.isMouseInside((int) event.x(), (int) event.y(), startX, startY, endX, endY)) {
+            int pixelX = (int) ((event.x() - startX) / picture.getPixelWidth());
+            int pixelY = (int) ((event.y() - startY) / picture.getPixelHeight());
             this.currentTool.handleDrag(this, pixelX, pixelY);
         }
     }
@@ -149,7 +150,7 @@ public class Canvas extends Component {
     }
 
     public void compileColor() {
-        this.currentColor = ((255 & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 0);
+        this.currentColor = ((0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | ((blue & 0xFF));
     }
 
     public int getCurrentColor() {
@@ -166,17 +167,13 @@ public class Canvas extends Component {
 
     public int[] copyPixels() {
         int[] copiedPixels = new int[pixels.length];
-        for (int i = 0; i < pixels.length; i++) {
-            copiedPixels[i] = pixels[i];
-        }
+        System.arraycopy(pixels, 0, copiedPixels, 0, pixels.length);
         return copiedPixels;
     }
 
     public void clear() {
         if (pixels != null) {
-            for (int i = 0; i < pixels.length; i++) {
-                pixels[i] = 0;
-            }
+            Arrays.fill(pixels, 0);
         }
     }
 }

@@ -7,7 +7,6 @@ import com.ultreon.devices.util.DyeableRegistration;
 import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import dev.ultreon.mods.xinexlib.registrar.Registrar;
 import dev.ultreon.mods.xinexlib.registrar.RegistrySupplier;
-import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;

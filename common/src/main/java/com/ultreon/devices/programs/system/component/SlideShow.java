@@ -1,6 +1,5 @@
 package com.ultreon.devices.programs.system.component;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.Icons;
 import com.ultreon.devices.api.app.Layout;
@@ -9,8 +8,8 @@ import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.programs.system.object.ImageEntry;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.Identifier;
 
@@ -35,7 +34,7 @@ public class SlideShow extends Component {
      * <p>
      * Laying out components is simply relative positioning. So for left (x position),
      * specific how many pixels from the left of the application window you want
-     * it to be positioned at. The top is the same, but instead from the top (y position).
+     * it to be positioned at. The top is the same, but instead of the top (y position).
      *
      * @param left how many pixels from the left
      * @param top  how many pixels from the top
@@ -85,15 +84,15 @@ public class SlideShow extends Component {
 
     @Override
     protected void handleMouseClick(MouseButtonEvent event) {
-        if (!this.visible || !this.enabled || mouseButton != 0) return;
+        if (!this.visible || !this.enabled || event.button() != 0) return;
 
-        if (GuiHelper.isMouseWithin(mouseX, mouseY, xPosition, yPosition, 15, height)) {
+        if (GuiHelper.isMouseWithin((int) event.x(), (int) event.y(), xPosition, yPosition, 15, height)) {
             if (currentImage > 0) {
                 this.setImage(currentImage - 1);
             }
         }
 
-        if (GuiHelper.isMouseWithin(mouseX, mouseY, xPosition + width - 15, yPosition, 15, height)) {
+        if (GuiHelper.isMouseWithin((int) event.x(), (int) event.y(), xPosition + width - 15, yPosition, 15, height)) {
             if (currentImage < IMAGES.size() - 1) {
                 this.setImage(currentImage + 1);
             }

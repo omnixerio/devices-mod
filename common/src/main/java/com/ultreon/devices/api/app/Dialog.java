@@ -1,6 +1,5 @@
 package com.ultreon.devices.api.app;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.component.Button;
 import com.ultreon.devices.api.app.component.ItemList;
 import com.ultreon.devices.api.app.component.Text;
@@ -23,7 +22,6 @@ import com.ultreon.devices.programs.system.object.ColorScheme;
 import com.ultreon.devices.util.GLHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.BlockPos;

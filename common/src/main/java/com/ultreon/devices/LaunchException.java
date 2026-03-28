@@ -1,7 +1,6 @@
 package com.ultreon.devices;
 
-import dev.architectury.injectables.targets.ArchitecturyTarget;
-import dev.architectury.platform.Platform;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 
 public class LaunchException extends RuntimeException {
     @Override
@@ -11,9 +10,11 @@ public class LaunchException extends RuntimeException {
     }
 
     private static String getPlatform() {
-        var target = ArchitecturyTarget.getCurrentTarget();
-        if (target.equals("forge")) return "Forge";
-        if (target.equals("fabric")) return "Fabric";
-        return "modded";
+        return switch (XinexPlatform.getPlatformName()) {
+            case Fabric -> "Fabric";
+            case Forge -> "Forge";
+            case NeoForge -> "NeoForge";
+            case Quilt -> "Quilt";
+        };
     }
 }

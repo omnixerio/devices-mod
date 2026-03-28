@@ -2,14 +2,11 @@ package com.ultreon.devices.network.task;
 
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.api.task.TaskManager;
-import dev.architectury.networking.NetworkManager;
 import dev.ultreon.mods.xinexlib.network.Networker;
 import dev.ultreon.mods.xinexlib.network.packet.PacketToClient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-
-import java.util.function.Supplier;
 
 public class ResponsePacket implements PacketToClient<ResponsePacket> {
     private final int id;

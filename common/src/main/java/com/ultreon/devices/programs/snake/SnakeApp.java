@@ -1,6 +1,5 @@
 package com.ultreon.devices.programs.snake;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.api.app.component.Button;

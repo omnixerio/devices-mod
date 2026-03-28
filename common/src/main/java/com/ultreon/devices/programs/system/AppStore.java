@@ -25,7 +25,7 @@ import com.ultreon.devices.programs.system.object.AppEntry;
 import com.ultreon.devices.programs.system.object.RemoteEntry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 

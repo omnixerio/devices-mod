@@ -1,6 +1,5 @@
 package com.ultreon.devices.programs.system.layout;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.app.IIcon;
 import com.ultreon.devices.api.app.Icons;
@@ -8,7 +7,6 @@ import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.api.app.component.Button;
 import com.ultreon.devices.core.Laptop;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.jetbrains.annotations.Nullable;

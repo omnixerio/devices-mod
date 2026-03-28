@@ -1,16 +1,17 @@
 package com.ultreon.devices.event;
 
-import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.WorldSavedData;
 import com.ultreon.devices.api.utils.BankUtil;
 import com.ultreon.devices.programs.email.EmailManager;
-import dev.architectury.event.events.common.LifecycleEvent;
+import dev.ultreon.mods.xinexlib.event.server.ServerLevelSaveEvent;
+import dev.ultreon.mods.xinexlib.event.server.ServerStartingEvent;
+import dev.ultreon.mods.xinexlib.event.system.EventSystem;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.LevelResource;
-import net.minecraft.world.level.storage.ServerLevelData;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,8 +23,8 @@ public class WorldDataHandler {
     private static final LevelResource DEVICES_MOD_DATA = new LevelResource("data/devices-mod");
 
     static {
-        LifecycleEvent.SERVER_STARTING.register(WorldDataHandler::load);
-        LifecycleEvent.SERVER_LEVEL_SAVE.register(WorldDataHandler::save);
+        EventSystem.MAIN.on(ServerStartingEvent.class, event -> load(event.getServer()));
+        EventSystem.MAIN.on(ServerLevelSaveEvent.class, event -> save(event.getServerLevel()));
     }
 
     public static void init() {
@@ -68,7 +69,7 @@ public class WorldDataHandler {
             return;
         }
         try {
-            CompoundTag nbt = NbtIo.readCompressed(dataFile);
+            CompoundTag nbt = NbtIo.readCompressed(dataFile.toPath(), NbtAccounter.unlimitedHeap());
             data.load(nbt);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -84,7 +85,7 @@ public class WorldDataHandler {
 
             CompoundTag nbt = new CompoundTag();
             data.save(nbt);
-            NbtIo.writeCompressed(nbt, dataFile);
+            NbtIo.writeCompressed(nbt, dataFile.toPath());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

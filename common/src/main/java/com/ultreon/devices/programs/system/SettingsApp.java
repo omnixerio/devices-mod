@@ -23,6 +23,7 @@ import com.ultreon.devices.programs.system.object.ColorSchemePresetRegistry;
 import com.ultreon.devices.programs.system.object.Preset;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.nbt.CompoundTag;
 
 import net.minecraft.resources.Identifier;
@@ -55,7 +56,7 @@ public class SettingsApp extends SystemApp {
     private ComboBox.List<PredefinedResolution> comboDisplayResolutions;
 
     private void resetColorSchemeClick(MouseButtonEvent event) {
-        if (mouseButton == 0) {
+        if (event.button() == 0) {
             Laptop.getSystem().getSettings().getColorScheme().resetDefault();
         }
     }
@@ -66,7 +67,7 @@ public class SettingsApp extends SystemApp {
         backBtn.setVisible(false);
         backBtn.setClickListener((event) ->
         {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 if (!predecessor.isEmpty()) {
                     setCurrentLayout(predecessor.pop());
                 }
@@ -100,7 +101,7 @@ public class SettingsApp extends SystemApp {
         buttonColorScheme.setSize(90, 20);
         buttonColorScheme.setToolTip("Personalise", "Change the wallpaper, UI colors, and more!");
         buttonColorScheme.setClickListener((event) -> {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 showMenu(layoutPersonalise);
             }
         });
@@ -111,7 +112,7 @@ public class SettingsApp extends SystemApp {
         buttonColorSchemes.setSize(90, 20);
         buttonColorSchemes.setToolTip("Color Schemes", "Change the color scheme using presets or choose a custom one.");
         buttonColorSchemes.setClickListener((event) -> {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 showMenu(layoutColorSchemes);
             }
         });
@@ -121,7 +122,7 @@ public class SettingsApp extends SystemApp {
         buttonGeneral.setSize(90, 20);
         buttonGeneral.setToolTip("General", "General settings.");
         buttonGeneral.setClickListener((event) -> {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 showMenu(layoutGeneral);
             }
         });
@@ -307,7 +308,7 @@ public class SettingsApp extends SystemApp {
         buttonColorSchemeApply.setToolTip("Apply", "Set these colors as the new color scheme");
         buttonColorSchemeApply.setClickListener((event) ->
         {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 ColorScheme colorScheme = Laptop.getSystem().getSettings().getColorScheme();
                 colorScheme.setTextColor(comboBoxTextColor.getValue());
                 colorScheme.setTextSecondaryColor(comboBoxTextSecondaryColor.getValue());
@@ -344,7 +345,7 @@ public class SettingsApp extends SystemApp {
         prevWallpaperBtn = new Button(135, 27, Icons.ARROW_LEFT);
         prevWallpaperBtn.setSize(25, 20);
         prevWallpaperBtn.setClickListener((event) -> {
-            if (mouseButton != 0)
+            if (event.button() != 0)
                 return;
 
             Laptop laptop = getLaptop();
@@ -360,7 +361,7 @@ public class SettingsApp extends SystemApp {
         nextWallpaperBtn = new Button(165, 27, Icons.ARROW_RIGHT);
         nextWallpaperBtn.setSize(25, 20);
         nextWallpaperBtn.setClickListener((event) -> {
-            if (mouseButton != 0)
+            if (event.button() != 0)
                 return;
 
             Laptop laptop = getLaptop();
@@ -375,7 +376,7 @@ public class SettingsApp extends SystemApp {
         // Reset wallpaper button.
         Button resetWallpaperBtn = new Button(6, 100, "Reset Wallpaper");
         resetWallpaperBtn.setClickListener((event) -> {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 getLaptop().setWallpaper(0);
                 image.setImage(getLaptop().getCurrentWallpaper());
                 prevWallpaperBtn.setEnabled(getLaptop().getCurrentWallpaper().isBuiltIn());
@@ -392,7 +393,7 @@ public class SettingsApp extends SystemApp {
         urlWallpaperBtn = new Button(135, 52, "Load", Icons.EARTH);
         urlWallpaperBtn.setSize(55, 20);
         urlWallpaperBtn.setClickListener((event) -> {
-            if (mouseButton != 0)
+            if (event.button() != 0)
                 return;
 
             Dialog.Input dialog = new Dialog.Input("Enter the URL of the image");
@@ -443,13 +444,13 @@ public class SettingsApp extends SystemApp {
     }
 
     private void wallpaperClick(MouseButtonEvent event) {
-        if (mouseButton == 0) {
+        if (event.button() == 0) {
             showMenu(layoutWallpaper);
         }
     }
 
     private void colorSchemeClick(MouseButtonEvent event) {
-        if (mouseButton == 0) {
+        if (event.button() == 0) {
             showMenu(layoutColorScheme);
         }
     }
@@ -490,7 +491,7 @@ public class SettingsApp extends SystemApp {
                 }
             }
         });
-        colorPicker.setChangeListener((oldValue, newValue) ->
+        colorPicker.setChangeListener((_, _) ->
         {if (buttonColorSchemeApply != null) buttonColorSchemeApply.setEnabled(true);});
 
         Palette palette = new Palette(5, 5, colorPicker);

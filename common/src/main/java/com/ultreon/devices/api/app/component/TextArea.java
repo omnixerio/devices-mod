@@ -2,7 +2,6 @@ package com.ultreon.devices.api.app.component;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.interfaces.IHighlight;
 import com.ultreon.devices.api.app.listener.KeyListener;
@@ -14,7 +13,6 @@ import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -84,7 +82,7 @@ public class TextArea extends Component {
      */
     public TextArea(int left, int top, int width, int height) {
         super(left, top);
-        this.font = Laptop.getFont();
+        this.font = Laptop.getFontStatic();
         this.width = width;
         this.height = height;
         this.visibleLines = (int) Math.floor((float) ((height - padding * 2 + 1) / font.lineHeight));

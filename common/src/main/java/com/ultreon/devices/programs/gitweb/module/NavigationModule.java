@@ -4,7 +4,6 @@ import com.ultreon.devices.api.app.Icons;
 import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.api.app.component.Button;
 import com.ultreon.devices.programs.gitweb.component.GitWebFrame;
-import net.minecraft.client.gui.Gui;
 
 import org.jetbrains.annotations.Nullable;
 import java.awt.*;

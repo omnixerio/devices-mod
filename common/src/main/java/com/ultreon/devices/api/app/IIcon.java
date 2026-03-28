@@ -3,6 +3,7 @@ package com.ultreon.devices.api.app;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 
 public interface IIcon {
@@ -35,14 +36,14 @@ public interface IIcon {
     int getOrdinal();
 
     default void draw(GuiGraphicsExtractor graphics, Minecraft mc, int x, int y) {
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-        RenderSystem.setShaderTexture(0, getIconAsset());
+//        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+//        RenderSystem.setShaderTexture(0, getIconAsset());
         int size = getIconSize();
         int assetWidth = getGridWidth() * size;
 //        java.lang.DebugLog.log("assetWidth = " + assetWidth);
         int assetHeight = getGridHeight() * size;
 //        java.lang.DebugLog.log("assetHeight = " + assetHeight);
 //        GuiComponent.blit(pose, x + contentX, y + iconY, iconWidth, iconHeight, iconU, iconV, iconWidth, iconHeight, iconSourceWidth, iconSourceHeight);
-        graphics.blit(getIconAsset(), x, y, size, size, getU(), getV(), size, size, assetWidth, assetHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, getIconAsset(), x, y, size, size, getU(), getV(), size, size, assetWidth, assetHeight);
     }
 }

@@ -1,6 +1,5 @@
 package com.ultreon.devices.api.app.component;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.core.Laptop;
 import net.minecraft.client.Minecraft;

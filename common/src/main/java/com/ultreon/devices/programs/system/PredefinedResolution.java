@@ -1,10 +1,8 @@
 package com.ultreon.devices.programs.system;
 
 import com.ultreon.devices.core.Laptop;
-import net.minecraft.network.chat.Component;
 
 import java.util.Collection;
-import java.util.Collections;
 
 public enum PredefinedResolution implements DisplayResolution {
     PREDEFINED_31360x17280(31360, 17280),

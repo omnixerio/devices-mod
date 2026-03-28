@@ -9,7 +9,6 @@ import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.debug.DebugLog;
 import com.ultreon.devices.programs.snake.SnakeApp;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.awt.*;

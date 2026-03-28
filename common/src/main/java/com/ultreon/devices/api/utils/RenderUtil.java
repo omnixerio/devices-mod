@@ -145,12 +145,12 @@ public class RenderUtil {
     }
 
     public static void drawStringClipped(GuiGraphicsExtractor graphics, String text, int x, int y, int width, int color, boolean shadow) {
-        if (shadow) graphics.text(Laptop.getFont(), clipStringToWidth(text, width) + ChatFormatting.RESET, x, y, color);
-        else graphics.text(Laptop.getFont(), Laptop.getFont().plainSubstrByWidth(text, width) + ChatFormatting.RESET, x, y, color, false);
+        if (shadow) graphics.text(Laptop.getFontStatic(), clipStringToWidth(text, width) + ChatFormatting.RESET, x, y, color);
+        else graphics.text(Laptop.getFontStatic(), Laptop.getFontStatic().plainSubstrByWidth(text, width) + ChatFormatting.RESET, x, y, color, false);
     }
 
     public static String clipStringToWidth(String text, int width) {
-        Font fontRenderer = Laptop.getFont();
+        Font fontRenderer = Laptop.getFontStatic();
         String clipped = text;
         if (fontRenderer.width(clipped) > width) {
             clipped = fontRenderer.plainSubstrByWidth(clipped, width - 8) + "...";

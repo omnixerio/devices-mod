@@ -2,7 +2,6 @@ package com.ultreon.devices.item;
 
 import com.ultreon.devices.ModDeviceTypes;
 import com.ultreon.devices.IDeviceType;
-import dev.architectury.injectables.annotations.PlatformOnly;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.BlockItem;
@@ -22,8 +21,6 @@ public class DeviceItem extends BlockItem implements IDeviceType {
 
     //This method is still bugged due to Forge.
     @Nullable
-    @PlatformOnly(PlatformOnly.FORGE)
-//    @Override
     public CompoundTag getShareTag(ItemStack stack) {
         CompoundTag tag = new CompoundTag();
         if (stack.getTag() != null && stack.getTag().contains("display", Tag.TAG_COMPOUND)) {

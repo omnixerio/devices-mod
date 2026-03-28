@@ -1,26 +1,22 @@
 package com.ultreon.devices.item;
 
-import com.ultreon.devices.Devices;
 import com.ultreon.devices.IDeviceType;
 import com.ultreon.devices.ModDeviceTypes;
 import com.ultreon.devices.Reference;
 import com.ultreon.devices.util.Colored;
-import dev.architectury.registry.registries.RegistrarManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.component.TooltipDisplay;
 import org.apache.commons.lang3.text.WordUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class FlashDriveItem extends Item implements Colored, SubItems, IDeviceType {
 
@@ -32,20 +28,19 @@ public class FlashDriveItem extends Item implements Colored, SubItems, IDeviceTy
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, List<Component> tooltip, @NotNull TooltipFlag isAdvanced) {
+    public void appendHoverText(ItemStack itemStack, TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag tooltipFlag) {
         TextColor textColor = TextColor.fromRgb(this.color == DyeColor.BLACK ? 0xffffff : this.color.getTextColor());
 
         MutableComponent colorComponent = Component.literal(WordUtils.capitalize(this.color.getName().replace("_", " ")))
                 .withStyle(style -> style.withBold(true).withColor(textColor));
-        tooltip.add(Component.literal("Color: ").withStyle(ChatFormatting.GRAY).append(colorComponent));
+        builder.accept(Component.literal("Color: ").withStyle(ChatFormatting.GRAY).append(colorComponent));
     }
 
     @Override
     public NonNullList<Identifier> getModels() {
         NonNullList<Identifier> modelLocations = NonNullList.create();
         for (DyeColor color : DyeColor.values())
-            modelLocations.add(new Identifier(Reference.MOD_ID, Objects.requireNonNull(RegistrarManager.getId(this, Registries.ITEM)).getPath().substring(5) + "/" + color.getName()));
+            modelLocations.add(Identifier.fromNamespaceAndPath(Reference.MOD_ID, Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(this)).getPath().substring(5) + "/" + color.getName()));
         return modelLocations;
     }
 

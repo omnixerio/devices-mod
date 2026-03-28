@@ -1,9 +1,5 @@
 package com.ultreon.devices.core.client;
 
-import com.ultreon.devices.Devices;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-
 /**
  * @author MrCrayfish
  */

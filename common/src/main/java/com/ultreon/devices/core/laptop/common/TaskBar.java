@@ -1,7 +1,6 @@
 package com.ultreon.devices.core.laptop.common;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.core.laptop.client.ClientLaptop;
 import com.ultreon.devices.programs.system.object.ColorScheme;

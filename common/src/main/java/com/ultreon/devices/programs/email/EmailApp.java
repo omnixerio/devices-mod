@@ -1,7 +1,6 @@
 package com.ultreon.devices.programs.email;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.Resources;
 import com.ultreon.devices.api.ApplicationManager;
 import com.ultreon.devices.api.app.Component;
@@ -24,7 +23,6 @@ import com.ultreon.devices.programs.email.object.Email;
 import com.ultreon.devices.programs.email.task.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -226,7 +224,7 @@ public class EmailApp extends Application {
                 graphics.fill(x + 130, y + 35, x + width - 5, y + height - 5, new Color(1f, 1f, 1f, 0.25f).getRGB());
                 RenderUtil.drawStringClipped(graphics, e.getSubject(), x + 135, y + 10, 120, Color.WHITE.getRGB(), true);
                 RenderUtil.drawStringClipped(graphics, e.getAuthor() + "@endermail.official", x + 135, y + 22, 120, Color.LIGHT_GRAY.getRGB(), false);
-                graphics.drawWordWrap(Laptop.getFont(), FormattedText.of(e.getMessage()), x + 135, y + 40, 115, Color.WHITE.getRGB());
+                graphics.drawWordWrap(Laptop.getFontStatic(), FormattedText.of(e.getMessage()), x + 135, y + 40, 115, Color.WHITE.getRGB());
             }
         });
 

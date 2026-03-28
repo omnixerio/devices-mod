@@ -2,7 +2,6 @@ package com.ultreon.devices;
 
 import com.ultreon.devices.init.DeviceItems;
 import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
-import dev.ultreon.mods.xinexlib.registrar.RegistrarManager;
 import dev.ultreon.mods.xinexlib.registrar.RegistrySupplier;
 import dev.ultreon.mods.xinexlib.tabs.CreativeModeTabBuilder;
 import net.minecraft.world.item.CreativeModeTab;

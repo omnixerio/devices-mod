@@ -1,7 +1,5 @@
 package com.ultreon.devices.core.client;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.ultreon.devices.api.app.IIcon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -12,7 +10,6 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author MrCrayfish

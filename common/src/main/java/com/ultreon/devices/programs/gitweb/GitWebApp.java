@@ -11,7 +11,6 @@ import com.ultreon.devices.programs.gitweb.layout.TextLayout;
 import com.ultreon.devices.programs.system.SettingsApp;
 import com.ultreon.devices.programs.system.layout.StandardLayout;
 import com.ultreon.devices.util.DataHandler;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.nbt.CompoundTag;
 
 import org.jetbrains.annotations.Nullable;

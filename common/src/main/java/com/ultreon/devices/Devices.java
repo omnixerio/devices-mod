@@ -183,8 +183,6 @@ public abstract class Devices {
 
     private void registerApplications() {
         // Applications (Both)
-        DevicesNetworker.init();
-
         registerApplicationEvent();
         // Core
         TaskManager.registerTask(TaskUpdateApplicationData::new);
@@ -395,9 +393,9 @@ public abstract class Devices {
             LOGGER.info("Player logged in: " + player.getName());
 
             if (allowedApps != null) {
-                PacketHandler.sendToClient(new SyncApplicationPacket(allowedApps), player);
+                DevicesNetworker.networker.sendToClient(new SyncApplicationPacket(allowedApps), player);
             }
-            PacketHandler.sendToClient(new SyncConfigPacket(), player);
+            DevicesNetworker.networker.sendToClient(new SyncConfigPacket(), player);
         });
     }
 

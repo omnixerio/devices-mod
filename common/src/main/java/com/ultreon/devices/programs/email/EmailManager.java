@@ -6,8 +6,6 @@ import com.ultreon.devices.api.WorldSavedData;
 import com.ultreon.devices.api.app.Icons;
 import com.ultreon.devices.api.app.Notification;
 import com.ultreon.devices.programs.email.object.Email;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
@@ -16,8 +14,6 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.*;
 
-;
-
 /**
  * @author MrCrayfish
  */
@@ -25,7 +21,6 @@ public class EmailManager implements WorldSavedData {
     public static final EmailManager INSTANCE = new EmailManager();
     private final HashBiMap<UUID, String> uuidToName = HashBiMap.create();
     private final Map<String, List<Email>> nameToInbox = new HashMap<>();
-    @Environment(EnvType.CLIENT)
     private List<Email> inbox;
 
     public boolean addEmailToInbox(Email email, String to) {
@@ -37,7 +32,6 @@ public class EmailManager implements WorldSavedData {
         return false;
     }
 
-    @Environment(EnvType.CLIENT)
     public List<Email> getInbox() {
         if (inbox == null) {
             inbox = new ArrayList<>();
@@ -76,13 +70,13 @@ public class EmailManager implements WorldSavedData {
 
         ListTag inboxes = (ListTag) nbt.get("Inboxes");
         for (int i = 0; i < inboxes.size(); i++) {
-            CompoundTag inbox = inboxes.getCompound(i);
-            String name = inbox.getString("Name");
+            CompoundTag inbox = inboxes.getCompoundOrEmpty(i);
+            String name = inbox.getString("Name").orElseThrow();
 
             List<Email> emails = new ArrayList<Email>();
             ListTag emailTagList = (ListTag) inbox.get("Emails");
             for (int j = 0; j < emailTagList.size(); j++) {
-                CompoundTag emailTag = emailTagList.getCompound(j);
+                CompoundTag emailTag = emailTagList.getCompoundOrEmpty(j);
                 Email email = Email.readFromNBT(emailTag);
                 emails.add(email);
             }
@@ -93,9 +87,9 @@ public class EmailManager implements WorldSavedData {
 
         ListTag accounts = (ListTag) nbt.get("Accounts");
         for (int i = 0; i < accounts.size(); i++) {
-            CompoundTag account = accounts.getCompound(i);
-            UUID uuid = UUID.fromString(account.getString("UUID"));
-            String name = account.getString("Name");
+            CompoundTag account = accounts.getCompoundOrEmpty(i);
+            UUID uuid = UUID.fromString(account.getString("UUID").orElseThrow());
+            String name = account.getString("Name").orElseThrow();
             uuidToName.put(uuid, name);
         }
     }

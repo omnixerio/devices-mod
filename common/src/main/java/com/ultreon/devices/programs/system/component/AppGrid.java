@@ -1,6 +1,5 @@
 package com.ultreon.devices.programs.system.component;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.ApplicationManager;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.Icons;
@@ -16,8 +15,8 @@ import com.ultreon.devices.programs.system.object.LocalEntry;
 import com.ultreon.devices.programs.system.object.RemoteEntry;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.resources.Identifier;
 
 import java.awt.*;
@@ -83,7 +82,7 @@ public class AppGrid extends Component {
         for (int i = 0; i < size; i++) {
             int itemX = xPosition + (i % horizontalItems) * (itemWidth + padding) + padding;
             int itemY = yPosition + (i / horizontalItems) * (itemHeight + padding) + padding;
-            if (GuiHelper.isMouseWithin(mouseX, mouseY, itemX, itemY, itemWidth, itemHeight)) {
+            if (GuiHelper.isMouseWithin((int) event.x(), (int) event.y(), itemX, itemY, itemWidth, itemHeight)) {
                 if (System.currentTimeMillis() - this.lastClick <= 200 && clickedIndex == i) {
                     this.lastClick = 0;
                     store.openApplication(entries.get(i));
