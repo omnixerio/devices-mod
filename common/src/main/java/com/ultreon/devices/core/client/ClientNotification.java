@@ -1,14 +1,13 @@
 package com.ultreon.devices.core.client;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.IIcon;
-import com.ultreon.devices.api.utils.RenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.Toast;
-import net.minecraft.client.gui.components.toasts.ToastComponent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -19,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
  * @author MrCrayfish
  */
 public class ClientNotification implements Toast {
-    private static final Identifier TEXTURE_TOASTS = new Identifier("devices:textures/gui/toast.png");
+    private static final Identifier TEXTURE_TOASTS = Identifier.parse("devices:textures/gui/toast.png");
 
     private IIcon icon;
     private String title;
@@ -28,32 +27,25 @@ public class ClientNotification implements Toast {
     private ClientNotification() {
     }
 
-    @NotNull
     @Override
-    public Visibility render(@NotNull GuiGraphics graphics, ToastComponent toastComponent, long timeSinceLastVisible) {
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-        RenderSystem.setShaderTexture(0, TEXTURE_TOASTS);
-        graphics.blit(TEXTURE_TOASTS, 0, 0, 0, 0, 160, 32);
-        Font font = toastComponent.getMinecraft().font;
+    public void extractRenderState(GuiGraphicsExtractor graphics, Font font, long fullyVisibleForMs) {
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE_TOASTS, 0, 0, 0, 0, 160, 32, 256, 256);
 
         if (subTitle == null) {
-            graphics.drawString(font, font.plainSubstrByWidth(I18n.get(title), 118), 38, 12, -1);
+            graphics.text(font, font.plainSubstrByWidth(I18n.get(title), 118), 38, 12, -1);
         } else {
-            graphics.drawString(font, font.plainSubstrByWidth(I18n.get(title), 118), 38, 7, -1);
-            graphics.drawString(font, font.plainSubstrByWidth(I18n.get(subTitle), 118), 38, 18, -1, false);
+            graphics.text(font, font.plainSubstrByWidth(I18n.get(title), 118), 38, 7, -1);
+            graphics.text(font, font.plainSubstrByWidth(I18n.get(subTitle), 118), 38, 18, -1, false);
         }
 
-        RenderSystem.setShaderTexture(0, icon.getIconAsset());
-        graphics.blit(icon.getIconAsset(), 6, 6, icon.getGridWidth(), icon.getGridHeight(), icon.getU(), icon.getV(), icon.getIconSize(), icon.getIconSize(), icon.getSourceWidth(), icon.getSourceHeight());
-
-        return timeSinceLastVisible >= 5000L ? Visibility.HIDE : Visibility.SHOW;
+        graphics.blit(RenderPipelines.GUI_TEXTURED, icon.getIconAsset(), 6, 6, icon.getGridWidth(), icon.getGridHeight(), icon.getU(), icon.getV(), icon.getIconSize(), icon.getIconSize(), icon.getSourceWidth(), icon.getSourceHeight());
     }
 
     public static ClientNotification loadFromTag(CompoundTag tag) {
         ClientNotification notification = new ClientNotification();
 
-        int ordinal = tag.getCompound("icon").getInt("ordinal");
-        String className = tag.getCompound("icon").getString("className");
+        int ordinal = tag.getCompoundOrEmpty("icon").getIntOr("ordinal", 0);
+        String className = tag.getCompoundOrEmpty("icon").getStringOr("className", "");
 
         try {
             notification.icon = (IIcon) Class.forName(className).getEnumConstants()[ordinal];
@@ -61,15 +53,15 @@ public class ClientNotification implements Toast {
             e.printStackTrace();
         }
 
-        notification.title = tag.getString("title");
+        notification.title = tag.getStringOr("title", "Title");
         if (tag.contains("subTitle", Tag.TAG_STRING)) {
-            notification.subTitle = tag.getString("subTitle");
+            notification.subTitle = tag.getStringOr("subTitle", "Subtitle");
         }
 
         return notification;
     }
 
     public void push() {
-        Minecraft.getInstance().getToasts().addToast(this);
+        Minecraft.getInstance().getToastManager().addToast(this);
     }
 }

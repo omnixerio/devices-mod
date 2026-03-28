@@ -21,7 +21,7 @@ import com.ultreon.devices.util.TimeUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -100,12 +100,12 @@ public class MineBayApp extends Application {
 
         Button btnAddItem = new Button(70, 5, "Add Item");
         btnAddItem.setSize(60, 15);
-        btnAddItem.setClickListener((mouseX, mouseY, mouseButton) -> setCurrentLayout(layoutSelectItem));
+        btnAddItem.setClickListener((event) -> setCurrentLayout(layoutSelectItem));
         layoutMain.addComponent(btnAddItem);
 
         Button btnViewItem = new Button(135, 5, "Your Auctions");
         btnViewItem.setSize(80, 15);
-        btnViewItem.setClickListener((mouseX, mouseY, mouseButton) -> {
+        btnViewItem.setClickListener((event) -> {
             assert Minecraft.getInstance().player != null;
             TaskGetAuctions task = new TaskGetAuctions(Minecraft.getInstance().player.getUUID());
             task.setCallback((nbt, success) -> {
@@ -145,7 +145,7 @@ public class MineBayApp extends Application {
         items = new ItemList<>(100, 40, 180, 4);
         items.setListItemRenderer(new ListItemRenderer<>(20) {
             @Override
-            public void render(GuiGraphics graphics, AuctionItem e, Minecraft mc, int x, int y, int width, int height, boolean selected) {
+            public void render(GuiGraphicsExtractor graphics, AuctionItem e, Minecraft mc, int x, int y, int width, int height, boolean selected) {
                 if (selected) {
                     graphics.fill(x, y, x + width, y + height, Color.DARK_GRAY.getRGB());
                 } else {
@@ -154,24 +154,24 @@ public class MineBayApp extends Application {
 
                 RenderUtil.renderItem(graphics, x + 2, y + 2, e.getStack(), true);
 
-                graphics.pose().pushPose();
+                graphics.pose().pushMatrix();
                 {
                     graphics.pose().translate(x + 24, y + 4, 0);
                     graphics.pose().scale(0.666f, 0.666f, 0);
-                    graphics.drawString(mc.font, e.getStack().getDisplayName(), 0, 0, Color.WHITE.getRGB(), false);
-                    graphics.drawString(mc.font, TimeUtil.getTotalRealTime(e.getTimeLeft()), 0, 11, Color.LIGHT_GRAY.getRGB(), false);
+                    graphics.text(mc.font, e.getStack().getDisplayName(), 0, 0, Color.WHITE.getRGB(), false);
+                    graphics.text(mc.font, TimeUtil.getTotalRealTime(e.getTimeLeft()), 0, 11, Color.LIGHT_GRAY.getRGB(), false);
                 }
-                graphics.pose().popPose();
+                graphics.pose().popMatrix();
 
                 String price = "$" + e.getPrice();
-                graphics.drawString(mc.font, price, x - mc.font.width(price) + width - 5, y + 6, Color.YELLOW.getRGB(), false);
+                graphics.text(mc.font, price, x - mc.font.width(price) + width - 5, y + 6, Color.YELLOW.getRGB(), false);
             }
         });
         layoutMain.addComponent(items);
 
         Button btnBuy = new Button(100, 127, "Buy");
         btnBuy.setSize(50, 15);
-        btnBuy.setClickListener((mouseX, mouseY, mouseButton) ->
+        btnBuy.setClickListener((event) ->
         {
             final Dialog.Confirmation dialog = new Dialog.Confirmation();
             dialog.setPositiveText("Buy");
@@ -204,11 +204,11 @@ public class MineBayApp extends Application {
         layoutSelectItem.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) -> {
             graphics.fill(x, y, x + width, y + 22, Color.LIGHT_GRAY.getRGB());
             graphics.fill(x, y + 22, x + width, y + 23, Color.DARK_GRAY.getRGB());
-            graphics.drawString(mc.font, "Select an Item...", x + 5, y + 7, Color.WHITE.getRGB());
+            graphics.text(mc.font, "Select an Item...", x + 5, y + 7, Color.WHITE.getRGB());
         });
 
         inventory = new Inventory(5, 28);
-        inventory.setClickListener((mouseX, mouseY, mouseButton) ->
+        inventory.setClickListener((event) ->
         {
             if (inventory.getSelectedSlotIndex() != -1) {
                 assert Minecraft.getInstance().player != null;
@@ -226,13 +226,13 @@ public class MineBayApp extends Application {
 
         buttonAddCancel = new Button(138, 4, MINEBAY_ASSETS, 0, 12, 8, 8);
         buttonAddCancel.setToolTip("Cancel", "Go back to main page");
-        buttonAddCancel.setClickListener((mouseX, mouseY, mouseButton) -> restoreDefaultLayout());
+        buttonAddCancel.setClickListener((event) -> restoreDefaultLayout());
         layoutSelectItem.addComponent(buttonAddCancel);
 
         buttonAddNext = new Button(154, 4, MINEBAY_ASSETS, 16, 12, 8, 8);
         buttonAddNext.setToolTip("Next Page", "Set price and amount");
         buttonAddNext.setEnabled(false);
-        buttonAddNext.setClickListener((mouseX, mouseY, mouseButton) ->
+        buttonAddNext.setClickListener((event) ->
         {
             selectorAmount.updateButtons();
             selectorPrice.updateButtons();
@@ -248,7 +248,7 @@ public class MineBayApp extends Application {
         layoutAmountAndPrice.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) -> {
             graphics.fill(x, y, x + width, y + 22, Color.LIGHT_GRAY.getRGB());
             graphics.fill(x, y + 22, x + width, y + 23, Color.DARK_GRAY.getRGB());
-            graphics.drawString(mc.font, "Set amount and price...", x + 5, y + 7, Color.WHITE.getRGB());
+            graphics.text(mc.font, "Set amount and price...", x + 5, y + 7, Color.WHITE.getRGB());
 
             int offsetX = 14;
             int offsetY = 40;
@@ -263,35 +263,35 @@ public class MineBayApp extends Application {
                 assert mc.player != null;
                 ItemStack stack = mc.player.getInventory().getItem(inventory.getSelectedSlotIndex());
                 if (!stack.isEmpty()) {
-                    graphics.pose().pushPose();
+                    graphics.pose().pushMatrix();
                     {
                         graphics.pose().translate(x + 17, y + 43, 0);
                         graphics.pose().scale(2, 2, 0);
                         RenderUtil.renderItem(graphics, 0, 0, stack, false);
                     }
-                    graphics.pose().popPose();
+                    graphics.pose().popMatrix();
                 }
             }
 
-            graphics.pose().pushPose();
+            graphics.pose().pushMatrix();
             {
                 graphics.pose().translate(x + 92, y + 43, 0);
                 graphics.pose().scale(2, 2, 0);
                 RenderUtil.renderItem(graphics, 0, 0, EMERALD, false);
             }
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
         });
 
         buttonAmountAndPriceBack = new Button(122, 4, MINEBAY_ASSETS, 8, 12, 8, 8);
-        buttonAmountAndPriceBack.setClickListener((mouseX, mouseY, mouseButton) -> setCurrentLayout(layoutSelectItem));
+        buttonAmountAndPriceBack.setClickListener((event) -> setCurrentLayout(layoutSelectItem));
         layoutAmountAndPrice.addComponent(buttonAmountAndPriceBack);
 
         buttonAmountAndPriceCancel = new Button(138, 4, MINEBAY_ASSETS, 0, 12, 8, 8);
-        buttonAmountAndPriceCancel.setClickListener((mouseX, mouseY, mouseButton) -> restoreDefaultLayout());
+        buttonAmountAndPriceCancel.setClickListener((event) -> restoreDefaultLayout());
         layoutAmountAndPrice.addComponent(buttonAmountAndPriceCancel);
 
         buttonAmountAndPriceNext = new Button(154, 4, MINEBAY_ASSETS, 16, 12, 8, 8);
-        buttonAmountAndPriceNext.setClickListener((mouseX, mouseY, mouseButton) -> setCurrentLayout(layoutDuration));
+        buttonAmountAndPriceNext.setClickListener((event) -> setCurrentLayout(layoutDuration));
         layoutAmountAndPrice.addComponent(buttonAmountAndPriceNext);
 
         labelAmount = new Label("Amount", 16, 30);
@@ -315,19 +315,19 @@ public class MineBayApp extends Application {
         layoutDuration.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) -> {
             graphics.fill(x, y, x + width, y + 22, Color.LIGHT_GRAY.getRGB());
             graphics.fill(x, y + 22, x + width, y + 23, Color.DARK_GRAY.getRGB());
-            graphics.drawString(mc.font, "Set duration...", x + 5, y + 7, Color.WHITE.getRGB());
+            graphics.text(mc.font, "Set duration...", x + 5, y + 7, Color.WHITE.getRGB());
         });
 
         buttonDurationBack = new Button(122, 4, MINEBAY_ASSETS, 8, 12, 8, 8);
-        buttonDurationBack.setClickListener((mouseX, mouseY, mouseButton) -> setCurrentLayout(layoutAmountAndPrice));
+        buttonDurationBack.setClickListener((event) -> setCurrentLayout(layoutAmountAndPrice));
         layoutDuration.addComponent(buttonDurationBack);
 
         buttonDurationCancel = new Button(138, 4, MINEBAY_ASSETS, 0, 12, 8, 8);
-        buttonDurationCancel.setClickListener((mouseX, mouseY, mouseButton) -> this.setCurrentLayout(layoutMain));
+        buttonDurationCancel.setClickListener((event) -> this.setCurrentLayout(layoutMain));
         layoutDuration.addComponent(buttonDurationCancel);
 
         buttonDurationAdd = new Button(154, 4, MINEBAY_ASSETS, 24, 12, 8, 8);
-        buttonDurationAdd.setClickListener((mouseX, mouseY, mouseButton) ->
+        buttonDurationAdd.setClickListener((event) ->
         {
             final Dialog.Confirmation dialog = new Dialog.Confirmation();
             dialog.setMessageText("Are you sure you want to auction this item?");

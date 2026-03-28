@@ -1,9 +1,12 @@
 package com.ultreon.devices.block;
 
+import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.print.IPrint;
 import com.ultreon.devices.block.entity.PaperBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -40,7 +43,7 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
     private static final VoxelShape[] SELECTION_BOUNDING_BOX = {SELECTION_BOX_SOUTH, SELECTION_BOX_WEST, SELECTION_BOX_NORTH, SELECTION_BOX_EAST};
 
     public PaperBlock() {
-        super(Properties.of().noCollission().instabreak().noOcclusion().noLootTable());
+        super(Properties.of().setId(ResourceKey.create(Registries.BLOCK, Devices.id("paper"))).noCollision().instabreak().noOcclusion().noLootTable());
 
         registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
     }

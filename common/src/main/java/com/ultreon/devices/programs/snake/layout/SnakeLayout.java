@@ -10,7 +10,7 @@ import com.ultreon.devices.debug.DebugLog;
 import com.ultreon.devices.programs.snake.SnakeApp;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class SnakeLayout extends Layout {
     public SnakeLayout(SnakeApp app) {
         super(150, 150);
         var button = new Button(1, 1, Icons.ARROW_LEFT);
-        button.setClickListener(((mouseX, mouseY, mouseButton) -> {
+        button.setClickListener(((event) -> {
             app.setCurrentLayout(app.titleScreen);
         }));
 
@@ -34,7 +34,7 @@ public class SnakeLayout extends Layout {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         super.render(graphics, laptop, mc, x, y, mouseX, mouseY, windowActive, partialTicks);
     }
 
@@ -100,7 +100,7 @@ public class SnakeLayout extends Layout {
         }
 
         @Override
-        protected void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+        protected void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
             super.render(graphics, laptop, mc, x, y, mouseX, mouseY, windowActive, partialTicks);
             var black = new Color(0, 0, 0, 0.5f);
             var intBlack = black.getRGB();
@@ -124,7 +124,7 @@ public class SnakeLayout extends Layout {
             graphics.fill(x+applePos.x*10, y+applePos.y*10, x+applePos.x*10+10, y+applePos.y*10+10, red);
         }
 
-        private void renderConnectedSnakePart(GuiGraphics graphics, int x, int y, int color, int index) {
+        private void renderConnectedSnakePart(GuiGraphicsExtractor graphics, int x, int y, int color, int index) {
             var pos = snakePos.get(index);
             graphics.fill(x+pos.x*10+1, y+pos.y*10+1, x+pos.x*10+10-1, y+pos.y*10+10-1, color);
 

@@ -6,7 +6,8 @@ import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 
@@ -41,7 +42,7 @@ public class Text extends Component {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
 //        DebugLog.log(lines.size() + ", " + rawText + ", " + lines);
         if (this.visible) {
             for (int i = 0; i < lines.size(); i++) {
@@ -50,8 +51,8 @@ public class Text extends Component {
                     text = text.substring(0, text.length() - 1);
                 }
                 assert text != null;
-                if (shadow) graphics.drawString(Laptop.getFont(), text, x + padding, y + (i * 10) + padding, textColor);
-                else graphics.drawString(Laptop.getFont(), text, x + padding, y + (i * 10) + padding, textColor, false);
+                if (shadow) graphics.text(Laptop.getFont(), text, x + padding, y + (i * 10) + padding, textColor);
+                else graphics.text(Laptop.getFont(), text, x + padding, y + (i * 10) + padding, textColor, false);
             }
         }
     }
@@ -100,12 +101,12 @@ public class Text extends Component {
     }
 
     @Override
-    protected void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
-        if (GuiHelper.isMouseWithin(mouseX, mouseY, xPosition + padding, yPosition + padding, width - padding * 2, getHeight() - padding * 2)) {
+    protected void handleMouseClick(MouseButtonEvent event) {
+        if (GuiHelper.isMouseWithin((int) event.x(), (int) event.y(), xPosition + padding, yPosition + padding, width - padding * 2, getHeight() - padding * 2)) {
             if (this.wordListener != null && lines.size() > 0) {
-                int lineIndex = (mouseY - (yPosition + padding)) / 10;
+                int lineIndex = (int) ((event.y() - (yPosition + padding)) / 10);
                 if (lineIndex < lines.size()) {
-                    int cursorX = mouseX - (xPosition + padding);
+                    int cursorX = (int) (event.x() - (xPosition + padding));
                     String line = lines.get(lineIndex);
                     int index = Laptop.getFont().plainSubstrByWidth(line, cursorX).length();
                     String clickedWord = getWord(line, index);

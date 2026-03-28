@@ -2,6 +2,7 @@ package com.ultreon.devices.api.app.component;
 
 import com.ultreon.devices.api.app.IIcon;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.resources.Identifier;
 
 @SuppressWarnings("unused")
@@ -73,10 +74,10 @@ public class ButtonToggle extends Button implements RadioGroup.Item {
     }
 
     @Override
-    public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseClick(MouseButtonEvent event) {
         if (!this.visible || !this.enabled) return;
 
-        if (super.isInside(mouseX, mouseY)) {
+        if (super.isInside((int) event.x(), (int) event.y())) {
             playClickSound(Minecraft.getInstance().getSoundManager());
             if (group != null) {
                 group.deselect();
@@ -85,7 +86,7 @@ public class ButtonToggle extends Button implements RadioGroup.Item {
                 this.toggle = !toggle;
             }
             if (clickListener != null) {
-                clickListener.onClick(mouseX, mouseY, mouseButton);
+                clickListener.onClick(event);
             }
         }
     }

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.object.Game;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class TileEnchantmentTable extends Tile
 {
@@ -14,7 +14,7 @@ public class TileEnchantmentTable extends Tile
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, Game game, int x, int y, Game.Layer layer)
+	public void render(GuiGraphicsExtractor graphics, Game game, int x, int y, Game.Layer layer)
 	{
 		if(game.getTile(layer.up(), x, y - 1) != this || layer == Game.Layer.FOREGROUND)
 		{

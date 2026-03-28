@@ -25,7 +25,7 @@ import com.ultreon.devices.object.Picture;
 import com.ultreon.devices.programs.system.layout.StandardLayout;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
@@ -99,7 +99,7 @@ public class PixelPainterApp extends Application {
         ItemList<Picture> pictureList = new ItemList<>(5, 43, 80, 4);
         pictureList.setListItemRenderer(new ListItemRenderer<>(18) {
             @Override
-            public void render(GuiGraphics graphics, Picture picture, Minecraft mc, int x, int y, int width, int height, boolean selected) {
+            public void render(GuiGraphicsExtractor graphics, Picture picture, Minecraft mc, int x, int y, int width, int height, boolean selected) {
                 RenderUtil.drawStringClipped(graphics, "Henlo", x, y, 100, AUTHOR_TEXT.getRGB(), true);
             }
         });
@@ -108,7 +108,7 @@ public class PixelPainterApp extends Application {
         btnNewPicture = new Button(5, 25, "New", Icons.PICTURE);
         btnNewPicture.setSize(40, 16);
         btnNewPicture.setToolTip("New Picture", "Start a new masterpiece!");
-        btnNewPicture.setClickListener((mouseX, mouseY, mouseButton) ->
+        btnNewPicture.setClickListener((event) ->
         {
             if (mouseButton == 0) {
                 setCurrentLayout(layoutNewPicture);
@@ -118,7 +118,7 @@ public class PixelPainterApp extends Application {
 
         btnLoadPicture = new Button(48, 25, Icons.IMPORT);
         btnLoadPicture.setToolTip("Load External", "Open a picture from file");
-        btnLoadPicture.setClickListener((mouseX, mouseY, mouseButton) -> setCurrentLayout(layoutLoadPicture));
+        btnLoadPicture.setClickListener((event) -> setCurrentLayout(layoutLoadPicture));
         layoutMainMenu.addComponent(btnLoadPicture);
 
         Button btnDeletePicture = new Button(67, 25, Icons.TRASH);
@@ -158,7 +158,7 @@ public class PixelPainterApp extends Application {
 
         btnCreatePicture = new Button(110, 40, "Create");
         btnCreatePicture.setSize(65, 20);
-        btnCreatePicture.setClickListener((mouseX, mouseY, mouseButton) ->
+        btnCreatePicture.setClickListener((event) ->
         {
             setCurrentLayout(layoutDraw);
             canvas.createPicture(fieldName.getText(), fieldAuthor.getText(), checkBox16x.isSelected() ? Picture.Size.X16 : Picture.Size.X32);
@@ -188,10 +188,10 @@ public class PixelPainterApp extends Application {
         listPictures = new ItemList<>(5, 5, 80, 5);
         listPictures.setListItemRenderer(new ListItemRenderer<>(20) {
             @Override
-            public void render(GuiGraphics graphics, Picture picture, Minecraft mc, int x, int y, int width, int height, boolean selected) {
+            public void render(GuiGraphicsExtractor graphics, Picture picture, Minecraft mc, int x, int y, int width, int height, boolean selected) {
                 graphics.fill(x, y, x + width, y + height, selected ? ITEM_SELECTED.getRGB() : ITEM_BACKGROUND.getRGB());
-                graphics.drawString(mc.font, picture.getName(), x + 2, y + 2, Color.WHITE.getRGB(), false);
-                graphics.drawString(mc.font, picture.getAuthor(), x + 2, y + 11, AUTHOR_TEXT.getRGB(), false);
+                graphics.text(mc.font, picture.getName(), x + 2, y + 2, Color.WHITE.getRGB(), false);
+                graphics.text(mc.font, picture.getAuthor(), x + 2, y + 11, AUTHOR_TEXT.getRGB(), false);
             }
         });
         listPictures.setItemClickListener((picture, index, mouseButton) ->
@@ -206,7 +206,7 @@ public class PixelPainterApp extends Application {
         btnLoadSavedPicture = new Button(110, 5, "Load");
         btnLoadSavedPicture.setSize(50, 20);
         btnLoadSavedPicture.setEnabled(false);
-        btnLoadSavedPicture.setClickListener((mouseX, mouseY, mouseButton) ->
+        btnLoadSavedPicture.setClickListener((event) ->
         {
             if (listPictures.getSelectedIndex() != -1) {
                 canvas.setPicture(Objects.requireNonNull(listPictures.getSelectedItem()));
@@ -217,7 +217,7 @@ public class PixelPainterApp extends Application {
 
         btnBrowseSavedPicture = new Button(110, 30, "Browse");
         btnBrowseSavedPicture.setSize(50, 20);
-        btnBrowseSavedPicture.setClickListener((mouseX, mouseY, mouseButton) ->
+        btnBrowseSavedPicture.setClickListener((event) ->
         {
             Dialog.OpenFile dialog = new Dialog.OpenFile(this);
             dialog.setResponseHandler((success, file) ->
@@ -240,7 +240,7 @@ public class PixelPainterApp extends Application {
         btnDeleteSavedPicture = new Button(110, 55, "Delete");
         btnDeleteSavedPicture.setSize(50, 20);
         btnDeleteSavedPicture.setEnabled(false);
-        btnDeleteSavedPicture.setClickListener((mouseX, mouseY, mouseButton) ->
+        btnDeleteSavedPicture.setClickListener((event) ->
         {
             if (listPictures.getSelectedIndex() != -1) {
                 Picture picture = listPictures.getSelectedItem();
@@ -266,7 +266,7 @@ public class PixelPainterApp extends Application {
 
         btnBackSavedPicture = new Button(110, 80, "Back");
         btnBackSavedPicture.setSize(50, 20);
-        btnBackSavedPicture.setClickListener((mouseX, mouseY, mouseButton) -> setCurrentLayout(layoutMainMenu));
+        btnBackSavedPicture.setClickListener((event) -> setCurrentLayout(layoutMainMenu));
         layoutLoadPicture.addComponent(btnBackSavedPicture);
 
 
@@ -280,22 +280,22 @@ public class PixelPainterApp extends Application {
         RadioGroup toolGroup = new RadioGroup();
 
         btnPencil = new ButtonToggle(138, 5, PIXEL_PAINTER_ICONS, 0, 0, 10, 10);
-        btnPencil.setClickListener((mouseX, mouseY, mouseButton) -> canvas.setCurrentTool(Canvas.PENCIL));
+        btnPencil.setClickListener((event) -> canvas.setCurrentTool(Canvas.PENCIL));
         btnPencil.setRadioGroup(toolGroup);
         layoutDraw.addComponent(btnPencil);
 
         btnBucket = new ButtonToggle(138, 24, PIXEL_PAINTER_ICONS, 10, 0, 10, 10);
-        btnBucket.setClickListener((mouseX, mouseY, mouseButton) -> canvas.setCurrentTool(Canvas.BUCKET));
+        btnBucket.setClickListener((event) -> canvas.setCurrentTool(Canvas.BUCKET));
         btnBucket.setRadioGroup(toolGroup);
         layoutDraw.addComponent(btnBucket);
 
         btnEraser = new ButtonToggle(138, 43, PIXEL_PAINTER_ICONS, 20, 0, 10, 10);
-        btnEraser.setClickListener((mouseX, mouseY, mouseButton) -> canvas.setCurrentTool(Canvas.ERASER));
+        btnEraser.setClickListener((event) -> canvas.setCurrentTool(Canvas.ERASER));
         btnEraser.setRadioGroup(toolGroup);
         layoutDraw.addComponent(btnEraser);
 
         btnEyeDropper = new ButtonToggle(138, 62, PIXEL_PAINTER_ICONS, 30, 0, 10, 10);
-        btnEyeDropper.setClickListener((mouseX, mouseY, mouseButton) ->
+        btnEyeDropper.setClickListener((event) ->
         {
             canvas.setCurrentTool(Canvas.EYE_DROPPER);
             Color color = new Color(canvas.getCurrentColor());
@@ -307,7 +307,7 @@ public class PixelPainterApp extends Application {
         layoutDraw.addComponent(btnEyeDropper);
 
         Button button = new Button(138, 81, Icons.PRINTER);
-        button.setClickListener((mouseX, mouseY, mouseButton) ->
+        button.setClickListener((event) ->
         {
             DebugLog.log("Print action triggered in pixel painter");
             if (mouseButton == 0) {
@@ -319,7 +319,7 @@ public class PixelPainterApp extends Application {
         layoutDraw.addComponent(button);
 
         btnCancel = new Button(138, 100, PIXEL_PAINTER_ICONS, 50, 0, 10, 10);
-        btnCancel.setClickListener((mouseX, mouseY, mouseButton) ->
+        btnCancel.setClickListener((event) ->
         {
             if (canvas.isExistingImage())
                 setCurrentLayout(layoutLoadPicture);
@@ -330,7 +330,7 @@ public class PixelPainterApp extends Application {
         layoutDraw.addComponent(btnCancel);
 
         btnSave = new Button(138, 119, PIXEL_PAINTER_ICONS, 40, 0, 10, 10);
-        btnSave.setClickListener((mouseX, mouseY, mouseButton) ->
+        btnSave.setClickListener((event) ->
         {
             canvas.picture.pixels = canvas.copyPixels();
 
@@ -383,7 +383,7 @@ public class PixelPainterApp extends Application {
 
         colorDisplay = new Component(158, 5) {
             @Override
-            public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+            public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
                 graphics.fill(xPosition, yPosition, xPosition + 50, yPosition + 20, Color.DARK_GRAY.getRGB());
                 graphics.fill(xPosition + 1, yPosition + 1, xPosition + 49, yPosition + 19, canvas.getCurrentColor());
             }
@@ -394,7 +394,7 @@ public class PixelPainterApp extends Application {
         layoutDraw.addComponent(colorGrid);
 
         displayGrid = new CheckBox("Grid", 166, 120);
-        displayGrid.setClickListener((mouseX, mouseY, mouseButton) -> canvas.setShowGrid(displayGrid.isSelected()));
+        displayGrid.setClickListener((event) -> canvas.setShowGrid(displayGrid.isSelected()));
         layoutDraw.addComponent(displayGrid);
 
         setCurrentLayout(layoutMainMenu);

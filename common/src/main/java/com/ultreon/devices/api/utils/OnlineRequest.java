@@ -1,14 +1,11 @@
 package com.ultreon.devices.api.utils;
 
+import com.ultreon.devices.Devices;
 import com.ultreon.devices.util.StreamUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -129,14 +126,20 @@ public class OnlineRequest {
                         wrapper.handler.handle(false, "DOMAIN NOT BLACKLISTED/ERROR PARSING DOMAIN");
                         continue;
                     }
-                    try (CloseableHttpClient client = HttpClients.custom().setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, (chain, authType) -> true).build()).build()) {
-                        HttpGet get = new HttpGet(wrapper.url);
-                        try (CloseableHttpResponse response = client.execute(get)) {
-                            String raw = StreamUtils.convertToString(response.getEntity().getContent());
+                    try {
+                        URL url = new URL(wrapper.url);
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        conn.setRequestMethod("GET");
+                        conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+
+                        try (InputStream in = conn.getInputStream()) {
+                            String raw = StreamUtils.convertToString(in);
                             wrapper.handler.handle(true, raw);
+                        } finally {
+                            conn.disconnect();
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Devices.LOGGER.error("Error making request to {}", wrapper.url, e);
                         wrapper.handler.handle(false, "");
                     }
                 }

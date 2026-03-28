@@ -16,7 +16,7 @@ import com.ultreon.devices.programs.system.object.LocalEntry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
@@ -48,7 +48,7 @@ public class LayoutSearchApps extends StandardLayout {
         itemListResults.sortBy(Comparator.comparing(AppInfo::getName));
         itemListResults.setListItemRenderer(new ListItemRenderer<>(18) {
             @Override
-            public void render(GuiGraphics graphics, AppInfo info, Minecraft mc, int x, int y, int width, int height, boolean selected) {
+            public void render(GuiGraphicsExtractor graphics, AppInfo info, Minecraft mc, int x, int y, int width, int height, boolean selected) {
                 graphics.fill(x, y, x + width, y + height, selected ? ITEM_SELECTED.getRGB() : ITEM_BACKGROUND.getRGB());
 
                 RenderSystem.setShaderColor(1f, 1f, 1f, 1f);

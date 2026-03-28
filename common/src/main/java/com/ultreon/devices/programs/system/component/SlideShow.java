@@ -10,7 +10,7 @@ import com.ultreon.devices.programs.system.object.ImageEntry;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.Identifier;
 
@@ -60,7 +60,7 @@ public class SlideShow extends Component {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    protected void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (!this.visible) return;
         image.render(graphics, laptop, mc, x, y, mouseX, mouseY, windowActive, partialTicks);
 
@@ -84,7 +84,7 @@ public class SlideShow extends Component {
     }
 
     @Override
-    protected void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+    protected void handleMouseClick(MouseButtonEvent event) {
         if (!this.visible || !this.enabled || mouseButton != 0) return;
 
         if (GuiHelper.isMouseWithin(mouseX, mouseY, xPosition, yPosition, 15, height)) {

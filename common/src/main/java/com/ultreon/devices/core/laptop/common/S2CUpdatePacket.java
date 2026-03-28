@@ -1,44 +1,44 @@
 package com.ultreon.devices.core.laptop.common;
 
 import com.ultreon.devices.core.laptop.client.ClientLaptop;
-import com.ultreon.devices.core.laptop.server.ServerLaptop;
 import com.ultreon.devices.debug.DebugLog;
-import com.ultreon.devices.network.Packet;
-import dev.architectury.networking.NetworkManager;
-import net.fabricmc.api.EnvType;
-import net.minecraft.client.Minecraft;
+import dev.ultreon.mods.xinexlib.network.Networker;
+import dev.ultreon.mods.xinexlib.network.packet.PacketToClient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class S2CUpdatePacket extends Packet<S2CUpdatePacket> {
+public class S2CUpdatePacket implements PacketToClient<S2CUpdatePacket> {
     private final CompoundTag nbt;
 
     public S2CUpdatePacket(UUID laptop, String type, CompoundTag nbt) {
         this.nbt = new CompoundTag();
-        this.nbt.putUUID("uuid", laptop); // laptop uuid
+        this.nbt.putLongArray("uuid", new long[]{laptop.getMostSignificantBits(), laptop.getLeastSignificantBits()});
         this.nbt.putString("type", type);
         this.nbt.put("data", nbt);
     }
 
-    @Deprecated // do not call
     public S2CUpdatePacket(FriendlyByteBuf buf) {
         this.nbt = buf.readNbt();
     }
+
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeNbt(nbt);
+    public void handle(Networker connection) {
+        Optional<long[]> uuidLongs = this.nbt.getLongArray("uuid");
+        if (uuidLongs.isEmpty()) return;
+        long[] longs = uuidLongs.get();
+        UUID uuid = new UUID(longs[0], longs[1]);
+        ClientLaptop.laptops.get(uuid).handlePacket(this.nbt.getString("type").orElseThrow(), this.nbt.getCompoundOrEmpty("data"));
+        DebugLog.log("SQUARE: " + Arrays.toString(ClientLaptop.laptops.get(uuid).square));
     }
 
     @Override
-    public boolean onMessage(Supplier<NetworkManager.PacketContext> ctx) {
-        if (ctx.get().getEnv().equals(EnvType.CLIENT)) {
-            ClientLaptop.laptops.get(this.nbt.getUUID("uuid")).handlePacket(this.nbt.getString("type"), this.nbt.getCompound("data"));
-            DebugLog.log("SQUARE: " + Arrays.toString(ClientLaptop.laptops.get(this.nbt.getUUID("uuid")).square));
-        }
-        return false;
+    public void write(RegistryFriendlyByteBuf buffer) {
+
     }
 }

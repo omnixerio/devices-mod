@@ -10,7 +10,8 @@ import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
@@ -39,7 +40,7 @@ public class Inventory extends Component {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (this.visible) {
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
             RenderSystem.setShaderTexture(0, CHEST_GUI_TEXTURE);
@@ -68,7 +69,7 @@ public class Inventory extends Component {
     }
 
     @Override
-    public void renderOverlay(GuiGraphics graphics, Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
+    public void renderOverlay(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
         if (this.visible) {
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 9; j++) {
@@ -87,7 +88,7 @@ public class Inventory extends Component {
     }
 
     @Override
-    public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseClick(MouseButtonEvent event) {
         if (!this.visible || !this.enabled)
             return;
 
@@ -95,10 +96,10 @@ public class Inventory extends Component {
             for (int j = 0; j < 9; j++) {
                 int x = xPosition + (j * 18) - 1;
                 int y = yPosition + (i * 18) - 1;
-                if (GuiHelper.isMouseInside(mouseX, mouseY, x, y, x + 18, y + 18)) {
+                if (GuiHelper.isMouseInside((int) event.x(), (int) event.y(), x, y, x + 18, y + 18)) {
                     this.selected = (i * 9) + j + 9;
                     if (clickListener != null) {
-                        clickListener.onClick(mouseX, mouseY, mouseButton);
+                        clickListener.onClick(event);
                     }
                     return;
                 }

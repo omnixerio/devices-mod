@@ -7,7 +7,8 @@ import com.ultreon.devices.api.app.listener.ClickListener;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 
 import java.awt.*;
 
@@ -57,7 +58,7 @@ public class CheckBox extends Component implements RadioGroup.Item {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (this.visible) {
             if (group == null) {
                 Color bgColor = new Color(getColorScheme().getBackgroundColor());
@@ -74,21 +75,21 @@ public class CheckBox extends Component implements RadioGroup.Item {
                 RenderSystem.setShaderTexture(0, COMPONENTS_GUI);
                 graphics.blit(COMPONENTS_GUI, xPosition, yPosition, checked ? 10 : 0, 60, 10, 10);
             }
-            graphics.drawString(mc.font, name, xPosition + 12, yPosition + 1, color(textColor, getColorScheme().getTextColor()));
+            graphics.text(mc.font, name, xPosition + 12, yPosition + 1, color(textColor, getColorScheme().getTextColor()));
         }
     }
 
     @Override
-    public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseClick(MouseButtonEvent event) {
         if (!this.visible || !this.enabled) return;
 
-        if (GuiHelper.isMouseInside(mouseX, mouseY, xPosition, yPosition, xPosition + 10, yPosition + 10)) {
+        if (GuiHelper.isMouseInside((int) event.x(), (int) event.y(), xPosition, yPosition, xPosition + 10, yPosition + 10)) {
             if (group != null) {
                 group.deselect();
             }
             this.checked = !checked;
             if (listener != null) {
-                listener.onClick(mouseX, mouseY, mouseButton);
+                listener.onClick(event);
             }
         }
     }

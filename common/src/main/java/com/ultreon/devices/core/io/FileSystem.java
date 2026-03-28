@@ -19,8 +19,6 @@ import com.ultreon.devices.core.io.task.TaskSendAction;
 import com.ultreon.devices.debug.DebugLog;
 import com.ultreon.devices.init.DeviceItems;
 import com.ultreon.devices.item.FlashDriveItem;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -60,7 +58,6 @@ public class FileSystem {
         load(tag);
     }
 
-    @Environment(EnvType.CLIENT)
     public static void sendAction(Drive drive, FileAction action, @Nullable Callback<Response> callback) {
         if (Laptop.getPos() != null) {
             DebugLog.log("Sending action " + action + " to " + drive);
@@ -70,7 +67,7 @@ public class FileSystem {
                 if (callback != null) {
                     assert tag != null;
                     DebugLog.log("Callback: " + tag.getString("response"));
-                    callback.execute(Response.fromTag(tag.getCompound("response")), success);
+                    callback.execute(Response.fromTag(tag.getCompoundOrEmpty("response")), success);
                 }
             });
             TaskManager.sendTask(task);

@@ -3,8 +3,6 @@ package com.ultreon.devices.block.entity;
 import com.ultreon.devices.block.LaptopBlock;
 import com.ultreon.devices.core.io.FileSystem;
 import com.ultreon.devices.util.BlockEntityUtil;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -26,10 +24,8 @@ public abstract class ComputerBlockEntity extends NetworkDeviceBlockEntity.Color
     private CompoundTag systemData = new CompoundTag();
     private FileSystem fileSystem;
 
-    @Environment(EnvType.CLIENT)
     private int rotation;
 
-    @Environment(EnvType.CLIENT)
     private int prevRotation;
 
     private DyeColor externalDriveColor;
@@ -53,7 +49,7 @@ public abstract class ComputerBlockEntity extends NetworkDeviceBlockEntity.Color
             level.setBlock(getBlockPos(), this.getBlockState().setValue(LaptopBlock.OPEN, open), 2);
         }
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             prevRotation = rotation;
             if (!open) {
                 if (rotation > 0) {
@@ -71,25 +67,25 @@ public abstract class ComputerBlockEntity extends NetworkDeviceBlockEntity.Color
     public void load(@NotNull CompoundTag compound) {
         super.load(compound);
         if (compound.contains("open")) {
-            this.open = compound.getBoolean("open");
+            this.open = compound.getBooleanOr("open", false);
             Level level = getLevel();
             if (level != null) {
                 level.setBlock(getBlockPos(), this.getBlockState().setValue(LaptopBlock.OPEN, open), 2);
             }
         }
-        if (compound.contains("system_data", Tag.TAG_COMPOUND)) {
-            this.systemData = compound.getCompound("system_data");
+        if (compound.contains("system_data")) {
+            this.systemData = compound.getCompoundOrEmpty("system_data");
         }
-        if (compound.contains("application_data", Tag.TAG_COMPOUND)) {
-            this.applicationData = compound.getCompound("application_data");
+        if (compound.contains("application_data")) {
+            this.applicationData = compound.getCompoundOrEmpty("application_data");
         }
         if (compound.contains("file_system")) {
-            this.fileSystem = new FileSystem(this, compound.getCompound("file_system"));
+            this.fileSystem = new FileSystem(this, compound.getCompoundOrEmpty("file_system"));
         }
-        if (compound.contains("external_drive_color", Tag.TAG_BYTE)) {
+        if (compound.contains("external_drive_color")) {
             this.externalDriveColor = null;
-            if (compound.getByte("external_drive_color") != -1) {
-                this.externalDriveColor = DyeColor.byId(compound.getByte("external_drive_color"));
+            if (compound.getByteOr("external_drive_color", (byte) -1) != -1) {
+                this.externalDriveColor = DyeColor.byId(compound.getByteOr("external_drive_color", (byte) 0));
             }
         }
     }
@@ -197,17 +193,14 @@ public abstract class ComputerBlockEntity extends NetworkDeviceBlockEntity.Color
         BlockEntityUtil.markBlockForUpdate(level, worldPosition);
     }
 
-    @Environment(EnvType.CLIENT)
     public float getScreenAngle(float partialTicks) {
         return -OPENED_ANGLE * ((prevRotation + (rotation - prevRotation) * partialTicks) / OPENED_ANGLE);
     }
 
-    @Environment(EnvType.CLIENT)
     public boolean isExternalDriveAttached() {
         return externalDriveColor != null;
     }
 
-    @Environment(EnvType.CLIENT)
     public DyeColor getExternalDriveColor() {
         return externalDriveColor;
     }

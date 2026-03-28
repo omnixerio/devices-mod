@@ -15,8 +15,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.util.Mth;
 
 import org.jetbrains.annotations.Nullable;
@@ -96,7 +97,7 @@ public class TextArea extends Component {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (this.visible) {
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
@@ -127,9 +128,9 @@ public class TextArea extends Component {
                         builder.append(word);
                         builder.append(ChatFormatting.RESET);
                     }
-                    graphics.drawString(mc.font, builder.toString(), x + padding - scrollX, y + padding + i * font.lineHeight, -1, false);
+                    graphics.text(mc.font, builder.toString(), x + padding - scrollX, y + padding + i * font.lineHeight, -1, false);
                 } else {
-                    graphics.drawString(mc.font, lines.get(lineY), x + padding - scrollX, y + padding + i * font.lineHeight, textColor, false);
+                    graphics.text(mc.font, lines.get(lineY), x + padding - scrollX, y + padding + i * font.lineHeight, textColor, false);
                 }
             }
             GLHelper.popScissor();
@@ -176,7 +177,7 @@ public class TextArea extends Component {
     }
 
     @Override
-    public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseClick(MouseButtonEvent event) {
         if (!this.visible || !this.enabled) return;
 
         ScrollBar scrollBar = isMouseInsideScrollBar(mouseX, mouseY);
@@ -209,22 +210,22 @@ public class TextArea extends Component {
     }
 
     @Override
-    protected void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
+    protected void handleMouseDrag(MouseButtonEvent event) {
         if (scrollBar != null) {
             switch (scrollBar) {
-                case HORIZONTAL -> horizontalOffset = mouseX - clickedX;
+                case HORIZONTAL -> horizontalOffset = (int) (event.x() - clickedX);
                 case VERTICAL -> {
                     int visibleScrollBarHeight = height - 4;
                     int scrollBarHeight = Math.max(20, (int) ((float) visibleLines / (float) lines.size() * (float) visibleScrollBarHeight));
                     float spacing = (float) (visibleScrollBarHeight - scrollBarHeight) / (float) (lines.size() - visibleLines);
-                    verticalOffset = (int) ((mouseY - clickedY) / spacing);
+                    verticalOffset = (int) ((event.y() - clickedY) / spacing);
                 }
             }
         }
     }
 
     @Override
-    protected void handleMouseRelease(int mouseX, int mouseY, int mouseButton) {
+    protected void handleMouseRelease(MouseButtonEvent event) {
         if (scrollBar != null) {
             switch (scrollBar) {
                 case HORIZONTAL -> {

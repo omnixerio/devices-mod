@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.core.Laptop;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.awt.*;
 
@@ -32,9 +32,9 @@ public class Label extends Component {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (this.visible) {
-            graphics.pose().pushPose();
+            graphics.pose().pushMatrix();
             {
                 graphics.pose().translate(xPosition, yPosition, 0);
                 graphics.pose().scale((float) scale, (float) scale, (float) scale);
@@ -43,12 +43,12 @@ public class Label extends Component {
                 if (alignment == ALIGN_CENTER)
                     graphics.pose().translate((float) ((int) -(mc.font.width(text) * scale) / (int) (2 * scale)), 0, 0);
                 if (shadow) {
-                    graphics.drawString(mc.font, text, 0, 0, textColor);
+                    graphics.text(mc.font, text, 0, 0, textColor);
                 } else {
-                    graphics.drawString(mc.font, text, 0, 0, textColor, false);
+                    graphics.text(mc.font, text, 0, 0, textColor, false);
                 }
             }
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
         }
     }
 

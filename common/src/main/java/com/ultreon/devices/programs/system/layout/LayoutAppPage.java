@@ -22,7 +22,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -128,7 +128,7 @@ public class LayoutAppPage extends Layout {
             AppInfo info = ((LocalEntry) entry).info();
             Button btnInstall = new Button(20, 2, installed ? "Delete" : "Install", installed ? Icons.CROSS : Icons.PLUS);
             btnInstall.setSize(55, 16);
-            btnInstall.setClickListener((mouseX, mouseY, mouseButton) ->
+            btnInstall.setClickListener((event) ->
             {
                 if (mouseButton == 0) {
                     if (installed) {
@@ -161,13 +161,13 @@ public class LayoutAppPage extends Layout {
         } else if (entry instanceof RemoteEntry) {
             Button btnDownload = new Button(20, 2, "Download", Icons.IMPORT);
             btnDownload.setSize(66, 16);
-            btnDownload.setClickListener((mouseX, mouseY, mouseButton) -> this.openWebLink("https://minecraft.curseforge.com/projects/" + ((RemoteEntry) entry).projectId));
+            btnDownload.setClickListener((event) -> this.openWebLink("https://minecraft.curseforge.com/projects/" + ((RemoteEntry) entry).projectId));
             this.addComponent(btnDownload);
         }
     }
 
     @Override
-    public void renderOverlay(GuiGraphics graphics, Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
+    public void renderOverlay(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
         super.renderOverlay(graphics, laptop, mc, mouseX, mouseY, windowActive);
         if (store.certifiedApps.contains(entry)) {
             int width = Laptop.getFont().width(entry.name()) * 2;

@@ -1,6 +1,5 @@
 package com.ultreon.devices.api.app.component;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.Icons;
 import com.ultreon.devices.api.app.Layout;
@@ -9,14 +8,15 @@ import com.ultreon.devices.api.app.renderer.ListItemRenderer;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.NonNullList;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+
 import java.awt.*;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -66,9 +66,9 @@ public class ItemList<E> extends Component implements Iterable<E> {
     @Override
     public void init(Layout layout) {
         btnUp = new Button(left + width - 12, top, Icons.CHEVRON_UP);
-        btnUp.setClickListener((mouseX, mouseY, mouseButton) ->
+        btnUp.setClickListener((event) ->
         {
-            if (mouseButton == 0) scrollUp();
+            if (event.button() == 0) scrollUp();
         });
         btnUp.setEnabled(false);
         btnUp.setVisible(false);
@@ -76,9 +76,9 @@ public class ItemList<E> extends Component implements Iterable<E> {
         layout.addComponent(btnUp);
 
         btnDown = new Button(left + width - 12, top + getHeight() - 12, Icons.CHEVRON_DOWN);
-        btnDown.setClickListener((mouseX, mouseY, mouseButton) ->
+        btnDown.setClickListener((event) ->
         {
-            if (mouseButton == 0) scrollDown();
+            if (event.button() == 0) scrollDown();
         });
         btnDown.setEnabled(false);
         btnDown.setVisible(false);
@@ -88,7 +88,7 @@ public class ItemList<E> extends Component implements Iterable<E> {
         layoutLoading = new Layout(left, top, getWidth(), getHeight());
         layoutLoading.setVisible(loading);
         layoutLoading.addComponent(new Spinner((layoutLoading.width - 12) / 2, (layoutLoading.height - 12) / 2));
-        layoutLoading.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) ->
+        layoutLoading.setBackground((graphics, _, x, y, width, height, _, _, _) ->
                 graphics.fill(x, y, x + width, y + height, LOADING_BACKGROUND));
         layout.addComponent(layoutLoading);
 
@@ -99,7 +99,7 @@ public class ItemList<E> extends Component implements Iterable<E> {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (this.visible) {
             int height = 13;
             if (renderer != null) {
@@ -129,7 +129,7 @@ public class ItemList<E> extends Component implements Iterable<E> {
                         drawHorizontalLine(graphics, xPosition + 1, xPosition + width - 1, yPosition + (i * height) + i + height + 1, borderColor.getRGB());
                     } else {
                         graphics.fill(xPosition + 1, yPosition + (i * 14) + 1, xPosition + width - 1, yPosition + 13 + (i * 14) + 1, (i + offset) != selected ? bgColor.brighter().getRGB() : bgColor.brighter().brighter().getRGB());
-                        graphics.drawString(mc.font, item.toString(), xPosition + 3, yPosition + 3 + (i * 14), textColor);
+                        graphics.text(mc.font, item.toString(), xPosition + 3, yPosition + 3 + (i * 14), textColor);
                         drawHorizontalLine(graphics, xPosition + 1, xPosition + width - 2, yPosition + (i * height) + i + height + 1, borderColor.getRGB());
                     }
                 }
@@ -143,7 +143,7 @@ public class ItemList<E> extends Component implements Iterable<E> {
                     drawHorizontalLine(graphics, xPosition + 1, xPosition + width - 1, yPosition + (i * height) + i + height + 1, borderColor.getRGB());
                 } else {
                     graphics.fill(xPosition + 1, yPosition + (i * 14) + 1, xPosition + width - 1, yPosition + 13 + (i * 14) + 1, (i + offset) != selected ? bgColor.brighter().getRGB() : bgColor.brighter().brighter().getRGB());
-                    graphics.drawString(Laptop.getFont(), item.toString(), xPosition + 3, yPosition + 3 + (i * 14), textColor);
+                    graphics.text(Laptop.getFont(), item.toString(), xPosition + 3, yPosition + 3 + (i * 14), textColor);
                 }
             }
 
@@ -155,18 +155,18 @@ public class ItemList<E> extends Component implements Iterable<E> {
     }
 
     @Override
-    public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseClick(MouseButtonEvent event) {
         if (!this.visible || !this.enabled || this.loading)
             return;
 
         int height = renderer != null ? renderer.getHeight() : 13;
         int size = getSize();
-        if (GuiHelper.isMouseInside(mouseX, mouseY, xPosition, yPosition, xPosition + width, yPosition + size * height + size)) {
+        if (GuiHelper.isMouseInside((int) event.x(), (int) event.y(), xPosition, yPosition, xPosition + width, yPosition + size * height + size)) {
             for (int i = 0; i < size && i < items.size(); i++) {
-                if (GuiHelper.isMouseInside(mouseX, mouseY, xPosition + 1, yPosition + (i * height) + i, xPosition + width - 1, yPosition + (i * height) + i + height)) {
-                    if (mouseButton == 0) this.selected = i + offset;
+                if (GuiHelper.isMouseInside((int) event.x(), (int) event.y(), xPosition + 1, yPosition + (i * height) + i, xPosition + width - 1, yPosition + (i * height) + i + height)) {
+                    if (event.button() == 0) this.selected = i + offset;
                     if (itemClickListener != null) {
-                        itemClickListener.onClick(items.get(i + offset), i + offset, mouseButton);
+                        itemClickListener.onClick(items.get(i + offset), i + offset, event.button());
                     }
                 }
             }
@@ -200,7 +200,7 @@ public class ItemList<E> extends Component implements Iterable<E> {
 
     private int getSize() {
         if (showAll) return visibleItems;
-        return Math.max(1, Math.min(visibleItems, items.size()));
+        return Math.clamp(visibleItems, 1, items.size());
     }
 
     private void scrollUp() {
@@ -427,12 +427,12 @@ public class ItemList<E> extends Component implements Iterable<E> {
      */
     public void sort() {
         if (sorter != null) {
-            Collections.sort(items, sorter);
+            items.sort(sorter);
         }
     }
 
     @Override
-    public Iterator<E> iterator() {
+    public @NonNull Iterator<E> iterator() {
         return items.iterator();
     }
 }

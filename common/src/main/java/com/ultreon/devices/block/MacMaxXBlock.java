@@ -1,12 +1,16 @@
 package com.ultreon.devices.block;
 
+import com.mojang.serialization.MapCodec;
+import com.ultreon.devices.Devices;
 import com.ultreon.devices.block.entity.MacMaxXBlockEntity;
 import com.ultreon.devices.init.DeviceBlocks;
-import dev.architectury.platform.Platform;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -17,6 +21,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -83,9 +88,10 @@ public class MacMaxXBlock extends ComputerBlock {
             Block.box(6.5, 0, 17, 9, 0.5, 23)
     );
 
-    public MacMaxXBlock() {
-        super(BlockBehaviour.Properties.of().mapColor(DyeColor.WHITE).strength(6f).sound(SoundType.METAL).noOcclusion().dynamicShape());
+    public MacMaxXBlock(BlockBehaviour.Properties properties) {
+        super(properties.setId(ResourceKey.create(Registries.BLOCK, Devices.id("mac_max_x"))).mapColor(DyeColor.WHITE).strength(6f).sound(SoundType.METAL).noOcclusion().dynamicShape());
     }
+
 
     @Override
     public @NotNull VoxelShape getShape(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
@@ -183,7 +189,7 @@ public class MacMaxXBlock extends ComputerBlock {
     }
 
     @Override
-    public void playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, BlockState state, @NotNull Player player) {
+    public BlockState playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, BlockState state, @NotNull Player player) {
         switch (state.getValue(FACING)) {
             case NORTH -> {
                 level.setBlock(pos.above().west(), Blocks.AIR.defaultBlockState(), 3);
@@ -215,6 +221,7 @@ public class MacMaxXBlock extends ComputerBlock {
             }
             default -> throw new IllegalStateException("Unexpected value: " + state.getValue(FACING));
         }
+        return state;
     }
 
     @Override
@@ -225,7 +232,7 @@ public class MacMaxXBlock extends ComputerBlock {
     @Override
     public MutableComponent getName() {
         MutableComponent normalName = Component.translatable("block.devices.mac_max_x");
-        if (Platform.isModLoaded("emojiful")) {
+        if (XinexPlatform.isModLoaded("emojiful")) {
             return Component.translatable("block.devices.mac_max_x_emoji");
         }
         return normalName;
@@ -234,5 +241,10 @@ public class MacMaxXBlock extends ComputerBlock {
     @Override
     public @Nullable BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new MacMaxXBlockEntity(pos, state);
+    }
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return simpleCodec( MacMaxXBlock::new);
     }
 }

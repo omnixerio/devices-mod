@@ -12,7 +12,8 @@ import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.util.DataHandler;
 import com.ultreon.devices.util.GLHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
@@ -133,7 +134,7 @@ public abstract class Application extends Wrappable implements DataHandler {
      * @param partialTicks the render partial ticks.
      */
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean active, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean active, float partialTicks) {
 //        GL11.glEnable(GL11.GL_SCISSOR_TEST);
 
         GLHelper.pushScissor(x, y, width, height);
@@ -160,39 +161,30 @@ public abstract class Application extends Wrappable implements DataHandler {
      * Called when you press a mouse button. Note if you override, make sure you
      * call this super method.
      *
-     * @param mouseX      the current x position of the mouse
-     * @param mouseY      the current y position of the mouse
-     * @param mouseButton the clicked mouse button
      */
     @Override
-    public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
-        currentLayout.handleMouseClick(mouseX, mouseY, mouseButton);
+    public void handleMouseClick(MouseButtonEvent event) {
+        currentLayout.handleMouseClick(event);
     }
 
     /**
      * Called when you drag the mouse with a button pressed down Note if you
      * override, make sure you call this super method.
      *
-     * @param mouseX      the current x position of the mouse
-     * @param mouseY      the current y position of the mouse
-     * @param mouseButton the pressed mouse button
      */
     @Override
-    public void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
-        currentLayout.handleMouseDrag(mouseX, mouseY, mouseButton);
+    public void handleMouseDrag(MouseButtonEvent event) {
+        currentLayout.handleMouseDrag(event);
     }
 
     /**
      * Called when you release the currently pressed mouse button. Note if you
      * override, make sure you call this super method.
      *
-     * @param mouseX      the x position of the release
-     * @param mouseY      the y position of the release
-     * @param mouseButton the button that was released
      */
     @Override
-    public void handleMouseRelease(int mouseX, int mouseY, int mouseButton) {
-        currentLayout.handleMouseRelease(mouseX, mouseY, mouseButton);
+    public void handleMouseRelease(MouseButtonEvent event) {
+        currentLayout.handleMouseRelease(event);
     }
 
     /**

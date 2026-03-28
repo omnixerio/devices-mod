@@ -11,9 +11,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -34,7 +36,7 @@ import java.util.List;
  */
 public class EthernetCableItem extends Item {
     public EthernetCableItem() {
-        super(new Properties().arch$tab(Devices.TAB_DEVICE).stacksTo(1));
+        super(new Properties().setId(ResourceKey.create(Registries.ITEM, Devices.id("ethernet_cable"))).stacksTo(1));
     }
 
     private static double getDistance(BlockPos source, BlockPos target) {

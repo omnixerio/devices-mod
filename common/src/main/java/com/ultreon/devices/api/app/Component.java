@@ -3,14 +3,15 @@ package com.ultreon.devices.api.app;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.programs.system.object.ColorScheme;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.resources.Identifier;
 
 public abstract class Component {
     /**
      * The default components textures
      */
-    public static final Identifier COMPONENTS_GUI = new Identifier("devices:textures/gui/components.png");
+    public static final Identifier COMPONENTS_GUI = Identifier.parse("devices:textures/gui/components.png");
     public static final int ALIGN_LEFT = 0;
     public static final int ALIGN_RIGHT = 1;
     public static final int ALIGN_CENTER = 2;
@@ -98,7 +99,7 @@ public abstract class Component {
      * @param windowActive if the window is active (at front)
      * @param partialTicks percentage passed in-between two ticks
      */
-    protected void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    protected void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
     }
 
     /**
@@ -112,19 +113,15 @@ public abstract class Component {
      * @param mouseY       the current y position of the mouse
      * @param windowActive if the window is active (at front)
      */
-    protected void renderOverlay(GuiGraphics graphics, Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
+    protected void renderOverlay(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
     }
 
     /**
      * Called when you mouse button has been pressed. You have to do
      * your own checking to test if it was within the component's
      * bounds.
-     *
-     * @param mouseX      the current x position of the mouse
-     * @param mouseY      the current y position of the mouse
-     * @param mouseButton the clicked mouse button
      */
-    protected void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+    protected void handleMouseClick(MouseButtonEvent event) {
 
     }
 
@@ -184,12 +181,8 @@ public abstract class Component {
 
     /**
      * Called when you drag the mouse with a button pressed down.
-     *
-     * @param mouseX      the current x position of the mouse
-     * @param mouseY      the current y position of the mouse
-     * @param mouseButton the pressed mouse button
      */
-    protected void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
+    protected void handleMouseDrag(MouseButtonEvent event) {
 
     }
 
@@ -197,12 +190,8 @@ public abstract class Component {
      * Called when you release the currently pressed mouse button. You have to do
      * your own checking to test if it was within the component's
      * bounds.
-     *
-     * @param mouseX      the x position of the release
-     * @param mouseY      the y position of the release
-     * @param mouseButton the button that was released
      */
-    protected void handleMouseRelease(int mouseX, int mouseY, int mouseButton) {
+    protected void handleMouseRelease(MouseButtonEvent event) {
     }
 
     //TODO document this plz
@@ -241,17 +230,17 @@ public abstract class Component {
     /**
      * Gets the laptop's Color scheme. A simple helper method to clean up code.
      *
-     * @return
+     * @return the laptop's Color scheme
      */
     protected ColorScheme getColorScheme() {
         return Laptop.getSystem().getSettings().getColorScheme();
     }
 
-    public void drawVerticalLine(GuiGraphics graphics, int x, int y1, int y2, int rgb) {
+    public void drawVerticalLine(GuiGraphicsExtractor graphics, int x, int y1, int y2, int rgb) {
         graphics.fill(x, y1, x + 1, y2, rgb);
     }
 
-    public void drawHorizontalLine(GuiGraphics graphics, int x1, int x2, int y, int rgb) {
+    public void drawHorizontalLine(GuiGraphicsExtractor graphics, int x1, int x2, int y, int rgb) {
         graphics.fill(x1, y, x2, y + 1, rgb);
     }
 }

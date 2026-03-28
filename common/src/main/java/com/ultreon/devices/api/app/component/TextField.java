@@ -6,7 +6,8 @@ import com.ultreon.devices.api.app.IIcon;
 import com.ultreon.devices.core.Laptop;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 
 import java.awt.*;
 
@@ -27,7 +28,7 @@ public class TextField extends TextArea {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (icon != null) {
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
             Color bgColor = new Color(color(backgroundColor, getColorScheme().getBackgroundColor()));
@@ -39,17 +40,17 @@ public class TextField extends TextArea {
     }
 
     @Override
-    public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseClick(MouseButtonEvent event) {
         super.handleMouseClick(mouseX - (icon != null ? 15 : 0), mouseY, mouseButton);
     }
 
     @Override
-    protected void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
+    protected void handleMouseDrag(MouseButtonEvent event) {
         super.handleMouseDrag(mouseX - (icon != null ? 15 : 0), mouseY, mouseButton);
     }
 
     @Override
-    protected void handleMouseRelease(int mouseX, int mouseY, int mouseButton) {
+    protected void handleMouseRelease(MouseButtonEvent event) {
         super.handleMouseRelease(mouseX - (icon != null ? 15 : 0), mouseY, mouseButton);
     }
 

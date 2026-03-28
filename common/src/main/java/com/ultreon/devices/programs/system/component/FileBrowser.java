@@ -29,7 +29,7 @@ import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.programs.system.SystemApp;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -59,7 +59,7 @@ public class FileBrowser extends Component {
 
     private static final ListItemRenderer<File> ITEM_RENDERER = new ListItemRenderer<>(18) {
         @Override
-        public void render(GuiGraphics graphics, File file, Minecraft mc, int x, int y, int width, int height, boolean selected) {
+        public void render(GuiGraphicsExtractor graphics, File file, Minecraft mc, int x, int y, int width, int height, boolean selected) {
             Color bgColor = new Color(Laptop.getSystem().getSettings().getColorScheme().getBackgroundColor());
             graphics.fill(x, y, x + width, y + height, selected ? bgColor.brighter().brighter().getRGB() : bgColor.brighter().getRGB());
 
@@ -72,7 +72,7 @@ public class FileBrowser extends Component {
                 AppInfo info = ApplicationManager.getApplication(Identifier.tryParse(file.getOpeningApp()));
                 RenderUtil.drawApplicationIcon(graphics, info, x + 3, y + 2);
             }
-            graphics.drawString(Minecraft.getInstance().font, file.getName(), x + 22, y + 5, file.isProtected() ? PROTECTED_FILE.getRGB() : Laptop.getSystem().getSettings().getColorScheme().getTextColor());
+            graphics.text(Minecraft.getInstance().font, file.getName(), x + 22, y + 5, file.isProtected() ? PROTECTED_FILE.getRGB() : Laptop.getSystem().getSettings().getColorScheme().getTextColor());
         }
     };
 
@@ -143,7 +143,7 @@ public class FileBrowser extends Component {
         });
 
         btnPreviousFolder = new Button(5, 2, Icons.ARROW_LEFT);
-        btnPreviousFolder.setClickListener((mouseX, mouseY, mouseButton) -> {
+        btnPreviousFolder.setClickListener((event) -> {
             if (mouseButton == 0) {
                 goToPreviousFolder();
             }
@@ -155,7 +155,7 @@ public class FileBrowser extends Component {
         int btnIndex = 0;
 
         btnNewFolder = new Button(5, 25, Icons.NEW_FOLDER);
-        btnNewFolder.setClickListener((mouseX, mouseY, mouseButton) -> {
+        btnNewFolder.setClickListener((event) -> {
             if (mouseButton == 0) {
                 createFolder();
             }
@@ -166,7 +166,7 @@ public class FileBrowser extends Component {
         btnIndex++;
 
         btnRename = new Button(5, 25 + btnIndex * 20, Icons.RENAME);
-        btnRename.setClickListener((mouseX, mouseY, mouseButton) -> {
+        btnRename.setClickListener((event) -> {
             if (mouseButton == 0) {
                 renameSelectedFile();
             }
@@ -179,7 +179,7 @@ public class FileBrowser extends Component {
             btnIndex++;
 
             btnCopy = new Button(5, 25 + btnIndex * 20, Icons.COPY);
-            btnCopy.setClickListener((mouseX, mouseY, mouseButton) -> {
+            btnCopy.setClickListener((event) -> {
                 if (mouseButton == 0) {
                     setClipboardFileToSelected();
                 }
@@ -191,7 +191,7 @@ public class FileBrowser extends Component {
             btnIndex++;
 
             btnCut = new Button(5, 25 + btnIndex * 20, Icons.CUT);
-            btnCut.setClickListener((mouseX, mouseY, mouseButton) -> {
+            btnCut.setClickListener((event) -> {
                 if (mouseButton == 0) {
                     cutSelectedFile();
                 }
@@ -203,7 +203,7 @@ public class FileBrowser extends Component {
             btnIndex++;
 
             btnPaste = new Button(5, 25 + btnIndex * 20, Icons.CLIPBOARD);
-            btnPaste.setClickListener((mouseX, mouseY, mouseButton) -> {
+            btnPaste.setClickListener((event) -> {
                 if (mouseButton == 0) {
                     pasteClipboardFile();
                 }
@@ -216,7 +216,7 @@ public class FileBrowser extends Component {
         btnIndex++;
 
         btnDelete = new Button(5, 25 + btnIndex * 20, Icons.TRASH);
-        btnDelete.setClickListener((mouseX, mouseY, mouseButton) -> {
+        btnDelete.setClickListener((event) -> {
             if (mouseButton == 0) {
                 deleteSelectedFile();
             }
@@ -280,7 +280,7 @@ public class FileBrowser extends Component {
         comboBoxDrive.setChangeListener((oldValue, newValue) -> openDrive(newValue));
         comboBoxDrive.setListItemRenderer(new ListItemRenderer<>(12) {
             @Override
-            public void render(GuiGraphics graphics, Drive drive, Minecraft mc, int x, int y, int width, int height, boolean selected) {
+            public void render(GuiGraphicsExtractor graphics, Drive drive, Minecraft mc, int x, int y, int width, int height, boolean selected) {
                 Color bgColor = new Color(getColorScheme().getBackgroundColor());
                 graphics.fill(x, y, x + width, y + height, selected ? bgColor.brighter().brighter().getRGB() : bgColor.brighter().getRGB());
                 RenderSystem.setShaderTexture(0, ASSETS);
@@ -291,7 +291,7 @@ public class FileBrowser extends Component {
                 if (mc.font.width(text) > 87) {
                     text = mc.font.plainSubstrByWidth(drive.getName(), 78) + "...";
                 }
-                graphics.drawString(mc.font, text, x + 13, y + 2, Color.WHITE.getRGB());
+                graphics.text(mc.font, text, x + 13, y + 2, Color.WHITE.getRGB());
             }
         });
         layoutMain.addComponent(comboBoxDrive);
@@ -567,7 +567,7 @@ public class FileBrowser extends Component {
             dialog.setMessageText(builder.toString());
             dialog.setTitle("Delete");
             dialog.setPositiveText("Yes");
-            dialog.setPositiveListener((mouseX, mouseY, mouseButton) -> {
+            dialog.setPositiveListener((event) -> {
                 removeFile(fileList.getSelectedIndex());
                 btnRename.setEnabled(false);
                 btnDelete.setEnabled(false);
@@ -675,7 +675,7 @@ public class FileBrowser extends Component {
             if (response.getStatus() == FileSystem.Status.FILE_EXISTS) {
                 Dialog.Confirmation dialog = new Dialog.Confirmation("A file with the same name already exists in this directory. Do you want to override it?");
                 dialog.setPositiveText("Override");
-                dialog.setPositiveListener((mouseX, mouseY, mouseButton) -> {
+                dialog.setPositiveListener((event) -> {
                     if (mouseButton == 0) {
                         handleCopyCut(true);
                     }

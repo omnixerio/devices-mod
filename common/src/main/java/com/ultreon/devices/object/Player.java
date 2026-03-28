@@ -9,7 +9,7 @@ import com.ultreon.devices.object.tiles.Tile;
 import com.ultreon.devices.util.KeyboardHelper;
 import com.ultreon.devices.util.Vec2d;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.BoatRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
@@ -117,13 +117,13 @@ public class Player {
         return (int) (posY / Tile.HEIGHT);
     }
 
-    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
         float scale = 0.5f;
         double px = x + posXPrev + (posX - posXPrev) * partialTicks;
         double py = y + posYPrev + (posY - posYPrev) * partialTicks;
         float rot = rotationPrev + (rotation - rotationPrev) * partialTicks;
 
-        graphics.pose().pushPose();
+        graphics.pose().pushMatrix();
         graphics.pose().translate((float) px, (float) py, 3f);
         graphics.pose().scale(-scale, -scale, -scale);
         graphics.pose().mulPose(new Quaternionf(180f, 0f, 0f, 1f)); //Flips boat up
@@ -135,9 +135,9 @@ public class Player {
         EntityRenderDispatcher entityRender = Minecraft.getInstance().getEntityRenderDispatcher();
         entityRender.render(this.boat, 0, 0, 0, 0f, partialTicks, graphics.pose(), MultiBufferSource.immediate(Tesselator.getInstance().getBuilder()), 1);
 //        boatModel.render(boat, 0f, 0f, pose, Minecraft.getInstance().renderBuffers().bufferSource(), 1);
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
 
-        graphics.pose().pushPose();
+        graphics.pose().pushMatrix();
         graphics.pose().translate((float) px, (float) py, 3f);
         graphics.pose().scale(-scale, scale, scale);
         // //Flips boat up
@@ -149,7 +149,7 @@ public class Player {
         graphics.pose().translate(0f, -12f, 5f);
 //        Minecraft.getMinecraft().getTextureManager().bindTexture(Minecraft.getMinecraft().player.getLocationSkin());
         //playerModel.render(null, 0f, 0f, 0f, 0f, 0f, 1f);
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 
 //    public static class ModelDummyPlayer extends PlayerModel<net.minecraft.world.entity.player.Player> {

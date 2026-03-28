@@ -76,13 +76,13 @@ public class NoteStashApp extends Application {
 
         btnNew = new Button(124, 5, "New");
         btnNew.setSize(50, 20);
-        btnNew.setClickListener((mouseX, mouseY, mouseButton) -> setCurrentLayout(layoutAddNote));
+        btnNew.setClickListener((event) -> setCurrentLayout(layoutAddNote));
         layoutMain.addComponent(btnNew);
 
         btnView = new Button(124, 30, "View");
         btnView.setSize(50, 20);
         btnView.setEnabled(false);
-        btnView.setClickListener((mouseX, mouseY, mouseButton) -> {
+        btnView.setClickListener((event) -> {
             if (notes.getSelectedIndex() != -1) {
                 Note note = notes.getSelectedItem();
                 assert note != null;
@@ -96,7 +96,7 @@ public class NoteStashApp extends Application {
         btnDelete = new Button(124, 55, "Delete");
         btnDelete.setSize(50, 20);
         btnDelete.setEnabled(false);
-        btnDelete.setClickListener((mouseX, mouseY, mouseButton) -> {
+        btnDelete.setClickListener((event) -> {
             if (notes.getSelectedIndex() != -1) {
                 if (notes.getSelectedIndex() != -1) {
                     Note note = notes.getSelectedItem();
@@ -135,7 +135,7 @@ public class NoteStashApp extends Application {
 
         btnSave = new Button(124, 5, "Save");
         btnSave.setSize(50, 20);
-        btnSave.setClickListener((mouseX, mouseY, mouseButton) -> {
+        btnSave.setClickListener((event) -> {
             CompoundTag data = new CompoundTag();
             data.putString("title", title.getText());
             data.putString("content", textArea.getText());
@@ -164,7 +164,7 @@ public class NoteStashApp extends Application {
 
         btnCancel = new Button(124, 30, "Cancel");
         btnCancel.setSize(50, 20);
-        btnCancel.setClickListener((mouseX, mouseY, mouseButton) -> {
+        btnCancel.setClickListener((event) -> {
             title.clear();
             textArea.clear();
             setCurrentLayout(layoutMain);
@@ -184,7 +184,7 @@ public class NoteStashApp extends Application {
 
         btnBack = new Button(124, 5, "Back");
         btnBack.setSize(50, 20);
-        btnBack.setClickListener((mouseX, mouseY, mouseButton) -> setCurrentLayout(layoutMain));
+        btnBack.setClickListener((event) -> setCurrentLayout(layoutMain));
         layoutViewNote.addComponent(btnBack);
 
         setCurrentLayout(layoutMain);

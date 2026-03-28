@@ -1,13 +1,12 @@
 package com.ultreon.devices.api.app;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.listener.InitListener;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.core.Wrappable;
 import com.ultreon.devices.util.GLHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.nbt.CompoundTag;
 
 import java.awt.*;
@@ -164,7 +163,7 @@ public class Layout extends com.ultreon.devices.api.app.Component {
      * @param y      the starting y rendering position (top most)
      */
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (!this.visible)
             return;
 
@@ -172,9 +171,7 @@ public class Layout extends com.ultreon.devices.api.app.Component {
             background.render(graphics, mc, x, y, width, height, mouseX, mouseY, windowActive);
         }
 
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         for (var c : new ArrayList<>(components)) {
-            RenderSystem.disableDepthTest();
             GLHelper.pushScissor(x, y, width, height);
             c.render(graphics, laptop, mc, x + c.left, y + c.top, mouseX, mouseY, windowActive, partialTicks);
             GLHelper.popScissor();
@@ -182,7 +179,7 @@ public class Layout extends com.ultreon.devices.api.app.Component {
     }
 
     @Override
-    public void renderOverlay(GuiGraphics graphics, Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
+    public void renderOverlay(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
         if (!visible)
             return;
 
@@ -244,32 +241,32 @@ public class Layout extends com.ultreon.devices.api.app.Component {
     }
 
     @Override
-    public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseClick(MouseButtonEvent event) {
         if (!visible || !enabled)
             return;
 
         for (var c : components) {
-            c.handleMouseClick(mouseX, mouseY, mouseButton);
+            c.handleMouseClick(event);
         }
     }
 
     @Override
-    public void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseDrag(MouseButtonEvent event) {
         if (!visible || !enabled)
             return;
 
         for (var c : components) {
-            c.handleMouseDrag(mouseX, mouseY, mouseButton);
+            c.handleMouseDrag(event);
         }
     }
 
     @Override
-    public void handleMouseRelease(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseRelease(MouseButtonEvent event) {
         if (!visible || !enabled)
             return;
 
         for (var c : components) {
-            c.handleMouseRelease(mouseX, mouseY, mouseButton);
+            c.handleMouseRelease(event);
         }
     }
 
@@ -370,7 +367,7 @@ public class Layout extends com.ultreon.devices.api.app.Component {
          * @param width  the width of the layout
          * @param height the height of the layout
          */
-        void render(GuiGraphics graphics, Minecraft mc, int x, int y, int width, int height, int mouseX, int mouseY, boolean windowActive);
+        void render(GuiGraphicsExtractor graphics, Minecraft mc, int x, int y, int width, int height, int mouseX, int mouseY, boolean windowActive);
     }
 
     public static class Context extends Layout {
@@ -381,7 +378,7 @@ public class Layout extends com.ultreon.devices.api.app.Component {
         }
 
         @Override
-        public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+        public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
             super.render(graphics, laptop, mc, x, y, mouseX, mouseY, windowActive, partialTicks);
             if (borderVisible) {
                 drawHorizontalLine(graphics, x, x + width - 1, y, Color.DARK_GRAY.getRGB());

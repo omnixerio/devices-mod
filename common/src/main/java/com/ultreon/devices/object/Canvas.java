@@ -10,7 +10,7 @@ import com.ultreon.devices.object.tools.ToolEyeDropper;
 import com.ultreon.devices.object.tools.ToolPencil;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.awt.*;
 
@@ -51,7 +51,7 @@ public class Canvas extends Component {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         graphics.fill(xPosition, yPosition, xPosition + picture.getWidth() * picture.getPixelWidth() + 2, yPosition + picture.getHeight() * picture.getPixelHeight() + 2, Color.DARK_GRAY.getRGB());
         graphics.fill(xPosition + 1, yPosition + 1, xPosition + picture.getWidth() * picture.getPixelWidth() + 1, yPosition + picture.getHeight() * picture.getPixelHeight() + 1, Color.WHITE.getRGB());
         for (int i = 0; i < picture.getHeight(); i++) {
@@ -68,7 +68,7 @@ public class Canvas extends Component {
     }
 
     @Override
-    public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseClick(MouseButtonEvent event) {
         int startX = xPosition + 1;
         int startY = yPosition + 1;
         int endX = startX + picture.getWidth() * picture.getPixelWidth() - 1;
@@ -82,7 +82,7 @@ public class Canvas extends Component {
     }
 
     @Override
-    public void handleMouseRelease(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseRelease(MouseButtonEvent event) {
         this.drawing = false;
 
         int startX = xPosition + 1;
@@ -97,7 +97,7 @@ public class Canvas extends Component {
     }
 
     @Override
-    public void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseDrag(MouseButtonEvent event) {
         int startX = xPosition + 1;
         int startY = yPosition + 1;
         int endX = startX + picture.getWidth() * picture.getPixelWidth() - 1;

@@ -1,9 +1,9 @@
 package com.ultreon.devices.core;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.Dialog;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +40,7 @@ public abstract class Wrappable {
      * @param active       if the window active
      * @param partialTicks time passed since tick
      */
-    public abstract void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean active, float partialTicks);
+    public abstract void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean active, float partialTicks);
 
     /**
      * Called when a key is typed from your keyboard. Note if you override, make
@@ -95,30 +95,18 @@ public abstract class Wrappable {
 
     /**
      * Called when you press a mouse button.
-     *
-     * @param mouseX      the current x position of the mouse
-     * @param mouseY      the current y position of the mouse
-     * @param mouseButton the clicked mouse button
      */
-    public abstract void handleMouseClick(int mouseX, int mouseY, int mouseButton);
+    public abstract void handleMouseClick(MouseButtonEvent event);
 
     /**
      * Called when you drag the mouse with a button pressed down.
-     *
-     * @param mouseX      the current x position of the mouse
-     * @param mouseY      the current y position of the mouse
-     * @param mouseButton the pressed mouse button
      */
-    public abstract void handleMouseDrag(int mouseX, int mouseY, int mouseButton);
+    public abstract void handleMouseDrag(MouseButtonEvent event);
 
     /**
      * Called when you release the currently pressed mouse button.
-     *
-     * @param mouseX      the x position of the release
-     * @param mouseY      the y position of the release
-     * @param mouseButton the button that was released
      */
-    public abstract void handleMouseRelease(int mouseX, int mouseY, int mouseButton);
+    public abstract void handleMouseRelease(MouseButtonEvent event);
 
     /**
      * Called when you scroll the wheel on your mouse.

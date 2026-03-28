@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import com.ultreon.devices.core.Laptop;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -51,14 +51,14 @@ public class LoomBox extends ContainerBox {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    protected void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         super.render(graphics, laptop, mc, x, y, mouseX, mouseY, windowActive, partialTicks);
         int i = x;//this.leftPos;
         int j = y+12;//this.topPos;
         if (result.isEmpty())return;
         Lighting.setupForFlatItems();
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
-        graphics.pose().pushPose();
+        graphics.pose().pushMatrix();
         //pose.translate((double)(i + 139), (double)(j + 52), 0.0D);
         graphics.pose().translate(i+90d,j+52d,0.0D);
         graphics.pose().scale(24.0F, -24.0F, 1.0F);
@@ -68,7 +68,7 @@ public class LoomBox extends ContainerBox {
         this.flag.xRot = 0.0F;
         this.flag.y = -32.0F;
         BannerRenderer.renderPatterns(graphics.pose(), bufferSource, 15728880, OverlayTexture.NO_OVERLAY, this.flag, ModelBakery.BANNER_BASE, true, this.resultBannerPatterns);
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
         bufferSource.endBatch();
 
 

@@ -2,18 +2,14 @@ package com.ultreon.devices.block.entity;
 
 import com.ultreon.devices.core.network.Router;
 import com.ultreon.devices.init.DeviceBlockEntities;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.state.BlockState;
 
 @SuppressWarnings("unused")
 public class RouterBlockEntity extends DeviceBlockEntity.Colored {
     private Router router;
 
-    @Environment(EnvType.CLIENT)
     private int debugTimer;
 
     public RouterBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
@@ -30,19 +26,17 @@ public class RouterBlockEntity extends DeviceBlockEntity.Colored {
 
     public void tick() {
         assert level != null;
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             getRouter().tick(level);
         } else if (debugTimer > 0) {
             debugTimer--;
         }
     }
 
-    @Environment(EnvType.CLIENT)
     public boolean isDebug() {
         return debugTimer > 0;
     }
 
-    @Environment(EnvType.CLIENT)
     public void setDebug(boolean debug) {
         if (debug) {
             debugTimer = 1200;
@@ -58,8 +52,8 @@ public class RouterBlockEntity extends DeviceBlockEntity.Colored {
     @Override
     public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        if (tag.contains("router", Tag.TAG_COMPOUND)) {
-            router = Router.fromTag(worldPosition, tag.getCompound("router"));
+        if (tag.contains("router")) {
+            router = Router.fromTag(worldPosition, tag.getCompoundOrEmpty("router"));
         }
     }
 

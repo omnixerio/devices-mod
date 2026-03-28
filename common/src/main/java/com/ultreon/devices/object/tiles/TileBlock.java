@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.object.Game;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class TileBlock extends Tile
 {
@@ -19,7 +19,7 @@ public class TileBlock extends Tile
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, Game game, int x, int y, Game.Layer layer)
+	public void render(GuiGraphicsExtractor graphics, Game game, int x, int y, Game.Layer layer)
 	{
 		if(layer == Game.Layer.BACKGROUND)
 		{
@@ -44,7 +44,7 @@ public class TileBlock extends Tile
 	}
 
 	@Override
-	public void renderForeground(GuiGraphics graphics, Game game, int x, int y, Game.Layer layer)
+	public void renderForeground(GuiGraphicsExtractor graphics, Game game, int x, int y, Game.Layer layer)
 	{
 		if(layer != Game.Layer.BACKGROUND || this == Tile.water)
 			return;

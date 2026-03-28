@@ -1,10 +1,14 @@
 package com.ultreon.devices.network.task;
 
 import com.ultreon.devices.block.entity.RouterBlockEntity;
-import com.ultreon.devices.network.Packet;
 import dev.architectury.networking.NetworkManager;
+import dev.ultreon.mods.xinexlib.network.Networker;
+import dev.ultreon.mods.xinexlib.network.packet.PacketToEither;
+import dev.ultreon.mods.xinexlib.network.packet.PacketToServer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -15,7 +19,7 @@ import java.util.function.Supplier;
 /**
  * @author MrCrayfish
  */
-public class SyncBlockPacket extends Packet<SyncBlockPacket> {
+public class SyncBlockPacket implements PacketToServer<SyncBlockPacket> {
     private final BlockPos routerPos;
 
     public SyncBlockPacket(FriendlyByteBuf buf) {
@@ -27,17 +31,16 @@ public class SyncBlockPacket extends Packet<SyncBlockPacket> {
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeBlockPos(routerPos);
-    }
-
-    @Override
-    public boolean onMessage(Supplier<NetworkManager.PacketContext> ctx) {
-        Level level = Objects.requireNonNull(ctx.get().getPlayer()).level();
+    public void handle(Networker connection, ServerPlayer player) {
+        Level level = player.level();
         BlockEntity blockEntity = level.getChunkAt(routerPos).getBlockEntity(routerPos, LevelChunk.EntityCreationType.IMMEDIATE);
         if (blockEntity instanceof RouterBlockEntity router) {
             router.syncDevicesToClient();
         }
-        return true;
+    }
+
+    @Override
+    public void write(RegistryFriendlyByteBuf buffer) {
+        buffer.writeBlockPos(routerPos);
     }
 }

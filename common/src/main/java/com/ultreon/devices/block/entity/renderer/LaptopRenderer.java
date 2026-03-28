@@ -10,7 +10,6 @@ import com.ultreon.devices.item.FlashDriveItem;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.block.BlockModelResolver;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -19,12 +18,12 @@ import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class LaptopRenderer implements BlockEntityRenderer<LaptopBlockEntity, LaptopBlockEntityRenderState> {
@@ -37,12 +36,12 @@ public class LaptopRenderer implements BlockEntityRenderer<LaptopBlockEntity, La
     }
 
     @Override
-    public LaptopBlockEntityRenderState createRenderState() {
+    public @NonNull LaptopBlockEntityRenderState createRenderState() {
         return new LaptopBlockEntityRenderState();
     }
 
     @Override
-    public void extractRenderState(LaptopBlockEntity blockEntity, LaptopBlockEntityRenderState state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+    public void extractRenderState(@NonNull LaptopBlockEntity blockEntity, @NonNull LaptopBlockEntityRenderState state, float partialTicks, @NonNull Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
         state.screenRotation = blockEntity.getScreenAngle(partialTicks);
@@ -70,7 +69,7 @@ public class LaptopRenderer implements BlockEntityRenderer<LaptopBlockEntity, La
     }
 
     @Override
-    public void submit(LaptopBlockEntityRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+    public void submit(LaptopBlockEntityRenderState state, @NonNull PoseStack poseStack, @NonNull SubmitNodeCollector submitNodeCollector, @NonNull CameraRenderState camera) {
 
         if (state.isExternalDriveAttached()) {
             poseStack.pushPose();

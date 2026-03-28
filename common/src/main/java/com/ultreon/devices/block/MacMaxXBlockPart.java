@@ -1,10 +1,14 @@
 package com.ultreon.devices.block;
 
-import dev.architectury.platform.Platform;
+import com.mojang.serialization.MapCodec;
+import com.ultreon.devices.Devices;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -253,8 +257,8 @@ public class MacMaxXBlockPart extends HorizontalDirectionalBlock {
             Block.box(6.5,   0 - 16,  -9 - 16, 9, 0.5 - 16,  -3 - 16),
             Block.box(6.5,   0 - 16,  17 - 16, 9, 0.5 - 16,  23 - 16));
 
-    public MacMaxXBlockPart() {
-        super(Properties.of().mapColor(DyeColor.WHITE).strength(6f).sound(SoundType.METAL));
+    public MacMaxXBlockPart(Properties properties) {
+        super(properties.setId(ResourceKey.create(Registries.BLOCK, Devices.id("mac_max_x_part"))).mapColor(DyeColor.WHITE).strength(6f).sound(SoundType.METAL));
         registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(PART, Part.T));
     }
 
@@ -311,7 +315,7 @@ public class MacMaxXBlockPart extends HorizontalDirectionalBlock {
     }
 
     @Override
-    public void playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
+    public BlockState playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
         BlockPos originPos = getOriginPos(pos, state);
         switch (state.getValue(FACING)) {
             case NORTH -> {
@@ -345,6 +349,7 @@ public class MacMaxXBlockPart extends HorizontalDirectionalBlock {
             default -> throw new IllegalStateException("Unexpected value: " + state.getValue(FACING));
         }
         destroyBlockExcept(level, pos, originPos, Blocks.AIR.defaultBlockState(), 3);
+        return state;
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -388,11 +393,11 @@ public class MacMaxXBlockPart extends HorizontalDirectionalBlock {
     }
 
     @Override
-    public InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         BlockPos originPos = getOriginPos(pos, state);
         BlockState originState = level.getBlockState(originPos);
         if (originState.getBlock() instanceof MacMaxXBlock block) {
-            return block.use(originState, level, originPos, player, hand, hit);
+            return block.useWithoutItem(originState, level, originPos, player, hitResult);
         }
         return InteractionResult.FAIL;
     }
@@ -400,7 +405,7 @@ public class MacMaxXBlockPart extends HorizontalDirectionalBlock {
     @Override
     public MutableComponent getName() {
         MutableComponent normalName = Component.translatable("block.devices.mac_max_x");
-        if (Platform.isModLoaded("emojiful")) {
+        if (XinexPlatform.isModLoaded("emojiful")) {
             return Component.translatable("block.devices.mac_max_x_emoji");
         }
         return normalName;
@@ -408,13 +413,18 @@ public class MacMaxXBlockPart extends HorizontalDirectionalBlock {
 
     @Override
     public RenderShape getRenderShape(@NotNull BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+        return RenderShape.INVISIBLE;
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> pBuilder) {
         super.createBlockStateDefinition(pBuilder);
         pBuilder.add(PART, FACING);
+    }
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return simpleCodec(MacMaxXBlockPart::new);
     }
 
     public enum Part implements StringRepresentable {

@@ -12,7 +12,7 @@ import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.object.AppInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.nbt.CompoundTag;
 import org.apache.commons.codec.binary.Hex;
 import org.jetbrains.annotations.Nullable;
@@ -50,7 +50,7 @@ public class ThemesApp extends Application implements SystemAccessor {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean active, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean active, float partialTicks) {
         super.render(graphics, laptop, mc, x, y, mouseX, mouseY, active, partialTicks);
     }
 
@@ -74,9 +74,9 @@ public class ThemesApp extends Application implements SystemAccessor {
         }
     }
 
-    private void renderBackground(GuiGraphics graphics, Minecraft minecraft, int x, int y, int width, int height, int mouseX, int mouseY, boolean active) {
+    private void renderBackground(GuiGraphicsExtractor graphics, Minecraft minecraft, int x, int y, int width, int height, int mouseX, int mouseY, boolean active) {
         if (true) return;
-        graphics.pose().pushPose();
+        graphics.pose().pushMatrix();
         if (!active) return;
         currentMouse[0] = mouseX;
         currentMouse[1] = mouseY;
@@ -93,7 +93,7 @@ public class ThemesApp extends Application implements SystemAccessor {
             mouseY = lastMousePositionsY[i];
             graphics.fill(mouseX - 5, mouseY - 5, mouseX + 5, mouseY + 5, 0x57575788);
         }
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 
     int marginX = 10;
@@ -243,11 +243,11 @@ public class ThemesApp extends Application implements SystemAccessor {
         }
 
         @Override
-        protected void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+        protected void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
             super.render(graphics, laptop, mc, x, y, mouseX, mouseY, windowActive, partialTicks);
-            graphics.pose().pushPose();
+            graphics.pose().pushMatrix();
             RenderUtil.drawIcon(graphics, x, y, info, height, height); // height is intended
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
         }
     }
 

@@ -2,8 +2,6 @@ package com.ultreon.devices.api.print;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.init.DeviceBlocks;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -25,9 +23,9 @@ public interface IPrint {
 
     @Nullable
     static IPrint load(CompoundTag tag) {
-        IPrint print = PrintingManager.getPrint(tag.getString("type"));
+        IPrint print = PrintingManager.getPrint(tag.getStringOr("type", "default"));
         if (print != null) {
-            print.fromTag(tag.getCompound("data"));
+            print.fromTag(tag.getCompoundOrEmpty("data"));
             return print;
         }
         return null;

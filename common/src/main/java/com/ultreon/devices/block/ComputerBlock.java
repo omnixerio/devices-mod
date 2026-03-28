@@ -6,8 +6,8 @@ import com.ultreon.devices.debug.DebugLog;
 import com.ultreon.devices.item.FlashDriveItem;
 import com.ultreon.devices.util.BlockEntityUtil;
 import com.ultreon.devices.util.Colorable;
-import dev.architectury.utils.Env;
-import dev.architectury.utils.EnvExecutor;
+import dev.ultreon.mods.xinexlib.Env;
+import dev.ultreon.mods.xinexlib.EnvExecutor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Locale;
 
@@ -42,19 +43,11 @@ public abstract class ComputerBlock extends DeviceBlock {
         registerDefaultState(this.getStateDefinition().any().setValue(TYPE, Type.BASE).setValue(OPEN, false));
     }
 
-    @NotNull
     @Override
-    @SuppressWarnings("deprecation")
-    public InteractionResult use(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
-
+    protected @NonNull InteractionResult useItemOn(@NonNull ItemStack itemStack, @NonNull BlockState state, Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull InteractionHand hand, @NonNull BlockHitResult hit) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof LaptopBlockEntity laptop) {
-            if (player.isCrouching()) {
-                if (!level.isClientSide) {
-                    laptop.openClose(player);
-                }
-                return InteractionResult.SUCCESS;
-            } else {
+            if (!player.isCrouching()) {
                 if (hit.getDirection() == state.getValue(FACING).getClockWise(Direction.Axis.Y)) {
                     ItemStack heldItem = player.getItemInHand(hand);
                     if (!heldItem.isEmpty() && heldItem.getItem() instanceof FlashDriveItem) {
@@ -63,13 +56,29 @@ public abstract class ComputerBlock extends DeviceBlock {
                                 DebugLog.logTime(level.getGameTime(), "Attached Drive");
                                 laptop.setAttachmentCooldown(10);
                                 heldItem.shrink(1);
-                                return InteractionResult.sidedSuccess(level.isClientSide);
+                                return InteractionResult.SUCCESS_SERVER;
                             } else {
                                 return InteractionResult.FAIL;
                             }
                         }
                     }
 
+                }
+            }
+        }
+        return super.useItemOn(itemStack, state, level, pos, player, hand, hit);
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof LaptopBlockEntity laptop) {
+            if (player.isCrouching()) {
+                if (!level.isClientSide()) {
+                    laptop.openClose(player);
+                }
+            } else {
+                if (hit.getDirection() == state.getValue(FACING).getClockWise(Direction.Axis.Y)) {
                     if (laptop.canChangeAttachment()) {
                         ItemStack stack = laptop.getFileSystem().detachDrive();
                         if (stack != null) {
@@ -78,23 +87,22 @@ public abstract class ComputerBlock extends DeviceBlock {
                             BlockPos summonPos = pos.relative(state.getValue(FACING).getClockWise(Direction.Axis.Y));
                             level.addFreshEntity(new ItemEntity(level, summonPos.getX() + 0.5, summonPos.getY(), summonPos.getZ() + 0.5, stack));
                             BlockEntityUtil.markBlockForUpdate(level, pos);
-                            return InteractionResult.sidedSuccess(level.isClientSide);
+                            return InteractionResult.SUCCESS_SERVER;
                         }
                     }
                     return InteractionResult.FAIL;
                 }
 
                 if (laptop.isOpen()) {
-                    if (level.isClientSide) {
+                    if (level.isClientSide()) {
                         EnvExecutor.runInEnv(Env.CLIENT, () -> () -> {
                             ClientLaptopWrapper.execute(laptop);
                         });
                     }
-                    return InteractionResult.sidedSuccess(level.isClientSide);
+                    return InteractionResult.SUCCESS_SERVER;
                 }
             }
         }
-
         return InteractionResult.PASS;
     }
 

@@ -46,7 +46,7 @@ public class TextAreaApp extends Application {
 
         ButtonToggle buttonWordWrap = new ButtonToggle(5, 5, Icons.ALIGN_JUSTIFY);
         buttonWordWrap.setToolTip("Word Wrap", "Break the lines to fit in the view");
-        buttonWordWrap.setClickListener((mouseX, mouseY, mouseButton) -> {
+        buttonWordWrap.setClickListener((event) -> {
             if (mouseButton == 0) {
                 textArea.setWrapText(!buttonWordWrap.isSelected());
             }
@@ -55,7 +55,7 @@ public class TextAreaApp extends Application {
 
         ButtonToggle buttonDebug = new ButtonToggle(24, 5, Icons.HELP);
         buttonDebug.setToolTip("Debug Mode", "Show invisible characters");
-        buttonDebug.setClickListener((mouseX, mouseY, mouseButton) -> {
+        buttonDebug.setClickListener((event) -> {
 //            if (mouseButton == 0) {
 //                Laptop.font.setDebug(!buttonDebug.isSelected());
 //            }
@@ -64,7 +64,7 @@ public class TextAreaApp extends Application {
 
         ButtonToggle buttonHighlight = new ButtonToggle(43, 5, Icons.FONT);
         buttonHighlight.setToolTip("Highlight", "Set text highlighting to Java");
-        buttonHighlight.setClickListener((mouseX, mouseY, mouseButton) -> {
+        buttonHighlight.setClickListener((event) -> {
             if (mouseButton == 0) {
                 if (!buttonHighlight.isSelected()) {
                     textArea.setHighlight(JAVA_HIGHLIGHT);

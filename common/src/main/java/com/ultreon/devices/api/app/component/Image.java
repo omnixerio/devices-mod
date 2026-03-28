@@ -2,8 +2,6 @@ package com.ultreon.devices.api.app.component;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.IIcon;
@@ -12,9 +10,8 @@ import com.ultreon.devices.api.utils.OnlineRequest;
 import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.object.AppInfo;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -98,11 +95,13 @@ public class Image extends Component {
     public int componentHeight;
     private Spinner spinner;
     private float alpha = 1f;
-    private Supplier<ColorSupplier> tint = () -> Util.make(new ColorSupplier(), cs -> {
+    private Supplier<ColorSupplier> tint = () -> {
+        ColorSupplier cs = new ColorSupplier();
         cs.r = 255;
         cs.g = 255;
         cs.b = 255;
-    });
+        return cs;
+    };
 
     public void setTint(int r, int g, int b) {
         var cs = new ColorSupplier();
@@ -249,7 +248,7 @@ public class Image extends Component {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (this.visible) {
             if (loader != null && loader.setup) {
                 image = loader.load(this);
@@ -261,14 +260,14 @@ public class Image extends Component {
                 graphics.fill(x, y, x + componentWidth, y + componentHeight, borderColor);
             }
 
-            RenderSystem.setShaderColor(tint.get().r/255f, tint.get().g/255f, tint.get().b/255f, alpha);
+//            RenderSystem.setShaderColor(tint.get().r/255f, tint.get().g/255f, tint.get().b/255f, alpha);
 
-            if (image != null && image.textureId != -1) {
+            if (image != null && image.texture != -1) {
                 image.restore();
 
-                RenderSystem.setShaderColor(tint.get().r/255f, tint.get().g/255f, tint.get().b/255f, alpha);
-                RenderSystem.enableBlend();
-                RenderSystem.setShaderTexture(0, image.textureId);
+//                RenderSystem.setShaderColor(tint.get().r/255f, tint.get().g/255f, tint.get().b/255f, alpha);
+//                RenderSystem.enableBlend();
+//                RenderSystem.setShaderTexture(0, image.textureId);
 
                 if (/*hasBorder*/true) {
                     if (drawFull) {
@@ -298,7 +297,7 @@ public class Image extends Component {
                     graphics.fill(x, y, x + componentWidth, y + componentHeight, Color.LIGHT_GRAY.getRGB());
                 }
             }
-            RenderSystem.setShaderColor(1f, 1f, 1f, alpha);
+//            RenderSystem.setShaderColor(1f, 1f, 1f, alpha);
         }
     }
 
@@ -421,13 +420,13 @@ public class Image extends Component {
         @Override
         @SuppressWarnings("ConstantConditions")
         public CachedImage load(Image image) {
-            @Nullable AbstractTexture textureObj = Minecraft.getInstance().getTextureManager().getTexture(resource, null);
+            @Nullable AbstractTexture textureObj = Minecraft.getInstance().getTextureManager().getTexture(resource);
             if (textureObj != null) {
-                return new CachedImage(textureObj.getId(), 0, 0, false);
+                return new CachedImage(textureObj, 0, 0, false);
             } else {
                 AbstractTexture texture = new SimpleTexture(resource);
                 Minecraft.getInstance().getTextureManager().register(resource, texture);
-                return new CachedImage(texture.getId(), 0, 0, false);
+                return new CachedImage(texture, 0, 0, false);
             }
         }
 
@@ -470,7 +469,7 @@ public class Image extends Component {
 
                     Laptop.runLater(() -> {
                         Devices.LOGGER.debug("Loaded image: " + url);
-                        texture = new DynamicTexture(nativeImage);
+                        texture = new DynamicTexture(() -> "devices_mod", nativeImage);
                         setup = true;
                     });
                 } catch (IOException e) {
@@ -550,21 +549,21 @@ public class Image extends Component {
     }
 
     public static class CachedImage {
-        private final int textureId;
+        private final @Nullable AbstractTexture texture;
         private final int width;
         private final int height;
         private final boolean dynamic;
         private boolean delete = false;
 
-        private CachedImage(int textureId, int width, int height, boolean dynamic) {
-            this.textureId = textureId;
+        private CachedImage(@Nullable AbstractTexture texture, int width, int height, boolean dynamic) {
+            this.texture = texture;
             this.width = width;
             this.height = height;
             this.dynamic = dynamic;
         }
 
-        public int getTextureId() {
-            return textureId;
+        public @Nullable AbstractTexture getTexture() {
+            return texture;
         }
 
         public void restore() {

@@ -10,15 +10,12 @@ import com.ultreon.devices.debug.DebugUtils;
 import com.ultreon.devices.debug.DumpType;
 import com.ultreon.devices.init.DeviceBlockEntities;
 import com.ultreon.devices.init.DeviceBlocks;
+import com.ultreon.devices.init.DeviceEntities;
 import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.programs.system.object.ColorSchemePresets;
-import dev.architectury.platform.Platform;
-import dev.architectury.registry.ReloadListenerRegistry;
-import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
-import dev.architectury.registry.client.rendering.RenderTypeRegistry;
-import dev.architectury.registry.registries.RegistrarManager;
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -51,19 +48,19 @@ public class ClientModEvents {
 
         if (Devices.DEVELOPER_MODE) {
             LOGGER.info(SETUP, "Adding developer wallpaper.");
-            Laptop.addWallpaper(new Identifier("devices:textures/gui/developer_wallpaper.png"));
+            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/developer_wallpaper.png"));
         } else {
             LOGGER.info(SETUP, "Adding default wallpapers.");
-            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_1.png"));
-            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_2.png"));
-            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_3.png"));
-            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_4.png"));
-            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_5.png"));
-            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_6.png"));
-            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_7.png"));
-            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_8.png"));
-            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_9.png"));
-            Laptop.addWallpaper(new Identifier("devices:textures/gui/laptop_wallpaper_10.png"));
+            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_1.png"));
+            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_2.png"));
+            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_3.png"));
+            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_4.png"));
+            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_5.png"));
+            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_6.png"));
+            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_7.png"));
+            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_8.png"));
+            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_9.png"));
+            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_10.png"));
         }
 
 
@@ -252,11 +249,11 @@ public class ClientModEvents {
     public static void registerRenderers() {
         LOGGER.info("Registering renderers.");
 
-        BlockEntityRendererRegistry.register(DeviceBlockEntities.LAPTOP.get(), LaptopRenderer::new);
-        BlockEntityRendererRegistry.register(DeviceBlockEntities.PRINTER.get(), PrinterRenderer::new);
-        BlockEntityRendererRegistry.register(DeviceBlockEntities.PAPER.get(), PaperRenderer::new);
-        BlockEntityRendererRegistry.register(DeviceBlockEntities.ROUTER.get(), RouterRenderer::new);
-        BlockEntityRendererRegistry.register(DeviceBlockEntities.SEAT.get(), OfficeChairRenderer::new);
+        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.LAPTOP, LaptopRenderer::new);
+        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.PRINTER, PrinterRenderer::new);
+        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.PAPER, PaperRenderer::new);
+        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.ROUTER, RouterRenderer::new);
+        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.SEAT, OfficeChairRenderer::new);
     }
 
     public static void registerLayerDefinitions() {

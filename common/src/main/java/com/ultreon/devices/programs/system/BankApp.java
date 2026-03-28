@@ -93,7 +93,7 @@ public class BankApp extends Application {//The bank is not a system application
         layoutStart.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) -> {
             assert Minecraft.getInstance().level != null;
             // TODO: get villager to render without instant game crash
-            graphics.pose().pushPose();
+            graphics.pose().pushMatrix();
             {
                 RenderSystem.enableDepthTest();
                 graphics.pose().translate(x + 25, y + 33, 15);
@@ -112,14 +112,14 @@ public class BankApp extends Application {//The bank is not a system application
                 assert villager != null;
                 villager.setVillagerData(new VillagerData(VillagerType.PLAINS, VillagerProfession.NITWIT, 1));
                 villager.getVillagerData().setProfession(VillagerProfession.NITWIT);
-                graphics.pose().pushPose();
+                graphics.pose().pushMatrix();
                 graphics.pose().scale(scaleX, scaleY, 1F);
         //        renderer.render(villager, 0F, 0F, pose, buffer, 15);
-                graphics.pose().popPose();
+                graphics.pose().popMatrix();
 
                 RenderSystem.disableDepthTest();
             }
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
 
             RenderSystem.setShaderTexture(0, BANK_ASSETS);
             RenderUtil.drawRectWithTexture(BANK_ASSETS, graphics, x + 46, y + 19, 0, 0, 146, 52, 146, 52);
@@ -140,7 +140,7 @@ public class BankApp extends Application {//The bank is not a system application
         btnTransfer = new Button(133, 74, "Transfer");
         btnTransfer.setSize(58, 20);
         btnTransfer.setToolTip("Transfer", "Withdraw and deposit emeralds");
-        btnTransfer.setClickListener((mouseX, mouseY, mouseButton) -> {
+        btnTransfer.setClickListener((event) -> {
             if (mouseButton == 0) {
                 setCurrentLayout(layoutMain);
             }
@@ -197,7 +197,7 @@ public class BankApp extends Application {//The bank is not a system application
 
         btnClear = new Button(24, 122, "Clr");
         btnClear.setSize(35, 16);
-        btnClear.setClickListener((mouseX, mouseY, mouseButton) -> {
+        btnClear.setClickListener((event) -> {
             if (mouseButton == 0) {
                 amountField.setText("0");
             }
@@ -206,7 +206,7 @@ public class BankApp extends Application {//The bank is not a system application
 
         buttonDeposit = new Button(62, 65, "Deposit");
         buttonDeposit.setSize(53, 16);
-        buttonDeposit.setClickListener((mouseX, mouseY, mouseButton) -> {
+        buttonDeposit.setClickListener((event) -> {
             if (mouseButton == 0) {
                 if (amountField.getText().equals("0")) {
                     return;
@@ -232,7 +232,7 @@ public class BankApp extends Application {//The bank is not a system application
 
         buttonWithdraw = new Button(62, 84, "Withdraw");
         buttonWithdraw.setSize(53, 16);
-        buttonWithdraw.setClickListener((mouseX, mouseY, mouseButton) -> {
+        buttonWithdraw.setClickListener((event) -> {
             if (mouseButton == 0) {
                 if (amountField.getText().equals("0")) {
                     return;
@@ -273,7 +273,7 @@ public class BankApp extends Application {//The bank is not a system application
     }
 
     public void addNumberClickListener(Button btn, final TextField field, final int number) {
-        btn.setClickListener((mouseX, mouseY, mouseButton) -> {
+        btn.setClickListener((event) -> {
             if (mouseButton == 0) {
                 if (!(field.getText().equals("0") && number == 0)) {
                     if (field.getText().equals("0")) field.clear();

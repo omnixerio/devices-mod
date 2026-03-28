@@ -9,7 +9,7 @@ import com.ultreon.devices.exception.WorldLessException;
 import com.ultreon.devices.object.tiles.Tile;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 
 import java.awt.*;
@@ -84,7 +84,7 @@ public class Game extends Component {
     }
 
     @Override
-    public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseClick(MouseButtonEvent event) {
         if (editorMode) {
             int startX = xPosition;
             int startY = yPosition;
@@ -100,7 +100,7 @@ public class Game extends Component {
     }
 
     @Override
-    public void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseDrag(MouseButtonEvent event) {
         if (editorMode) {
             int startX = xPosition;
             int startY = yPosition;
@@ -116,14 +116,14 @@ public class Game extends Component {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         //long start = System.currentTimeMillis();
 
         if (editorMode) {
             graphics.fill(xPosition - 1, yPosition - 1, xPosition + mapWidth * Tile.WIDTH + 1, yPosition + mapHeight * Tile.HEIGHT + 1, Color.DARK_GRAY.getRGB());
         }
 
-        graphics.pose().pushPose();
+        graphics.pose().pushMatrix();
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, ICONS);
 
@@ -196,7 +196,7 @@ public class Game extends Component {
             }
         }
 
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
 
         //DebugLog.log("Rendered game in " + (System.currentTimeMillis() - start));
     }

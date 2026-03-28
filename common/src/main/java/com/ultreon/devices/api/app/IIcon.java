@@ -2,7 +2,7 @@ package com.ultreon.devices.api.app;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 
 public interface IIcon {
@@ -34,7 +34,7 @@ public interface IIcon {
 
     int getOrdinal();
 
-    default void draw(GuiGraphics graphics, Minecraft mc, int x, int y) {
+    default void draw(GuiGraphicsExtractor graphics, Minecraft mc, int x, int y) {
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, getIconAsset());
         int size = getIconSize();

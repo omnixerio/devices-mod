@@ -14,7 +14,7 @@ import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.object.tiles.Tile;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class TileGrid extends Component
 		btnNextCategory.setClickListener(new ClickListener()
 		{
 			@Override
-			public void onClick(int mouseX, int mouseY, int mouseButton)
+			public void onClick(MouseButtonEvent event)
 			{
 				if(currentCategory < Tile.Category.values().length - 1)
 				{
@@ -65,7 +65,7 @@ public class TileGrid extends Component
 		btnPrevCategory.setClickListener(new ClickListener()
 		{
 			@Override
-			public void onClick(int mouseX, int mouseY, int mouseButton)
+			public void onClick(MouseButtonEvent event)
 			{
 				if(currentCategory > 0)
 				{
@@ -80,7 +80,7 @@ public class TileGrid extends Component
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks)
+	public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks)
 	{
 		try {
 			Tesselator.getInstance().getBuilder().end();
@@ -101,10 +101,10 @@ public class TileGrid extends Component
 				graphics.fill(tileX - 1, tileY - 1, tileX + 13, tileY + 13, Color.WHITE.getRGB());
 			else
 				graphics.fill(tileX - 1, tileY - 1, tileX + 13, tileY + 13, Color.LIGHT_GRAY.getRGB());
-			graphics.pose().pushPose();
+			graphics.pose().pushMatrix();
 			RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 			RenderUtil.drawRectWithTexture(null, graphics, tileX, tileY, tile.x * 16, tile.y * 16, 12, 12, 16, 16);
-			graphics.pose().popPose();
+			graphics.pose().popMatrix();
 		}
 
 		if(GuiHelper.isMouseInside(mouseX, mouseX, xPosition, yPosition, xPosition + 60, yPosition + 60))
@@ -122,7 +122,7 @@ public class TileGrid extends Component
 	}
 	
 	@Override
-	public void handleMouseClick(int mouseX, int mouseY, int mouseButton)
+	public void handleMouseClick(MouseButtonEvent event)
 	{
 		for(int i = 0; i < tabTiles.size(); i++)
 		{

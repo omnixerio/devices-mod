@@ -5,7 +5,8 @@ import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.app.Dialog;
 import com.ultreon.devices.gui.GuiButtonClose;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 
@@ -74,7 +75,7 @@ public class Window<T extends Wrappable> {
         content.onTick();
     }
 
-    public void render(GuiGraphics graphics, Laptop gui, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean active, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop gui, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean active, float partialTicks) {
         if (content.isPendingLayoutUpdate()) {
             this.setWidth(content.getWidth());
             this.setHeight(content.getHeight());
@@ -84,7 +85,7 @@ public class Window<T extends Wrappable> {
             content.clearPendingLayout();
         }
 
-        graphics.pose().pushPose();
+        graphics.pose().pushMatrix();
 
         Color color = new Color(Laptop.getSystem().getSettings().getColorScheme().getWindowBackgroundColor());
         RenderSystem.enableBlend();
@@ -112,7 +113,7 @@ public class Window<T extends Wrappable> {
         if (mc.font.width(windowTitle) > width - 2 - 13 - 3) { // window width, border, close button, padding, padding
             windowTitle = mc.font.plainSubstrByWidth(windowTitle, width - 2 - 13 - 3);
         }
-        graphics.drawString(mc.font, windowTitle, x + offsetX + 3, y + offsetY + 3, Color.WHITE.getRGB(), true);
+        graphics.text(mc.font, windowTitle, x + offsetX + 3, y + offsetY + 3, Color.WHITE.getRGB(), true);
 
         btnClose.renderWidget(graphics, mouseX, mouseY, partialTicks);
 
@@ -129,7 +130,7 @@ public class Window<T extends Wrappable> {
             dialogWindow.render(graphics, gui, mc, x, y, mouseX, mouseY, active, partialTicks);
         }
 
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 
     @Deprecated
@@ -195,7 +196,7 @@ public class Window<T extends Wrappable> {
     }
 
     @SuppressWarnings("unused")
-    void handleMouseClick(Laptop gui, int x, int y, int mouseX, int mouseY, int mouseButton) {
+    void handleMouseClick(Laptop gui, int x, int y, MouseButtonEvent event) {
         if (btnClose.isHovered()) {
             if (content instanceof Application) {
                 gui.closeApplication(((Application) content).getInfo());
@@ -208,27 +209,27 @@ public class Window<T extends Wrappable> {
         }
 
         if (dialogWindow != null) {
-            dialogWindow.handleMouseClick(gui, x, y, mouseX, mouseY, mouseButton);
+            dialogWindow.handleMouseClick(gui, x, y, event);
             return;
         }
 
-        content.handleMouseClick(mouseX, mouseY, mouseButton);
+        content.handleMouseClick(event);
     }
 
-    void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
+    void handleMouseDrag(MouseButtonEvent event) {
         if (dialogWindow != null) {
-            dialogWindow.handleMouseDrag(mouseX, mouseY, mouseButton);
+            dialogWindow.handleMouseDrag(event);
             return;
         }
-        content.handleMouseDrag(mouseX, mouseY, mouseButton);
+        content.handleMouseDrag(event);
     }
 
-    void handleMouseRelease(int mouseX, int mouseY, int mouseButton) {
+    void handleMouseRelease(MouseButtonEvent event) {
         if (dialogWindow != null) {
-            dialogWindow.handleMouseRelease(mouseX, mouseY, mouseButton);
+            dialogWindow.handleMouseRelease(event);
             return;
         }
-        content.handleMouseRelease(mouseX, mouseY, mouseButton);
+        content.handleMouseRelease(event);
     }
 
     void handleMouseScroll(int mouseX, int mouseY, double delta, boolean direction) {

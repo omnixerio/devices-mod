@@ -1,17 +1,18 @@
 package com.ultreon.devices.network.task;
 
 import com.ultreon.devices.DeviceConfig;
-import com.ultreon.devices.network.Packet;
-import dev.architectury.networking.NetworkManager;
+import dev.ultreon.mods.xinexlib.network.Networker;
+import dev.ultreon.mods.xinexlib.network.packet.PacketToServer;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * @author MrCrayfish
  */
-public class SyncConfigPacket extends Packet<SyncConfigPacket> {
+public class SyncConfigPacket implements PacketToServer<SyncConfigPacket> {
     public SyncConfigPacket() {
 
     }
@@ -21,12 +22,12 @@ public class SyncConfigPacket extends Packet<SyncConfigPacket> {
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeNbt(DeviceConfig.writeSyncTag());
+    public void handle(Networker connection, ServerPlayer player) {
+
     }
 
     @Override
-    public boolean onMessage(Supplier<NetworkManager.PacketContext> ctx) {
-        return true;
+    public void write(RegistryFriendlyByteBuf buffer) {
+        buffer.writeNbt(DeviceConfig.writeSyncTag());
     }
 }

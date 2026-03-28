@@ -5,7 +5,7 @@ import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.core.Laptop;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.text.DecimalFormat;
 
@@ -44,7 +44,7 @@ public class NumberSelector extends Component {
     public void init(Layout layout) {
         btnUp = new Button(left, top, COMPONENTS_GUI, 111, 12, 8, 5);
         btnUp.setSize(width, 11);
-        btnUp.setClickListener((mouseX, mouseY, mouseButton) -> {
+        btnUp.setClickListener((event) -> {
             if (current < max) {
                 current++;
                 display.setText(format.format(current));
@@ -60,7 +60,7 @@ public class NumberSelector extends Component {
 
         btnDown = new Button(left, top + 24, COMPONENTS_GUI, 119, 12, 8, 5);
         btnDown.setSize(width, 11);
-        btnDown.setClickListener((mouseX, mouseY, mouseButton) -> {
+        btnDown.setClickListener((event) -> {
             if (current > min) {
                 current--;
                 display.setText(format.format(current));
@@ -71,7 +71,7 @@ public class NumberSelector extends Component {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
     }
 
     @Override

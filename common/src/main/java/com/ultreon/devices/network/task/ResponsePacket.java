@@ -2,14 +2,16 @@ package com.ultreon.devices.network.task;
 
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.api.task.TaskManager;
-import com.ultreon.devices.network.Packet;
 import dev.architectury.networking.NetworkManager;
+import dev.ultreon.mods.xinexlib.network.Networker;
+import dev.ultreon.mods.xinexlib.network.packet.PacketToClient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 import java.util.function.Supplier;
 
-public class ResponsePacket extends Packet<ResponsePacket> {
+public class ResponsePacket implements PacketToClient<ResponsePacket> {
     private final int id;
     private final Task request;
     private CompoundTag tag;
@@ -29,20 +31,19 @@ public class ResponsePacket extends Packet<ResponsePacket> {
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeInt(this.id);
-        buf.writeBoolean(this.request.isSucessful());
-        buf.writeUtf(this.request.getName());
-        CompoundTag tag = new CompoundTag();
-        this.request.prepareResponse(tag);
-        buf.writeNbt(tag);
-        this.request.complete();
+    public void handle(Networker connection) {
+        request.processResponse(tag);
+        request.callback(tag);
     }
 
     @Override
-    public boolean onMessage(Supplier<NetworkManager.PacketContext> ctx) {
-        request.processResponse(tag);
-        request.callback(tag);
-        return false;
+    public void write(RegistryFriendlyByteBuf buffer) {
+        buffer.writeInt(this.id);
+        buffer.writeBoolean(this.request.isSucessful());
+        buffer.writeUtf(this.request.getName());
+        CompoundTag tag = new CompoundTag();
+        this.request.prepareResponse(tag);
+        buffer.writeNbt(tag);
+        this.request.complete();
     }
 }

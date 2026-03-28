@@ -5,19 +5,15 @@ import com.google.gson.reflect.TypeToken;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.Reference;
 import com.ultreon.devices.core.Laptop;
-import dev.architectury.injectables.annotations.PlatformOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.awt.*;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -194,11 +190,11 @@ public class AppInfo {
         }
 
         private Icon(AppInfo info) {
-            this.base = Glyph.of(new Identifier(info.APP_ID.getNamespace(), "textures/app/icon/base/" + info.APP_ID.getPath() + ".png"));
+            this.base = Glyph.of(Identifier.fromNamespaceAndPath(info.APP_ID.getNamespace(), "textures/app/icon/base/" + info.APP_ID.getPath() + ".png"));
             this.base.type = 0;
-            this.overlay0 = Glyph.of(new Identifier(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/" + info.APP_ID.getPath() + ".png"));
+            this.overlay0 = Glyph.of(Identifier.fromNamespaceAndPath(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/" + info.APP_ID.getPath() + ".png"));
             this.overlay0.type = 1;
-            this.overlay1 = Glyph.of(new Identifier(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/" + info.APP_ID.getPath() + ".png"));
+            this.overlay1 = Glyph.of(Identifier.fromNamespaceAndPath(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/" + info.APP_ID.getPath() + ".png"));
             this.overlay1.type = 2;
         }
 
@@ -245,7 +241,7 @@ public class AppInfo {
         resetInfo();
         if (Minecraft.getInstance().getResourceManager() == null) return;
         // TODO "Check if the resource manager can be used on client side."
-        Resource resource = Minecraft.getInstance().getResourceManager().getResource(new Identifier(APP_ID.getNamespace(), "/apps/" + APP_ID.getPath() + ".json")).orElse(null);
+        Resource resource = Minecraft.getInstance().getResourceManager().getResource(Identifier.fromNamespaceAndPath(APP_ID.getNamespace(), "/apps/" + APP_ID.getPath() + ".json")).orElse(null);
 
         if (resource == null)
             throw new RuntimeException("Missing app info json for '" + APP_ID + "'");
@@ -319,11 +315,11 @@ public class AppInfo {
 
             if (json.getAsJsonObject().has("icon") && json.getAsJsonObject().get("icon").isJsonPrimitive()) {
                 info.icon = new Icon();
-                info.icon.base = Icon.Glyph.of(new Identifier(json.getAsJsonObject().get("icon").getAsString()));
+                info.icon.base = Icon.Glyph.of(Identifier.parse(json.getAsJsonObject().get("icon").getAsString()));
                 info.icon.base.type = 0;
-                info.icon.overlay0 = Icon.Glyph.of(new Identifier(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/empty.png"));
+                info.icon.overlay0 = Icon.Glyph.of(Identifier.fromNamespaceAndPath(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/empty.png"));
                 info.icon.overlay0.type = 1;
-                info.icon.overlay1 = Icon.Glyph.of(new Identifier(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/empty.png"));
+                info.icon.overlay1 = Icon.Glyph.of(Identifier.fromNamespaceAndPath(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/empty.png"));
                 info.icon.overlay1.type = 2;
             }
 

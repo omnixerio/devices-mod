@@ -2,10 +2,12 @@ package com.ultreon.devices.block;
 
 import com.ultreon.devices.ModDeviceTypes;
 import com.ultreon.devices.block.entity.RouterBlockEntity;
-import com.ultreon.devices.network.PacketHandler;
 import com.ultreon.devices.network.task.SyncBlockPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -57,8 +59,8 @@ public class RouterBlock extends DeviceBlock.Colored {
             box(13, 0, 1, 16, 10, 15)
     };
 
-    public RouterBlock(DyeColor color) {
-        super(Properties.of().mapColor(color).strength(6f).sound(SoundType.METAL), color, ModDeviceTypes.ROUTER);
+    public RouterBlock(DyeColor color, Identifier id) {
+        super(Properties.of().setId(ResourceKey.create(Registries.BLOCK, id)).mapColor(color).strength(6f).sound(SoundType.METAL), color, ModDeviceTypes.ROUTER);
         this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(VERTICAL, false));
     }
 

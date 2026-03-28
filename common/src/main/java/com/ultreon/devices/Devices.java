@@ -20,7 +20,7 @@ import com.ultreon.devices.core.print.task.TaskPrint;
 import com.ultreon.devices.core.task.TaskInstallApp;
 import com.ultreon.devices.debug.DebugLog;
 import com.ultreon.devices.event.WorldDataHandler;
-import com.ultreon.devices.network.PacketHandler;
+import com.ultreon.devices.network.DevicesNetworker;
 import com.ultreon.devices.network.task.SyncApplicationPacket;
 import com.ultreon.devices.network.task.SyncConfigPacket;
 import com.ultreon.devices.object.AppInfo;
@@ -183,6 +183,7 @@ public abstract class Devices {
 
     private void registerApplications() {
         // Applications (Both)
+        DevicesNetworker.init();
 
         registerApplicationEvent();
         // Core

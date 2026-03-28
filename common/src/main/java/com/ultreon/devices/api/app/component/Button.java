@@ -11,7 +11,8 @@ import com.ultreon.devices.util.StringUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.resources.Identifier;
@@ -22,7 +23,7 @@ import java.util.Arrays;
 
 @SuppressWarnings("unused")
 public class Button extends Component {
-    protected static final Identifier BUTTON_TEXTURES = new Identifier("textures/gui/widgets.png");
+    protected static final Identifier BUTTON_TEXTURES = Identifier.parse("textures/gui/widgets.png");
 
     protected static final int TOOLTIP_DELAY = 20;
 
@@ -210,7 +211,7 @@ public class Button extends Component {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (this.visible) {
             RenderSystem.setShaderTexture(0, Component.COMPONENTS_GUI);
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
@@ -260,32 +261,32 @@ public class Button extends Component {
                 int textY = (height - mc.font.lineHeight) / 2 + 1;
                 int textOffsetX = iconResource != null ? iconWidth + 3 : 0;
                 int textColor = !Button.this.enabled ? 0xa0a0a0 : 0xe0e0e0;
-                graphics.drawString(mc.font, text, x + contentX + textOffsetX, y + textY, textColor);
+                graphics.text(mc.font, text, x + contentX + textOffsetX, y + textY, textColor);
             }
         }
     }
 
     @Override
-    public void renderOverlay(GuiGraphics graphics, Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
+    public void renderOverlay(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
         if (this.hovered && this.toolTip != null && toolTipTick >= TOOLTIP_DELAY) {
             laptop.renderComponentTooltip(graphics, Arrays.asList(net.minecraft.network.chat.Component.literal(this.toolTipTitle).withStyle(ChatFormatting.GOLD), net.minecraft.network.chat.Component.literal(this.toolTip)), mouseX, mouseY);
         }
     }
 
-    public void forceClick(int mouseX, int mouseY, int mouseButton) {
+    public void forceClick(MouseButtonEvent event) {
         if (clickListener != null) {
-            clickListener.onClick(mouseX, mouseY, mouseButton);
+            clickListener.onClick(event);
         }
     }
 
     @Override
-    public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseClick(MouseButtonEvent event) {
         if (!this.visible || !this.enabled)
             return;
 
         if (this.hovered) {
             if (clickListener != null) {
-                clickListener.onClick(mouseX, mouseY, mouseButton);
+                clickListener.onClick(event);
             }
             playClickSound(Minecraft.getInstance().getSoundManager());
         }

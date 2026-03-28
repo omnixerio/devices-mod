@@ -2,7 +2,6 @@ package com.ultreon.devices.api.app;
 
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.core.client.ClientNotification;
-import com.ultreon.devices.network.PacketHandler;
 import com.ultreon.devices.network.task.NotificationPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;

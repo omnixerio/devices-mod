@@ -107,7 +107,7 @@ public class NavigationModule extends Module {
         }
         if (frame != null && data.containsKey("item-link-" + index)) {
             String link = data.get("item-link-" + index);
-            button.setClickListener((mouseX, mouseY, mouseButton) ->
+            button.setClickListener((event) ->
             {
                 if (mouseButton == 0) {
                     frame.loadWebsite(link);

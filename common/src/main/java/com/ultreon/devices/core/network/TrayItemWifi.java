@@ -19,7 +19,7 @@ import com.ultreon.devices.core.network.task.TaskPing;
 import com.ultreon.devices.object.TrayItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
@@ -49,7 +49,7 @@ public class TrayItemWifi extends TrayItem {
         itemListRouters.setItems(getRouters());
         itemListRouters.setListItemRenderer(new ListItemRenderer<>(16) {
             @Override
-            public void render(GuiGraphics graphics, Device device, Minecraft mc, int x, int y, int width, int height, boolean selected) {
+            public void render(GuiGraphicsExtractor graphics, Device device, Minecraft mc, int x, int y, int width, int height, boolean selected) {
                 graphics.fill(x, y, x + width, y + height, selected ? Color.DARK_GRAY.getRGB() : Color.GRAY.getRGB());
                 RenderUtil.drawStringClipped(graphics, device.getName(), x + 16, y + 4, 70, Color.WHITE.getRGB(), false);
 
@@ -79,7 +79,7 @@ public class TrayItemWifi extends TrayItem {
         layout.addComponent(itemListRouters);
 
         Button buttonConnect = new Button(79, 79, Icons.CHECK);
-        buttonConnect.setClickListener((mouseX, mouseY, mouseButton) -> {
+        buttonConnect.setClickListener((event) -> {
             if (mouseButton == 0) {
                 if (itemListRouters.getSelectedItem() != null) {
                     TaskConnect connect = new TaskConnect(Laptop.getPos(), itemListRouters.getSelectedItem().getPos());
@@ -127,7 +127,7 @@ public class TrayItemWifi extends TrayItem {
 
     @Override
     public void init() {
-        this.setClickListener((mouseX, mouseY, mouseButton) -> {
+        this.setClickListener((event) -> {
             if (Laptop.getSystem().hasContext()) {
                 Laptop.getSystem().closeContext();
             } else {

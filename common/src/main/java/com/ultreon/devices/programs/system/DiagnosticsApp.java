@@ -79,9 +79,9 @@ public final class DiagnosticsApp extends SystemApp {
 
         Button buttonPositive = new Button(getWidth() - 41, getHeight() - 20, "Close");
         buttonPositive.setSize(36, 16);
-        buttonPositive.setClickListener((mouseX, mouseY, mouseButton) -> {
+        buttonPositive.setClickListener((event) -> {
             if (positiveListener != null) {
-                positiveListener.onClick(mouseX, mouseY, mouseButton);
+                positiveListener.onClick(event);
             }
             getWindow().close();
         });

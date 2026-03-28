@@ -44,7 +44,7 @@ public class IconsApp extends Application {
         Button btnPrevPage = new Button(297, 3, Icons.ARROW_LEFT);
         btnPrevPage.setToolTip("Previous Page", "Go to previous page of this icon set");
         btnPrevPage.setSize(14, 14);
-        btnPrevPage.setClickListener((mouseX, mouseY, mouseButton) ->
+        btnPrevPage.setClickListener((event) ->
         {
             if (mouseButton == 0) {
                 if (offset > 0) offset--;
@@ -56,7 +56,7 @@ public class IconsApp extends Application {
         Button btnNextPage = new Button(313, 3, Icons.ARROW_RIGHT);
         btnNextPage.setToolTip("Next Page", "Go to next page of this icon set");
         btnNextPage.setSize(14, 14);
-        btnNextPage.setClickListener((mouseX, mouseY, mouseButton) ->
+        btnNextPage.setClickListener((event) ->
         {
             if (mouseButton == 0) {
                 if (offset < (iconSetComboBox.getSelectedItem().getIcons().length / 126)) offset++;

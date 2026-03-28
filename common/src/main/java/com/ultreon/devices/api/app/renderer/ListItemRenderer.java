@@ -1,7 +1,7 @@
 package com.ultreon.devices.api.app.renderer;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public abstract class ListItemRenderer<E> {
     private final int height;
@@ -14,5 +14,5 @@ public abstract class ListItemRenderer<E> {
         return height;
     }
 
-    public abstract void render(GuiGraphics graphics, E e, Minecraft mc, int x, int y, int width, int height, boolean selected);
+    public abstract void render(GuiGraphicsExtractor graphics, E e, Minecraft mc, int x, int y, int width, int height, boolean selected);
 }

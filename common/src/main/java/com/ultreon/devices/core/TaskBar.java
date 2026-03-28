@@ -15,7 +15,8 @@ import com.ultreon.devices.programs.system.SettingsApp;
 import com.ultreon.devices.programs.system.SystemApp;
 import com.ultreon.devices.util.Vulnerability;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -29,7 +30,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class TaskBar {
-    public static final Identifier APP_BAR_GUI = new Identifier("devices:textures/gui/application_bar.png");
+    public static final Identifier APP_BAR_GUI = Identifier.parse("devices:textures/gui/application_bar.png");
     public static final int BAR_HEIGHT = 18;
     private static final int APPS_DISPLAYED = Devices.DEVELOPER_MODE ? 18 : 10;
 
@@ -104,7 +105,7 @@ public class TaskBar {
         trayItems.forEach(TrayItem::tick);
     }
 
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.setShaderColor(1f, 1f, 1f, 0.75f);
         RenderSystem.enableBlend();
         RenderSystem.setShaderTexture(0, APP_BAR_GUI);
@@ -134,7 +135,7 @@ public class TaskBar {
 
         assert mc.level == null || mc.player != null;
        // assert mc.level != null; //can no longer assume
-        graphics.drawString(mc.font, timeToString(mc.level != null ? mc.level.getDayTime() : 0), x + Laptop.getScreenWidth() - 31, y + 5, Color.WHITE.getRGB(), true);
+        graphics.text(mc.font, timeToString(mc.level != null ? mc.level.getDayTime() : 0), x + Laptop.getScreenWidth() - 31, y + 5, Color.WHITE.getRGB(), true);
 
         /* Settings App */
         int startX = x + Laptop.getScreenWidth() - 48;
@@ -160,10 +161,10 @@ public class TaskBar {
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
     }
 
-    public void handleClick(Laptop laptop, int x, int y, int mouseX, int mouseY, int mouseButton) {
-        if (isMouseInside(mouseX, mouseY, x + 1, y + 1, x + 236, y + 16)) {
+    public void handleClick(Laptop laptop, int x, int y, MouseButtonEvent event) {
+        if (isMouseInside((int) event.x(), (int) event.y(), x + 1, y + 1, x + 236, y + 16)) {
             Devices.LOGGER.debug(MARKER, "Clicked on task bar");
-            int appIndex = (mouseX - x - 1) / 16;
+            int appIndex = (int) ((event.x() - x - 1) / 16);
             if (appIndex >= 0 && appIndex <= offset + APPS_DISPLAYED && appIndex < laptop.installedApps.size()) {
                 laptop.openApplication(laptop.installedApps.get(appIndex));
                 return;
@@ -173,9 +174,9 @@ public class TaskBar {
         int startX = x + Laptop.getScreenWidth() - 48;
         for (int i = 0; i < trayItems.size(); i++) {
             int posX = startX - (trayItems.size() - 1 - i) * 14;
-            if (isMouseInside(mouseX, mouseY, posX, y + 2, posX + 13, y + 15)) {
+            if (isMouseInside((int) event.x(), (int) event.y(), posX, y + 2, posX + 13, y + 15)) {
                 TrayItem trayItem = trayItems.get(i);
-                trayItem.handleClick(mouseX, mouseY, mouseButton);
+                trayItem.handleClick(event);
                 Devices.LOGGER.debug(MARKER, "Clicked on tray item (%d): %s".formatted(i, trayItem.getClass().getSimpleName()));
                 break;
             }

@@ -2,17 +2,15 @@ package com.ultreon.devices.network.task;
 
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.api.task.TaskManager;
-import com.ultreon.devices.network.Packet;
-import com.ultreon.devices.network.PacketHandler;
-import dev.architectury.networking.NetworkManager;
+import com.ultreon.devices.network.DevicesNetworker;
+import dev.ultreon.mods.xinexlib.network.Networker;
+import dev.ultreon.mods.xinexlib.network.packet.PacketToServer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.Objects;
-import java.util.function.Supplier;
-
-public class RequestPacket extends Packet<RequestPacket> {
+public class RequestPacket implements PacketToServer<RequestPacket> {
     private final int id;
     private final Task request;
     private CompoundTag tag;
@@ -30,26 +28,31 @@ public class RequestPacket extends Packet<RequestPacket> {
         this.request = request;
     }
 
-    @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeInt(this.id);
-        buf.writeUtf(this.request.getName());
-        CompoundTag tag = new CompoundTag();
-        this.request.prepareRequest(tag);
-        buf.writeNbt(tag);
-    }
-
-    @Override
-    public boolean onMessage(Supplier<NetworkManager.PacketContext> ctx) {
-        //DebugLog.log("RECEIVED from " + ctx.get().getPlayer().getUUID());
-        request.processRequest(tag, Objects.requireNonNull(ctx.get().getPlayer()).level(), ctx.get().getPlayer());
-        if (ctx.get().getPlayer() instanceof ServerPlayer player)
-        PacketHandler.sendToClient(new ResponsePacket(id, request), player);
-        return true;
-    }
-
     public int getId() {
         return id;
     }
 
+    @Override
+    public void handle(Networker connection, ServerPlayer player) {
+        //DebugLog.log("RECEIVED from " + ctx.get().getPlayer().getUUID());
+        request.processRequest(tag, player.level(), player);
+        DevicesNetworker.networker.sendToClient(new ResponsePacket(id, request), player);
+    }
+
+    @Override
+    public void write(RegistryFriendlyByteBuf buffer) {
+        buffer.writeInt(this.id);
+        buffer.writeUtf(this.request.getName());
+        CompoundTag tag = new CompoundTag();
+        this.request.prepareRequest(tag);
+        buffer.writeNbt(tag);
+    }
+
+    public Task getRequest() {
+        return request;
+    }
+
+    public CompoundTag getTag() {
+        return tag;
+    }
 }

@@ -3,19 +3,19 @@ package com.ultreon.devices.network.task;
 import com.google.common.collect.ImmutableList;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.ApplicationManager;
-import com.ultreon.devices.network.Packet;
 import com.ultreon.devices.object.AppInfo;
-import dev.architectury.networking.NetworkManager;
+import dev.ultreon.mods.xinexlib.network.Networker;
+import dev.ultreon.mods.xinexlib.network.packet.PacketToClient;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * @author MrCrayfish
  */
-public class SyncApplicationPacket extends Packet<SyncApplicationPacket> {
+public class SyncApplicationPacket implements PacketToClient<SyncApplicationPacket> {
     private final List<AppInfo> allowedApps;
 
     public SyncApplicationPacket(FriendlyByteBuf buf) {
@@ -27,7 +27,7 @@ public class SyncApplicationPacket extends Packet<SyncApplicationPacket> {
             if (info != null) {
                 builder.add(info);
             } else {
-                Devices.LOGGER.error("Missing application '" + appId + "'");
+                Devices.LOGGER.error("Missing application '{}'", appId);
             }
         }
 
@@ -39,16 +39,15 @@ public class SyncApplicationPacket extends Packet<SyncApplicationPacket> {
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeInt(allowedApps.size());
-        for (AppInfo appInfo : allowedApps) {
-            buf.writeIdentifier(appInfo.getId());
-        }
+    public void handle(Networker connection) {
+        Devices.setAllowedApps(allowedApps);
     }
 
     @Override
-    public boolean onMessage(Supplier<NetworkManager.PacketContext> ctx) {
-        Devices.setAllowedApps(allowedApps);
-        return true;
+    public void write(RegistryFriendlyByteBuf buffer) {
+        buffer.writeInt(allowedApps.size());
+        for (AppInfo appInfo : allowedApps) {
+            buffer.writeIdentifier(appInfo.getId());
+        }
     }
 }

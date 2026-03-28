@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.object.Game;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class TileGrass extends Tile
 {
@@ -14,7 +14,7 @@ public class TileGrass extends Tile
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, Game game, int x, int y, Game.Layer layer)
+	public void render(GuiGraphicsExtractor graphics, Game game, int x, int y, Game.Layer layer)
 	{
 		super.render(graphics, game, x, y, layer);
 		if(!game.isFullTile(layer, x, y + 1))
@@ -26,7 +26,7 @@ public class TileGrass extends Tile
 	}
 
 	@Override
-	public void renderForeground(GuiGraphics graphics, Game game, int x, int y, Game.Layer layer)
+	public void renderForeground(GuiGraphicsExtractor graphics, Game game, int x, int y, Game.Layer layer)
 	{
 		super.renderForeground(graphics, game, x, y, layer);
 

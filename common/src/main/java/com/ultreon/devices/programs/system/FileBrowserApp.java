@@ -44,7 +44,7 @@ public class FileBrowserApp extends SystemApp {
         }
 
         @Override
-        public void handleClick(int mouseX, int mouseY, int mouseButton) {
+        public void handleClick(MouseButtonEvent event) {
             AppInfo info = ApplicationManager.getApplication(Devices.id("file_browser"));
             if (info != null) {
                 Laptop.getSystem().openApplication(info);

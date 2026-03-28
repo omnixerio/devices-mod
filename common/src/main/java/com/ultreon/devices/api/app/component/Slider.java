@@ -8,7 +8,8 @@ import com.ultreon.devices.api.app.listener.SlideListener;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 
 import java.awt.*;
 
@@ -41,7 +42,7 @@ public class Slider extends Component {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (this.visible) {
             Color bgColor = new Color(getColorScheme().getBackgroundColor());
             graphics.fill(xPosition, yPosition + 4, xPosition + width, yPosition + 8, bgColor.darker().darker().getRGB());
@@ -52,20 +53,20 @@ public class Slider extends Component {
     }
 
     @Override
-    public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseClick(MouseButtonEvent event) {
         if (!this.visible || !this.enabled) return;
 
-        if (GuiHelper.isMouseInside(mouseX, mouseY, xPosition + newSliderX, yPosition, xPosition + newSliderX + 8, yPosition + 12)) {
+        if (GuiHelper.isMouseInside((int) event.x(), (int) event.y(), xPosition + newSliderX, yPosition, xPosition + newSliderX + 8, yPosition + 12)) {
             this.dragging = true;
             this.clickX = mouseX;
             if (clickListener != null) {
-                clickListener.onClick(mouseX, mouseY, mouseButton);
+                clickListener.onClick(event);
             }
         }
     }
 
     @Override
-    public void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseDrag(MouseButtonEvent event) {
         if (!this.visible || !this.enabled) return;
 
         if (dragging) {
@@ -83,7 +84,7 @@ public class Slider extends Component {
     }
 
     @Override
-    public void handleMouseRelease(int mouseX, int mouseY, int mouseButton) {
+    public void handleMouseRelease(MouseButtonEvent event) {
         if (!this.visible || !this.enabled) return;
 
         this.dragging = false;

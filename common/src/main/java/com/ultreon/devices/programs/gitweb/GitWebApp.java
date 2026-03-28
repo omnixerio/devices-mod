@@ -69,17 +69,17 @@ public class GitWebApp extends Application implements SystemAccessor, DataHandle
 
         btnSearch = new Button(308, 2, 16, 16, Icons.ARROW_RIGHT);
         btnSearch.setToolTip("Refresh", "Loads the entered address.");
-        btnSearch.setClickListener((mouseX, mouseY, mouseButton) -> webFrame.loadWebsite(this.getAddress()));
+        btnSearch.setClickListener((event) -> webFrame.loadWebsite(this.getAddress()));
         layoutBrowser.addComponent(btnSearch);
 
         btnHome = new Button(326, 2, 16, 16, Icons.HOME);
         btnHome.setToolTip("Home", "Loads page set in settings.");
-        btnHome.setClickListener((mouseX, mouseY, mouseButton) -> webFrame.loadWebsite("welcome.official"));
+        btnHome.setClickListener((event) -> webFrame.loadWebsite("welcome.official"));
         layoutBrowser.addComponent(btnHome);
 
         btnSettings = new Button(344, 2, 16, 16, Icons.WRENCH);
         btnSettings.setToolTip("Settings", "Change your preferences.");
-        btnSettings.setClickListener((mouseX, mouseY, mouseButton) -> this.setCurrentLayout(layoutPref));
+        btnSettings.setClickListener((event) -> this.setCurrentLayout(layoutPref));
         layoutBrowser.addComponent(btnSettings);
 
         webFrame = new GitWebFrame(this, 0, 21, 362, 143);
@@ -104,7 +104,7 @@ public class GitWebApp extends Application implements SystemAccessor, DataHandle
     private void setUpPreferences() {
         var backBtn = new Button(2, 2, Icons.ARROW_LEFT);
         backBtn.setVisible(true);
-        backBtn.setClickListener((mouseX, mouseY, mouseButton) ->
+        backBtn.setClickListener((event) ->
         {
             if (mouseButton == 0) {
                 this.setCurrentLayout(layoutBrowser);

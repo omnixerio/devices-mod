@@ -1,5 +1,7 @@
 package com.ultreon.devices.api.app.listener;
 
+import net.minecraft.client.input.MouseButtonEvent;
+
 /**
  * The click listener interface. Used for handling clicks
  * on components.
@@ -12,5 +14,5 @@ public interface ClickListener {
      *
      * @param mouseButton the mouse button used to click
      */
-    void onClick(int mouseX, int mouseY, int mouseButton);
+    void onClick(MouseButtonEvent event);
 }

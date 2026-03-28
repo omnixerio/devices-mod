@@ -5,6 +5,9 @@ import com.ultreon.devices.block.entity.PrinterBlockEntity;
 import com.ultreon.devices.util.Colored;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -76,8 +79,8 @@ public class PrinterBlock extends DeviceBlock.Colored implements Colored {
             box(5, 3, 1, 7, 5, 15),
             box(12, 3, 4, 16, 9.3, 12));
 
-    public PrinterBlock(DyeColor color) {
-        super(Properties.of().mapColor(color).strength(6f).sound(SoundType.METAL), color, ModDeviceTypes.PRINTER);
+    public PrinterBlock(DyeColor color, Identifier id) {
+        super(Properties.of().mapColor(color).setId(ResourceKey.create(Registries.BLOCK, id)).strength(6f).sound(SoundType.METAL), color, ModDeviceTypes.PRINTER);
         this.registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
     }
 

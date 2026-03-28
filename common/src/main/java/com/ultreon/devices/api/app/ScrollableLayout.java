@@ -1,12 +1,12 @@
 package com.ultreon.devices.api.app;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.component.Text;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.util.GLHelper;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.util.Mth;
 
 import java.awt.*;
@@ -42,7 +42,7 @@ public class ScrollableLayout extends Layout {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         if (!visible)
             return;
 
@@ -52,7 +52,7 @@ public class ScrollableLayout extends Layout {
     }
 
     @Override
-    public void renderOverlay(GuiGraphics graphics, Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
+    public void renderOverlay(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
         if (!visible)
             return;
 
@@ -94,23 +94,23 @@ public class ScrollableLayout extends Layout {
     }
 
     @Override
-    public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
-        if (GuiHelper.isMouseWithin(mouseX, mouseY, xPosition, yPosition, width, visibleHeight)) {
-            super.handleMouseClick(mouseX, mouseY, mouseButton);
+    public void handleMouseClick(MouseButtonEvent event) {
+        if (GuiHelper.isMouseWithin((int) event.x(), (int) event.y(), xPosition, yPosition, width, visibleHeight)) {
+            super.handleMouseClick(event);
         }
     }
 
     @Override
-    public void handleMouseRelease(int mouseX, int mouseY, int mouseButton) {
-        if (GuiHelper.isMouseWithin(mouseX, mouseY, xPosition, yPosition, width, visibleHeight)) {
-            super.handleMouseRelease(mouseX, mouseY, mouseButton);
+    public void handleMouseRelease(MouseButtonEvent event) {
+        if (GuiHelper.isMouseWithin((int) event.x(), (int) event.y(), xPosition, yPosition, width, visibleHeight)) {
+            super.handleMouseRelease(event);
         }
     }
 
     @Override
-    public void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
-        if (GuiHelper.isMouseWithin(mouseX, mouseY, xPosition, yPosition, width, visibleHeight)) {
-            super.handleMouseDrag(mouseX, mouseY, mouseButton);
+    public void handleMouseDrag(MouseButtonEvent event) {
+        if (GuiHelper.isMouseWithin((int) event.x(), (int) event.y(), xPosition, yPosition, width, visibleHeight)) {
+            super.handleMouseDrag(event);
         }
     }
 

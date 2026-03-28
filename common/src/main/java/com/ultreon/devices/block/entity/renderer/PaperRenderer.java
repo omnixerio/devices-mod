@@ -1,35 +1,11 @@
 package com.ultreon.devices.block.entity.renderer;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.ultreon.devices.DeviceConfig;
-import com.ultreon.devices.Devices;
-import com.ultreon.devices.api.print.IPrint;
-import com.ultreon.devices.api.print.PrintingManager;
-import com.ultreon.devices.block.PaperBlock;
 import com.ultreon.devices.block.entity.PaperBlockEntity;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.MapRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.entity.ItemFrameRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-
-import java.awt.*;
-import java.util.Objects;
 
 /**
  * @author MrCrayfish
@@ -99,7 +75,7 @@ public record PaperRenderer(
 //            return;
 //        }
 //
-//        pose.pushPose();
+//        pose.pushMatrix();
 //        {
 //            pose.translate(blockEntity.getBlockPos().getX(), blockEntity.getBlockPos().getY(), blockEntity.getBlockPos().getZ());
 //            pose.translate(0.5, 0.5, 0.5);
@@ -118,25 +94,25 @@ public record PaperRenderer(
 //
 //                    pose.translate(0, 0, DeviceConfig.RENDER_PRINTED_3D.get() ? 0.0625 : 0.001);
 //
-//                    pose.pushPose();
+//                    pose.pushMatrix();
 //                    {
 //                        IPrint.Renderer renderer = PrintingManager.getRenderer(print);
 //                        renderer.render(pose, data);
 //                    }
-//                    pose.popPose();
+//                    pose.popMatrix();
 //
-//                    pose.pushPose();
+//                    pose.pushMatrix();
 //                    {
 //                        if (DeviceConfig.RENDER_PRINTED_3D.get() && data.getBoolean("cut")) {
 //                            CompoundTag tag = print.toTag();
 //                            drawPixels(pose, tag.getIntArray("pixels"), tag.getInt("resolution"), tag.getBoolean("cut"), packedLight, bufferSource);
 //                        }
 //                    }
-//                    pose.popPose();
+//                    pose.popMatrix();
 //                }
 //            }
 //        }
-//        pose.popPose();
+//        pose.popMatrix();
 //    }
 
 

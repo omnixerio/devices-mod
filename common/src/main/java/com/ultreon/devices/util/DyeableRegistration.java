@@ -49,7 +49,7 @@ public abstract class DyeableRegistration<T> implements Iterable<RegistrySupplie
                 DyeColor.PINK
         );
     }
-    public abstract <C extends T> RegistrySupplier<C, T> register(Registrar<T> registrar, DyeColor color);
+    public abstract RegistrySupplier<? extends T, T> register(Registrar<T> registrar, DyeColor color);
 
     public ImmutableMap<DyeColor, RegistrySupplier<?, T>> getMap() {
         return ImmutableMap.copyOf(map);

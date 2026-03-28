@@ -74,7 +74,7 @@ public class AppStore extends SystemApp {
 
         Button btnSearch = new Button(5, 5, Icons.SEARCH);
         btnSearch.setToolTip("Search", "Find a specific application");
-        btnSearch.setClickListener((mouseX, mouseY, mouseButton) -> {
+        btnSearch.setClickListener((event) -> {
             if (mouseButton == 0) {
                 this.setCurrentLayout(new LayoutSearchApps(this, getCurrentLayout()));
             }
@@ -194,7 +194,7 @@ public class AppStore extends SystemApp {
         }
 
         @Override
-        public void handleClick(int mouseX, int mouseY, int mouseButton) {
+        public void handleClick(MouseButtonEvent event) {
             AppInfo info = ApplicationManager.getApplication(Devices.id("app_store"));
             if (info != null) {
                 Laptop.getSystem().openApplication(info);

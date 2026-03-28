@@ -10,7 +10,7 @@ import com.ultreon.devices.core.Laptop;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 
@@ -34,7 +34,7 @@ public class StandardLayout extends Layout {
     public void init() {
         if (previous != null) {
             Button btnBack = new Button(2, 2, Icons.ARROW_LEFT);
-            btnBack.setClickListener((mouseX, mouseY, mouseButton) ->
+            btnBack.setClickListener((event) ->
             {
                 if (mouseButton == 0) {
                     app.setCurrentLayout(previous);
@@ -45,7 +45,7 @@ public class StandardLayout extends Layout {
     }
 
     @Override
-    public void render(GuiGraphics graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         Color color = new Color(Laptop.getSystem().getSettings().getColorScheme().getHeaderColor());
         graphics.fill(x, y, x + width, y + 20, color.getRGB());
         graphics.fill(x, y + 20, x + width, y + 21, color.darker().getRGB());
@@ -55,7 +55,7 @@ public class StandardLayout extends Layout {
         }
 
         if (title != null) {
-            graphics.drawString(mc.font, title, x + 5 + (previous != null || icon != null ? 16 : 0), y + 7, Color.WHITE.getRGB());
+            graphics.text(mc.font, title, x + 5 + (previous != null || icon != null ? 16 : 0), y + 7, Color.WHITE.getRGB());
         }
 
         super.render(graphics, laptop, mc, x, y, mouseX, mouseY, windowActive, partialTicks);
