@@ -20,8 +20,8 @@ import java.util.function.Predicate;
 public class NoteStashApp extends Application {
     @SuppressWarnings("ConstantConditions")
     private static final Predicate<File> PREDICATE_FILE_NOTE = file -> !file.isFolder()
-            && file.getData().contains("title", Tag.TAG_STRING)
-            && file.getData().contains("content", Tag.TAG_STRING);
+            && file.getData().contains("title")
+            && file.getData().contains("content");
     private static final Marker MARKER = MarkerFactory.getMarker("Note Stash App");
 
     /* Main */
@@ -76,13 +76,13 @@ public class NoteStashApp extends Application {
 
         btnNew = new Button(124, 5, "New");
         btnNew.setSize(50, 20);
-        btnNew.setClickListener((event) -> setCurrentLayout(layoutAddNote));
+        btnNew.setClickListener(event -> setCurrentLayout(layoutAddNote));
         layoutMain.addComponent(btnNew);
 
         btnView = new Button(124, 30, "View");
         btnView.setSize(50, 20);
         btnView.setEnabled(false);
-        btnView.setClickListener((event) -> {
+        btnView.setClickListener(event -> {
             if (notes.getSelectedIndex() != -1) {
                 Note note = notes.getSelectedItem();
                 assert note != null;
@@ -96,7 +96,7 @@ public class NoteStashApp extends Application {
         btnDelete = new Button(124, 55, "Delete");
         btnDelete.setSize(50, 20);
         btnDelete.setEnabled(false);
-        btnDelete.setClickListener((event) -> {
+        btnDelete.setClickListener(event -> {
             if (notes.getSelectedIndex() != -1) {
                 if (notes.getSelectedIndex() != -1) {
                     Note note = notes.getSelectedItem();
@@ -135,7 +135,7 @@ public class NoteStashApp extends Application {
 
         btnSave = new Button(124, 5, "Save");
         btnSave.setSize(50, 20);
-        btnSave.setClickListener((event) -> {
+        btnSave.setClickListener(event -> {
             CompoundTag data = new CompoundTag();
             data.putString("title", title.getText());
             data.putString("content", textArea.getText());
@@ -164,7 +164,7 @@ public class NoteStashApp extends Application {
 
         btnCancel = new Button(124, 30, "Cancel");
         btnCancel.setSize(50, 20);
-        btnCancel.setClickListener((event) -> {
+        btnCancel.setClickListener(event -> {
             title.clear();
             textArea.clear();
             setCurrentLayout(layoutMain);
@@ -184,7 +184,7 @@ public class NoteStashApp extends Application {
 
         btnBack = new Button(124, 5, "Back");
         btnBack.setSize(50, 20);
-        btnBack.setClickListener((event) -> setCurrentLayout(layoutMain));
+        btnBack.setClickListener(event -> setCurrentLayout(layoutMain));
         layoutViewNote.addComponent(btnBack);
 
         setCurrentLayout(layoutMain);

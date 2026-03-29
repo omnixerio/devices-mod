@@ -16,7 +16,7 @@ public interface AppEntry {
     @Deprecated
     default String author() {
         StringBuilder a = new StringBuilder();
-        Arrays.stream(authors()).forEach((str -> a.append(str).append(", ")));
+        Arrays.stream(authors()).forEach(str -> a.append(str).append(", "));
         a.deleteCharAt(a.length()-1);
         a.deleteCharAt(a.length()-1);
         return a.toString();

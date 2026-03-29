@@ -20,8 +20,8 @@ public class InventoryUtil {
 
     public static boolean hasItemAndAmount(Player player, Item item, int amount) {
         int count = 0;
-        for (ItemStack stack : player.getInventory().items) {
-            if (stack != null && stack.getItem() == item) {
+        for (ItemStack stack : player.getInventory()) {
+            if (stack.getItem() == item) {
                 count += stack.getCount();
             }
         }
@@ -38,7 +38,7 @@ public class InventoryUtil {
                         return true;
                     } else {
                         amount -= stack.getCount();
-                        player.getInventory().items.set(i, ItemStack.EMPTY);
+                        player.getInventory().setItem(i, ItemStack.EMPTY);
                         if (amount == 0) return true;
                     }
                 }

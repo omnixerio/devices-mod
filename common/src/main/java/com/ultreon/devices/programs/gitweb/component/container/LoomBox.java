@@ -1,7 +1,5 @@
 package com.ultreon.devices.programs.gitweb.component.container;
 
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.datafixers.util.Pair;
 import com.ultreon.devices.core.Laptop;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -9,16 +7,15 @@ import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.object.banner.BannerFlagModel;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BannerRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BannerBlockEntity;
 import net.minecraft.world.level.block.entity.BannerPattern;
+import net.minecraft.world.level.block.entity.BannerPatternLayers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +26,8 @@ public class LoomBox extends ContainerBox {
     private final ItemStack dye;
     private final ItemStack pattern;
     private final ItemStack result;
-    private final List<Pair<Holder<BannerPattern>, DyeColor>> resultBannerPatterns;
-    private final ModelPart flag;
+    private final BannerPatternLayers resultBannerPatterns;
+    private final BannerFlagModel flag;
 
     public LoomBox(ItemStack banner, ItemStack dye, ItemStack pattern, ItemStack result) {
         super(0, 0, 128, 72, HEIGHT, new ItemStack(Blocks.LOOM), "Loom");
@@ -43,11 +40,13 @@ public class LoomBox extends ContainerBox {
         slots.add(new Slot(23, 45, this.pattern));
         slots.add(new Slot(94, 58, this.result));
 
-//        if (!result.isEmpty())
-//            this.resultBannerPatterns = BannerBlockEntity.createPatterns(((BannerItem) this.result.getItem()).getColor(), BannerBlockEntity.getItemPatterns(this.result));
-//        else
-//            this.resultBannerPatterns = new ArrayList<>();
-        this.flag = Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.STANDING_BANNER).getChild("flag");
+        if (banner.has(DataComponents.BANNER_PATTERNS))
+            this.resultBannerPatterns = banner.get(DataComponents.BANNER_PATTERNS);
+        else
+            this.resultBannerPatterns = new BannerPatternLayers(new ArrayList<>());
+
+        ModelPart modelPart = Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.STANDING_BANNER_FLAG);
+        this.flag = new BannerFlagModel(modelPart);
     }
 
     @Override
@@ -64,9 +63,21 @@ public class LoomBox extends ContainerBox {
         graphics.pose().translate(0.5F, 0.5F);
         float f = 0.6666667F;
         graphics.pose().scale(0.6666667F, -0.6666667F);
-        this.flag.xRot = 0.0F;
-        this.flag.y = -32.0F;
-//        graphics.bannerPattern(BannerFlagModel.createFlagLayer(true), )
+
+        List<BannerPatternLayers.Layer> layers = resultBannerPatterns.layers();
+        if (!layers.isEmpty()) {
+            Item item = banner.getItem();
+            if (item instanceof BannerItem bannerItem) {
+                int xo = this.xPosition;
+                int yo = this.yPosition;
+                int x0 = xo + 141;
+                int y0 = yo + 8;
+                graphics.bannerPattern(flag, bannerItem.getColor(), resultBannerPatterns, x0, y0, x0 + 20, y0 + 40);
+            } else {
+                graphics.item(banner, 141, 8);
+            }
+        }
+
         graphics.pose().popMatrix();
         bufferSource.endBatch();
 

@@ -50,8 +50,8 @@ public class Text extends Component {
                     text = text.substring(0, text.length() - 1);
                 }
                 assert text != null;
-                if (shadow) graphics.text(Laptop.getFontStatic(), text, x + padding, y + (i * 10) + padding, textColor);
-                else graphics.text(Laptop.getFontStatic(), text, x + padding, y + (i * 10) + padding, textColor, false);
+                if (shadow) graphics.text(Laptop.getFontStatic(), text, x + padding, y + i * 10 + padding, textColor);
+                else graphics.text(Laptop.getFontStatic(), text, x + padding, y + i * 10 + padding, textColor, false);
             }
         }
     }

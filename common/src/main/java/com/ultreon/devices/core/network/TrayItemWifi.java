@@ -77,7 +77,7 @@ public class TrayItemWifi extends TrayItem {
         layout.addComponent(itemListRouters);
 
         Button buttonConnect = new Button(79, 79, Icons.CHECK);
-        buttonConnect.setClickListener((event) -> {
+        buttonConnect.setClickListener(event -> {
             if (event.button() == 0) {
                 if (itemListRouters.getSelectedItem() != null) {
                     TaskConnect connect = new TaskConnect(Laptop.getPos(), itemListRouters.getSelectedItem().getPos());
@@ -125,7 +125,7 @@ public class TrayItemWifi extends TrayItem {
 
     @Override
     public void init() {
-        this.setClickListener((event) -> {
+        this.setClickListener(event -> {
             if (Laptop.getSystem().hasContext()) {
                 Laptop.getSystem().closeContext();
             } else {

@@ -22,9 +22,9 @@ public class SnakeLayout extends Layout {
     public SnakeLayout(SnakeApp app) {
         super(150, 150);
         var button = new Button(1, 1, Icons.ARROW_LEFT);
-        button.setClickListener(((event) -> {
+        button.setClickListener(event -> {
             app.setCurrentLayout(app.titleScreen);
-        }));
+        });
 
         this.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) -> {
             graphics.fill(x,y,x+width,x+height, new Color(0x0, 0x0, 0x0).getRGB());
@@ -44,7 +44,7 @@ public class SnakeLayout extends Layout {
     }
 
     public static class Grid extends Component {
-        private ArrayList<Pos2d> snakePos = new ArrayList<>() {
+        private final ArrayList<Pos2d> snakePos = new ArrayList<>() {
             @Override
             public Pos2d get(int index) {
                 try {
@@ -203,8 +203,8 @@ public class SnakeLayout extends Layout {
             super.handleTick();
             if (tick > speed) {
                 tick = 0;
-                Pos2d newPos = null;
-                Pos2d newLastPos = null;
+                Pos2d newPos;
+                Pos2d newLastPos;
                 var first = snakePos.getLast();
                 newPos = first.dir(direction2d);
                 for (var pos : snakePos) {
@@ -233,7 +233,6 @@ public class SnakeLayout extends Layout {
 //                }
 //            }
 
-                assert newPos != null;
                 snakePos.add(newPos);
                 //snakePos.add(0, newLastPos);
                 if (applePos.samePos(snakePos.getLast())) {
@@ -264,19 +263,20 @@ public class SnakeLayout extends Layout {
                 for (var pos : snakePos) {
                     if (pos.samePos(applePos)) {
                         isC = false;
+                        break;
                     }
                 }
                 if (isC)clean=true;
             }
         }
 
-        private static enum Direction2d {
+        private enum Direction2d {
             LEFT, RIGHT, UP, DOWN
         }
 
         private class Pos2d {
-            private int x;
-            private int y;
+            private final int x;
+            private final int y;
             private boolean last;
             private boolean first;
             public Pos2d(int x, int y) {

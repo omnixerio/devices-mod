@@ -9,7 +9,6 @@ import com.ultreon.devices.core.Laptop;
 import net.minecraft.client.Minecraft;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 
 /**
@@ -21,7 +20,7 @@ public class StandardLayout extends Layout {
     private final Layout previous;
     private IIcon icon;
 
-    public StandardLayout(String title, int width, int height, Application app, @Nullable Layout previous) {
+    public StandardLayout(String title, int width, int height, Application app, Layout previous) {
         super(width, height);
         this.title = title;
         this.app = app;
@@ -32,9 +31,9 @@ public class StandardLayout extends Layout {
     public void init() {
         if (previous != null) {
             Button btnBack = new Button(2, 2, Icons.ARROW_LEFT);
-            btnBack.setClickListener((event) ->
+            btnBack.setClickListener(event ->
             {
-                if (mouseButton == 0) {
+                if (event.button() == 0) {
                     app.setCurrentLayout(previous);
                 }
             });

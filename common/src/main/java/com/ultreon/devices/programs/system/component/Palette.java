@@ -43,17 +43,17 @@ public class Palette extends Component {
     protected void init(Layout layout) {
         colorSlider = new Slider(5, 58, 52);
         colorSlider.setSlideListener(percentage -> {
-            if (percentage >= (1d / 6d) * 5d) {
-                currentColor = new Color(1f, 1f - (percentage - (1f / 6f) * 5f) * 6f, 0f);
-            } else if (percentage >= (1d / 6d) * 4d) {
-                currentColor = new Color((percentage - ((1f / 6f) * 4f)) * 6f, 1f, 0f);
-            } else if (percentage >= (1d / 6d) * 3d) {
-                currentColor = new Color(0f, 1f, 1f - (percentage - ((1f / 6f) * 3f)) * 6f);
-            } else if (percentage >= (1d / 6d) * 2d) {
-                currentColor = new Color(0f, (percentage - ((1f / 6f) * 2f)) * 6f, 1f);
-            } else if (percentage >= (1d / 6d)) {
-                currentColor = new Color(1f - (percentage - ((1f / 6f))) * 6f, 0f, 1f);
-            } else if (percentage >= (1d / 6d) * 0d) {
+            if (percentage >= 1d / 6d * 5d) {
+                currentColor = new Color(1f, 1f - (percentage - 1f / 6f * 5f) * 6f, 0f);
+            } else if (percentage >= 1d / 6d * 4d) {
+                currentColor = new Color((percentage - 1f / 6f * 4f) * 6f, 1f, 0f);
+            } else if (percentage >= 1d / 6d * 3d) {
+                currentColor = new Color(0f, 1f, 1f - (percentage - 1f / 6f * 3f) * 6f);
+            } else if (percentage >= 1d / 6d * 2d) {
+                currentColor = new Color(0f, (percentage - 1f / 6f * 2f) * 6f, 1f);
+            } else if (percentage >= 1d / 6d) {
+                currentColor = new Color(1f - (percentage - 1f / 6f) * 6f, 0f, 1f);
+            } else if (percentage >= 1d / 6d * 0d) {
                 currentColor = new Color(1f, 0f, percentage * 6f);
             }
         });

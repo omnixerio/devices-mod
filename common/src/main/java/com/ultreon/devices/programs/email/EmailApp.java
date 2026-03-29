@@ -151,7 +151,7 @@ public class EmailApp extends Application {
 
         btnRegisterAccount = new Button(70, 65, "Register");
         btnRegisterAccount.setSize(60, 16);
-        btnRegisterAccount.setClickListener((event) -> setCurrentLayout(layoutRegisterAccount));
+        btnRegisterAccount.setClickListener(event -> setCurrentLayout(layoutRegisterAccount));
         layoutMainMenu.addComponent(btnRegisterAccount);
 
         this.setCurrentLayout(layoutMainMenu);
@@ -177,7 +177,7 @@ public class EmailApp extends Application {
 
         btnRegister = new Button(70, 80, "Register");
         btnRegister.setSize(60, 16);
-        btnRegister.setClickListener((event) -> {
+        btnRegister.setClickListener(event -> {
             int length = fieldEmail.getText().length();
             if (length > 0 && length <= 10) {
                 TaskRegisterEmailAccount taskRegisterAccount = new TaskRegisterEmailAccount(fieldEmail.getText());
@@ -248,7 +248,7 @@ public class EmailApp extends Application {
         layoutInbox.addComponent(listEmails);
 
         btnViewEmail = new Button(5, 5, ENDER_MAIL_ICONS, 30, 0, 10, 10);
-        btnViewEmail.setClickListener((event) -> {
+        btnViewEmail.setClickListener(event -> {
             int index = listEmails.getSelectedIndex();
             if (index != -1) {
                 TaskManager.sendTask(new TaskViewEmail(index));
@@ -272,12 +272,12 @@ public class EmailApp extends Application {
         layoutInbox.addComponent(btnViewEmail);
 
         btnNewEmail = new Button(25, 5, ENDER_MAIL_ICONS, 0, 0, 10, 10);
-        btnNewEmail.setClickListener((event) -> setCurrentLayout(layoutNewEmail));
+        btnNewEmail.setClickListener(event -> setCurrentLayout(layoutNewEmail));
         btnNewEmail.setToolTip("New Email", "Send an email to a player");
         layoutInbox.addComponent(btnNewEmail);
 
         btnReplyEmail = new Button(45, 5, ENDER_MAIL_ICONS, 60, 0, 10, 10);
-        btnReplyEmail.setClickListener((event) -> {
+        btnReplyEmail.setClickListener(event -> {
             Email email = listEmails.getSelectedItem();
             if (email != null) {
                 setCurrentLayout(layoutNewEmail);
@@ -289,7 +289,7 @@ public class EmailApp extends Application {
         layoutInbox.addComponent(btnReplyEmail);
 
         btnDeleteEmail = new Button(65, 5, ENDER_MAIL_ICONS, 10, 0, 10, 10);
-        btnDeleteEmail.setClickListener((event) -> {
+        btnDeleteEmail.setClickListener(event -> {
             final int index = listEmails.getSelectedIndex();
             if (index != -1) {
                 TaskDeleteEmail taskDeleteEmail = new TaskDeleteEmail(index);
@@ -304,7 +304,7 @@ public class EmailApp extends Application {
         layoutInbox.addComponent(btnDeleteEmail);
 
         btnRefresh = new Button(85, 5, ENDER_MAIL_ICONS, 20, 0, 10, 10);
-        btnRefresh.setClickListener((event) -> {
+        btnRefresh.setClickListener(event -> {
             TaskUpdateInbox taskUpdateInbox = new TaskUpdateInbox();
             taskUpdateInbox.setCallback((nbt, success) -> {
                 listEmails.removeAll();
@@ -344,7 +344,7 @@ public class EmailApp extends Application {
         layoutNewEmail.addComponent(textAreaMessage);
 
         btnSendEmail = new Button(5, 5, ENDER_MAIL_ICONS, 50, 0, 10, 10);
-        btnSendEmail.setClickListener((event) -> {
+        btnSendEmail.setClickListener(event -> {
             Matcher matcher = EMAIL.matcher(fieldRecipient.getText());
             if (!matcher.matches()) return;
 
@@ -365,7 +365,7 @@ public class EmailApp extends Application {
         layoutNewEmail.addComponent(btnSendEmail);
 
         btnCancelEmail = new Button(5, 25, ENDER_MAIL_ICONS, 40, 0, 10, 10);
-        btnCancelEmail.setClickListener((event) -> {
+        btnCancelEmail.setClickListener(event -> {
             setCurrentLayout(layoutInbox);
             textAreaMessage.clear();
             fieldSubject.clear();
@@ -377,7 +377,7 @@ public class EmailApp extends Application {
 
         btnAttachedFile = new Button(26, 129, ENDER_MAIL_ICONS, 70, 0, 10, 10);
         btnAttachedFile.setToolTip("Attach File", "Select a file from computer to attach to this email");
-        btnAttachedFile.setClickListener((event) -> {
+        btnAttachedFile.setClickListener(event -> {
             if (event.button() == 0) {
                 Dialog.OpenFile dialog = new Dialog.OpenFile(this);
                 dialog.setResponseHandler((success, file) -> {
@@ -402,7 +402,7 @@ public class EmailApp extends Application {
         btnRemoveAttachedFile = new Button(26, 129, ENDER_MAIL_ICONS, 40, 0, 10, 10);
         btnRemoveAttachedFile.setToolTip("Remove Attachment", "Delete the attached file from this email");
         btnRemoveAttachedFile.setVisible(false);
-        btnRemoveAttachedFile.setClickListener((event) -> {
+        btnRemoveAttachedFile.setClickListener(event -> {
             if (event.button() == 0) {
                 resetAttachedFile();
             }
@@ -436,7 +436,7 @@ public class EmailApp extends Application {
         layoutViewEmail.addComponent(labelFrom);
 
         btnCancelViewEmail = new Button(5, 3, ENDER_MAIL_ICONS, 40, 0, 10, 10);
-        btnCancelViewEmail.setClickListener((event) -> {
+        btnCancelViewEmail.setClickListener(event -> {
             if (event.button() == 0) {
                 attachedFile = null;
                 btnSaveAttachment.setVisible(false);
@@ -455,7 +455,7 @@ public class EmailApp extends Application {
         btnSaveAttachment = new Button(219, 3, ENDER_MAIL_ICONS, 80, 0, 10, 10);
         btnSaveAttachment.setToolTip("Save Attachment", "Save the file attached to this email");
         btnSaveAttachment.setVisible(false);
-        btnSaveAttachment.setClickListener((event) -> {
+        btnSaveAttachment.setClickListener(event -> {
             if (event.button() == 0 && attachedFile != null) {
                 Dialog.SaveFile dialog = new Dialog.SaveFile(this, attachedFile);
                 openDialog(dialog);

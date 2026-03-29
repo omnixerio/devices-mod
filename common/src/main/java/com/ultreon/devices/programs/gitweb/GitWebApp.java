@@ -13,7 +13,6 @@ import com.ultreon.devices.programs.system.layout.StandardLayout;
 import com.ultreon.devices.util.DataHandler;
 import net.minecraft.nbt.CompoundTag;
 
-import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.util.Optional;
 
@@ -41,7 +40,7 @@ public class GitWebApp extends Application implements SystemAccessor, DataHandle
     }
 
     @Override
-    public void init(@Nullable CompoundTag intent) {
+    public void init(CompoundTag intent) {
         layoutBrowser = new StandardLayout(null, 362, 240, this, null);
         layoutBrowser.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) -> {
             Color color = new Color(Laptop.getSystem().getSettings().getColorScheme().getItemBackgroundColor());
@@ -54,7 +53,7 @@ public class GitWebApp extends Application implements SystemAccessor, DataHandle
         textFieldAddress = new TextField(2, 2, 304);
         textFieldAddress.setPlaceholder("Enter Address");
         textFieldAddress.setKeyListener(c -> {
-            if (c == '\r') {
+            if (c.codepoint() == '\r') {
                 webFrame.loadWebsite(this.getAddress());
                 return false;
             }
@@ -68,17 +67,17 @@ public class GitWebApp extends Application implements SystemAccessor, DataHandle
 
         btnSearch = new Button(308, 2, 16, 16, Icons.ARROW_RIGHT);
         btnSearch.setToolTip("Refresh", "Loads the entered address.");
-        btnSearch.setClickListener((event) -> webFrame.loadWebsite(this.getAddress()));
+        btnSearch.setClickListener(event -> webFrame.loadWebsite(this.getAddress()));
         layoutBrowser.addComponent(btnSearch);
 
         btnHome = new Button(326, 2, 16, 16, Icons.HOME);
         btnHome.setToolTip("Home", "Loads page set in settings.");
-        btnHome.setClickListener((event) -> webFrame.loadWebsite("welcome.official"));
+        btnHome.setClickListener(event -> webFrame.loadWebsite("welcome.official"));
         layoutBrowser.addComponent(btnHome);
 
         btnSettings = new Button(344, 2, 16, 16, Icons.WRENCH);
         btnSettings.setToolTip("Settings", "Change your preferences.");
-        btnSettings.setClickListener((event) -> this.setCurrentLayout(layoutPref));
+        btnSettings.setClickListener(event -> this.setCurrentLayout(layoutPref));
         layoutBrowser.addComponent(btnSettings);
 
         webFrame = new GitWebFrame(this, 0, 21, 362, 143);
@@ -103,9 +102,9 @@ public class GitWebApp extends Application implements SystemAccessor, DataHandle
     private void setUpPreferences() {
         var backBtn = new Button(2, 2, Icons.ARROW_LEFT);
         backBtn.setVisible(true);
-        backBtn.setClickListener((event) ->
+        backBtn.setClickListener(event ->
         {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 this.setCurrentLayout(layoutBrowser);
             }
         });

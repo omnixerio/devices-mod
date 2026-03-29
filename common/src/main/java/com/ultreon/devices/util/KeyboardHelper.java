@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 
 public class KeyboardHelper {
     public static boolean isKeyDown(int key) {
-        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), key);
+        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), key);
     }
 
     public static boolean isCtrlDown() {
@@ -20,7 +20,7 @@ public class KeyboardHelper {
         return isKeyDown(InputConstants.KEY_LALT) || isKeyDown(InputConstants.KEY_RALT);
     }
 
-    public static boolean isWinDown() {
-        return isKeyDown(InputConstants.KEY_LWIN) || isKeyDown(InputConstants.KEY_RWIN);
+    public static boolean isSuperDown() {
+        return isKeyDown(InputConstants.KEY_LSUPER) || isKeyDown(InputConstants.KEY_RSUPER);
     }
 }

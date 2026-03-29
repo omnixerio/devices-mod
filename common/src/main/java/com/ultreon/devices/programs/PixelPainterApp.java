@@ -1,8 +1,6 @@
 package com.ultreon.devices.programs;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.platform.TextureUtil;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.Reference;
 import com.ultreon.devices.api.app.Component;
@@ -15,6 +13,7 @@ import com.ultreon.devices.api.app.component.*;
 import com.ultreon.devices.api.app.renderer.ListItemRenderer;
 import com.ultreon.devices.api.io.File;
 import com.ultreon.devices.api.print.IPrint;
+import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.core.io.FileSystem;
 import com.ultreon.devices.debug.DebugLog;
@@ -24,8 +23,8 @@ import com.ultreon.devices.object.Picture;
 import com.ultreon.devices.programs.system.layout.StandardLayout;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import org.joml.Quaternionf;
 
@@ -35,7 +34,7 @@ import java.util.Objects;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class PixelPainterApp extends Application {
-    private static final Identifier PIXEL_PAINTER_ICONS = new Identifier("devices:textures/gui/pixel_painter.png");
+    private static final Identifier PIXEL_PAINTER_ICONS = Identifier.parse("devices:textures/gui/pixel_painter.png");
 
     private static final Color ITEM_BACKGROUND = new Color(170, 176, 194);
     private static final Color ITEM_SELECTED = new Color(200, 176, 174);
@@ -105,9 +104,9 @@ public class PixelPainterApp extends Application {
         btnNewPicture = new Button(5, 25, "New", Icons.PICTURE);
         btnNewPicture.setSize(40, 16);
         btnNewPicture.setToolTip("New Picture", "Start a new masterpiece!");
-        btnNewPicture.setClickListener((event) ->
+        btnNewPicture.setClickListener(event ->
         {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 setCurrentLayout(layoutNewPicture);
             }
         });
@@ -115,7 +114,7 @@ public class PixelPainterApp extends Application {
 
         btnLoadPicture = new Button(48, 25, Icons.IMPORT);
         btnLoadPicture.setToolTip("Load External", "Open a picture from file");
-        btnLoadPicture.setClickListener((event) -> setCurrentLayout(layoutLoadPicture));
+        btnLoadPicture.setClickListener(event -> setCurrentLayout(layoutLoadPicture));
         layoutMainMenu.addComponent(btnLoadPicture);
 
         Button btnDeletePicture = new Button(67, 25, Icons.TRASH);
@@ -155,7 +154,7 @@ public class PixelPainterApp extends Application {
 
         btnCreatePicture = new Button(110, 40, "Create");
         btnCreatePicture.setSize(65, 20);
-        btnCreatePicture.setClickListener((event) ->
+        btnCreatePicture.setClickListener(event ->
         {
             setCurrentLayout(layoutDraw);
             canvas.createPicture(fieldName.getText(), fieldAuthor.getText(), checkBox16x.isSelected() ? Picture.Size.X16 : Picture.Size.X32);
@@ -203,7 +202,7 @@ public class PixelPainterApp extends Application {
         btnLoadSavedPicture = new Button(110, 5, "Load");
         btnLoadSavedPicture.setSize(50, 20);
         btnLoadSavedPicture.setEnabled(false);
-        btnLoadSavedPicture.setClickListener((event) ->
+        btnLoadSavedPicture.setClickListener(event ->
         {
             if (listPictures.getSelectedIndex() != -1) {
                 canvas.setPicture(Objects.requireNonNull(listPictures.getSelectedItem()));
@@ -214,7 +213,7 @@ public class PixelPainterApp extends Application {
 
         btnBrowseSavedPicture = new Button(110, 30, "Browse");
         btnBrowseSavedPicture.setSize(50, 20);
-        btnBrowseSavedPicture.setClickListener((event) ->
+        btnBrowseSavedPicture.setClickListener(event ->
         {
             Dialog.OpenFile dialog = new Dialog.OpenFile(this);
             dialog.setResponseHandler((success, file) ->
@@ -237,7 +236,7 @@ public class PixelPainterApp extends Application {
         btnDeleteSavedPicture = new Button(110, 55, "Delete");
         btnDeleteSavedPicture.setSize(50, 20);
         btnDeleteSavedPicture.setEnabled(false);
-        btnDeleteSavedPicture.setClickListener((event) ->
+        btnDeleteSavedPicture.setClickListener(event ->
         {
             if (listPictures.getSelectedIndex() != -1) {
                 Picture picture = listPictures.getSelectedItem();
@@ -263,7 +262,7 @@ public class PixelPainterApp extends Application {
 
         btnBackSavedPicture = new Button(110, 80, "Back");
         btnBackSavedPicture.setSize(50, 20);
-        btnBackSavedPicture.setClickListener((event) -> setCurrentLayout(layoutMainMenu));
+        btnBackSavedPicture.setClickListener(event -> setCurrentLayout(layoutMainMenu));
         layoutLoadPicture.addComponent(btnBackSavedPicture);
 
 
@@ -277,22 +276,22 @@ public class PixelPainterApp extends Application {
         RadioGroup toolGroup = new RadioGroup();
 
         btnPencil = new ButtonToggle(138, 5, PIXEL_PAINTER_ICONS, 0, 0, 10, 10);
-        btnPencil.setClickListener((event) -> canvas.setCurrentTool(Canvas.PENCIL));
+        btnPencil.setClickListener(event -> canvas.setCurrentTool(Canvas.PENCIL));
         btnPencil.setRadioGroup(toolGroup);
         layoutDraw.addComponent(btnPencil);
 
         btnBucket = new ButtonToggle(138, 24, PIXEL_PAINTER_ICONS, 10, 0, 10, 10);
-        btnBucket.setClickListener((event) -> canvas.setCurrentTool(Canvas.BUCKET));
+        btnBucket.setClickListener(event -> canvas.setCurrentTool(Canvas.BUCKET));
         btnBucket.setRadioGroup(toolGroup);
         layoutDraw.addComponent(btnBucket);
 
         btnEraser = new ButtonToggle(138, 43, PIXEL_PAINTER_ICONS, 20, 0, 10, 10);
-        btnEraser.setClickListener((event) -> canvas.setCurrentTool(Canvas.ERASER));
+        btnEraser.setClickListener(event -> canvas.setCurrentTool(Canvas.ERASER));
         btnEraser.setRadioGroup(toolGroup);
         layoutDraw.addComponent(btnEraser);
 
         btnEyeDropper = new ButtonToggle(138, 62, PIXEL_PAINTER_ICONS, 30, 0, 10, 10);
-        btnEyeDropper.setClickListener((event) ->
+        btnEyeDropper.setClickListener(event ->
         {
             canvas.setCurrentTool(Canvas.EYE_DROPPER);
             Color color = new Color(canvas.getCurrentColor());
@@ -304,10 +303,10 @@ public class PixelPainterApp extends Application {
         layoutDraw.addComponent(btnEyeDropper);
 
         Button button = new Button(138, 81, Icons.PRINTER);
-        button.setClickListener((event) ->
+        button.setClickListener(event ->
         {
             DebugLog.log("Print action triggered in pixel painter");
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 Dialog.Print dialog = new Dialog.Print(new PicturePrint(canvas.picture.getName(), canvas.getPixels(), canvas.picture.getWidth()));
                 openDialog(dialog);
             }
@@ -316,7 +315,7 @@ public class PixelPainterApp extends Application {
         layoutDraw.addComponent(button);
 
         btnCancel = new Button(138, 100, PIXEL_PAINTER_ICONS, 50, 0, 10, 10);
-        btnCancel.setClickListener((event) ->
+        btnCancel.setClickListener(event ->
         {
             if (canvas.isExistingImage())
                 setCurrentLayout(layoutLoadPicture);
@@ -327,7 +326,7 @@ public class PixelPainterApp extends Application {
         layoutDraw.addComponent(btnCancel);
 
         btnSave = new Button(138, 119, PIXEL_PAINTER_ICONS, 40, 0, 10, 10);
-        btnSave.setClickListener((event) ->
+        btnSave.setClickListener(event ->
         {
             canvas.picture.pixels = canvas.copyPixels();
 
@@ -391,7 +390,7 @@ public class PixelPainterApp extends Application {
         layoutDraw.addComponent(colorGrid);
 
         displayGrid = new CheckBox("Grid", 166, 120);
-        displayGrid.setClickListener((event) -> canvas.setShowGrid(displayGrid.isSelected()));
+        displayGrid.setClickListener(event -> canvas.setShowGrid(displayGrid.isSelected()));
         layoutDraw.addComponent(displayGrid);
 
         setCurrentLayout(layoutMainMenu);
@@ -450,9 +449,9 @@ public class PixelPainterApp extends Application {
         @Override
         public boolean requiresColor() {
             for (int pixel : pixels) {
-                int r = (pixel >> 16 & 255);
-                int g = (pixel >> 8 & 255);
-                int b = (pixel & 255);
+                int r = pixel >> 16 & 255;
+                int g = pixel >> 8 & 255;
+                int b = pixel & 255;
                 if (r != g || r != b) {
                     return true;
                 }
@@ -484,12 +483,12 @@ public class PixelPainterApp extends Application {
     }
 
     public static class PictureRenderer implements IPrint.Renderer {
-        public static final Identifier TEXTURE = new Identifier(Reference.MOD_ID, "textures/model/paper.png");
+        public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Reference.MOD_ID, "textures/model/paper.png");
 
         @SuppressWarnings("resource")
         @Override
-        public boolean render(PoseStack pose, CompoundTag data) {
-            if (data.contains("pixels", Tag.TAG_INT_ARRAY) && data.contains("resolution", Tag.TAG_INT)) {
+        public boolean render(GuiGraphicsExtractor graphics, PoseStack pose, CompoundTag data) {
+            if (data.contains("pixels") && data.contains("resolution")) {
                 int[] pixels = data.getIntArray("pixels").orElse(null);
                 int resolution = data.getIntOr("resolution", 0);
                 boolean cut = data.getBooleanOr("cut", false);
@@ -497,15 +496,12 @@ public class PixelPainterApp extends Application {
                 if (pixels.length != resolution * resolution)
                     return false;
 
-                RenderSystem.enableBlend();
-                RenderSystem.blendFuncSeparate(770, 771, 1, 0);
 //                GlStateManager.disableLighting();
                 pose.mulPose(new Quaternionf(0, 1, 0, 180));
 
                 // This is for the paper background
                 if (!cut) {
-                    RenderSystem.setShaderTexture(0, TEXTURE);
-                    RenderUtil.drawRectWithTexture(TEXTURE, pose, -1, 0, 0, 0, 1, 1, resolution, resolution, resolution, resolution);
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, -1, 0, 0, 0, 1, 1, resolution, resolution, resolution, resolution);
                 }
 
                 // This creates a flipped copy of the pixel array
@@ -513,19 +509,20 @@ public class PixelPainterApp extends Application {
                 NativeImage image = new NativeImage(resolution, resolution, false);
                 for (int i = 0; i < resolution; i++) {
                     for (int j = 0; j < resolution; j++) {
-                        image.setPixelRGBA(resolution - i - 1, resolution - j - 1, pixels[i + j * resolution]);
+                        image.setPixel(resolution - i - 1, resolution - j - 1, pixels[i + j * resolution]);
                     }
                 }
 
-                int textureId = TextureUtil.generateTextureId();
-                TextureUtil.prepareImage(textureId, resolution, resolution);
-
-                RenderSystem.setShaderTexture(0, textureId);
-                RenderUtil.drawRectWithTexture(null, pose, -1, 0, 0, 0, 1, 1, resolution, resolution, resolution, resolution);
-                RenderSystem.deleteTexture(textureId);
-
-//                RenderSystem.disableRescaleNormal();
-                RenderSystem.disableBlend();
+                // FixMe - Port to 26.1+
+//                int textureId = TextureUtil.generateTextureId();
+//                TextureUtil.prepareImage(textureId, resolution, resolution);
+//
+//                RenderSystem.setShaderTexture(0, textureId);
+//                RenderUtil.drawRectWithTexture(null, pose, -1, 0, 0, 0, 1, 1, resolution, resolution, resolution, resolution);
+//                RenderSystem.deleteTexture(textureId);
+//
+////                RenderSystem.disableRescaleNormal();
+//                RenderSystem.disableBlend();
 //                RenderSystem.enableLighting();
                 return true;
             }

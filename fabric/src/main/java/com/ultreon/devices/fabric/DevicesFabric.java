@@ -7,14 +7,16 @@ import com.ultreon.devices.api.print.IPrint;
 import com.ultreon.devices.api.print.PrintingManager;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.init.RegistrationHandler;
-import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
+import fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.fml.config.ModConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,7 @@ import java.util.Map;
 public class DevicesFabric extends Devices implements ModInitializer {
     @Override
     public void onInitialize() {
-        ForgeConfigRegistry.INSTANCE.register(Devices.MOD_ID, ModConfig.Type.CLIENT, DeviceConfig.CONFIG);
+        ConfigRegistry.INSTANCE.register(Devices.MOD_ID, ModConfig.Type.CLIENT, DeviceConfig.CONFIG);
 
         this.init();
 
@@ -31,9 +33,8 @@ public class DevicesFabric extends Devices implements ModInitializer {
     }
 
     @Override
-    public int getBurnTime(ItemStack stack, RecipeType<?> type) {
-        var a = AbstractFurnaceBlockEntity.getFuel().get(stack.getItem());
-        return a == null ? 1600 : a;
+    public int getBurnTime(ItemStack stack, RecipeType<?> type, Level level) {
+        return level.fuelValues().burnDuration(stack);
     }
 
     @Override

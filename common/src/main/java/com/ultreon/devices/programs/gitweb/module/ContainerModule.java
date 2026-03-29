@@ -34,7 +34,7 @@ public abstract class ContainerModule extends Module {
             String desc = GitWebFrame.parseFormatting(data.get("desc"));
             Text text = new Text(desc, 0, data.containsKey("title") ? 12 : 5, width - CraftingBox.WIDTH - 5);
             text.setPadding(5);
-            height += Math.max(0, (text.getHeight() + text.top) - height);
+            height += Math.max(0, text.getHeight() + text.top - height);
         }
         return height;
     }
@@ -71,11 +71,12 @@ public abstract class ContainerModule extends Module {
 
     protected static ItemStack getItem(Map<String, String> data, String key) {
         if (data.containsKey(key)) {
-            try {
-                return ItemStack.of(TagParser.parseTag(data.get(key)));
-            } catch (CommandSyntaxException e) {
-                return ItemStack.EMPTY;
-            }
+            // FixMe = Implement NBT support
+//            try {
+//                return ItemStack.of(TagParser.parseTag(data.get(key)));
+//            } catch (CommandSyntaxException e) {
+//                return ItemStack.EMPTY;
+//            }
         }
         return ItemStack.EMPTY;
     }

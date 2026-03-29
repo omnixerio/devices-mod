@@ -45,8 +45,8 @@ public class Inventory extends Component {
             assert mc.player != null;
             net.minecraft.world.entity.player.Inventory inventory = mc.player.getInventory();
             for (int i = 9; i < inventory.getContainerSize() - 4; i++) {
-                int offsetX = (i % 9) * 18;
-                int offsetY = (i / 9) * 18 - 18;
+                int offsetX = i % 9 * 18;
+                int offsetY = i / 9 * 18 - 18;
 
                 if (selected == i) {
                     graphics.fill(xPosition + offsetX, yPosition + offsetY, xPosition + offsetX + 18, yPosition + offsetY + 18, selectedColor);
@@ -69,10 +69,10 @@ public class Inventory extends Component {
         if (this.visible) {
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 9; j++) {
-                    int x = xPosition + (j * 18) - 1;
-                    int y = yPosition + (i * 18) - 1;
+                    int x = xPosition + j * 18 - 1;
+                    int y = yPosition + i * 18 - 1;
                     if (GuiHelper.isMouseInside(mouseX, mouseY, x, y, x + 18, y + 18)) {
-                        ItemStack stack = mc.player.getInventory().getItem((i * 9) + j + 9);
+                        ItemStack stack = mc.player.getInventory().getItem(i * 9 + j + 9);
                         if (!stack.isEmpty()) {
                             graphics.setTooltipForNextFrame(mc.font, stack, mouseX, mouseY);
                         }
@@ -90,10 +90,10 @@ public class Inventory extends Component {
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 9; j++) {
-                int x = xPosition + (j * 18) - 1;
-                int y = yPosition + (i * 18) - 1;
+                int x = xPosition + j * 18 - 1;
+                int y = yPosition + i * 18 - 1;
                 if (GuiHelper.isMouseInside((int) event.x(), (int) event.y(), x, y, x + 18, y + 18)) {
-                    this.selected = (i * 9) + j + 9;
+                    this.selected = i * 9 + j + 9;
                     if (clickListener != null) {
                         clickListener.onClick(event);
                     }

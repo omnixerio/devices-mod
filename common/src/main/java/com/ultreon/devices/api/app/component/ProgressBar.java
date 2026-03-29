@@ -41,7 +41,7 @@ public class ProgressBar extends Component {
     }
 
     private int getProgressScaled() {
-        return (int) Math.ceil(((width - 4) * ((double) progress / (double) max)));
+        return (int) Math.ceil((width - 4) * ((double) progress / (double) max));
     }
 
     /**

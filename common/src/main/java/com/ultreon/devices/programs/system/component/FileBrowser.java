@@ -139,7 +139,7 @@ public class FileBrowser extends Component {
         });
 
         btnPreviousFolder = new Button(5, 2, Icons.ARROW_LEFT);
-        btnPreviousFolder.setClickListener((event) -> {
+        btnPreviousFolder.setClickListener(event -> {
             if (event.button() == 0) {
                 goToPreviousFolder();
             }
@@ -151,7 +151,7 @@ public class FileBrowser extends Component {
         int btnIndex = 0;
 
         btnNewFolder = new Button(5, 25, Icons.NEW_FOLDER);
-        btnNewFolder.setClickListener((event) -> {
+        btnNewFolder.setClickListener(event -> {
             if (event.button() == 0) {
                 createFolder();
             }
@@ -162,7 +162,7 @@ public class FileBrowser extends Component {
         btnIndex++;
 
         btnRename = new Button(5, 25 + btnIndex * 20, Icons.RENAME);
-        btnRename.setClickListener((event) -> {
+        btnRename.setClickListener(event -> {
             if (event.button() == 0) {
                 renameSelectedFile();
             }
@@ -175,7 +175,7 @@ public class FileBrowser extends Component {
             btnIndex++;
 
             btnCopy = new Button(5, 25 + btnIndex * 20, Icons.COPY);
-            btnCopy.setClickListener((event) -> {
+            btnCopy.setClickListener(event -> {
                 if (event.button() == 0) {
                     setClipboardFileToSelected();
                 }
@@ -187,7 +187,7 @@ public class FileBrowser extends Component {
             btnIndex++;
 
             btnCut = new Button(5, 25 + btnIndex * 20, Icons.CUT);
-            btnCut.setClickListener((event) -> {
+            btnCut.setClickListener(event -> {
                 if (event.button() == 0) {
                     cutSelectedFile();
                 }
@@ -199,7 +199,7 @@ public class FileBrowser extends Component {
             btnIndex++;
 
             btnPaste = new Button(5, 25 + btnIndex * 20, Icons.CLIPBOARD);
-            btnPaste.setClickListener((event) -> {
+            btnPaste.setClickListener(event -> {
                 if (event.button() == 0) {
                     pasteClipboardFile();
                 }
@@ -212,7 +212,7 @@ public class FileBrowser extends Component {
         btnIndex++;
 
         btnDelete = new Button(5, 25 + btnIndex * 20, Icons.TRASH);
-        btnDelete.setClickListener((event) -> {
+        btnDelete.setClickListener(event -> {
             if (event.button() == 0) {
                 deleteSelectedFile();
             }
@@ -561,7 +561,7 @@ public class FileBrowser extends Component {
             dialog.setMessageText(builder.toString());
             dialog.setTitle("Delete");
             dialog.setPositiveText("Yes");
-            dialog.setPositiveListener((_) -> {
+            dialog.setPositiveListener(_ -> {
                 removeFile(fileList.getSelectedIndex());
                 btnRename.setEnabled(false);
                 btnDelete.setEnabled(false);
@@ -669,7 +669,7 @@ public class FileBrowser extends Component {
             if (response.getStatus() == FileSystem.Status.FILE_EXISTS) {
                 Dialog.Confirmation dialog = new Dialog.Confirmation("A file with the same name already exists in this directory. Do you want to override it?");
                 dialog.setPositiveText("Override");
-                dialog.setPositiveListener((event) -> {
+                dialog.setPositiveListener(event -> {
                     if (event.button() == 0) {
                         handleCopyCut(true);
                     }

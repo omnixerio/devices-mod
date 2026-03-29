@@ -321,7 +321,7 @@ public class GitWebFrame extends Component {
     }
 
     private void generateLayout(String websiteData, boolean dynamic) {
-        Minecraft.getInstance().doRunTask(() ->
+        Minecraft.getInstance().submit(() ->
         {
             List<ModuleEntry> modules = parseData(websiteData);
             if (modules == null) {

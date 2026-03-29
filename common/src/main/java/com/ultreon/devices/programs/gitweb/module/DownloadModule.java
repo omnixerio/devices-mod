@@ -8,6 +8,7 @@ import com.ultreon.devices.api.app.Icons;
 import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.api.app.component.Button;
 import com.ultreon.devices.api.io.File;
+import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.programs.gitweb.component.GitWebFrame;
 import net.minecraft.nbt.CompoundTag;
@@ -48,7 +49,6 @@ public class DownloadModule extends Module {
             graphics.fill(posX, posY, posX + subWidth, posY + height - 5, Color.BLACK.getRGB());
             graphics.fill(posX + 1, posY + 1, posX + subWidth - 1, posY + height - 5 - 1, Color.DARK_GRAY.getRGB());
 
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 //            int iconU = 0, iconV = 0;
 //            if (info != null) {
 //                iconU = info.getIconU();
@@ -70,9 +70,9 @@ public class DownloadModule extends Module {
         Button button = new Button(0, 10, "Download", Icons.IMPORT);
         button.left = section * 5 - 70 - 5;
         button.setSize(70, height - 15);
-        button.setClickListener((event) -> {
+        button.setClickListener(event -> {
             try {
-                CompoundTag tag = TagParser.parseTag(data.get("file-data"));
+                CompoundTag tag = TagParser.parseCompoundFully(data.get("file-data"));
                 File file = new File(data.getOrDefault("file-name", ""), data.get("file-app"), tag);
                 Dialog dialog = new Dialog.SaveFile(frame.getApp(), file);
                 frame.getApp().openDialog(dialog);

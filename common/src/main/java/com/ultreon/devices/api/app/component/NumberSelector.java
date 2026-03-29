@@ -45,7 +45,7 @@ public class NumberSelector extends Component {
     public void init(Layout layout) {
         btnUp = new Button(left, top, COMPONENTS_GUI, 111, 12, 8, 5);
         btnUp.setSize(width, 11);
-        btnUp.setClickListener((event) -> {
+        btnUp.setClickListener(event -> {
             if (current < max) {
                 current++;
                 display.setText(format.format(current));
@@ -61,7 +61,7 @@ public class NumberSelector extends Component {
 
         btnDown = new Button(left, top + 24, COMPONENTS_GUI, 119, 12, 8, 5);
         btnDown.setSize(width, 11);
-        btnDown.setClickListener((event) -> {
+        btnDown.setClickListener(event -> {
             if (current > min) {
                 current--;
                 display.setText(format.format(current));

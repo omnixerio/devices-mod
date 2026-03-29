@@ -1,6 +1,5 @@
 package com.ultreon.devices.programs.system.layout;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.ultreon.devices.api.ApplicationManager;
 import com.ultreon.devices.api.app.Icons;
 import com.ultreon.devices.api.app.Layout;
@@ -8,13 +7,14 @@ import com.ultreon.devices.api.app.component.Button;
 import com.ultreon.devices.api.app.component.ItemList;
 import com.ultreon.devices.api.app.component.TextField;
 import com.ultreon.devices.api.app.renderer.ListItemRenderer;
+import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.programs.system.AppStore;
 import com.ultreon.devices.programs.system.object.LocalEntry;
+import com.ultreon.devices.util.StringUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.util.Comparator;
@@ -48,7 +48,6 @@ public class LayoutSearchApps extends StandardLayout {
             public void render(GuiGraphicsExtractor graphics, AppInfo info, Minecraft mc, int x, int y, int width, int height, boolean selected) {
                 graphics.fill(x, y, x + width, y + height, selected ? ITEM_SELECTED.getRGB() : ITEM_BACKGROUND.getRGB());
 
-                RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
                 RenderUtil.drawApplicationIcon(graphics, info, x + 2, y + 2);
                 RenderUtil.drawStringClipped(graphics, info.getName() + ChatFormatting.GRAY + " - " + ChatFormatting.DARK_GRAY + info.getDescription(), x + 20, y + 5, itemListResults.getWidth() - 22, Color.WHITE.getRGB(), false);
             }
@@ -80,7 +79,7 @@ public class LayoutSearchApps extends StandardLayout {
         Layout layout = new LayoutAppPage(appStore.getLaptop(), new LocalEntry(info), appStore);
         app.setCurrentLayout(layout);
         Button btnPrevious = new Button(2, 2, Icons.ARROW_LEFT);
-        btnPrevious.setClickListener((mouseX1, mouseY1, mouseButton1) -> app.setCurrentLayout(this));
+        btnPrevious.setClickListener(event -> app.setCurrentLayout(this));
         layout.addComponent(btnPrevious);
     }
 }

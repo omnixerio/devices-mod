@@ -18,10 +18,10 @@ public class SnakeApp extends Application {
     public void init(@Nullable CompoundTag intent) {
         this.titleScreen = new Layout(200, 100);
         var startButton = new Button(30, 70, "Start");
-        startButton.setClickListener(((event) -> {
+        startButton.setClickListener(event -> {
             this.gameLayout = new SnakeLayout(this);
             this.setCurrentLayout(this.gameLayout);
-        }));
+        });
         var titleText = new Label("Snake", 10, 10);
         titleText.setScale(2);
 

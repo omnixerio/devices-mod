@@ -42,7 +42,7 @@ public class ParagraphModule extends Module {
             Image image = new Image(width - size - padding, padding, size, size);
             image.setImage(data.get("image"));
             layout.addComponent(image);
-            width -= (size + 5);
+            width -= size + 5;
         }
         layout.addComponent(make(data, width));
     }
@@ -59,7 +59,7 @@ public class ParagraphModule extends Module {
                 image.componentWidth = size;
                 image.componentHeight = size;
                 image.setImage(data.get("image"));
-                width -= (size + 5);
+                width -= size + 5;
             }
 
 

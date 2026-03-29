@@ -120,7 +120,7 @@ public class AppInfo {
     @Deprecated
     public String getAuthor() {
         StringBuilder a = new StringBuilder();
-        Arrays.stream(authors).forEach((str -> a.append(str).append(", ")));
+        Arrays.stream(authors).forEach(str -> a.append(str).append(", "));
         if (a.length() >= 2) {
             a.deleteCharAt(a.length() - 1);
             a.deleteCharAt(a.length() - 1);

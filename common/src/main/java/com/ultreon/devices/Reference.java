@@ -11,7 +11,7 @@ public class Reference {
     }
 
     public static String getVersion() {
-        return XinexPlatform.getMod(Devices.MOD_ID).getVersion();
+        return XinexPlatform.getMod(Devices.MOD_ID).orElseThrow().getVersion();
     }
 
     public static String[] getVerInfo() {

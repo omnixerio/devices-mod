@@ -3,6 +3,7 @@ package com.ultreon.devices.programs.gitweb.module;
 import com.ultreon.devices.api.app.Icons;
 import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.api.app.component.Button;
+import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.programs.gitweb.component.GitWebFrame;
 
 import java.awt.*;
@@ -32,8 +33,8 @@ public class FooterModule extends Module {
         Button buttonScroll = new Button(0, 5, Icons.ARROW_UP);
         buttonScroll.left = width - buttonScroll.getWidth() - 5;
         buttonScroll.setToolTip("Scroll to Top", "Brings you back to the top of the page");
-        buttonScroll.setClickListener((event) -> {
-            if (mouseButton == 0) {
+        buttonScroll.setClickListener(event -> {
+            if (event.button() == 0) {
                 frame.scrollToTop();
             }
         });
@@ -42,8 +43,8 @@ public class FooterModule extends Module {
         Button buttonHome = new Button(0, 5, Icons.HOME);
         buttonHome.left = buttonScroll.left - buttonHome.getWidth() - 3;
         buttonHome.setToolTip("Go to Homepage", data.get("home-page"));
-        buttonHome.setClickListener((event) -> {
-            if (mouseButton == 0) {
+        buttonHome.setClickListener(event -> {
+            if (event.button() == 0) {
                 frame.loadWebsite(data.get("home-page"));
             }
         });
@@ -57,7 +58,7 @@ public class FooterModule extends Module {
         String title = GitWebFrame.parseFormatting(data.get("title"));
         String subTitle = GitWebFrame.parseFormatting(data.get("sub-title"));
         int finalColor = color;
-        layout.setBackground((graphics, mc, x, y, width1, height, mouseX, mouseY, windowActive) -> {
+        layout.setBackground((graphics, _, x, y, width1, height, _, _, _) -> {
             graphics.fill(x, y, x + width1, y + height, finalColor);
 
             RenderUtil.drawStringClipped(graphics, title, x + 5, y + 5, buttonHome.left - 10, -1, true);

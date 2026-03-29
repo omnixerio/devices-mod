@@ -66,7 +66,7 @@ public class ItemList<E> extends Component implements Iterable<E> {
     @Override
     public void init(Layout layout) {
         btnUp = new Button(left + width - 12, top, Icons.CHEVRON_UP);
-        btnUp.setClickListener((event) ->
+        btnUp.setClickListener(event ->
         {
             if (event.button() == 0) scrollUp();
         });
@@ -76,7 +76,7 @@ public class ItemList<E> extends Component implements Iterable<E> {
         layout.addComponent(btnUp);
 
         btnDown = new Button(left + width - 12, top + getHeight() - 12, Icons.CHEVRON_DOWN);
-        btnDown.setClickListener((event) ->
+        btnDown.setClickListener(event ->
         {
             if (event.button() == 0) scrollDown();
         });
@@ -112,25 +112,25 @@ public class ItemList<E> extends Component implements Iterable<E> {
             Color borderColor = bgColor.darker().darker();
 
             /* Fill */
-            graphics.fill(xPosition + 1, yPosition + 1, xPosition + width - 1, yPosition + (size * height) + size, bgColor.getRGB());
+            graphics.fill(xPosition + 1, yPosition + 1, xPosition + width - 1, yPosition + size * height + size, bgColor.getRGB());
 
             /* Box */
             drawHorizontalLine(graphics, xPosition, xPosition + width - 1, yPosition, borderColor.getRGB());
-            drawVerticalLine(graphics, xPosition, yPosition, yPosition + (size * height) + size, borderColor.getRGB());
-            drawVerticalLine(graphics, xPosition + width - 1, yPosition, yPosition + (size * height) + size, borderColor.getRGB());
-            drawHorizontalLine(graphics, xPosition, xPosition + width - 1, yPosition + (size * height) + size, borderColor.getRGB());
+            drawVerticalLine(graphics, xPosition, yPosition, yPosition + size * height + size, borderColor.getRGB());
+            drawVerticalLine(graphics, xPosition + width - 1, yPosition, yPosition + size * height + size, borderColor.getRGB());
+            drawHorizontalLine(graphics, xPosition, xPosition + width - 1, yPosition + size * height + size, borderColor.getRGB());
 
             /* Items */
             for (int i = 0; i < size - 1 && i < items.size(); i++) {
                 E item = getItem(i);
                 if (item != null) {
                     if (renderer != null) {
-                        renderer.render(graphics, item, mc, xPosition + 1, yPosition + (i * (renderer.getHeight())) + 1 + i, width - 2, renderer.getHeight(), (i + offset) == selected);
-                        drawHorizontalLine(graphics, xPosition + 1, xPosition + width - 1, yPosition + (i * height) + i + height + 1, borderColor.getRGB());
+                        renderer.render(graphics, item, mc, xPosition + 1, yPosition + i * renderer.getHeight() + 1 + i, width - 2, renderer.getHeight(), i + offset == selected);
+                        drawHorizontalLine(graphics, xPosition + 1, xPosition + width - 1, yPosition + i * height + i + height + 1, borderColor.getRGB());
                     } else {
-                        graphics.fill(xPosition + 1, yPosition + (i * 14) + 1, xPosition + width - 1, yPosition + 13 + (i * 14) + 1, (i + offset) != selected ? bgColor.brighter().getRGB() : bgColor.brighter().brighter().getRGB());
-                        graphics.text(mc.font, item.toString(), xPosition + 3, yPosition + 3 + (i * 14), textColor);
-                        drawHorizontalLine(graphics, xPosition + 1, xPosition + width - 2, yPosition + (i * height) + i + height + 1, borderColor.getRGB());
+                        graphics.fill(xPosition + 1, yPosition + i * 14 + 1, xPosition + width - 1, yPosition + 13 + i * 14 + 1, i + offset != selected ? bgColor.brighter().getRGB() : bgColor.brighter().brighter().getRGB());
+                        graphics.text(mc.font, item.toString(), xPosition + 3, yPosition + 3 + i * 14, textColor);
+                        drawHorizontalLine(graphics, xPosition + 1, xPosition + width - 2, yPosition + i * height + i + height + 1, borderColor.getRGB());
                     }
                 }
             }
@@ -139,17 +139,17 @@ public class ItemList<E> extends Component implements Iterable<E> {
             E item = getItem(i);
             if (item != null) {
                 if (renderer != null) {
-                    renderer.render(graphics, item, mc, xPosition + 1, yPosition + (i * (renderer.getHeight())) + 1 + i, width - 2, renderer.getHeight(), (i + offset) == selected);
-                    drawHorizontalLine(graphics, xPosition + 1, xPosition + width - 1, yPosition + (i * height) + i + height + 1, borderColor.getRGB());
+                    renderer.render(graphics, item, mc, xPosition + 1, yPosition + i * renderer.getHeight() + 1 + i, width - 2, renderer.getHeight(), i + offset == selected);
+                    drawHorizontalLine(graphics, xPosition + 1, xPosition + width - 1, yPosition + i * height + i + height + 1, borderColor.getRGB());
                 } else {
-                    graphics.fill(xPosition + 1, yPosition + (i * 14) + 1, xPosition + width - 1, yPosition + 13 + (i * 14) + 1, (i + offset) != selected ? bgColor.brighter().getRGB() : bgColor.brighter().brighter().getRGB());
-                    graphics.text(Laptop.getFontStatic(), item.toString(), xPosition + 3, yPosition + 3 + (i * 14), textColor);
+                    graphics.fill(xPosition + 1, yPosition + i * 14 + 1, xPosition + width - 1, yPosition + 13 + i * 14 + 1, i + offset != selected ? bgColor.brighter().getRGB() : bgColor.brighter().brighter().getRGB());
+                    graphics.text(Laptop.getFontStatic(), item.toString(), xPosition + 3, yPosition + 3 + i * 14, textColor);
                 }
             }
 
             if (items.size() > visibleItems) {
-                graphics.fill(xPosition + width, yPosition, xPosition + width + 10, yPosition + (size * height) + size, Color.DARK_GRAY.getRGB());
-                drawVerticalLine(graphics, xPosition + width + 10, yPosition + 11, yPosition + (size * height) + size - 11, borderColor.getRGB());
+                graphics.fill(xPosition + width, yPosition, xPosition + width + 10, yPosition + size * height + size, Color.DARK_GRAY.getRGB());
+                drawVerticalLine(graphics, xPosition + width + 10, yPosition + 11, yPosition + size * height + size - 11, borderColor.getRGB());
             }
         }
     }
@@ -163,7 +163,7 @@ public class ItemList<E> extends Component implements Iterable<E> {
         int size = getSize();
         if (GuiHelper.isMouseInside((int) event.x(), (int) event.y(), xPosition, yPosition, xPosition + width, yPosition + size * height + size)) {
             for (int i = 0; i < size && i < items.size(); i++) {
-                if (GuiHelper.isMouseInside((int) event.x(), (int) event.y(), xPosition + 1, yPosition + (i * height) + i, xPosition + width - 1, yPosition + (i * height) + i + height)) {
+                if (GuiHelper.isMouseInside((int) event.x(), (int) event.y(), xPosition + 1, yPosition + i * height + i, xPosition + width - 1, yPosition + i * height + i + height)) {
                     if (event.button() == 0) this.selected = i + offset;
                     if (itemClickListener != null) {
                         itemClickListener.onClick(items.get(i + offset), i + offset, event.button());

@@ -44,9 +44,9 @@ public class IconsApp extends Application {
         Button btnPrevPage = new Button(297, 3, Icons.ARROW_LEFT);
         btnPrevPage.setToolTip("Previous Page", "Go to previous page of this icon set");
         btnPrevPage.setSize(14, 14);
-        btnPrevPage.setClickListener((event) ->
+        btnPrevPage.setClickListener(event ->
         {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 if (offset > 0) offset--;
                 updateIcons();
             }
@@ -56,10 +56,10 @@ public class IconsApp extends Application {
         Button btnNextPage = new Button(313, 3, Icons.ARROW_RIGHT);
         btnNextPage.setToolTip("Next Page", "Go to next page of this icon set");
         btnNextPage.setSize(14, 14);
-        btnNextPage.setClickListener((event) ->
+        btnNextPage.setClickListener(event ->
         {
-            if (mouseButton == 0) {
-                if (offset < (iconSetComboBox.getSelectedItem().getIcons().length / 126)) offset++;
+            if (event.button() == 0) {
+                if (offset < iconSetComboBox.getSelectedItem().getIcons().length / 126) offset++;
                 updateIcons();
             }
         });
@@ -72,11 +72,11 @@ public class IconsApp extends Application {
     private void updateIcons() {
         layoutContainer.clear();
         IconSet set = iconSetComboBox.getSelectedItem();
-        for (int i = 0; i < 126 && i < set.getIcons().length - (offset * 126); i++) {
-            Enum<? extends IIcon> anEnum = set.getIcons()[i + (offset * 126)];
+        for (int i = 0; i < 126 && i < set.getIcons().length - offset * 126; i++) {
+            Enum<? extends IIcon> anEnum = set.getIcons()[i + offset * 126];
             IIcon icon = (IIcon) anEnum;
-            int posX = (i % 18) * 18 - 1;
-            int posY = (i / 18) * 18 + 20;
+            int posX = i % 18 * 18 - 1;
+            int posY = i / 18 * 18 + 20;
             Button button = new Button(5 + posX, 5 + posY, icon);
             button.setToolTip("Icon", anEnum.name());
             layoutContainer.addComponent(button);

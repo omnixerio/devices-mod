@@ -16,12 +16,14 @@ import com.ultreon.devices.programs.system.task.TaskWithdraw;
 import com.ultreon.devices.util.InventoryUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import org.jetbrains.annotations.Nullable;
+
 import java.awt.*;
 
 @SuppressWarnings("FieldCanBeLocal")
@@ -106,15 +108,14 @@ public class BankApp extends Application {//The bank is not a system application
             }
             graphics.pose().popMatrix();
 
-            RenderSystem.setShaderTexture(0, BANK_ASSETS);
-            RenderUtil.drawRectWithTexture(BANK_ASSETS, graphics, x + 46, y + 19, 0, 0, 146, 52, 146, 52);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, BANK_ASSETS, x + 46, y + 19, 0, 0, 146, 52, 146, 52);
         });
 
         labelTeller = new Label(ChatFormatting.YELLOW + "Casey The Teller", 60, 7);
         layoutStart.addComponent(labelTeller);
 
         assert Minecraft.getInstance().level == null || Minecraft.getInstance().player != null;
-        textWelcome = new Text(ChatFormatting.BLACK + "Hello " + Minecraft.getInstance().player.getGameProfile().getName() + ", welcome to The Emerald Bank! How can I help you?", 62, 25, 125);
+        textWelcome = new Text(ChatFormatting.BLACK + "Hello " + Minecraft.getInstance().player.getName().getString() + ", welcome to The Emerald Bank! How can I help you?", 62, 25, 125);
         layoutStart.addComponent(textWelcome);
 
         btnDepositWithdraw = new Button(54, 74, "View Account");
@@ -125,8 +126,8 @@ public class BankApp extends Application {//The bank is not a system application
         btnTransfer = new Button(133, 74, "Transfer");
         btnTransfer.setSize(58, 20);
         btnTransfer.setToolTip("Transfer", "Withdraw and deposit emeralds");
-        btnTransfer.setClickListener((event) -> {
-            if (mouseButton == 0) {
+        btnTransfer.setClickListener(event -> {
+            if (event.button() == 0) {
                 setCurrentLayout(layoutMain);
             }
         });
@@ -148,7 +149,7 @@ public class BankApp extends Application {//The bank is not a system application
             graphics.fill(x + 62, y + 103, x + 115, y + 138, Color.BLACK.getRGB());
             graphics.fill(x + 63, y + 104, x + 114, y + 113, Color.DARK_GRAY.getRGB());
             graphics.fill(x + 63, y + 114, x + 114, y + 137, Color.GRAY.getRGB());
-            RenderUtil.renderItem(graphics, x + 65, y + 118, EMERALD, false);
+            graphics.item(EMERALD, x + 65, y + 118);
         });
 
         labelBalance = new Label("Balance", 60, 5);
@@ -167,8 +168,8 @@ public class BankApp extends Application {//The bank is not a system application
         layoutMain.addComponent(amountField);
 
         for (int i = 0; i < 9; i++) {
-            int posX = 5 + (i % 3) * 19;
-            int posY = 65 + (i / 3) * 19;
+            int posX = 5 + i % 3 * 19;
+            int posY = 65 + i / 3 * 19;
             Button button = new Button(posX, posY, Integer.toString(i + 1));
             button.setSize(16, 16);
             addNumberClickListener(button, amountField, i + 1);
@@ -182,8 +183,8 @@ public class BankApp extends Application {//The bank is not a system application
 
         btnClear = new Button(24, 122, "Clr");
         btnClear.setSize(35, 16);
-        btnClear.setClickListener((event) -> {
-            if (mouseButton == 0) {
+        btnClear.setClickListener(event -> {
+            if (event.button() == 0) {
                 amountField.setText("0");
             }
         });
@@ -191,8 +192,8 @@ public class BankApp extends Application {//The bank is not a system application
 
         buttonDeposit = new Button(62, 65, "Deposit");
         buttonDeposit.setSize(53, 16);
-        buttonDeposit.setClickListener((event) -> {
-            if (mouseButton == 0) {
+        buttonDeposit.setClickListener(event -> {
+            if (event.button() == 0) {
                 if (amountField.getText().equals("0")) {
                     return;
                 }
@@ -217,8 +218,8 @@ public class BankApp extends Application {//The bank is not a system application
 
         buttonWithdraw = new Button(62, 84, "Withdraw");
         buttonWithdraw.setSize(53, 16);
-        buttonWithdraw.setClickListener((event) -> {
-            if (mouseButton == 0) {
+        buttonWithdraw.setClickListener(event -> {
+            if (event.button() == 0) {
                 if (amountField.getText().equals("0")) {
                     return;
                 }
@@ -258,8 +259,8 @@ public class BankApp extends Application {//The bank is not a system application
     }
 
     public void addNumberClickListener(Button btn, final TextField field, final int number) {
-        btn.setClickListener((event) -> {
-            if (mouseButton == 0) {
+        btn.setClickListener(event -> {
+            if (event.button() == 0) {
                 if (!(field.getText().equals("0") && number == 0)) {
                     if (field.getText().equals("0")) field.clear();
                     field.writeText(Integer.toString(number));

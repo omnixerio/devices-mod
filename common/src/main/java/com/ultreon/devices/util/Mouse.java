@@ -7,7 +7,7 @@ public class Mouse {
     public static int[] getEventPos() {
         double[] xPos = new double[1];
         double[] yPos = new double[1];
-        GLFW.glfwGetCursorPos(Minecraft.getInstance().getWindow().getWindow(), xPos, yPos);
+        GLFW.glfwGetCursorPos(Minecraft.getInstance().getWindow().handle(), xPos, yPos);
         return new int[]{(int) xPos[0], (int) yPos[0]};
     }
 

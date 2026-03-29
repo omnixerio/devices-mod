@@ -439,7 +439,7 @@ public class Laptop extends Screen implements System {
         var lines = new ArrayList<String>();
         font.getSplitter().splitLines(FormattedText.of(text.replaceAll("\r\n", "\n").replaceAll("\r", "\n")), width, Style.EMPTY).forEach(b -> lines.add(b.getString()));
         var totalTextHeight = font.lineHeight*lines.size();
-        var textScale = (instance.videoInfo.getResolution().height()-20-(getFontStatic().lineHeight*2))/(float)totalTextHeight;
+        var textScale = (instance.videoInfo.getResolution().height()-20- getFontStatic().lineHeight*2)/(float)totalTextHeight;
         textScale = (float) (1f / Minecraft.getInstance().getWindow().getGuiScale());
         textScale = Math.max(0.5f, textScale);
         graphics.pose().pushMatrix();
@@ -807,7 +807,7 @@ public class Laptop extends Screen implements System {
                 Window<Dialog> dialogWindow = window.getContent().getActiveDialog();
                 if (dragging) {
                     if (isMouseOnScreen((int) event.x(), (int) event.y()) && dragWindowFromX != null && dragWindowFromY != null) {
-                        Objects.requireNonNullElse(dialogWindow, window).handleWindowMove(posX, posY, (int) ((dx + event.x()) - dragWindowFromX), (int) ((dy + event.y()) - dragWindowFromY));
+                        Objects.requireNonNullElse(dialogWindow, window).handleWindowMove(posX, posY, (int) (dx + event.x() - dragWindowFromX), (int) (dy + event.y() - dragWindowFromY));
                     } else {
                         dragging = false;
                     }

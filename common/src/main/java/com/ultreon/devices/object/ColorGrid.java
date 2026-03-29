@@ -34,25 +34,25 @@ public class ColorGrid extends Component {
     @Override
     public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         int endX = xPosition + width + 2;
-        int endY = yPosition + (colors.length / 5) * 10 + 2;
+        int endY = yPosition + colors.length / 5 * 10 + 2;
         graphics.fill(xPosition, yPosition, endX, endY, Color.DARK_GRAY.getRGB());
         for (int i = 0; i < colors.length; i++) {
-            int startX = xPosition + (i % 5) * 10 + 1;
-            int startY = yPosition + (i / 5) * 10 + 1;
+            int startX = xPosition + i % 5 * 10 + 1;
+            int startY = yPosition + i / 5 * 10 + 1;
             graphics.fill(startX, startY, startX + 10, startY + 10, colors[i].getRGB());
         }
 
         if (GuiHelper.isMouseInside(mouseX, mouseY, xPosition + 1, yPosition + 1, endX - 2, endY - 2)) {
             int boxX = (mouseX - xPosition - 1) / 10;
             int boxY = (mouseY - yPosition - 1) / 10;
-            graphics. fill(xPosition + (boxX * 10) + 1, yPosition + (boxY * 10) + 1, xPosition + (boxX * 10) + 11, yPosition + (boxY * 10) + 11, hoverColor);
+            graphics. fill(xPosition + boxX * 10 + 1, yPosition + boxY * 10 + 1, xPosition + boxX * 10 + 11, yPosition + boxY * 10 + 11, hoverColor);
         }
     }
 
     @Override
     public void handleMouseClick(MouseButtonEvent event) {
         int endX = xPosition + width + 2;
-        int endY = yPosition + (colors.length / 5) * 10 + 2;
+        int endY = yPosition + colors.length / 5 * 10 + 2;
         if (GuiHelper.isMouseInside((int) event.x(), (int) event.y(), xPosition + 1, yPosition + 1, endX - 2, endY - 2)) {
             int boxX = (int) ((event.x() - xPosition - 1) / 10);
             int boxY = (int) ((event.y() - yPosition - 1) / 10);

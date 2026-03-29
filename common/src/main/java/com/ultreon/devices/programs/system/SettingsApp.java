@@ -65,7 +65,7 @@ public class SettingsApp extends SystemApp {
     public void init(@Nullable CompoundTag intent) {
         backBtn = new Button(2, 2, Icons.ARROW_LEFT);
         backBtn.setVisible(false);
-        backBtn.setClickListener((event) ->
+        backBtn.setClickListener(event ->
         {
             if (event.button() == 0) {
                 if (!predecessor.isEmpty()) {
@@ -100,7 +100,7 @@ public class SettingsApp extends SystemApp {
         Button buttonColorScheme = new Button(5, 26+20+4, "Personalise", Icons.EDIT);
         buttonColorScheme.setSize(90, 20);
         buttonColorScheme.setToolTip("Personalise", "Change the wallpaper, UI colors, and more!");
-        buttonColorScheme.setClickListener((event) -> {
+        buttonColorScheme.setClickListener(event -> {
             if (event.button() == 0) {
                 showMenu(layoutPersonalise);
             }
@@ -111,7 +111,7 @@ public class SettingsApp extends SystemApp {
         Button buttonColorSchemes = new Button(5, 26+26+20+4, "Themes", Icons.WRENCH);
         buttonColorSchemes.setSize(90, 20);
         buttonColorSchemes.setToolTip("Color Schemes", "Change the color scheme using presets or choose a custom one.");
-        buttonColorSchemes.setClickListener((event) -> {
+        buttonColorSchemes.setClickListener(event -> {
             if (event.button() == 0) {
                 showMenu(layoutColorSchemes);
             }
@@ -121,7 +121,7 @@ public class SettingsApp extends SystemApp {
         Button buttonGeneral = new Button(5, 26+26+26+20+4, "Advanced", Icons.WRENCH);
         buttonGeneral.setSize(90, 20);
         buttonGeneral.setToolTip("General", "General settings.");
-        buttonGeneral.setClickListener((event) -> {
+        buttonGeneral.setClickListener(event -> {
             if (event.button() == 0) {
                 showMenu(layoutGeneral);
             }
@@ -135,7 +135,7 @@ public class SettingsApp extends SystemApp {
     private Button createAboutButton(Menu layoutMain) {
         Button aboutButton = new Button(5, 26, "About", Icons.INFO);
         aboutButton.setSize(90, 20);
-        aboutButton.setClickListener((event) -> {
+        aboutButton.setClickListener(event -> {
             var qq = new Menu("About");
             qq.addComponent(backBtn);
             var l = new ScrollableLayout(layoutMain.width, layoutMain.height, 124);
@@ -306,7 +306,7 @@ public class SettingsApp extends SystemApp {
         buttonColorSchemeApply = new Button(5, 79, Icons.CHECK);
         buttonColorSchemeApply.setEnabled(false);
         buttonColorSchemeApply.setToolTip("Apply", "Set these colors as the new color scheme");
-        buttonColorSchemeApply.setClickListener((event) ->
+        buttonColorSchemeApply.setClickListener(event ->
         {
             if (event.button() == 0) {
                 ColorScheme colorScheme = Laptop.getSystem().getSettings().getColorScheme();
@@ -344,7 +344,7 @@ public class SettingsApp extends SystemApp {
         // Previous wallpaper button.
         prevWallpaperBtn = new Button(135, 27, Icons.ARROW_LEFT);
         prevWallpaperBtn.setSize(25, 20);
-        prevWallpaperBtn.setClickListener((event) -> {
+        prevWallpaperBtn.setClickListener(event -> {
             if (event.button() != 0)
                 return;
 
@@ -360,7 +360,7 @@ public class SettingsApp extends SystemApp {
         // Next wallpaper button.
         nextWallpaperBtn = new Button(165, 27, Icons.ARROW_RIGHT);
         nextWallpaperBtn.setSize(25, 20);
-        nextWallpaperBtn.setClickListener((event) -> {
+        nextWallpaperBtn.setClickListener(event -> {
             if (event.button() != 0)
                 return;
 
@@ -375,7 +375,7 @@ public class SettingsApp extends SystemApp {
 
         // Reset wallpaper button.
         Button resetWallpaperBtn = new Button(6, 100, "Reset Wallpaper");
-        resetWallpaperBtn.setClickListener((event) -> {
+        resetWallpaperBtn.setClickListener(event -> {
             if (event.button() == 0) {
                 getLaptop().setWallpaper(0);
                 image.setImage(getLaptop().getCurrentWallpaper());
@@ -392,7 +392,7 @@ public class SettingsApp extends SystemApp {
         // Add wallpaper load from url button.
         urlWallpaperBtn = new Button(135, 52, "Load", Icons.EARTH);
         urlWallpaperBtn.setSize(55, 20);
-        urlWallpaperBtn.setClickListener((event) -> {
+        urlWallpaperBtn.setClickListener(event -> {
             if (event.button() != 0)
                 return;
 

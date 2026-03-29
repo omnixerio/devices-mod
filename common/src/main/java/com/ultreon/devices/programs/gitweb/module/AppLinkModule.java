@@ -38,7 +38,7 @@ public class AppLinkModule extends Module {
         Button button = new Button(0, 10, "Install", Icons.IMPORT);
         button.left = section * 5 - 70 - 5;
         button.setSize(70, height - 15);
-        button.setClickListener((event) -> {
+        button.setClickListener(event -> {
             if (frame.getApp() instanceof GitWebApp gitWeb) {
                 DebugLog.log("FRAME");
                 gitWeb.getSystem().ifPresent(a -> {

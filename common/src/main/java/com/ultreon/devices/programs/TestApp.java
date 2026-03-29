@@ -15,8 +15,8 @@ public class TestApp extends Application {
     @Override
     public void init(@Nullable CompoundTag intent) {
         Button button = new Button(5, 5, Icons.PRINTER);
-        button.setClickListener((event) -> {
-            if (mouseButton == 0) {
+        button.setClickListener(event -> {
+            if (event.button() == 0) {
                 Dialog.Confirmation dialog = new Dialog.Confirmation("Test");
                 dialog.setPositiveText("Override");
                 openDialog(dialog);
@@ -25,32 +25,32 @@ public class TestApp extends Application {
         super.addComponent(button);
 
         Button button1 = new Button(30, 5, Icons.PRINTER);
-        button1.setClickListener((event) -> {
-            if (mouseButton == 0) {
+        button1.setClickListener(event -> {
+            if (event.button() == 0) {
                 openDialog(new Dialog.Message("Test"));
             }
         });
         super.addComponent(button1);
 
         Button button2 = new Button(55, 5, Icons.PRINTER);
-        button2.setClickListener((event) -> {
-            if (mouseButton == 0) {
+        button2.setClickListener(event -> {
+            if (event.button() == 0) {
                 openDialog(new Dialog.Input("Test"));
             }
         });
         super.addComponent(button2);
 
         Button button3 = new Button(80, 5, Icons.PRINTER);
-        button3.setClickListener((event) -> {
-            if (mouseButton == 0) {
+        button3.setClickListener(event -> {
+            if (event.button() == 0) {
                 openDialog(new Dialog.OpenFile(this));
             }
         });
         super.addComponent(button3);
 
         Button button4 = new Button(105, 5, Icons.PRINTER);
-        button4.setClickListener((event) -> {
-            if (mouseButton == 0) {
+        button4.setClickListener(event -> {
+            if (event.button() == 0) {
                 openDialog(new Dialog.SaveFile(this, new CompoundTag()));
             }
         });

@@ -8,6 +8,7 @@ import com.ultreon.devices.api.app.listener.ClickListener;
 import com.ultreon.devices.object.AppInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.FormattedText;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -68,7 +69,7 @@ public final class DiagnosticsApp extends SystemApp {
 
         Layout layoutMain = new Layout(150, 40);
 
-        int textHeight = Minecraft.getInstance().font.wordWrapHeight(messageText, getWidth() - 10);
+        int textHeight = Minecraft.getInstance().font.wordWrapHeight(FormattedText.of(messageText), getWidth() - 10);
         layoutMain.height += textHeight;
 
         layoutMain.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) -> graphics.fill(x, y, x + width, y + height, Color.LIGHT_GRAY.getRGB()));
@@ -78,7 +79,7 @@ public final class DiagnosticsApp extends SystemApp {
 
         Button buttonPositive = new Button(getWidth() - 41, getHeight() - 20, "Close");
         buttonPositive.setSize(36, 16);
-        buttonPositive.setClickListener((event) -> {
+        buttonPositive.setClickListener(event -> {
             if (positiveListener != null) {
                 positiveListener.onClick(event);
             }

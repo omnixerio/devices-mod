@@ -115,7 +115,7 @@ public class Image extends Component {
         int b;
 
         public int toRGB() {
-            return (r << 16) | (g << 8) | b;
+            return r << 16 | g << 8 | b;
         }
     }
 
@@ -233,7 +233,7 @@ public class Image extends Component {
     @Override
     public void init(Layout layout) {
         if (layout != null) {
-            spinner = new Spinner(left + (componentWidth / 2) - 6, top + (componentHeight / 2) - 6);
+            spinner = new Spinner(left + componentWidth / 2 - 6, top + componentHeight / 2 - 6);
             layout.addComponent(spinner);
         }
         initialized = true;

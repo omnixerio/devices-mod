@@ -84,6 +84,10 @@ public abstract class Component {
     protected void handleUnload() {
     }
 
+    public void handleKeyPressed(java.awt.event.KeyEvent event) {
+
+    }
+
     /**
      * Called when the game ticks
      */

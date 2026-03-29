@@ -41,12 +41,12 @@ public class ExampleApp extends Application {
 
         button = new Button(5, 18, "Button");
         button.setSize(63, 20);
-        button.setClickListener((event) -> itemList.addItem("Henlo"));
+        button.setClickListener(event -> itemList.addItem("Henlo"));
         super.addComponent(button);
 
         leftButton = new Button(5, 43, Icons.CHEVRON_LEFT);
         leftButton.setPadding(1);
-        leftButton.setClickListener((event) -> itemList.removeItem(itemList.getSelectedIndex()));
+        leftButton.setClickListener(event -> itemList.removeItem(itemList.getSelectedIndex()));
         super.addComponent(leftButton);
 
         upButton = new Button(22, 43, Icons.CHEVRON_UP);
@@ -59,7 +59,7 @@ public class ExampleApp extends Application {
 
         downButton = new Button(56, 43, Icons.CHEVRON_DOWN);
         downButton.setPadding(1);
-        downButton.setClickListener((event) ->
+        downButton.setClickListener(event ->
                 TaskManager.sendTask(new TaskNotificationTest()));
         super.addComponent(downButton);
 

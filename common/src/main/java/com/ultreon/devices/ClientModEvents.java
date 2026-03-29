@@ -155,8 +155,8 @@ public class ClientModEvents {
                         Devices.LOGGER.error("Incorrect icon size for " + (info == null ? null : info.getId()) + " (Must be 14 by 14 pixels)");
                         return false;
                     }
-                    int iconU = (index % 16) * ICON_SIZE;
-                    int iconV = (index / 16) * ICON_SIZE;
+                    int iconU = index % 16 * ICON_SIZE;
+                    int iconV = index / 16 * ICON_SIZE;
                     g.drawImage(icon, iconU, iconV, ICON_SIZE, ICON_SIZE, null);
                     if (info != null) {
                         AppInfo.Icon.Glyph glyph = switch (mode) {
@@ -192,7 +192,7 @@ public class ClientModEvents {
 
                 if (DebugFlags.DUMP_APP_ICON_ATLAS) {
                     try {
-                        DebugUtils.dump(DumpType.ATLAS, Laptop.ICON_TEXTURES, (stream) -> ImageIO.write(atlas, "png", stream));
+                        DebugUtils.dump(DumpType.ATLAS, Laptop.ICON_TEXTURES, stream -> ImageIO.write(atlas, "png", stream));
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -250,11 +250,11 @@ public class ClientModEvents {
     public static void registerRenderers() {
         LOGGER.info("Registering renderers.");
 
-        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.LAPTOP.get()), (a) -> new LaptopRenderer(a));
-        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.PRINTER.get()), (a) -> new PrinterRenderer(a));
-        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.PAPER.get()), (a) -> new PaperRenderer(a));
-        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.ROUTER.get()), (a) -> new RouterRenderer(a));
-        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.SEAT.get()), (a) -> new OfficeChairRenderer(a));
+        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.LAPTOP.get()), a -> new LaptopRenderer(a));
+        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.PRINTER.get()), a -> new PrinterRenderer(a));
+        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.PAPER.get()), a -> new PaperRenderer(a));
+        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.ROUTER.get()), a -> new RouterRenderer(a));
+        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.SEAT.get()), a -> new OfficeChairRenderer(a));
     }
 
     public static void registerLayerDefinitions() {

@@ -68,14 +68,14 @@ public class AppStore extends SystemApp {
         });
 
         com.ultreon.devices.api.app.component.Image imageBanner = new com.ultreon.devices.api.app.component.Image(0, 0, LAYOUT_WIDTH, 60);
-        imageBanner.setImage(new Identifier(Reference.MOD_ID, "textures/gui/app_market_background.png"));
+        imageBanner.setImage(Identifier.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/app_market_background.png"));
         imageBanner.setDrawFull(true);
         homePageLayout.addComponent(imageBanner);
 
         Button btnSearch = new Button(5, 5, Icons.SEARCH);
         btnSearch.setToolTip("Search", "Find a specific application");
-        btnSearch.setClickListener((event) -> {
-            if (mouseButton == 0) {
+        btnSearch.setClickListener(event -> {
+            if (event.button() == 0) {
                 this.setCurrentLayout(new LayoutSearchApps(this, getCurrentLayout()));
             }
         });
@@ -108,7 +108,7 @@ public class AppStore extends SystemApp {
             certifiedApps.clear();
             spinner.setVisible(false);
             if (success) {
-                Minecraft.getInstance().doRunTask(() -> {
+                Minecraft.getInstance().submit(() -> {
                     AppGrid grid = new AppGrid(0, 81, 3, 1, this);
                     certifiedApps.addAll(parseJson(response));
                     shuffleAndShrink(certifiedApps, 3).forEach(grid::addEntry);
@@ -179,7 +179,7 @@ public class AppStore extends SystemApp {
         Layout layout = new LayoutAppPage(getLaptop(), entry, this);
         this.setCurrentLayout(layout);
         Button btnPrevious = new Button(2, 2, Icons.ARROW_LEFT);
-        btnPrevious.setClickListener((mouseX1, mouseY1, mouseButton1) -> this.setCurrentLayout(layoutMain));
+        btnPrevious.setClickListener(_ -> this.setCurrentLayout(layoutMain));
         layout.addComponent(btnPrevious);
     }
 

@@ -150,7 +150,7 @@ public class Canvas extends Component {
     }
 
     public void compileColor() {
-        this.currentColor = ((0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | ((blue & 0xFF));
+        this.currentColor = 0xFF << 24 | (red & 0xFF) << 16 | (green & 0xFF) << 8 | blue & 0xFF;
     }
 
     public int getCurrentColor() {

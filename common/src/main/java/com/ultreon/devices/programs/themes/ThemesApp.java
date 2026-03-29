@@ -6,10 +6,13 @@ import com.ultreon.devices.api.app.Dialog;
 import com.ultreon.devices.api.app.System;
 import com.ultreon.devices.api.app.component.Button;
 import com.ultreon.devices.api.app.component.TextField;
+import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.object.AppInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
@@ -104,7 +107,7 @@ public class ThemesApp extends Application implements SystemAccessor {
 
     private Button createTintButton() {
         var button = new Button(marginX, marginY + 16 + paddingY, "Tints");
-        button.setClickListener((mouseX, mouseY, btn) -> {
+        button.setClickListener(_ -> {
             setCurrentLayout(createTintMenu());
         });
         return button;
@@ -174,7 +177,7 @@ public class ThemesApp extends Application implements SystemAccessor {
             resetButton.setEnabled(false);
 
             var okButton = new Button(left+16+50+50+16+16, top, Icons.CHECK);
-            resetButton.setClickListener((__, ___, ____) -> {
+            resetButton.setClickListener(_ -> {
                 this.info.setTintProvider(AppInfo.getDefaultTintProvider());
 
                 primaryTint.setText(toColorHex(info.getTint(1)));
@@ -195,7 +198,7 @@ public class ThemesApp extends Application implements SystemAccessor {
 
             okButton.setSize(16, 16);
             okButton.setEnabled(false);
-            okButton.setClickListener((__, ___, ____) -> {
+            okButton.setClickListener(_ -> {
                 try {
                     var l = new Color(new BigInteger(primaryTint.getText().replace("#", ""), 16).intValue());
                     var ll = new Color(new BigInteger(secondaryTint.getText().replace("#", ""), 16).intValue());
@@ -211,7 +214,7 @@ public class ThemesApp extends Application implements SystemAccessor {
 
 
             // click listener
-            editButton.setClickListener((__, ___, ____) -> {
+            editButton.setClickListener(_ -> {
                 primaryTint.setBackgroundColor(new Color(getColorScheme().getBackgroundColor()));
                 primaryTint.setTextColor(Color.WHITE);
                 primaryTint.setEnabled(true);
@@ -227,13 +230,13 @@ public class ThemesApp extends Application implements SystemAccessor {
             layout.addComponent(editButton);
 
             if (this.info.getTintProvider() instanceof ThemeTintProvider) {
-                editButton.forceClick(0, 0, 0);
+                editButton.forceClick(new MouseButtonEvent(0, 0, new MouseButtonInfo(0, 0)));
                 resetButton.setEnabled(true);
             }
         }
 
         private String toColorHex(int b) {
-            String hexColor = String.format("#%06X", (0xFFFFFF & b));
+            String hexColor = String.format("#%06X", 0xFFFFFF & b);
             return hexColor;
         }
 

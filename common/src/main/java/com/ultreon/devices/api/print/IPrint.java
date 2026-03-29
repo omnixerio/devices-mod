@@ -2,6 +2,7 @@ package com.ultreon.devices.api.print;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.init.DeviceBlocks;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
@@ -79,6 +80,6 @@ public interface IPrint {
     Class<? extends Renderer> getRenderer();
 
     interface Renderer {
-        boolean render(PoseStack pose, CompoundTag data);
+        boolean render(GuiGraphicsExtractor graphics, PoseStack pose, CompoundTag data);
     }
 }

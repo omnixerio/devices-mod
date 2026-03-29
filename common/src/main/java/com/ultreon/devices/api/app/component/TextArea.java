@@ -101,7 +101,7 @@ public class TextArea extends Component {
             graphics.fill(x, y, x + width, y + height, bgColor.darker().darker().getRGB());
             graphics.fill(x + 1, y + 1, x + width - 1, y + height - 1, bgColor.getRGB());
 
-            if (!isFocused && placeholder != null && (lines.isEmpty() || (lines.size() == 1 && lines.getFirst().isEmpty()))) {
+            if (!isFocused && placeholder != null && (lines.isEmpty() || lines.size() == 1 && lines.getFirst().isEmpty())) {
                 RenderUtil.drawStringClipped(graphics, placeholder, x + padding, y + padding, width - padding * 2, placeholderColor, false);
             }
 
@@ -110,7 +110,7 @@ public class TextArea extends Component {
                 float scrollPercentage = (verticalScroll + verticalOffset) / (float) (lines.size() - visibleLines);
                 float pixelsPerUnit = (float) maxLineWidth / (float) (width - padding * 2);
                 int scrollX = Mth.clamp(horizontalScroll + (int) (horizontalOffset * pixelsPerUnit), 0, Math.max(0, maxLineWidth - (width - padding * 2)));
-                int scrollY = (int) ((lines.size() - visibleLines) * (scrollPercentage));
+                int scrollY = (int) ((lines.size() - visibleLines) * scrollPercentage);
                 int lineY = i + Mth.clamp(scrollY, 0, Math.max(0, lines.size() - visibleLines));
                 if (highlight != null) {
                     String[] words = lines.get(lineY).split(SPLIT_REGEX);
@@ -135,7 +135,7 @@ public class TextArea extends Component {
                 float linesPerUnit = (float) lines.size() / (float) visibleLines;
                 int scroll = Mth.clamp(verticalScroll + verticalOffset * (int) linesPerUnit, 0, Math.max(0, lines.size() - visibleLines));
                 if (cursorY >= scroll && cursorY < scroll + visibleLines) {
-                    if ((this.cursorTick / 10) % 2 == 0) {
+                    if (this.cursorTick / 10 % 2 == 0) {
                         String subString = getActiveLine().substring(0, cursorX);
                         int visibleWidth = width - padding * 2;
                         float pixelsPerUnit = (float) maxLineWidth / (float) (width - padding * 2);
@@ -229,7 +229,7 @@ public class TextArea extends Component {
                 }
                 case VERTICAL -> {
                     float scrollPercentage = Mth.clamp((verticalScroll + verticalOffset) / (float) (lines.size() - visibleLines), 0f, 1f);
-                    verticalScroll = (int) ((lines.size() - visibleLines) * (scrollPercentage));
+                    verticalScroll = (int) ((lines.size() - visibleLines) * scrollPercentage);
                 }
             }
             horizontalOffset = 0;
@@ -500,7 +500,7 @@ public class TextArea extends Component {
 
         String activeLine = getActiveLine();
 
-        if (cursorY == lines.size() - 1 && cursorX == activeLine.length() || (cursorX > 0 && activeLine.charAt(cursorX - 1) == '\n'))
+        if (cursorY == lines.size() - 1 && cursorX == activeLine.length() || cursorX > 0 && activeLine.charAt(cursorX - 1) == '\n')
             return;
 
         cursorTick = 0;

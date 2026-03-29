@@ -55,12 +55,12 @@ public enum Alphabet implements IIcon {
 
     @Override
     public int getU() {
-        return (ordinal() % GRID_SIZE) * ICON_SIZE;
+        return ordinal() % GRID_SIZE * ICON_SIZE;
     }
 
     @Override
     public int getV() {
-        return (ordinal() / GRID_SIZE) * ICON_SIZE;
+        return ordinal() / GRID_SIZE * ICON_SIZE;
     }
 
     @Override

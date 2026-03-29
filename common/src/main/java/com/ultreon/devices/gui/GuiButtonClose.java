@@ -12,7 +12,7 @@ import org.jspecify.annotations.NonNull;
 public class GuiButtonClose extends Button {
     public GuiButtonClose(int x, int y) {
         super(x, y, 11, 11, Component.literal(""),
-                (_) -> { }, (_)-> MutableComponent.create(new PlainTextContents.LiteralContents("")));
+                _ -> { }, _ -> MutableComponent.create(new PlainTextContents.LiteralContents("")));
     }
 
     @Override

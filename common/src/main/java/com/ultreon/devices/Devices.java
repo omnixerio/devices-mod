@@ -49,6 +49,7 @@ import dev.ultreon.mods.xinexlib.event.server.ServerStoppedEvent;
 import dev.ultreon.mods.xinexlib.event.system.EventSystem;
 import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import dev.ultreon.mods.xinexlib.registrar.RegistrarManager;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -58,6 +59,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -238,7 +240,7 @@ public abstract class Devices {
         EnvExecutor.runInEnv(Env.CLIENT, () -> () -> PrintingManager.registerPrint(Devices.id("picture"), PixelPainterApp.PicturePrint.class));
     }
 
-    public abstract int getBurnTime(ItemStack stack, RecipeType<?> type);
+    public abstract int getBurnTime(ItemStack stack, RecipeType<?> type, Level level);
 
     protected abstract void registerApplicationEvent();
 
@@ -404,7 +406,7 @@ public abstract class Devices {
     }
 
     private static void checkForVulnerabilities() {
-        OnlineRequest.getInstance().make(VULNERABILITIES_URL, ((success, response) -> {
+        OnlineRequest.getInstance().make(VULNERABILITIES_URL, (success, response) -> {
             if (!success) {
                 LOGGER.error("Could not access vulnerabilities!");
                 vulnerabilities = ImmutableList.of();
@@ -418,7 +420,7 @@ public abstract class Devices {
                 s.lines().toList().forEach(line -> LOGGER.debug("[VulChecker] {}", line));
                 LOGGER.debug("[VulChecker]");
             });
-        }));
+        });
     }
 
     private static CompletableFuture<Void> setupSiteRegistration(String url) {

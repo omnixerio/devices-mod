@@ -17,8 +17,8 @@ public class CraftingBox extends ContainerBox {
 
     private void setIngredients(ItemStack[] ingredients) {
         for (int i = 0; i < ingredients.length; i++) {
-            int posX = (i % 3) * 18 + 8;
-            int posY = (i / 3) * 18 + 8;
+            int posX = i % 3 * 18 + 8;
+            int posY = i / 3 * 18 + 8;
             slots.add(new Slot(posX, posY, ingredients[i]));
         }
     }

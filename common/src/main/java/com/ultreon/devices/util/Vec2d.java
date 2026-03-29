@@ -14,7 +14,7 @@ public class Vec2d {
     }
 
     public void normalise() {
-        double length = Math.sqrt((x * x) + (y * y));
+        double length = Math.sqrt(x * x + y * y);
         if (length > 1) {
             this.x /= length;
             this.y /= length;

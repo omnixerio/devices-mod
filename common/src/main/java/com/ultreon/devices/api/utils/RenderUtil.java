@@ -25,7 +25,7 @@ public class RenderUtil {
 
     public static void drawIcon(GuiGraphicsExtractor graphics, double x, double y, AppInfo info, int width, int height) {
         //Gui.blit(pose, (int) x, (int) y, width, height, u, v, sourceWidth, sourceHeight, (int) textureWidth, (int) textureHeight);
-        if (info == null || (info.getIcon().getBase().getU() == -1 && info.getIcon().getBase().getV() == -1)) {
+        if (info == null || info.getIcon().getBase().getU() == -1 && info.getIcon().getBase().getV() == -1) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, Laptop.ICON_TEXTURES, (int) x, (int) y, 0, 0, width, height, 14, 14, 224, 224);
             return;
         }

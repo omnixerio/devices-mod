@@ -95,12 +95,12 @@ public class MineBayApp extends Application {
 
         Button btnAddItem = new Button(70, 5, "Add Item");
         btnAddItem.setSize(60, 15);
-        btnAddItem.setClickListener((event) -> setCurrentLayout(layoutSelectItem));
+        btnAddItem.setClickListener(event -> setCurrentLayout(layoutSelectItem));
         layoutMain.addComponent(btnAddItem);
 
         Button btnViewItem = new Button(135, 5, "Your Auctions");
         btnViewItem.setSize(80, 15);
-        btnViewItem.setClickListener((event) -> {
+        btnViewItem.setClickListener(event -> {
             assert Minecraft.getInstance().player != null;
             TaskGetAuctions task = new TaskGetAuctions(Minecraft.getInstance().player.getUUID());
             task.setCallback((nbt, success) -> {
@@ -166,11 +166,11 @@ public class MineBayApp extends Application {
 
         Button btnBuy = new Button(100, 127, "Buy");
         btnBuy.setSize(50, 15);
-        btnBuy.setClickListener((event) ->
+        btnBuy.setClickListener(event ->
         {
             final Dialog.Confirmation dialog = new Dialog.Confirmation();
             dialog.setPositiveText("Buy");
-            dialog.setPositiveListener((event1) -> {
+            dialog.setPositiveListener(event1 -> {
                 final int index = items.getSelectedIndex();
                 if (index == -1) return;
 
@@ -203,7 +203,7 @@ public class MineBayApp extends Application {
         });
 
         inventory = new Inventory(5, 28);
-        inventory.setClickListener((event) ->
+        inventory.setClickListener(event ->
         {
             if (inventory.getSelectedSlotIndex() != -1) {
                 assert Minecraft.getInstance().player != null;
@@ -221,13 +221,13 @@ public class MineBayApp extends Application {
 
         buttonAddCancel = new Button(138, 4, MINEBAY_ASSETS, 0, 12, 8, 8);
         buttonAddCancel.setToolTip("Cancel", "Go back to main page");
-        buttonAddCancel.setClickListener((event) -> restoreDefaultLayout());
+        buttonAddCancel.setClickListener(event -> restoreDefaultLayout());
         layoutSelectItem.addComponent(buttonAddCancel);
 
         buttonAddNext = new Button(154, 4, MINEBAY_ASSETS, 16, 12, 8, 8);
         buttonAddNext.setToolTip("Next Page", "Set price and amount");
         buttonAddNext.setEnabled(false);
-        buttonAddNext.setClickListener((event) ->
+        buttonAddNext.setClickListener(event ->
         {
             selectorAmount.updateButtons();
             selectorPrice.updateButtons();
@@ -278,15 +278,15 @@ public class MineBayApp extends Application {
         });
 
         buttonAmountAndPriceBack = new Button(122, 4, MINEBAY_ASSETS, 8, 12, 8, 8);
-        buttonAmountAndPriceBack.setClickListener((event) -> setCurrentLayout(layoutSelectItem));
+        buttonAmountAndPriceBack.setClickListener(event -> setCurrentLayout(layoutSelectItem));
         layoutAmountAndPrice.addComponent(buttonAmountAndPriceBack);
 
         buttonAmountAndPriceCancel = new Button(138, 4, MINEBAY_ASSETS, 0, 12, 8, 8);
-        buttonAmountAndPriceCancel.setClickListener((event) -> restoreDefaultLayout());
+        buttonAmountAndPriceCancel.setClickListener(event -> restoreDefaultLayout());
         layoutAmountAndPrice.addComponent(buttonAmountAndPriceCancel);
 
         buttonAmountAndPriceNext = new Button(154, 4, MINEBAY_ASSETS, 16, 12, 8, 8);
-        buttonAmountAndPriceNext.setClickListener((event) -> setCurrentLayout(layoutDuration));
+        buttonAmountAndPriceNext.setClickListener(event -> setCurrentLayout(layoutDuration));
         layoutAmountAndPrice.addComponent(buttonAmountAndPriceNext);
 
         labelAmount = new Label("Amount", 16, 30);
@@ -314,20 +314,20 @@ public class MineBayApp extends Application {
         });
 
         buttonDurationBack = new Button(122, 4, MINEBAY_ASSETS, 8, 12, 8, 8);
-        buttonDurationBack.setClickListener((event) -> setCurrentLayout(layoutAmountAndPrice));
+        buttonDurationBack.setClickListener(event -> setCurrentLayout(layoutAmountAndPrice));
         layoutDuration.addComponent(buttonDurationBack);
 
         buttonDurationCancel = new Button(138, 4, MINEBAY_ASSETS, 0, 12, 8, 8);
-        buttonDurationCancel.setClickListener((event) -> this.setCurrentLayout(layoutMain));
+        buttonDurationCancel.setClickListener(event -> this.setCurrentLayout(layoutMain));
         layoutDuration.addComponent(buttonDurationCancel);
 
         buttonDurationAdd = new Button(154, 4, MINEBAY_ASSETS, 24, 12, 8, 8);
-        buttonDurationAdd.setClickListener((event) ->
+        buttonDurationAdd.setClickListener(event ->
         {
             final Dialog.Confirmation dialog = new Dialog.Confirmation();
             dialog.setMessageText("Are you sure you want to auction this item?");
             dialog.setPositiveText("Yes");
-            dialog.setPositiveListener((event1) ->
+            dialog.setPositiveListener(event1 ->
             {
                 int ticks = (int) TimeUtil.getRealTimeToTicks(selectorHours.getNumber(), selectorMinutes.getNumber(), selectorSeconds.getNumber());
                 TaskAddAuction task = new TaskAddAuction(inventory.getSelectedSlotIndex(), selectorAmount.getNumber(), selectorPrice.getNumber(), ticks);

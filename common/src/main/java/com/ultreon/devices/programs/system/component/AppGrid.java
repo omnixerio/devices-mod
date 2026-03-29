@@ -6,6 +6,7 @@ import com.ultreon.devices.api.app.Icons;
 import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.api.app.component.Image;
 import com.ultreon.devices.api.app.component.Label;
+import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.programs.system.AppStore;
@@ -55,8 +56,8 @@ public class AppGrid extends Component {
         int size = Math.min(entries.size(), verticalItems * horizontalItems);
         for (int i = 0; i < size; i++) {
             AppEntry entry = entries.get(i);
-            int itemX = left + (i % horizontalItems) * (itemWidth + padding) + padding;
-            int itemY = top + (i / horizontalItems) * (itemHeight + padding) + padding;
+            int itemX = left + i % horizontalItems * (itemWidth + padding) + padding;
+            int itemY = top + i / horizontalItems * (itemHeight + padding) + padding;
             container.addComponent(generateAppTile(entry, itemX, itemY));
         }
         layout.addComponent(container);
@@ -66,8 +67,8 @@ public class AppGrid extends Component {
     protected void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         int size = Math.min(entries.size(), verticalItems * horizontalItems);
         for (int i = 0; i < size; i++) {
-            int itemX = x + (i % horizontalItems) * (itemWidth + padding) + padding;
-            int itemY = y + (i / horizontalItems) * (itemHeight + padding) + padding;
+            int itemX = x + i % horizontalItems * (itemWidth + padding) + padding;
+            int itemY = y + i / horizontalItems * (itemHeight + padding) + padding;
             if (GuiHelper.isMouseWithin(mouseX, mouseY, itemX, itemY, itemWidth, itemHeight)) {
                 graphics.fill(itemX, itemY, itemX + itemWidth, itemY + itemHeight, Color.GRAY.getRGB());
                 graphics.fill(itemX + 1, itemY + 1, itemX + itemWidth - 1, itemY + itemHeight - 1, Laptop.getSystem().getSettings().getColorScheme().getItemBackgroundColor());
@@ -79,8 +80,8 @@ public class AppGrid extends Component {
     protected void handleMouseClick(MouseButtonEvent event) {
         int size = Math.min(entries.size(), verticalItems * horizontalItems);
         for (int i = 0; i < size; i++) {
-            int itemX = xPosition + (i % horizontalItems) * (itemWidth + padding) + padding;
-            int itemY = yPosition + (i / horizontalItems) * (itemHeight + padding) + padding;
+            int itemX = xPosition + i % horizontalItems * (itemWidth + padding) + padding;
+            int itemY = yPosition + i / horizontalItems * (itemHeight + padding) + padding;
             if (GuiHelper.isMouseWithin((int) event.x(), (int) event.y(), itemX, itemY, itemWidth, itemHeight)) {
                 if (System.currentTimeMillis() - this.lastClick <= 200 && clickedIndex == i) {
                     this.lastClick = 0;
@@ -122,7 +123,7 @@ public class AppGrid extends Component {
          //   com.ultreon.devices.api.app.component.Image image = new com.ultreon.devices.api.app.component.Image(iconOffset, padding, 14 * 3, 14 * 3, localEntry.info().getIconU(), localEntry.info().getIconV(), 14, 14, 224, 224, Laptop.ICON_TEXTURES);
             layout.addComponent(appImage);
         } else if (entry instanceof RemoteEntry remoteEntry) {
-            Identifier resource = new Identifier(remoteEntry.id);
+            Identifier resource = Identifier.parse(remoteEntry.id);
             com.ultreon.devices.api.app.component.Image image = new com.ultreon.devices.api.app.component.Image(iconOffset, padding, 14 * 3, 14 * 3, AppStore.CERTIFICATES_BASE_URL + "/assets/" + resource.getNamespace() + "/" + resource.getPath() + "/icon.png");
             layout.addComponent(image);
         }

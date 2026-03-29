@@ -126,7 +126,7 @@ public class LayoutAppPage extends Layout {
             AppInfo info = ((LocalEntry) entry).info();
             Button btnInstall = new Button(20, 2, installed ? "Delete" : "Install", installed ? Icons.CROSS : Icons.PLUS);
             btnInstall.setSize(55, 16);
-            btnInstall.setClickListener((event) ->
+            btnInstall.setClickListener(event ->
             {
                 if (event.button() == 0) {
                     if (installed) {
@@ -159,7 +159,7 @@ public class LayoutAppPage extends Layout {
         } else if (entry instanceof RemoteEntry) {
             Button btnDownload = new Button(20, 2, "Download", Icons.IMPORT);
             btnDownload.setSize(66, 16);
-            btnDownload.setClickListener((event) -> this.openWebLink("https://minecraft.curseforge.com/projects/" + ((RemoteEntry) entry).projectId));
+            btnDownload.setClickListener(event -> this.openWebLink("https://minecraft.curseforge.com/projects/" + ((RemoteEntry) entry).projectId));
             this.addComponent(btnDownload);
         }
     }

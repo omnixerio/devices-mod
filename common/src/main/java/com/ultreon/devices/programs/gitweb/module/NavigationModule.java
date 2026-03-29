@@ -76,7 +76,7 @@ public class NavigationModule extends Module {
                     remainingWidth = width - 6;
                 }
             }
-            button.left = 3 + rowItemCount * 3 + (width - 6) - remainingWidth;
+            button.left = 3 + rowItemCount * 3 + width - 6 - remainingWidth;
             button.top = 3 + currentRow * 18 + currentRow * 3;
 
             int offset = button.getWidth();
@@ -106,9 +106,9 @@ public class NavigationModule extends Module {
         }
         if (frame != null && data.containsKey("item-link-" + index)) {
             String link = data.get("item-link-" + index);
-            button.setClickListener((event) ->
+            button.setClickListener(event ->
             {
-                if (mouseButton == 0) {
+                if (event.button() == 0) {
                     frame.loadWebsite(link);
                 }
             });
