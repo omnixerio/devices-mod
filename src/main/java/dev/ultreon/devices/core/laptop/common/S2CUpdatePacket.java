@@ -1,43 +1,33 @@
 package dev.ultreon.devices.core.laptop.common;
 
-import dev.ultreon.devices.core.laptop.client.ClientLaptop;
-import dev.ultreon.devices.debug.DebugLog;
-import dev.ultreon.mods.xinexlib.network.Networker;
-import dev.ultreon.mods.xinexlib.network.packet.PacketToClient;
+import dev.ultreon.devices.UltreonDevicesCommon;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-import java.util.Arrays;
-import java.util.Optional;
 import java.util.UUID;
 
-public class S2CUpdatePacket implements PacketToClient<S2CUpdatePacket> {
-    private final CompoundTag nbt;
+public record S2CUpdatePacket(Tag nbt) implements CustomPacketPayload {
+    public static final Type<S2CUpdatePacket> TYPE = new Type<>(UltreonDevicesCommon.id("s2c_update"));
+    public static final StreamCodec<FriendlyByteBuf, S2CUpdatePacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.tagCodec(NbtAccounter::unlimitedHeap), S2CUpdatePacket::nbt,
+            S2CUpdatePacket::new
+    );
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 
     public S2CUpdatePacket(UUID laptop, String type, CompoundTag nbt) {
-        this.nbt = new CompoundTag();
-        this.nbt.putLongArray("uuid", new long[]{laptop.getMostSignificantBits(), laptop.getLeastSignificantBits()});
-        this.nbt.putString("type", type);
-        this.nbt.put("data", nbt);
-    }
-
-    public S2CUpdatePacket(FriendlyByteBuf buf) {
-        this.nbt = buf.readNbt();
-    }
-
-    @Override
-    public void handle(Networker connection) {
-        Optional<long[]> uuidLongs = this.nbt.getLongArray("uuid");
-        if (uuidLongs.isEmpty()) return;
-        long[] longs = uuidLongs.get();
-        UUID uuid = new UUID(longs[0], longs[1]);
-        ClientLaptop.laptops.get(uuid).handlePacket(this.nbt.getString("type").orElse(null), this.nbt.getCompoundOrEmpty("data"));
-        DebugLog.log("SQUARE: " + Arrays.toString(ClientLaptop.laptops.get(uuid).square));
-    }
-
-    @Override
-    public void write(RegistryFriendlyByteBuf buffer) {
-
+        var tag = new CompoundTag();
+        tag.putLongArray("uuid", new long[]{laptop.getMostSignificantBits(), laptop.getLeastSignificantBits()});
+        tag.putString("type", type);
+        tag.put("data", nbt);
+        this(tag);
     }
 }

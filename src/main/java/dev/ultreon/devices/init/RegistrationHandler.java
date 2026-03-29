@@ -1,7 +1,7 @@
 package dev.ultreon.devices.init;
 
 import dev.ultreon.devices.item.DeviceDataComponents;
-import dev.ultreon.devices.network.DevicesNetworker;
+import dev.ultreon.devices.network.DevicesCommonNetworker;
 import dev.ultreon.mods.xinexlib.Env;
 import dev.ultreon.mods.xinexlib.EnvExecutor;
 import net.neoforged.bus.api.IEventBus;
@@ -21,7 +21,7 @@ public class RegistrationHandler {
         DeviceSounds.register(bus);
         DeviceCreativeTabs.register(bus);
 
-        DevicesNetworker.init();
+        DevicesCommonNetworker.init();
 
         if (FMLEnvironment.getDist().isClient()) {
             DeviceEntityRenderers.register(bus);

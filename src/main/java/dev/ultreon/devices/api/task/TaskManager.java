@@ -1,7 +1,7 @@
 package dev.ultreon.devices.api.task;
 
 import dev.ultreon.devices.UltreonDevicesCommon;
-import dev.ultreon.devices.network.DevicesNetworker;
+import dev.ultreon.devices.network.DevicesCommonNetworker;
 import dev.ultreon.devices.network.task.RequestPacket;
 import net.minecraft.client.Minecraft;
 
@@ -45,7 +45,7 @@ public final class TaskManager {
         int requestId = manager.currentId++;
         manager.requests.put(requestId, task);
         if(Minecraft.getInstance().getConnection() != null)
-            DevicesNetworker.INSTANCE.sendToServer(new RequestPacket(requestId, task));
+            DevicesCommonNetworker.INSTANCE.sendToServer(new RequestPacket(requestId, task));
     }
 
     public static Task getTask(String name) {

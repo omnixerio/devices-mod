@@ -1,6 +1,5 @@
 package dev.ultreon.devices.api.event;
 
-import dev.ultreon.devices.api.TrayItemAdder;
 import dev.ultreon.devices.core.Laptop;
 import dev.ultreon.devices.object.TrayItem;
 

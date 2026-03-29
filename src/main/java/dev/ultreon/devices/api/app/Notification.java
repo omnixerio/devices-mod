@@ -2,7 +2,7 @@ package dev.ultreon.devices.api.app;
 
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.core.client.ClientNotification;
-import dev.ultreon.devices.network.DevicesNetworker;
+import dev.ultreon.devices.network.DevicesCommonNetworker;
 import dev.ultreon.devices.network.task.NotificationPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -76,6 +76,6 @@ public class Notification {
      * @param player the target player
      */
     public void pushTo(ServerPlayer player) {
-        DevicesNetworker.INSTANCE.sendToClient(new NotificationPacket(this), player);
+        DevicesCommonNetworker.INSTANCE.sendToClient(new NotificationPacket(this), player);
     }
 }

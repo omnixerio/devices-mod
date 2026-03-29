@@ -2,7 +2,7 @@ package dev.ultreon.devices.network.task;
 
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.api.task.TaskManager;
-import dev.ultreon.devices.network.DevicesNetworker;
+import dev.ultreon.devices.network.DevicesCommonNetworker;
 import dev.ultreon.mods.xinexlib.network.Networker;
 import dev.ultreon.mods.xinexlib.network.packet.PacketToServer;
 import net.minecraft.nbt.CompoundTag;
@@ -36,7 +36,7 @@ public class RequestPacket implements PacketToServer<RequestPacket> {
     public void handle(Networker connection, ServerPlayer player) {
         //DebugLog.log("RECEIVED from " + ctx.get().getPlayer().getUUID());
         request.processRequest(tag, player.level(), player);
-        DevicesNetworker.INSTANCE.sendToClient(new ResponsePacket(id, request), player);
+        DevicesCommonNetworker.INSTANCE.sendToClient(new ResponsePacket(id, request), player);
     }
 
     @Override

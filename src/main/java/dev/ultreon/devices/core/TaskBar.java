@@ -1,7 +1,6 @@
 package dev.ultreon.devices.core;
 
 import dev.ultreon.devices.UltreonDevicesCommon;
-import dev.ultreon.devices.api.TrayItemAdder;
 import dev.ultreon.devices.api.event.SetupTrayItemsEvent;
 import dev.ultreon.devices.api.utils.RenderUtil;
 import dev.ultreon.devices.core.network.TrayItemWifi;

@@ -1,4 +1,4 @@
-package dev.ultreon.devices.core.laptop.client;
+package dev.ultreon.devices.client;
 
 import dev.ultreon.devices.Reference;
 import dev.ultreon.devices.debug.DebugLog;
@@ -23,7 +23,7 @@ public class ClientLaptopScreen extends Screen {
         this.laptop = laptop;
     }
 
-    public void renderBezels(final @NotNull GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, float partialTicks) {
+    public void extractBezels(final @NotNull GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, float partialTicks) {
         this.extractBackground(graphics, mouseX, mouseY, partialTicks);
 
         //*************************//
@@ -54,7 +54,7 @@ public class ClientLaptopScreen extends Screen {
         int posX = (width - ClientLaptop.DEVICE_WIDTH) / 2 + BORDER;
         int posY = (height - ClientLaptop.DEVICE_HEIGHT) / 2 + BORDER;
         super.extractRenderState(graphics, mouseX, mouseY, a);
-        renderBezels(graphics, mouseX, mouseY, a);
+        this.extractBezels(graphics, mouseX, mouseY, a);
         graphics.pose().translate(posX, posY);
         laptop.render(graphics, mouseX-posX, mouseY-posY, a);
     }

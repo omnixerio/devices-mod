@@ -3,7 +3,7 @@ package dev.ultreon.devices.block;
 import com.mojang.serialization.MapCodec;
 import dev.ultreon.devices.ModDeviceTypes;
 import dev.ultreon.devices.block.entity.RouterBlockEntity;
-import dev.ultreon.devices.network.DevicesNetworker;
+import dev.ultreon.devices.network.DevicesCommonNetworker;
 import dev.ultreon.devices.network.task.SyncBlockPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -89,7 +89,7 @@ public class RouterBlock extends DeviceBlock.Colored {
             if (blockEntity instanceof RouterBlockEntity router) {
                 router.setDebug(true);
                 if (router.isDebug()) {
-                    DevicesNetworker.INSTANCE.sendToServer(new SyncBlockPacket(pos));
+                    DevicesCommonNetworker.INSTANCE.sendToServer(new SyncBlockPacket(pos));
                 }
             }
             return InteractionResult.SUCCESS;

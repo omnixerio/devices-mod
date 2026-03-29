@@ -1,9 +1,8 @@
-package dev.ultreon.devices.core;
+package dev.ultreon.devices.client;
 
 import com.google.common.collect.ImmutableList;
 import dev.ultreon.devices.UltreonDevicesCommon;
 import dev.ultreon.devices.api.ApplicationManager;
-import dev.ultreon.devices.api.app.*;
 import dev.ultreon.devices.api.app.*;
 import dev.ultreon.devices.api.app.Dialog;
 import dev.ultreon.devices.api.app.System;
@@ -17,6 +16,9 @@ import dev.ultreon.devices.api.utils.OnlineRequest;
 import dev.ultreon.devices.api.video.CustomResolution;
 import dev.ultreon.devices.api.video.VideoInfo;
 import dev.ultreon.devices.block.entity.ComputerBlockEntity;
+import dev.ultreon.devices.core.Settings;
+import dev.ultreon.devices.core.TaskBar;
+import dev.ultreon.devices.core.Window;
 import dev.ultreon.devices.core.task.TaskInstallApp;
 import dev.ultreon.devices.object.AppInfo;
 import dev.ultreon.devices.programs.system.DiagnosticsApp;
@@ -58,10 +60,8 @@ import org.joml.Matrix3x2f;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 //TODO Intro message (created by mrcrayfish, donate here)
@@ -90,7 +90,7 @@ public class Laptop extends Screen implements System {
     }
 
     public static List<Identifier> getWallpapers() {
-        return ImmutableList.copyOf(WALLPAPERS);
+        return Collections.unmodifiableList(WALLPAPERS);
     }
 
     private static final List<Identifier> WALLPAPERS = new ArrayList<>();
@@ -102,7 +102,7 @@ public class Laptop extends Screen implements System {
     private static Drive mainDrive;
     private final Settings settings;
     private final TaskBar bar;
-    final CopyOnWriteArrayList<Window<?>> windows;
+    final CopyOnWriteArrayList<dev.ultreon.devices.core.Window<?>> windows;
     private final CompoundTag appData;
     private final CompoundTag systemData;
     protected List<AppInfo> installedApps = new ArrayList<>();
@@ -151,7 +151,7 @@ public class Laptop extends Screen implements System {
         // Windows
         this.windows = new CopyOnWriteArrayList<>() {
             @Override
-            public Window<?> get(int index) {
+            public dev.ultreon.devices.core.Window<?> get(int index) {
                 try {
                     return super.get(index);
                 } catch (Exception e) {
@@ -160,7 +160,7 @@ public class Laptop extends Screen implements System {
             }
 
             @Override
-            public boolean add(Window<?> window) {
+            public boolean add(dev.ultreon.devices.core.Window<?> window) {
                 window.removed = false;
                 return super.add(window);
             }
@@ -306,7 +306,7 @@ public class Laptop extends Screen implements System {
     public void removed() {
         /* Close all windows and sendTask application data */
         for (int i = 0; i < windows.size(); i++) {
-            Window<?> window = windows.get(i);
+            dev.ultreon.devices.core.Window<?> window = windows.get(i);
             if (window != null) {
                 window.close();
                 i--;
@@ -372,7 +372,7 @@ public class Laptop extends Screen implements System {
         try {
             bar.onTick();
 
-            for (Window<?> window : windows) {
+            for (dev.ultreon.devices.core.Window<?> window : windows) {
                 if (window != null) {
                     window.onTick();
 //                    if (window.removed) {
@@ -642,10 +642,10 @@ public class Laptop extends Screen implements System {
         this.bar.handleClick(this, posX, posY + getScreenHeight() - TaskBar.BAR_HEIGHT, event);
 
         for (int i = 0; i < windows.size(); i++) {
-            Window<Application> window = (Window<Application>) windows.get(i);
+            dev.ultreon.devices.core.Window<Application> window = (dev.ultreon.devices.core.Window<Application>) windows.get(i);
             if (window != null) {
                 try {
-                    Window<Dialog> dialogWindow = window.getContent().getActiveDialog();
+                    dev.ultreon.devices.core.Window<Dialog> dialogWindow = window.getContent().getActiveDialog();
                     if (isMouseWithinWindow((int) event.x(), (int) event.y(), window) || isMouseWithinWindow((int) event.x(), (int) event.y(), dialogWindow)) {
                         windows.remove(i);
                         i--;
@@ -803,8 +803,8 @@ public class Laptop extends Screen implements System {
             }
 
             if (windows.getFirst() != null) {
-                Window<Application> window = (Window<Application>) windows.getFirst();
-                Window<Dialog> dialogWindow = window.getContent().getActiveDialog();
+                dev.ultreon.devices.core.Window<Application> window = (dev.ultreon.devices.core.Window<Application>) windows.getFirst();
+                dev.ultreon.devices.core.Window<Dialog> dialogWindow = window.getContent().getActiveDialog();
                 if (dragging) {
                     if (isMouseOnScreen((int) event.x(), (int) event.y()) && dragWindowFromX != null && dragWindowFromY != null) {
                         Objects.requireNonNullElse(dialogWindow, window).handleWindowMove(posX, posY, (int) (dx + event.x() - dragWindowFromX), (int) (dy + event.y() - dragWindowFromY));
@@ -859,7 +859,7 @@ public class Laptop extends Screen implements System {
     public Pair<Application, Boolean> sendApplicationToFront(AppInfo info) {
         int i = 0;
         for (; i < windows.size(); i++) {
-            Window<?> window = windows.get(i);
+            dev.ultreon.devices.core.Window<?> window = windows.get(i);
             if (window != null && window.content instanceof Application && ((Application) window.content).getInfo() == info) {
                 windows.remove(i);
                 updateWindowStack();
@@ -906,7 +906,7 @@ public class Laptop extends Screen implements System {
                 ((SystemAccessor) app).sendSystem(this);
             }
 
-            Window<Application> window = new Window<>(app, this);
+            dev.ultreon.devices.core.Window<Application> window = new dev.ultreon.devices.core.Window<>(app, this);
             window.init((width - getScreenWidth()) / 2, (height - getScreenHeight()) / 2, intent);
 
             if (appData.contains(app.getInfo().getFormattedId())) {
@@ -969,7 +969,7 @@ public class Laptop extends Screen implements System {
     @SuppressWarnings("unchecked")
     private void closeApplication(Application app) {
         for (int i = 0; i < windows.size(); i++) {
-            Window<Application> window = (Window<Application>) windows.get(i);
+            dev.ultreon.devices.core.Window<Application> window = (dev.ultreon.devices.core.Window<Application>) windows.get(i);
             if (window != null) {
                 if (window.content.getInfo().equals(app.getInfo())) {
                     if (app.isDirty()) {
@@ -992,7 +992,7 @@ public class Laptop extends Screen implements System {
         }
     }
 
-    private void addWindow(Window<Application> window) {
+    private void addWindow(dev.ultreon.devices.core.Window<Application> window) {
         if (hasReachedWindowLimit())
             return;
 
@@ -1028,21 +1028,21 @@ public class Laptop extends Screen implements System {
         return isMouseInside(mouseX, mouseY, posX, posY, posX + getScreenWidth(), posY + getScreenHeight());
     }
 
-    private boolean isMouseWithinWindowBar(int mouseX, int mouseY, Window<?> window) {
+    private boolean isMouseWithinWindowBar(int mouseX, int mouseY, dev.ultreon.devices.core.Window<?> window) {
         if (window == null) return false;
         int posX = (width - getScreenWidth()) / 2;
         int posY = (height - getScreenHeight()) / 2;
         return isMouseInside(mouseX, mouseY, posX + window.offsetX + 1, posY + window.offsetY + 1, posX + window.offsetX + window.width - 13, posY + window.offsetY + 11);
     }
 
-    private boolean isMouseWithinWindow(int mouseX, int mouseY, Window<?> window) {
+    private boolean isMouseWithinWindow(int mouseX, int mouseY, dev.ultreon.devices.core.Window<?> window) {
         if (window == null) return false;
         int posX = (width - getScreenWidth()) / 2;
         int posY = (height - getScreenHeight()) / 2;
         return isMouseInside(mouseX, mouseY, posX + window.offsetX, posY + window.offsetY, posX + window.offsetX + window.width, posY + window.offsetY + window.height);
     }
 
-    public boolean isMouseWithinApp(int mouseX, int mouseY, Window<?> window) {
+    public boolean isMouseWithinApp(int mouseX, int mouseY, dev.ultreon.devices.core.Window<?> window) {
         int posX = (width - getScreenWidth()) / 2;
         int posY = (height - getScreenHeight()) / 2;
         return isMouseInside(mouseX, mouseY, posX + window.offsetX + 1, posY + window.offsetY + 13, posX + window.offsetX + window.width - 1, posY + window.offsetY + window.height - 1);

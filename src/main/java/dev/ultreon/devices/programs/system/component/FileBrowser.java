@@ -2,11 +2,9 @@ package dev.ultreon.devices.programs.system.component;
 
 import dev.ultreon.devices.api.ApplicationManager;
 import dev.ultreon.devices.api.app.*;
-import dev.ultreon.devices.api.app.*;
 import dev.ultreon.devices.api.app.component.*;
 import dev.ultreon.devices.api.app.Component;
 import dev.ultreon.devices.api.app.Dialog;
-import dev.ultreon.devices.api.app.component.*;
 import dev.ultreon.devices.api.app.component.Button;
 import dev.ultreon.devices.api.app.component.Label;
 import dev.ultreon.devices.api.app.listener.ItemClickListener;

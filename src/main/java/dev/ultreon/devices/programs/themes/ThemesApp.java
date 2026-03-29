@@ -1,7 +1,6 @@
 package dev.ultreon.devices.programs.themes;
 
 import dev.ultreon.devices.api.app.*;
-import dev.ultreon.devices.api.app.*;
 import dev.ultreon.devices.api.app.Component;
 import dev.ultreon.devices.api.app.Dialog;
 import dev.ultreon.devices.api.app.System;

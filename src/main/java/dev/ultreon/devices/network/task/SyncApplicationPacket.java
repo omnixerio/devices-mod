@@ -8,6 +8,7 @@ import dev.ultreon.mods.xinexlib.network.Networker;
 import dev.ultreon.mods.xinexlib.network.packet.PacketToClient;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * @author MrCrayfish
  */
-public class SyncApplicationPacket implements PacketToClient<SyncApplicationPacket> {
+public class SyncApplicationPacket implements CustomPacketPayload {
     private final List<AppInfo> allowedApps;
 
     public SyncApplicationPacket(FriendlyByteBuf buf) {
@@ -49,5 +50,10 @@ public class SyncApplicationPacket implements PacketToClient<SyncApplicationPack
         for (AppInfo appInfo : allowedApps) {
             buffer.writeIdentifier(appInfo.getId());
         }
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+
     }
 }

@@ -1,41 +1,28 @@
 package dev.ultreon.devices.network.task;
 
-import dev.ultreon.devices.DeviceConfig;
+import dev.ultreon.devices.UltreonDevicesCommon;
 import dev.ultreon.mods.xinexlib.network.Networker;
 import dev.ultreon.mods.xinexlib.network.packet.PacketToClient;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import org.jspecify.annotations.NonNull;
 
 /**
  * @author MrCrayfish
  */
-public class SyncConfigPacket implements PacketToClient<SyncConfigPacket> {
-
-    private @NotNull CompoundTag syncData;
-
-    public SyncConfigPacket(CompoundTag syncData) {
-        this.syncData = syncData;
-    }
-
-    public SyncConfigPacket() {
-        this(DeviceConfig.writeSyncTag());
-    }
-
-    public SyncConfigPacket(FriendlyByteBuf buf) {
-        syncData = Objects.requireNonNull(buf.readNbt());
-    }
+public record SyncConfigPacket(Tag syncData) implements CustomPacketPayload {
+    public static final Type<SyncConfigPacket> TYPE = new Type<>(UltreonDevicesCommon.id("sync_config"));
+    public static final StreamCodec<FriendlyByteBuf, SyncConfigPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.tagCodec(NbtAccounter::unlimitedHeap), SyncConfigPacket::syncData,
+            SyncConfigPacket::new
+    );
 
     @Override
-    public void handle(Networker connection) {
-        DeviceConfig.readSyncTag(syncData);
-    }
-
-    @Override
-    public void write(RegistryFriendlyByteBuf buffer) {
-        buffer.writeNbt(syncData);
+    public @NonNull Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

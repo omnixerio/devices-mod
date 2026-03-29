@@ -9,7 +9,6 @@ import dev.ultreon.devices.api.app.Icons;
 import dev.ultreon.devices.api.app.Layout;
 import dev.ultreon.devices.api.app.ScrollableLayout;
 import dev.ultreon.devices.api.app.component.*;
-import dev.ultreon.devices.api.app.component.*;
 import dev.ultreon.devices.api.app.component.Button;
 import dev.ultreon.devices.api.app.component.Image;
 import dev.ultreon.devices.api.app.renderer.ItemRenderer;

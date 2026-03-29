@@ -1,7 +1,6 @@
 package dev.ultreon.devices.api.app;
 
 import dev.ultreon.devices.api.app.component.*;
-import dev.ultreon.devices.api.app.component.*;
 import dev.ultreon.devices.api.app.component.Button;
 import dev.ultreon.devices.api.app.component.Image;
 import dev.ultreon.devices.api.app.component.Label;

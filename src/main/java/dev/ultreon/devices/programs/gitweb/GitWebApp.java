@@ -1,7 +1,6 @@
 package dev.ultreon.devices.programs.gitweb;
 
 import dev.ultreon.devices.api.app.*;
-import dev.ultreon.devices.api.app.*;
 import dev.ultreon.devices.api.app.System;
 import dev.ultreon.devices.api.app.component.Button;
 import dev.ultreon.devices.api.app.component.Spinner;

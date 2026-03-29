@@ -1,7 +1,7 @@
 package dev.ultreon.devices.core.laptop.server;
 
 import dev.ultreon.devices.core.laptop.common.S2CUpdatePacket;
-import dev.ultreon.devices.network.DevicesNetworker;
+import dev.ultreon.devices.network.DevicesCommonNetworker;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -15,7 +15,7 @@ public class ServerLaptop {
     ;
 
     public void sendPacket(ServerPlayer player, String type, CompoundTag nbt) {
-        DevicesNetworker.INSTANCE.sendToClient(new S2CUpdatePacket(this.uuid, type, nbt), player);
+        DevicesCommonNetworker.INSTANCE.sendToClient(new S2CUpdatePacket(this.uuid, type, nbt), player);
     }
 
     public UUID getUuid() {

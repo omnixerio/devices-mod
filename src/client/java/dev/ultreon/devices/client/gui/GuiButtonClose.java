@@ -1,4 +1,4 @@
-package dev.ultreon.devices.gui;
+package dev.ultreon.devices.client.gui;
 
 import dev.ultreon.devices.core.Window;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

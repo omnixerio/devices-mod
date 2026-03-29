@@ -1,6 +1,5 @@
 package dev.ultreon.devices;
 
-import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import com.mojang.serialization.Lifecycle;
@@ -13,7 +12,6 @@ import dev.ultreon.devices.api.utils.OnlineRequest;
 import dev.ultreon.devices.core.client.ClientNotification;
 import dev.ultreon.devices.core.client.debug.ClientAppDebug;
 import dev.ultreon.devices.core.io.task.*;
-import dev.ultreon.devices.core.io.task.*;
 import dev.ultreon.devices.core.network.task.TaskConnect;
 import dev.ultreon.devices.core.network.task.TaskGetDevices;
 import dev.ultreon.devices.core.network.task.TaskPing;
@@ -21,7 +19,7 @@ import dev.ultreon.devices.core.print.task.TaskPrint;
 import dev.ultreon.devices.core.task.TaskInstallApp;
 import dev.ultreon.devices.debug.DebugLog;
 import dev.ultreon.devices.event.WorldDataHandler;
-import dev.ultreon.devices.network.DevicesNetworker;
+import dev.ultreon.devices.network.DevicesCommonNetworker;
 import dev.ultreon.devices.network.task.SyncApplicationPacket;
 import dev.ultreon.devices.network.task.SyncConfigPacket;
 import dev.ultreon.devices.object.AppInfo;
@@ -34,11 +32,9 @@ import dev.ultreon.devices.programs.auction.task.TaskBuyItem;
 import dev.ultreon.devices.programs.auction.task.TaskGetAuctions;
 import dev.ultreon.devices.programs.debug.TextAreaApp;
 import dev.ultreon.devices.programs.email.task.*;
-import dev.ultreon.devices.programs.email.task.*;
 import dev.ultreon.devices.programs.example.ExampleApp;
 import dev.ultreon.devices.programs.example.task.TaskNotificationTest;
 import dev.ultreon.devices.programs.system.SystemApp;
-import dev.ultreon.devices.programs.system.task.*;
 import dev.ultreon.devices.programs.system.task.*;
 import dev.ultreon.devices.util.SiteRegistration;
 import dev.ultreon.devices.util.Vulnerability;
@@ -52,6 +48,7 @@ import dev.ultreon.mods.xinexlib.event.server.ServerStoppedEvent;
 import dev.ultreon.mods.xinexlib.event.system.EventSystem;
 import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import dev.ultreon.mods.xinexlib.registrar.RegistrarManager;
+import net.fabricmc.api.ModInitializer;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
@@ -77,7 +74,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-public abstract class UltreonDevicesCommon {
+public class UltreonDevicesCommon implements ModInitializer {
     public static final boolean DEVELOPER_MODE = !FMLEnvironment.isProduction();
     public static final String MOD_ID = "devices";
     public static final Logger LOGGER = LoggerFactory.getLogger("Devices Mod");
@@ -112,6 +109,12 @@ public abstract class UltreonDevicesCommon {
         UltreonDevicesCommon.instance = this;
     }
 
+    @Override
+    public void onInitialize() {
+        preInit();
+        init();
+    }
+
     public static UltreonDevicesCommon getInstance() {
         return instance;
     }
@@ -132,7 +135,7 @@ public abstract class UltreonDevicesCommon {
         //LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
         LOGGER.info("Doing some common setup.");
 
-        DevicesNetworker.init();
+        DevicesCommonNetworker.init();
 
         registerApplications();
 
@@ -393,9 +396,9 @@ public abstract class UltreonDevicesCommon {
             LOGGER.info("Player logged in: " + player.getName());
 
             if (allowedApps != null) {
-                DevicesNetworker.INSTANCE.sendToClient(new SyncApplicationPacket(allowedApps), player);
+                DevicesCommonNetworker.INSTANCE.sendToClient(new SyncApplicationPacket(allowedApps), player);
             }
-            DevicesNetworker.INSTANCE.sendToClient(new SyncConfigPacket(), player);
+            DevicesCommonNetworker.INSTANCE.sendToClient(new SyncConfigPacket(), player);
         });
     }
 

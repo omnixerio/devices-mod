@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 public class AppInfo {
     public static final Comparator<AppInfo> SORT_NAME = Comparator.comparing(AppInfo::getName);
 
-    private transient final Identifier APP_ID;
+    private transient final Identifier appId;
 
     private final transient boolean systemApp;
 
@@ -67,9 +67,13 @@ public class AppInfo {
     private String[] screenshots;
     private Support support;
 
-    public AppInfo(Identifier identifier, boolean isSystemApp) {
-        this.APP_ID = identifier;
-        this.systemApp = isSystemApp;
+    public AppInfo(Identifier appId, boolean systemApp) {
+        this.appId = appId;
+        this.systemApp = systemApp;
+    }
+
+    public AppInfo(Identifier appId) {
+        this(appId, false);
     }
 
     /**
@@ -78,7 +82,7 @@ public class AppInfo {
      * @return the app resource location
      */
     public Identifier getId() {
-        return APP_ID;
+        return appId;
     }
 
     /**
@@ -190,11 +194,11 @@ public class AppInfo {
         }
 
         private Icon(AppInfo info) {
-            this.base = Glyph.of(Identifier.fromNamespaceAndPath(info.APP_ID.getNamespace(), "textures/app/icon/base/" + info.APP_ID.getPath() + ".png"));
+            this.base = Glyph.of(Identifier.fromNamespaceAndPath(info.appId.getNamespace(), "textures/app/icon/base/" + info.appId.getPath() + ".png"));
             this.base.type = 0;
-            this.overlay0 = Glyph.of(Identifier.fromNamespaceAndPath(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/" + info.APP_ID.getPath() + ".png"));
+            this.overlay0 = Glyph.of(Identifier.fromNamespaceAndPath(info.appId.getNamespace(), "textures/app/icon/overlay0/" + info.appId.getPath() + ".png"));
             this.overlay0.type = 1;
-            this.overlay1 = Glyph.of(Identifier.fromNamespaceAndPath(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/" + info.APP_ID.getPath() + ".png"));
+            this.overlay1 = Glyph.of(Identifier.fromNamespaceAndPath(info.appId.getNamespace(), "textures/app/icon/overlay1/" + info.appId.getPath() + ".png"));
             this.overlay1.type = 2;
         }
 
@@ -241,10 +245,10 @@ public class AppInfo {
         resetInfo();
         if (Minecraft.getInstance().getResourceManager() == null) return;
         // TODO "Check if the resource manager can be used on client side."
-        Resource resource = Minecraft.getInstance().getResourceManager().getResource(Identifier.fromNamespaceAndPath(APP_ID.getNamespace(), "/apps/" + APP_ID.getPath() + ".json")).orElse(null);
+        Resource resource = Minecraft.getInstance().getResourceManager().getResource(Identifier.fromNamespaceAndPath(appId.getNamespace(), "/apps/" + appId.getPath() + ".json")).orElse(null);
 
         if (resource == null)
-            throw new RuntimeException("Missing app info json for '" + APP_ID + "'");
+            throw new RuntimeException("Missing app info json for '" + appId + "'");
 
         try (Reader reader = resource.openAsReader()) {
             JsonElement obj = JsonParser.parseReader(reader);
@@ -317,9 +321,9 @@ public class AppInfo {
                 info.icon = new Icon();
                 info.icon.base = Icon.Glyph.of(Identifier.parse(json.getAsJsonObject().get("icon").getAsString()));
                 info.icon.base.type = 0;
-                info.icon.overlay0 = Icon.Glyph.of(Identifier.fromNamespaceAndPath(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/empty.png"));
+                info.icon.overlay0 = Icon.Glyph.of(Identifier.fromNamespaceAndPath(info.appId.getNamespace(), "textures/app/icon/overlay0/empty.png"));
                 info.icon.overlay0.type = 1;
-                info.icon.overlay1 = Icon.Glyph.of(Identifier.fromNamespaceAndPath(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/empty.png"));
+                info.icon.overlay1 = Icon.Glyph.of(Identifier.fromNamespaceAndPath(info.appId.getNamespace(), "textures/app/icon/overlay1/empty.png"));
                 info.icon.overlay1.type = 2;
             }
 

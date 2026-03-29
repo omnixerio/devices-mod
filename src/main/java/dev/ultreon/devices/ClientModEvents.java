@@ -3,7 +3,6 @@ package dev.ultreon.devices;
 import com.mojang.blaze3d.platform.NativeImage;
 import dev.ultreon.devices.api.ApplicationManager;
 import dev.ultreon.devices.block.entity.renderer.*;
-import dev.ultreon.devices.block.entity.renderer.*;
 import dev.ultreon.devices.client.RenderRegistry;
 import dev.ultreon.devices.core.Laptop;
 import dev.ultreon.devices.debug.DebugFlags;
