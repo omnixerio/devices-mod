@@ -25,12 +25,12 @@ public class FurnaceBox extends ContainerBox {
         slots.add(new Slot(26, 8, input));
         slots.add(new Slot(26, 44, fuel));
         slots.add(new Slot(85, 26, result));
-        this.fuelTime = Devices.getInstance().getBurnTime(fuel, RecipeType.SMELTING);
+        this.fuelTime = Devices.getInstance().getBurnTime(fuel, RecipeType.SMELTING, Minecraft.getInstance().level);
     }
 
     @Deprecated
     private static int getBurnTime(ItemStack stack, RecipeType<?> type) {
-        return Devices.getInstance().getBurnTime(stack, type);
+        return Devices.getInstance().getBurnTime(stack, type, Minecraft.getInstance().level);
     }
 
     @Override
