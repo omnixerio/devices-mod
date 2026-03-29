@@ -31,7 +31,7 @@ public class TaskDeleteEmail extends Task {
 	public void processRequest(CompoundTag nbt, Level level, Player player) {
 		List<Email> emails = EmailManager.INSTANCE.getEmailsForAccount(player);
 		if (emails != null) {
-			int index = nbt.getInt("Index");
+			int index = nbt.getIntOr("Index", 0);
 			if (index >= 0 && index < emails.size()) {
 				emails.remove(index);
 				this.setSuccessful();

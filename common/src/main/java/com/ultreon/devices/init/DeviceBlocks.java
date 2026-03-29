@@ -8,6 +8,7 @@ import dev.ultreon.mods.xinexlib.registrar.RegistrySupplier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -30,8 +31,8 @@ public class DeviceBlocks {
         }
     };
 
-    public static final RegistrySupplier<MacMaxXBlock, Block> MAC_MAX_X = REGISTER.register("mac_max_x", MacMaxXBlock::new);
-    public static final RegistrySupplier<MacMaxXBlockPart, Block> MAC_MAX_X_PART = REGISTER.register("mac_max_x_part", MacMaxXBlockPart::new);
+    public static final RegistrySupplier<MacMaxXBlock, Block> MAC_MAX_X = REGISTER.register("mac_max_x", () -> new MacMaxXBlock(BlockBehaviour.Properties.of().strength(2.5f).noOcclusion()));
+    public static final RegistrySupplier<MacMaxXBlockPart, Block> MAC_MAX_X_PART = REGISTER.register("mac_max_x_part", () -> new MacMaxXBlockPart(BlockBehaviour.Properties.of().strength(2.5f).noOcclusion()));
 
     public static final DyeableRegistration<Block> PRINTERS = new DyeableRegistration<>() {
         @Override
@@ -70,7 +71,7 @@ public class DeviceBlocks {
     };
 
 
-    public static final RegistrySupplier<PaperBlock, Block> PAPER = REGISTER.register("paper", PaperBlock::new);
+    public static final RegistrySupplier<PaperBlock, Block> PAPER = REGISTER.register("paper", () -> new PaperBlock(BlockBehaviour.Properties.of().strength(0.5f).noOcclusion()));
 
 
     public static Stream<Block> getAllBlocks() {

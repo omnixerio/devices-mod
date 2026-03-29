@@ -8,11 +8,14 @@ import com.ultreon.devices.core.network.NetworkDevice;
 import com.ultreon.devices.core.network.Router;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.storage.TagValueInput;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -38,19 +41,20 @@ public class TaskPrint extends Task {
     @Override
     public void prepareRequest(CompoundTag tag) {
         tag.putLong("devicePos", devicePos.asLong());
-        tag.putUUID("printerId", printerId);
+        tag.putLongArray("printerId", new long[]{printerId.getMostSignificantBits(), printerId.getLeastSignificantBits()});
         tag.put("print", IPrint.save(print));
     }
 
     @Override
     public void processRequest(CompoundTag tag, Level level, Player player) {
-        BlockEntity tileEntity = level.getChunkAt(BlockPos.of(tag.getLong("devicePos"))).getBlockEntity(BlockPos.of(tag.getLong("devicePos")), LevelChunk.EntityCreationType.IMMEDIATE);
+        BlockEntity tileEntity = level.getChunkAt(BlockPos.of(tag.getLongOr("devicePos", 0))).getBlockEntity(BlockPos.of(tag.getLongOr("devicePos", 0)), LevelChunk.EntityCreationType.IMMEDIATE);
         if (tileEntity instanceof NetworkDeviceBlockEntity device) {
             Router router = device.getRouter();
             if (router != null) {
-                NetworkDeviceBlockEntity printer = router.getDevice(level, tag.getUUID("printerId"));
+                Optional<long[]> printerId1 = tag.getLongArray("printerId");
+                NetworkDeviceBlockEntity printer = router.getDevice(level, printerId1.map(l -> new UUID(l[0], l[1])).orElseThrow());
                 if (printer instanceof PrinterBlockEntity) {
-                    IPrint print = IPrint.load(tag.getCompound("print"));
+                    IPrint print = IPrint.load(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), tag.getCompoundOrEmpty("print")));
                     ((PrinterBlockEntity) printer).addToQueue(print);
                     this.setSuccessful();
                 } else {

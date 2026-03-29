@@ -1,6 +1,5 @@
 package com.ultreon.devices.programs.auction;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.app.Dialog;
 import com.ultreon.devices.api.app.Layout;
@@ -19,6 +18,7 @@ import com.ultreon.devices.util.TimeUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -32,8 +32,8 @@ import java.util.Objects;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class MineBayApp extends Application {
-    private static final Identifier CHEST_GUI_TEXTURE = new Identifier("textures/gui/container/generic_54.png");
-    private static final Identifier MINEBAY_ASSETS = new Identifier("devices:textures/gui/minebay.png");
+    private static final Identifier CHEST_GUI_TEXTURE = Identifier.parse("textures/gui/container/generic_54.png");
+    private static final Identifier MINEBAY_ASSETS = Identifier.parse("devices:textures/gui/minebay.png");
 
     private static final ItemStack EMERALD = new ItemStack(Items.EMERALD);
 
@@ -90,9 +90,7 @@ public class MineBayApp extends Application {
             graphics.fill(x, y + 25, x + 95, y + height, Color.LIGHT_GRAY.getRGB());
             graphics.fill(x + 94, y + 25, x + 95, y + height, Color.GRAY.getRGB());
 
-            RenderSystem.setShaderTexture(0, MINEBAY_ASSETS);
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-            RenderUtil.drawRectWithTexture(MINEBAY_ASSETS, graphics, x + 5, y + 6, 0, 0, 61, 11, 61, 12);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, MINEBAY_ASSETS, x + 5, y + 6, 0, 0, 61, 11, 61, 12, 256, 256);
         });
 
         Button btnAddItem = new Button(70, 5, "Add Item");
@@ -149,12 +147,12 @@ public class MineBayApp extends Application {
                     graphics.fill(x, y, x + width, y + height, Color.GRAY.getRGB());
                 }
 
-                RenderUtil.renderItem(graphics, x + 2, y + 2, e.getStack(), true);
+                graphics.item(e.getStack(), x + 2, y + 2);
 
                 graphics.pose().pushMatrix();
                 {
-                    graphics.pose().translate(x + 24, y + 4, 0);
-                    graphics.pose().scale(0.666f, 0.666f, 0);
+                    graphics.pose().translate(x + 24, y + 4);
+                    graphics.pose().scale(0.666f, 0.666f);
                     graphics.text(mc.font, e.getStack().getDisplayName(), 0, 0, Color.WHITE.getRGB(), false);
                     graphics.text(mc.font, TimeUtil.getTotalRealTime(e.getTimeLeft()), 0, 11, Color.LIGHT_GRAY.getRGB(), false);
                 }
@@ -172,7 +170,7 @@ public class MineBayApp extends Application {
         {
             final Dialog.Confirmation dialog = new Dialog.Confirmation();
             dialog.setPositiveText("Buy");
-            dialog.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
+            dialog.setPositiveListener((event1) -> {
                 final int index = items.getSelectedIndex();
                 if (index == -1) return;
 
@@ -189,7 +187,7 @@ public class MineBayApp extends Application {
                 }
             });
             dialog.setNegativeText("Cancel");
-            dialog.setNegativeListener((mouseX1, mouseY1, mouseButton1) -> dialog.close());
+            dialog.setNegativeListener(event1 -> dialog.close());
             MineBayApp.this.openDialog(dialog);
         });
         layoutMain.addComponent(btnBuy);
@@ -262,9 +260,9 @@ public class MineBayApp extends Application {
                 if (!stack.isEmpty()) {
                     graphics.pose().pushMatrix();
                     {
-                        graphics.pose().translate(x + 17, y + 43, 0);
-                        graphics.pose().scale(2, 2, 0);
-                        RenderUtil.renderItem(graphics, 0, 0, stack, false);
+                        graphics.pose().translate(x + 17, y + 43);
+                        graphics.pose().scale(2, 2);
+                        graphics.item(stack, 0, 0);
                     }
                     graphics.pose().popMatrix();
                 }
@@ -272,9 +270,9 @@ public class MineBayApp extends Application {
 
             graphics.pose().pushMatrix();
             {
-                graphics.pose().translate(x + 92, y + 43, 0);
-                graphics.pose().scale(2, 2, 0);
-                RenderUtil.renderItem(graphics, 0, 0, EMERALD, false);
+                graphics.pose().translate(x + 92, y + 43);
+                graphics.pose().scale(2, 2);
+                graphics.item(EMERALD, 0, 0);
             }
             graphics.pose().popMatrix();
         });
@@ -329,7 +327,7 @@ public class MineBayApp extends Application {
             final Dialog.Confirmation dialog = new Dialog.Confirmation();
             dialog.setMessageText("Are you sure you want to auction this item?");
             dialog.setPositiveText("Yes");
-            dialog.setPositiveListener((mouseX1, mouseY1, mouseButton1) ->
+            dialog.setPositiveListener((event1) ->
             {
                 int ticks = (int) TimeUtil.getRealTimeToTicks(selectorHours.getNumber(), selectorMinutes.getNumber(), selectorSeconds.getNumber());
                 TaskAddAuction task = new TaskAddAuction(inventory.getSelectedSlotIndex(), selectorAmount.getNumber(), selectorPrice.getNumber(), ticks);

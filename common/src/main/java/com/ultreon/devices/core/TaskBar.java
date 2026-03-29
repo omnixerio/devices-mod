@@ -55,7 +55,7 @@ public class TaskBar {
         this.laptop = laptop;
         this.tag = tag;
 
-        var trayItemsTag = tag.getCompound("TrayItems").orElseThrow();
+        var trayItemsTag = tag.getCompoundOrEmpty("TrayItems");
 
         addTrayItem(new Vulnerability.VulnerabilityTrayItem(), trayItemsTag);
         addTrayItem(new FileBrowserApp.FileBrowserTrayItem(), trayItemsTag);
@@ -71,7 +71,7 @@ public class TaskBar {
         this.trayItems.add(trayItem);
         String strId = trayItem.getId().toString();
         if (tag.contains(strId)) {
-            CompoundTag trayTag = tag.getCompound(strId).orElseThrow();
+            CompoundTag trayTag = tag.getCompoundOrEmpty(strId);
             trayItem.deserialize(trayTag);
         }
     }

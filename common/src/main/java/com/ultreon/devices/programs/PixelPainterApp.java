@@ -472,9 +472,9 @@ public class PixelPainterApp extends Application {
 
         @Override
         public void fromTag(CompoundTag tag) {
-            name = tag.getString("name");
-            cut = tag.getBoolean("cut");
-            setPicture(tag.getIntArray("pixels"));
+            name = tag.getString("name").orElse(null);
+            cut = tag.getBooleanOr("cut", false);
+            setPicture(tag.getIntArray("pixels").orElse(null));
         }
 
         @Override
@@ -490,9 +490,9 @@ public class PixelPainterApp extends Application {
         @Override
         public boolean render(PoseStack pose, CompoundTag data) {
             if (data.contains("pixels", Tag.TAG_INT_ARRAY) && data.contains("resolution", Tag.TAG_INT)) {
-                int[] pixels = data.getIntArray("pixels");
-                int resolution = data.getInt("resolution");
-                boolean cut = data.getBoolean("cut");
+                int[] pixels = data.getIntArray("pixels").orElse(null);
+                int resolution = data.getIntOr("resolution", 0);
+                boolean cut = data.getBooleanOr("cut", false);
 
                 if (pixels.length != resolution * resolution)
                     return false;

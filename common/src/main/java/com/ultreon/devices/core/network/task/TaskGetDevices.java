@@ -60,9 +60,9 @@ public class TaskGetDevices extends Task {
 
     @Override
     public void processRequest(CompoundTag tag, Level level, Player player) {
-        BlockPos devicePos = BlockPos.of(tag.getLong("devicePos"));
+        BlockPos devicePos = BlockPos.of(tag.getLongOr("devicePos", 0));
         BlockEntityType<?> targetType;
-        int typeId = tag.getInt("targetType");
+        int typeId = tag.getIntOr("targetType", 0);
         if (typeId < 0) {
             this.reason = "Invalid target ID received: " + typeId;
             return;

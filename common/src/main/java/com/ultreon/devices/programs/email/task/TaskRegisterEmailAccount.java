@@ -25,7 +25,7 @@ public class TaskRegisterEmailAccount extends Task {
 
     @Override
     public void processRequest(CompoundTag nbt, Level level, Player player) {
-        if (EmailManager.INSTANCE.addAccount(player, nbt.getString("AccountName"))) {
+        if (EmailManager.INSTANCE.addAccount(player, nbt.getString("AccountName").orElse(null))) {
             this.setSuccessful();
         }
     }

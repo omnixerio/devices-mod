@@ -120,7 +120,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
 
     private String printerPain() {
         try {
-            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("printer/printerpain.txt").orElseThrow().toFile());
+            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("printer/printerpain.txt").toFile());
             return IOUtils.toString(d, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -129,7 +129,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
 
     private String printerStatePain() {
         try {
-            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("printer/printerstatepain.txt").orElseThrow().toFile());
+            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("printer/printerstatepain.txt").toFile());
             return IOUtils.toString(d, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -138,7 +138,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
 
     private String routerPain() {
         try {
-            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("router/routerpain.txt").orElseThrow().toFile());
+            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("router/routerpain.txt").toFile());
             return IOUtils.toString(d, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -147,7 +147,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
 
     private String routerStatePain() {
         try {
-            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("router/routerstatepain.txt").orElseThrow().toFile());
+            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("router/routerstatepain.txt").toFile());
             return IOUtils.toString(d, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -156,7 +156,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
 
     private String laptopPain() {
         try {
-            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("laptop/laptoppain.txt").orElseThrow().toFile());
+            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("laptop/laptoppain.txt").toFile());
             return IOUtils.toString(d, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -165,7 +165,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
 
     private String laptopClosedPain() {
         try {
-            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("laptop/laptopclosedpain.txt").orElseThrow().toFile());
+            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("laptop/laptopclosedpain.txt").toFile());
             return IOUtils.toString(d, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -174,7 +174,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
 
     private String laptopStatePain() {
         try {
-            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("laptop/laptopstatepain.txt").orElseThrow().toFile());
+            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("laptop/laptopstatepain.txt").toFile());
             return IOUtils.toString(d, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -183,7 +183,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
 
     private String laptopFullPain() {
         try {
-            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("laptop/laptopfullpain.txt").orElseThrow().toFile());
+            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("laptop/laptopfullpain.txt").toFile());
             return IOUtils.toString(d, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -192,7 +192,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
 
     private String laptopFullItemPain() {
         try {
-            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("laptop/laptopfullitempain.txt").orElseThrow().toFile());
+            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("laptop/laptopfullitempain.txt").toFile());
             return IOUtils.toString(d, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -201,7 +201,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
 
     private String officeChairFullItemPain() {
         try {
-            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("office_chair/officechairfullpain.txt").orElseThrow().toFile());
+            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("office_chair/officechairfullpain.txt").toFile());
             return IOUtils.toString(d, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -210,7 +210,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
 
     private String officeChairFullLegsPain() {
         try {
-            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("office_chair/officechairlegspain.txt").orElseThrow().toFile());
+            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("office_chair/officechairlegspain.txt").toFile());
             return IOUtils.toString(d, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -220,7 +220,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
 
     private String officeChairFullSeatPain() {
         try {
-            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("office_chair/officechairseatpain.txt").orElseThrow().toFile());
+            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("office_chair/officechairseatpain.txt").toFile());
             return IOUtils.toString(d, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -229,7 +229,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
 
     private String officeChairStatePain() {
         try {
-            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("office_chair/officechairstatepain.txt").orElseThrow().toFile());
+            FileInputStream d = new FileInputStream(dataOutput.getModContainer().findPath("office_chair/officechairstatepain.txt").toFile());
             return IOUtils.toString(d, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);

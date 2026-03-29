@@ -79,10 +79,10 @@ public class Connection {
 
     public static Connection fromTag(CompoundTag tag) {
         Connection connection = new Connection();
-        connection.routerId = UUID.fromString(tag.getString("id").orElseThrow());
+        connection.routerId = UUID.fromString(tag.getString("id").orElse(null));
         if (tag.contains("Pos")) {
-            CompoundTag posTag = tag.getCompound("Pos").orElseThrow();
-            connection.routerPos = new BlockPos(posTag.getInt("x").orElseThrow(), posTag.getInt("y").orElseThrow(), posTag.getInt("z").orElseThrow());
+            CompoundTag posTag = tag.getCompoundOrEmpty("Pos");
+            connection.routerPos = new BlockPos(posTag.getIntOr("x", 0), posTag.getIntOr("y", 0), posTag.getIntOr("z", 0));
         }
         return connection;
     }
@@ -99,13 +99,13 @@ public class Connection {
 
     public static Connection load(@NotNull ValueInput tag) {
         Connection connection = new Connection();
-        connection.routerId = UUID.fromString(tag.getString("id").orElseThrow());
+        connection.routerId = UUID.fromString(tag.getString("id").orElse(null));
         Optional<ValueInput> pos = tag.child("Pos");
         if (pos.isPresent()) {
             ValueInput valueInput = pos.get();
-            int x = valueInput.getInt("x").orElseThrow();
-            int y = valueInput.getInt("y").orElseThrow();
-            int z = valueInput.getInt("z").orElseThrow();
+            int x = valueInput.getIntOr("x", 0);
+            int y = valueInput.getIntOr("y", 0);
+            int z = valueInput.getIntOr("z", 0);
             connection.routerPos = new BlockPos(x, y, z);
         }
         return connection;

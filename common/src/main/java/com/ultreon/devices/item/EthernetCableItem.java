@@ -90,7 +90,7 @@ public class EthernetCableItem extends Item {
                     Optional<UUID> uuid = tag.connectedTo();
                     Optional<String> name = tag.name();
                     if (uuid.isPresent() && name.isPresent()) {
-                        if (router.addDevice(tag.getUUID("id"), tag.getString("name"))) {
+                        if (router.addDevice(uuid.orElseThrow(), name.orElseThrow())) {
                             heldItem.shrink(1);
                             sendGameInfoMessage(player, "message.devices.successful_registered");
                         } else {

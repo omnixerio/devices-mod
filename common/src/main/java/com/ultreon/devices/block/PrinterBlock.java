@@ -1,5 +1,6 @@
 package com.ultreon.devices.block;
 
+import com.mojang.serialization.MapCodec;
 import com.ultreon.devices.ModDeviceTypes;
 import com.ultreon.devices.block.entity.PrinterBlockEntity;
 import com.ultreon.devices.util.Colored;
@@ -15,6 +16,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -25,6 +27,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 /**
  * @author MrCrayfish
@@ -84,6 +87,11 @@ public class PrinterBlock extends DeviceBlock.Colored implements Colored {
         this.registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
     }
 
+    public PrinterBlock(Properties properties) {
+        super(properties, DyeColor.WHITE, ModDeviceTypes.PRINTER);
+        this.registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
+    }
+
     @NotNull
     @Override
     public VoxelShape getShape(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
@@ -96,15 +104,13 @@ public class PrinterBlock extends DeviceBlock.Colored implements Colored {
         };
     }
 
-    @NotNull
     @Override
-    @SuppressWarnings("deprecation")
-    public InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos, Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
-        if (level.isClientSide) {
+    protected @NonNull InteractionResult useItemOn(@NonNull ItemStack itemStack, @NonNull BlockState state, Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull InteractionHand hand, @NonNull BlockHitResult hitResult) {
+        if (level.isClientSide()) {
             if (player.isCrouching()) {
                 return InteractionResult.SUCCESS;
             } else {
-                return super.use(state, level, pos, player, hand, hit);
+                return super.useItemOn(itemStack, state, level, pos, player, hand, hitResult);
             }
         }
         ItemStack heldItem = player.getItemInHand(hand);
@@ -118,5 +124,10 @@ public class PrinterBlock extends DeviceBlock.Colored implements Colored {
     @Override
     public @Nullable BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new PrinterBlockEntity(pos, state);
+    }
+
+    @Override
+    protected @NonNull MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return simpleCodec(PrinterBlock::new);
     }
 }

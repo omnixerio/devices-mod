@@ -25,9 +25,9 @@ public class Picture {
     public static Picture fromFile(File file) {
         CompoundTag data = file.getData();
         assert data != null;
-        Picture picture = new Picture(data.getString("Name"), data.getString("Author"), Objects.requireNonNull(Size.getFromSize(data.getInt("Resolution"))));
+        Picture picture = new Picture(data.getString("Name").orElse(null), data.getString("Author").orElse(null), Objects.requireNonNull(Size.getFromSize(data.getIntOr("Resolution", 0))));
         picture.source = file;
-        picture.pixels = data.getIntArray("Pixels");
+        picture.pixels = data.getIntArray("Pixels").orElse(null);
         return picture;
     }
 

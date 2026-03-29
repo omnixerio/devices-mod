@@ -61,7 +61,7 @@ public final class DiagnosticsApp extends SystemApp {
     public void init(@Nullable CompoundTag intent) {
         String applicationName = null;
         if (intent != null) {
-            applicationName = intent.getString("applicationName");
+            applicationName = intent.getString("applicationName").orElse(null);
         }
 
         this.messageText = applicationName == null ? "App Crashed" : "App Crashed:\n" + applicationName;

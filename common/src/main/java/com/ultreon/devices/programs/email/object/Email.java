@@ -30,12 +30,12 @@ public class Email {
 
     public static Email readFromNBT(CompoundTag nbt) {
         File attachment = null;
-        if (nbt.contains("attachment", Tag.TAG_COMPOUND)) {
-            CompoundTag fileTag = nbt.getCompound("attachment");
-            attachment = File.fromTag(fileTag.getString("file_name"), fileTag.getCompound("data"));
+        if (nbt.contains("attachment")) {
+            CompoundTag fileTag = nbt.getCompoundOrEmpty("attachment");
+            attachment = File.fromTag(fileTag.getString("file_name").orElse(null), fileTag.getCompoundOrEmpty("data"));
         }
-        Email email = new Email(nbt.getString("subject"), nbt.getString("author"), nbt.getString("message"), attachment);
-        email.setRead(nbt.getBoolean("read"));
+        Email email = new Email(nbt.getString("subject").orElse(null), nbt.getString("author").orElse(null), nbt.getString("message").orElse(null), attachment);
+        email.setRead(nbt.getBooleanOr("read", false));
         return email;
     }
 

@@ -26,7 +26,7 @@ public class TaskAdd extends Task {
 
     @Override
     public void processRequest(CompoundTag tag, Level level, Player player) {
-        int amount = tag.getInt("amount");
+        int amount = tag.getIntOr("amount", 0);
         Account sender = BankUtil.INSTANCE.getAccount(player);
         sender.add(amount);
         this.setSuccessful();

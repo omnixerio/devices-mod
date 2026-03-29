@@ -38,10 +38,10 @@ public class TaskAddAuction extends Task {
 
     @Override
     public void processRequest(CompoundTag nbt, Level level, Player player) {
-        int slot = nbt.getInt("slot");
-        int amount = nbt.getInt("amount");
-        int price = nbt.getInt("price");
-        int duration = nbt.getInt("duration");
+        int slot = nbt.getIntOr("slot", 0);
+        int amount = nbt.getIntOr("amount", 0);
+        int price = nbt.getIntOr("price", 0);
+        int duration = nbt.getIntOr("duration", 0);
 
         if (slot >= 0 && price >= 0 && slot < player.getInventory().getContainerSize()) {
             ItemStack real = player.getInventory().getItem(slot);

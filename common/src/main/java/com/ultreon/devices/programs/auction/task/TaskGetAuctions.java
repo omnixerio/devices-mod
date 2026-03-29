@@ -33,7 +33,7 @@ public class TaskGetAuctions extends Task {
     @Override
     public void processRequest(CompoundTag nbt, Level world, Player player) {
         if (nbt.contains("seller")) {
-            seller = UUID.fromString(nbt.getString("seller"));
+            seller = UUID.fromString(nbt.getString("seller").orElse(null));
         }
     }
 

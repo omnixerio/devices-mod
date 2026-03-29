@@ -31,7 +31,7 @@ public class C2SUpdatePacket implements PacketToServer<C2SUpdatePacket> {
         if (uuid.isEmpty()) return;
         long[] longs = uuid.get();
         UUID uuid1 = new UUID(longs[0], longs[1]);
-        ServerLaptop.laptops.get(uuid).handlePacket(player, this.nbt.getString("type").orElseThrow(), this.nbt.getCompoundOrEmpty("data"));
+        ServerLaptop.laptops.get(uuid).handlePacket(player, this.nbt.getString("type").orElse(null), this.nbt.getCompoundOrEmpty("data"));
     }
 
     @Override

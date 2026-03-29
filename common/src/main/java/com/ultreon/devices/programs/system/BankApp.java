@@ -202,7 +202,7 @@ public class BankApp extends Application {//The bank is not a system application
                     deposit(amount, (tag, success) -> {
                         if (success) {
                             assert tag != null;
-                            int balance = tag.getInt("balance");
+                            int balance = tag.getIntOr("balance", 0);
                             labelAmount.setText("$" + balance);
                             amountField.setText("0");
                         }
@@ -228,7 +228,7 @@ public class BankApp extends Application {//The bank is not a system application
                     withdraw(amount, (tag, success) -> {
                         if (success) {
                             assert tag != null;
-                            int balance = tag.getInt("balance");
+                            int balance = tag.getIntOr("balance", 0);
                             labelAmount.setText("$" + balance);
                             amountField.setText("0");
                         }
@@ -251,7 +251,7 @@ public class BankApp extends Application {//The bank is not a system application
         BankUtil.getBalance((tag, success) -> {
             if (success) {
                 assert tag != null;
-                int balance = tag.getInt("balance");
+                int balance = tag.getIntOr("balance", 0);
                 labelAmount.setText("$" + balance);
             }
         });

@@ -60,36 +60,36 @@ public abstract class AbstractDrive {
 
     public FileSystem.Response handleFileAction(FileSystem fileSystem, FileAction action, Level level) {
         CompoundTag actionData = action.getData();
-        ServerFolder folder = getFolder(actionData.getString("directory").orElseThrow());
+        ServerFolder folder = getFolder(actionData.getString("directory").orElse(null));
         if (folder != null) {
-            CompoundTag data = actionData.getCompound("data").orElseThrow();
+            CompoundTag data = actionData.getCompoundOrEmpty("data");
             switch (action.getType()) {
                 case NEW:
                     if (data.contains("files")) {
-                        return folder.add(ServerFolder.fromTag(actionData.getString("file_name").orElseThrow(), data), actionData.getBoolean("override").orElseThrow());
+                        return folder.add(ServerFolder.fromTag(actionData.getString("file_name").orElse(null), data), actionData.getBooleanOr("override", false));
                     }
-                    return folder.add(ServerFile.fromTag(actionData.getString("file_name").orElseThrow(), data), data.getBoolean("override").orElseThrow());
+                    return folder.add(ServerFile.fromTag(actionData.getString("file_name").orElse(null), data), data.getBooleanOr("override", false));
                 case DELETE:
-                    return folder.delete(actionData.getString("file_name").orElseThrow());
+                    return folder.delete(actionData.getString("file_name").orElse(null));
                 case RENAME:
-                    ServerFile file = folder.getFile(actionData.getString("file_name").orElseThrow());
+                    ServerFile file = folder.getFile(actionData.getString("file_name").orElse(null));
                     if (file != null) {
-                        return file.rename(actionData.getString("new_file_name").orElseThrow());
+                        return file.rename(actionData.getString("new_file_name").orElse(null));
                     }
                     return FileSystem.createResponse(FileSystem.Status.FILE_INVALID, "File not found on server. Please refresh!");
                 case DATA:
-                    file = folder.getFile(actionData.getString("file_name").orElseThrow());
+                    file = folder.getFile(actionData.getString("file_name").orElse(null));
                     if (file != null) {
-                        return file.setData(actionData.getCompound("data").orElseThrow());
+                        return file.setData(actionData.getCompoundOrEmpty("data"));
                     }
                     return FileSystem.createResponse(FileSystem.Status.FILE_INVALID, "File not found on server. Please refresh!");
                 case COPY_CUT:
-                    file = folder.getFile(actionData.getString("file_name").orElseThrow());
+                    file = folder.getFile(actionData.getString("file_name").orElse(null));
                     if (file != null) {
-                        UUID uuid = UUID.fromString(actionData.getString("destination_drive").orElseThrow());
+                        UUID uuid = UUID.fromString(actionData.getString("destination_drive").orElse(null));
                         AbstractDrive drive = fileSystem.getAvailableDrives(level, true).get(uuid);
                         if (drive != null) {
-                            ServerFolder destination = drive.getFolder(actionData.getString("destination_folder").orElseThrow());
+                            ServerFolder destination = drive.getFolder(actionData.getString("destination_folder").orElse(null));
                             if (destination != null) {
                                 ServerFolder temp = destination;
                                 while (temp != null) {
@@ -98,11 +98,11 @@ public abstract class AbstractDrive {
                                     temp = temp.getParent();
                                 }
 
-                                FileSystem.Response response = destination.add(file.copy(), actionData.getBoolean("override").orElseThrow());
+                                FileSystem.Response response = destination.add(file.copy(), actionData.getBooleanOr("override", false));
                                 if (response.getStatus() != FileSystem.Status.SUCCESSFUL) {
                                     return response;
                                 }
-                                if (actionData.getBoolean("cut").orElseThrow()) {
+                                if (actionData.getBooleanOr("cut", false)) {
                                     return file.delete();
                                 }
                                 return FileSystem.createSuccessResponse();

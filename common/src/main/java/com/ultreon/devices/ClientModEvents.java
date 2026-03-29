@@ -12,10 +12,12 @@ import com.ultreon.devices.init.DeviceBlockEntities;
 import com.ultreon.devices.init.DeviceBlocks;
 import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.programs.system.object.ColorSchemePresets;
+import dev.ultreon.mods.xinexlib.ModPlatform;
 import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
@@ -34,6 +36,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -67,13 +70,13 @@ public class ClientModEvents {
         registerRenderLayers();
         registerRenderers();
         registerLayerDefinitions();
-        if (Platform.isForge()) { // Note: Forge requires the icon atlas to be generator beforehand.
+        if (XinexPlatform.getPlatformName() == ModPlatform.Forge || XinexPlatform.getPlatformName() == ModPlatform.NeoForge) { // Note: Forge requires the icon atlas to be generator beforehand.
             generateIconAtlas();
         }
 
         registerOSContent();
 
-        ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new ReloaderListener());
+//        ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new ReloaderListener());
     }
 
     private static void registerOSContent() {
@@ -82,41 +85,40 @@ public class ClientModEvents {
 
     @ApiStatus.Internal
     public static class ReloaderListener implements PreparableReloadListener {
-        @NotNull
+
         @Override
-        @ApiStatus.Internal
-        public CompletableFuture<Void> reload(@NotNull PreparableReloadListener.PreparationBarrier preparationBarrier, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller preparationsProfiler, @NotNull ProfilerFiller reloadProfiler, @NotNull Executor backgroundExecutor, @NotNull Executor gameExecutor) {
+        public CompletableFuture<Void> reload(SharedState currentReload, Executor taskExecutor, PreparationBarrier preparationBarrier, Executor reloadExecutor) {
             LOGGER.debug("Reloading resources from the Device Mod.");
 
             return CompletableFuture.runAsync(() -> {
                 if (ApplicationManager.getAllApplications().size() > 0) {
                     ApplicationManager.getAllApplications().forEach(AppInfo::reload);
-                    generateIconAtlas(resourceManager); // FIXME: Broken resource reloading, can't find image resource while definitely exists.
+                    generateIconAtlas(currentReload.resourceManager()); // FIXME: Broken resource reloading, can't find image resource while definitely exists.
                 }
 
-            }, gameExecutor).thenCompose(preparationBarrier::wait);
+            }, reloadExecutor).thenCompose(preparationBarrier::wait);
         }
     }
 
     private static void registerRenderLayers() {
         if (true) return;
-        DeviceBlocks.getAllLaptops().forEach(block -> {
-            LOGGER.debug(SETUP, "Setting render layer for laptop {}", RegistrarManager.getId(block, Registries.BLOCK));
-            RenderTypeRegistry.register(RenderType.cutout(), block);
-        });
-
-        DeviceBlocks.getAllPrinters().forEach(block -> {
-            LOGGER.debug(SETUP, "Setting render layer for printer {}", RegistrarManager.getId(block, Registries.BLOCK));
-            RenderTypeRegistry.register(RenderType.cutout(), block);
-        });
-
-        DeviceBlocks.getAllRouters().forEach(block -> {
-            LOGGER.debug(SETUP, "Setting render layer for router {}", RegistrarManager.getId(block, Registries.BLOCK));
-            RenderTypeRegistry.register(RenderType.cutout(), block);
-        });
-
-        LOGGER.debug(SETUP, "Setting render layer for paper {}", RegistrarManager.getId(DeviceBlocks.PAPER.get(), Registries.BLOCK));
-        RenderTypeRegistry.register(RenderType.cutout(), DeviceBlocks.PAPER.get());
+//        DeviceBlocks.getAllLaptops().forEach(block -> {
+//            LOGGER.debug(SETUP, "Setting render layer for laptop {}", RegistrarManager.getId(block, Registries.BLOCK));
+//            RenderTypeRegistry.register(RenderType.cutout(), block);
+//        });
+//
+//        DeviceBlocks.getAllPrinters().forEach(block -> {
+//            LOGGER.debug(SETUP, "Setting render layer for printer {}", RegistrarManager.getId(block, Registries.BLOCK));
+//            RenderTypeRegistry.register(RenderType.cutout(), block);
+//        });
+//
+//        DeviceBlocks.getAllRouters().forEach(block -> {
+//            LOGGER.debug(SETUP, "Setting render layer for router {}", RegistrarManager.getId(block, Registries.BLOCK));
+//            RenderTypeRegistry.register(RenderType.cutout(), block);
+//        });
+//
+//        LOGGER.debug(SETUP, "Setting render layer for paper {}", RegistrarManager.getId(DeviceBlocks.PAPER.get(), Registries.BLOCK));
+//        RenderTypeRegistry.register(RenderType.cutout(), DeviceBlocks.PAPER.get());
     }
 
     public static void generateIconAtlas() {
@@ -203,7 +205,7 @@ public class ClientModEvents {
                     ByteArrayInputStream input = new ByteArrayInputStream(bytes);
                     Minecraft.getInstance().submit(() -> {
                         try {
-                            Minecraft.getInstance().getTextureManager().register(Laptop.ICON_TEXTURES, new DynamicTexture(NativeImage.read(input)));
+                            Minecraft.getInstance().getTextureManager().register(Laptop.ICON_TEXTURES, new DynamicTexture(() -> "devices_mod_" + UUID.randomUUID().toString().replace("_", ""), NativeImage.read(input)));
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -214,7 +216,7 @@ public class ClientModEvents {
             }
         };
 
-        imageWriter.writeImage(null, new Identifier("devices", "textures/app/icon/base/missing.png"));
+        imageWriter.writeImage(null, Identifier.fromNamespaceAndPath("devices", "textures/app/icon/base/missing.png"));
 
 
         for (AppInfo info : ApplicationManager.getAllApplications()) {
@@ -248,11 +250,11 @@ public class ClientModEvents {
     public static void registerRenderers() {
         LOGGER.info("Registering renderers.");
 
-        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.LAPTOP, LaptopRenderer::new);
-        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.PRINTER, PrinterRenderer::new);
-        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.PAPER, PaperRenderer::new);
-        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.ROUTER, RouterRenderer::new);
-        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.SEAT, OfficeChairRenderer::new);
+        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.LAPTOP.get()), (a) -> new LaptopRenderer(a));
+        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.PRINTER.get()), (a) -> new PrinterRenderer(a));
+        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.PAPER.get()), (a) -> new PaperRenderer(a));
+        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.ROUTER.get()), (a) -> new RouterRenderer(a));
+        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.SEAT.get()), (a) -> new OfficeChairRenderer(a));
     }
 
     public static void registerLayerDefinitions() {

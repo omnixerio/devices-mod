@@ -15,7 +15,7 @@ public class VideoInfo {
 
     public VideoInfo(CompoundTag videoInfoData) {
         if (videoInfoData.contains("resolution"))
-            resolution = DisplayResolution.load(videoInfoData.getCompound("resolution").orElseThrow());
+            resolution = DisplayResolution.load(videoInfoData.getCompoundOrEmpty("resolution"));
     }
 
     public Collection<PredefinedResolution> getResolutionList() {

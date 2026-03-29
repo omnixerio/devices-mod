@@ -44,7 +44,7 @@ public class TaskUpdateInbox extends Task {
         EmailManager.INSTANCE.getInbox().clear();
         ListTag emails = (ListTag) nbt.get("emails");
         for (int i = 0; i < emails.size(); i++) {
-            CompoundTag emailTag = emails.getCompound(i);
+            CompoundTag emailTag = emails.getCompoundOrEmpty(i);
             Email email = Email.readFromNBT(emailTag);
             EmailManager.INSTANCE.getInbox().add(email);
         }

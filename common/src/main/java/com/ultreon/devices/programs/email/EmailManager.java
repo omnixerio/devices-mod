@@ -71,7 +71,7 @@ public class EmailManager implements WorldSavedData {
         ListTag inboxes = (ListTag) nbt.get("Inboxes");
         for (int i = 0; i < inboxes.size(); i++) {
             CompoundTag inbox = inboxes.getCompoundOrEmpty(i);
-            String name = inbox.getString("Name").orElseThrow();
+            String name = inbox.getString("Name").orElse(null);
 
             List<Email> emails = new ArrayList<Email>();
             ListTag emailTagList = (ListTag) inbox.get("Emails");
@@ -88,8 +88,8 @@ public class EmailManager implements WorldSavedData {
         ListTag accounts = (ListTag) nbt.get("Accounts");
         for (int i = 0; i < accounts.size(); i++) {
             CompoundTag account = accounts.getCompoundOrEmpty(i);
-            UUID uuid = UUID.fromString(account.getString("UUID").orElseThrow());
-            String name = account.getString("Name").orElseThrow();
+            UUID uuid = UUID.fromString(account.getString("UUID").orElse(null));
+            String name = account.getString("Name").orElse(null);
             uuidToName.put(uuid, name);
         }
     }

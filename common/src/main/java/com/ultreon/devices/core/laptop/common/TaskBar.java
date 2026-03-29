@@ -7,6 +7,7 @@ import com.ultreon.devices.programs.system.object.ColorScheme;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
@@ -41,26 +42,17 @@ public class TaskBar {
 //    }
 
     public void render(GuiGraphicsExtractor graphics, ClientLaptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, float partialTicks) {
-        RenderSystem.setShaderColor(1f, 1f, 1f, 0.75f);
-        RenderSystem.enableBlend();
-        RenderSystem.setShaderTexture(0, APP_BAR_GUI);
-
         // r=217,g=230,b=255
         var colorScheme = new ColorScheme();
         colorScheme.resetDefault();
         Color bgColor = new Color(colorScheme.getBackgroundColor());//.brighter().brighter();
         float[] hsb = Color.RGBtoHSB(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), null);
         bgColor = new Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]));
-        RenderSystem.setShaderColor(bgColor.getRed() / 255f, bgColor.getGreen() / 255f, bgColor.getBlue() / 255f, 1f);
 
-        int trayItemsWidth = /*trayItems.size()*/0 * 14;
-        graphics.blit(APP_BAR_GUI, x, y, 1, 18, 0, 0, 1, 18, 256, 256);
-        graphics.blit(APP_BAR_GUI, x + 1, y, ClientLaptop.SCREEN_WIDTH - 36 - trayItemsWidth, 18, 1, 0, 1, 18, 256, 256);
-        graphics.blit(APP_BAR_GUI, x + ClientLaptop.SCREEN_WIDTH - 35 - trayItemsWidth, y, 35 + trayItemsWidth, 18, 2, 0, 1, 18, 256, 256);
-
-        RenderSystem.disableBlend();
-
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        int trayItemsWidth = /*trayItems.size()*/0;
+        graphics.blit(RenderPipelines.GUI_TEXTURED, APP_BAR_GUI, x, y, 1, 18, 0, 0, 1, 18, 256, 256, 0x80000000 | bgColor.getRGB());
+        graphics.blit(RenderPipelines.GUI_TEXTURED, APP_BAR_GUI, x + 1, y, ClientLaptop.SCREEN_WIDTH - 36 - trayItemsWidth, 18, 1, 0, 1, 18, 256, 256, 0x80000000 | bgColor.getRGB());
+        graphics.blit(RenderPipelines.GUI_TEXTURED, APP_BAR_GUI, x + ClientLaptop.SCREEN_WIDTH - 35 - trayItemsWidth, y, 35 + trayItemsWidth, 18, 2, 0, 1, 18, 256, 256, 0x80000000 | bgColor.getRGB());
 //        for (int i = 0; i < APPS_DISPLAYED && i < laptop.installedApps.size(); i++) {
 //            AppInfo info = laptop.installedApps.get(i + offset);
 //            RenderUtil.drawApplicationIcon(pose, info, x + 2 + i * 16, y + 2);
@@ -72,10 +64,10 @@ public class TaskBar {
 
         assert mc.level == null || mc.player != null;
        // assert mc.level != null; //can no longer assume
-        graphics.text(mc.font, timeToString(mc.level != null ? mc.level.getDayTime() : 0), x + 334, y + 5, Color.WHITE.getRGB(), true);
+        graphics.text(mc.font, timeToString(mc.level != null ? mc.level.getOverworldClockTime() : 0), x + 334, y + 5, Color.WHITE.getRGB(), true);
 
         /* Settings App */
-        int startX = x + 317;
+//        int startX = x + 317;
 //        for (int i = 0; i < trayItems.size(); i++) {
 //            int posX = startX - (trayItems.size() - 1 - i) * 14;
 //            if (isMouseInside(mouseX, mouseY, posX, y + 2, posX + 13, y + 15)) {
@@ -83,8 +75,6 @@ public class TaskBar {
 //            }
 //            trayItems.get(i).getIcon().draw(pose, mc, posX + 2, y + 4);
 //        }
-
-        RenderSystem.setShaderTexture(0, APP_BAR_GUI);
 
 //        /* Other Apps */
 //        if (isMouseInside(mouseX, mouseY, x + 1, y + 1, x + 236, y + 16)) {
@@ -95,7 +85,6 @@ public class TaskBar {
 //            }
 //        }
 
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 //        RenderHelper.disableStandardItemLighting();
     }
 

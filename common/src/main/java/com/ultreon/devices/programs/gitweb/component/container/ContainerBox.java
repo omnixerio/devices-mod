@@ -3,10 +3,13 @@ package com.ultreon.devices.programs.gitweb.component.container;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.ultreon.devices.Reference;
 import com.ultreon.devices.api.app.Component;
+import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
@@ -20,7 +23,7 @@ import java.util.Optional;
  */
 public abstract class ContainerBox extends Component {
     public static final int WIDTH = 128;
-    protected static final Identifier CONTAINER_BOXES_TEXTURE = new Identifier(Reference.MOD_ID, "textures/gui/container_boxes.png");
+    protected static final Identifier CONTAINER_BOXES_TEXTURE = Identifier.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/container_boxes.png");
     protected List<Slot> slots = new ArrayList<>();
     protected int boxU, boxV;
     protected int height;
@@ -38,16 +41,15 @@ public abstract class ContainerBox extends Component {
 
     @Override
     protected void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
-        RenderSystem.setShaderTexture(0, CONTAINER_BOXES_TEXTURE);
-        RenderUtil.drawRectWithTexture(CONTAINER_BOXES_TEXTURE, graphics, x, y + 12, boxU, boxV, WIDTH, height, WIDTH, height, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_BOXES_TEXTURE, x, y + 12, boxU, boxV, WIDTH, height, WIDTH, height, 256, 256);
         //Gui.blit(pose, x, y + 12, WIDTH, height, boxU, boxV, 256, 256, WIDTH, height);
 
         int contentOffset = (WIDTH - (Laptop.getFontStatic().width(title) + 8 + 4)) / 2;
         graphics.pose().pushMatrix();
         {
-            graphics.pose().translate(x + contentOffset, y, 0);
-            graphics.pose().scale(0.5f, 0.5f, 0.5f);
-            RenderUtil.renderItem(graphics, x+contentOffset-5, y-4, icon, false);
+            graphics.pose().translate(x + contentOffset, y);
+            graphics.pose().scale(0.5f, 0.5f);
+            graphics.item(icon, x+contentOffset-5, y-4);
         }
         graphics.pose().popMatrix();
 
@@ -79,7 +81,7 @@ public abstract class ContainerBox extends Component {
         public void renderOverlay(GuiGraphicsExtractor graphics, Laptop laptop, int x, int y, int mouseX, int mouseY) {
             if (GuiHelper.isMouseWithin(mouseX, mouseY, x + slotX, y + slotY, 16, 16)) {
                 if (!stack.isEmpty()) {
-                    graphics.renderTooltip(Minecraft.getInstance().font, laptop.getTooltipFromItem(Minecraft.getInstance(), stack), Optional.empty(), mouseX, mouseY/*, stack*/);
+                    graphics.setTooltipForNextFrame(Minecraft.getInstance().font, Screen.getTooltipFromItem(Minecraft.getInstance(), stack), Optional.empty(), mouseX, mouseY/*, stack*/);
                 }
             }
 

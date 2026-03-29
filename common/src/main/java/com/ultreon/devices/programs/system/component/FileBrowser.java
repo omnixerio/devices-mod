@@ -313,19 +313,19 @@ public class FileBrowser extends Component {
                 if (success) {
                     if (Laptop.getMainDrive() == null) {
                         assert tag != null;
-                        CompoundTag structureTag = tag.getCompound("structure").orElseThrow();
-                        Drive drive = new Drive(tag.getCompound("main_drive").orElseThrow());
+                        CompoundTag structureTag = tag.getCompoundOrEmpty("structure");
+                        Drive drive = new Drive(tag.getCompoundOrEmpty("main_drive"));
                         drive.syncRoot(Folder.fromTag(FileSystem.LAPTOP_DRIVE_NAME, structureTag));
                         drive.getRoot().validate();
                         Laptop.setMainDrive(drive);
                     }
 
                     assert tag != null;
-                    ListTag driveList = tag.getList("available_drives").orElseThrow();
+                    ListTag driveList = tag.getListOrEmpty("available_drives");
                     Drive[] drives = new Drive[driveList.size() + 1];
                     drives[0] = currentDrive = Laptop.getMainDrive();
                     for (int i = 0; i < driveList.size(); i++) {
-                        CompoundTag driveTag = driveList.getCompound(i).orElseThrow();
+                        CompoundTag driveTag = driveList.getCompoundOrEmpty(i);
                         drives[i + 1] = new Drive(driveTag);
                     }
                     comboBoxDrive.setItems(drives);
@@ -385,7 +385,7 @@ public class FileBrowser extends Component {
                 setLoading(false);
                 if (success) {
                     assert tag != null;
-                    Folder folder = Folder.fromTag(tag.getString("file_name").orElseThrow(), tag.getCompound("structure").orElseThrow());
+                    Folder folder = Folder.fromTag(tag.getString("file_name").orElse(null), tag.getCompoundOrEmpty("structure"));
                     drive.syncRoot(folder);
                     openFolder(drive.getRoot(), false, (_, success1) -> {
                         if (!success1) {
@@ -418,7 +418,7 @@ public class FileBrowser extends Component {
                 if (success) {
                     assert tag != null;
                     if (tag.contains("files")) {
-                        ListTag files = tag.getList("files").orElseThrow();
+                        ListTag files = tag.getListOrEmpty("files");
                         folder.syncFiles(files);
                         setCurrentFolder(folder, push);
                     }

@@ -2,7 +2,6 @@ package com.ultreon.devices.core.io.drive;
 
 import com.ultreon.devices.core.io.ServerFolder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -14,10 +13,10 @@ public final class InternalDrive extends AbstractDrive {
     }
 
     public static @NotNull AbstractDrive fromTag(CompoundTag driveTag) {
-        AbstractDrive drive = new InternalDrive(driveTag.getString("name"));
-        if (driveTag.contains("root", Tag.TAG_COMPOUND)) {
-            CompoundTag folderTag = driveTag.getCompound("root");
-            drive.root = ServerFolder.fromTag(folderTag.getString("file_name"), folderTag.getCompound("data"));
+        AbstractDrive drive = new InternalDrive(driveTag.getString("name").orElse(null));
+        if (driveTag.contains("root")) {
+            CompoundTag folderTag = driveTag.getCompoundOrEmpty("root");
+            drive.root = ServerFolder.fromTag(folderTag.getString("file_name").orElse(null), folderTag.getCompoundOrEmpty("data"));
         }
         return drive;
     }

@@ -26,7 +26,7 @@ public class TaskRemove extends Task {
 
     @Override
     public void processRequest(CompoundTag tag, Level level, Player player) {
-        this.amount = tag.getInt("amount");
+        this.amount = tag.getIntOr("amount", 0);
         Account sender = BankUtil.INSTANCE.getAccount(player);
         if (sender.hasAmount(amount)) {
             sender.remove(amount);

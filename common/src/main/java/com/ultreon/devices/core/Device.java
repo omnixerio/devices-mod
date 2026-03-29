@@ -80,10 +80,10 @@ public class Device {
 
     public static Device fromTag(CompoundTag tag) {
         Device device = new Device();
-        device.id = UUID.fromString(tag.getString("id").orElseThrow());
-        device.name = tag.getString("name").orElseThrow();
+        device.id = UUID.fromString(tag.getString("id").orElse(null));
+        device.name = tag.getString("name").orElse(null);
         if (tag.contains("pos")) {
-            device.pos = BlockPos.of(tag.getLong("pos").orElseThrow());
+            device.pos = BlockPos.of(tag.getLongOr("pos", 0));
         }
         return device;
     }

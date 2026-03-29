@@ -29,7 +29,7 @@ public interface IPrint {
     static IPrint load(ValueInput tag) {
         IPrint print = PrintingManager.getPrint(tag.getStringOr("type", "default"));
         if (print != null) {
-            print.fromTag(tag.read("data", ExtraCodecs.NBT).orElseThrow().asCompound().orElseThrow());
+            print.fromTag(tag.read("data", ExtraCodecs.NBT).orElse(new CompoundTag()).asCompound().orElse(new CompoundTag()));
             return print;
         }
         return null;

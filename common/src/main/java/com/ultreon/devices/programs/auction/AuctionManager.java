@@ -76,7 +76,7 @@ public class AuctionManager {
 
         ListTag tagList = (ListTag) tag.get("auctionItems");
         for (int i = 0; i < tagList.size(); i++) {
-            CompoundTag itemTag = tagList.getCompound(i);
+            CompoundTag itemTag = tagList.getCompoundOrEmpty(i);
             AuctionItem item = AuctionItem.readFromNBT(itemTag);
             items.add(item);
         }

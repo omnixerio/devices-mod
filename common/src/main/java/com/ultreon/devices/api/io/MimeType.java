@@ -11,7 +11,7 @@ public record MimeType(String type, String subType) {
     public static final MimeType IMAGE_MC_IMG = new MimeType("image", "mc-img");
 
     public static MimeType of(CompoundTag mimeType) {
-        return new MimeType(mimeType.getString("type").orElseThrow(), mimeType.getString("subType").orElseThrow());
+        return new MimeType(mimeType.getString("type").orElse(null), mimeType.getString("subType").orElse(null));
     }
 
     public CompoundTag toNbt() {

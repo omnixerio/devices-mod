@@ -32,7 +32,7 @@ public class S2CUpdatePacket implements PacketToClient<S2CUpdatePacket> {
         if (uuidLongs.isEmpty()) return;
         long[] longs = uuidLongs.get();
         UUID uuid = new UUID(longs[0], longs[1]);
-        ClientLaptop.laptops.get(uuid).handlePacket(this.nbt.getString("type").orElseThrow(), this.nbt.getCompoundOrEmpty("data"));
+        ClientLaptop.laptops.get(uuid).handlePacket(this.nbt.getString("type").orElse(null), this.nbt.getCompoundOrEmpty("data"));
         DebugLog.log("SQUARE: " + Arrays.toString(ClientLaptop.laptops.get(uuid).square));
     }
 

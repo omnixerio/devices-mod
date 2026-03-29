@@ -5,8 +5,10 @@ import com.mojang.blaze3d.vertex.*;
 import com.ultreon.devices.core.laptop.common.C2SUpdatePacket;
 import com.ultreon.devices.core.laptop.common.TaskBar;
 import com.ultreon.devices.debug.DebugLog;
+import com.ultreon.devices.network.DevicesNetworker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,15 +42,15 @@ public class ClientLaptop {
         if (type.equals("placeSquare")) {
             DebugLog.log("moving square lol");
             DebugLog.log(nbt);
-            square[0] = nbt.getDouble("x");
-            square[1] = nbt.getDouble("y");
+            square[0] = nbt.getDoubleOr("x", 0);
+            square[1] = nbt.getDoubleOr("y", 0);
             DebugLog.log("SET");
         }
     }
 
     public void sendPacket(String type, CompoundTag nbt) {
         System.out.printf("Sending packet %s, %s%n", type, nbt);
-        PacketHandler.sendToServer(new C2SUpdatePacket(this.uuid, type, nbt));
+        DevicesNetworker.INSTANCE.sendToServer(new C2SUpdatePacket(this.uuid, type, nbt));
     }
 
     public void renderBezels(final @NotNull PoseStack pose, final int mouseX, final int mouseY, float partialTicks) { // no bezels
@@ -58,15 +60,11 @@ public class ClientLaptop {
     //@Override
     public void render(final @NotNull GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, float partialTicks) {
         double[] square = new double[2];
-        Minecraft.getInstance().doRunTask(() -> {
+        Minecraft.getInstance().submit(() -> {
             square[0] = this.square[0];
             square[1] = this.square[1];
         });
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-        RenderSystem.setShaderTexture(0, LAPTOP_GUI);
-        //RenderSystem.disableBlend();
-        graphics.blit(LAPTOP_GUI, 0, 0, ClientLaptop.SCREEN_WIDTH, ClientLaptop.SCREEN_HEIGHT, 10, 10, 1, 1, 256, 256);
-        //RenderSystem.enableBlend();
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LAPTOP_GUI, 0, 0, ClientLaptop.SCREEN_WIDTH, ClientLaptop.SCREEN_HEIGHT, 10, 10, 1, 1, 256, 256);
 
         graphics.text(Minecraft.getInstance().font, "New Laptop System 0.01% complete", 0, 0, 0xffffff);
         graphics.fill(0, 0, 10, 10, 0x2e2e2e);

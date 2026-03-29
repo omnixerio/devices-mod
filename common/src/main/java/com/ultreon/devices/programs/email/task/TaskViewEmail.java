@@ -30,7 +30,7 @@ public class TaskViewEmail extends Task {
     public void processRequest(CompoundTag nbt, Level world, Player player) {
         List<Email> emails = EmailManager.INSTANCE.getEmailsForAccount(player);
         if (emails != null) {
-            int index = nbt.getInt("Index");
+            int index = nbt.getIntOr("Index", 0);
             if (index >= 0 && index < emails.size()) {
                 emails.get(index).setRead(true);
             }

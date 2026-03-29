@@ -68,7 +68,7 @@ public class FileSystem {
                 DebugLog.log("Action " + action + " sent to " + drive + ": " + success);
                 if (callback != null) {
                     assert tag != null;
-                    DebugLog.log("Callback: " + tag.getString("response"));
+                    DebugLog.log("Callback: " + tag.getString("response").orElse(null));
                     callback.execute(Response.fromTag(tag.getCompoundOrEmpty("response")), success);
                 }
             });
@@ -116,7 +116,7 @@ public class FileSystem {
                     task.setCallback((tag, success) -> {
                         assert tag != null;
                         if (success && tag.contains("files")) {
-                            ListTag files = tag.getList("files").orElseThrow();
+                            ListTag files = tag.getListOrEmpty("files");
                             appFolder.syncFiles(files);
                             callback.execute(appFolder, true);
                         } else {
@@ -151,19 +151,19 @@ public class FileSystem {
 
     private void load(CompoundTag tag) {
         if (tag.contains("main_drive"))
-            mainDrive = InternalDrive.fromTag(tag.getCompound("main_drive").orElseThrow());
+            mainDrive = InternalDrive.fromTag(tag.getCompoundOrEmpty("main_drive"));
         if (tag.contains("drives")) {
-            ListTag list = tag.getList("drives").orElseThrow();
+            ListTag list = tag.getListOrEmpty("drives");
             for (int i = 0; i < list.size(); i++) {
-                CompoundTag driveTag = list.getCompound(i).orElseThrow();
-                AbstractDrive drive = InternalDrive.fromTag(driveTag.getCompound("drive").orElseThrow());
+                CompoundTag driveTag = list.getCompoundOrEmpty(i);
+                AbstractDrive drive = InternalDrive.fromTag(driveTag.getCompoundOrEmpty("drive"));
                 additionalDrives.put(drive.getUuid(), drive);
             }
         }
         if (tag.contains("external_drive"))
-            attachedDrive = ExternalDrive.fromTag(tag.getCompound("external_drive").orElseThrow());
+            attachedDrive = ExternalDrive.fromTag(tag.getCompoundOrEmpty("external_drive"));
         if (tag.contains("external_drive_color"))
-            attachedDriveColor = DyeColor.byId(tag.getByte("external_drive_color").orElseThrow());
+            attachedDriveColor = DyeColor.byId(tag.getByteOr("external_drive_color", (byte) 0));
 
         setupDefault();
     }
@@ -268,7 +268,7 @@ public class FileSystem {
             stack.set(DeviceDataComponents.DRIVE.get(), driveComponent);
         }
 
-        return stack.get(DeviceDataComponents.DRIVE.get()).tag().asCompound().orElseThrow();
+        return stack.get(DeviceDataComponents.DRIVE.get()).tag().asCompound().orElse(new CompoundTag());
     }
 
     public static ExternalDrive getExternalDrive(ItemStack stack) {
@@ -278,7 +278,7 @@ public class FileSystem {
             stack.set(DeviceDataComponents.DRIVE.get(), new DriveComponent(externalDrive.toTag()));
             return externalDrive;
         }
-        return ExternalDrive.fromTag(stack.get(DeviceDataComponents.DRIVE.get()).tag().asCompound().orElseThrow());
+        return ExternalDrive.fromTag(stack.get(DeviceDataComponents.DRIVE.get()).tag().asCompound().orElse(new CompoundTag()));
     }
 
     public CompoundTag toTag() {
@@ -313,7 +313,7 @@ public class FileSystem {
         }
 
         public static Response fromTag(CompoundTag responseTag) {
-            return new Response(responseTag.getInt("status").orElseThrow(), responseTag.getString("message").orElseThrow());
+            return new Response(responseTag.getIntOr("status", 0), responseTag.getString("message").orElse(null));
         }
 
         public int getStatus() {

@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.Toast;
+import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
@@ -22,6 +23,16 @@ public class ClientNotification implements Toast {
     private String subTitle;
 
     private ClientNotification() {
+    }
+
+    @Override
+    public Visibility getWantedVisibility() {
+        return Visibility.SHOW;
+    }
+
+    @Override
+    public void update(ToastManager manager, long fullyVisibleForMs) {
+
     }
 
     @Override
@@ -51,7 +62,7 @@ public class ClientNotification implements Toast {
         }
 
         notification.title = tag.getStringOr("title", "Title");
-        if (tag.contains("subTitle", Tag.TAG_STRING)) {
+        if (tag.contains("subTitle")) {
             notification.subTitle = tag.getStringOr("subTitle", "Subtitle");
         }
 

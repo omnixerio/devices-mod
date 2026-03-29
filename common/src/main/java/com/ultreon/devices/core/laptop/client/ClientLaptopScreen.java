@@ -5,6 +5,7 @@ import com.ultreon.devices.Reference;
 import com.ultreon.devices.debug.DebugLog;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +14,7 @@ import java.util.Arrays;
 
 
 public class ClientLaptopScreen extends Screen {
-    static final Identifier LAPTOP_GUI = new Identifier(Reference.MOD_ID, "textures/gui/laptop.png");
+    static final Identifier LAPTOP_GUI = Identifier.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/laptop.png");
     private static final int BORDER = 10;
     private final ClientLaptop laptop;
 
@@ -24,10 +25,7 @@ public class ClientLaptopScreen extends Screen {
     }
 
     public void renderBezels(final @NotNull GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, float partialTicks) {
-        this.renderBackground(graphics);
-
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-        RenderSystem.setShaderTexture(0, LAPTOP_GUI);
+        this.extractBackground(graphics, mouseX, mouseY, partialTicks);
 
         //*************************//
         //     Physical Screen     //
@@ -36,30 +34,30 @@ public class ClientLaptopScreen extends Screen {
         int posY = (height - ClientLaptop.DEVICE_HEIGHT) / 2;
 
         // Corners
-        graphics.blit(LAPTOP_GUI, posX, posY, 0, 0, BORDER, BORDER); // TOP-LEFT
-        graphics.blit(LAPTOP_GUI, posX + ClientLaptop.DEVICE_WIDTH - BORDER, posY, 11, 0, BORDER, BORDER); // TOP-RIGHT
-        graphics.blit(LAPTOP_GUI, posX + ClientLaptop.DEVICE_WIDTH - BORDER, posY + ClientLaptop.DEVICE_HEIGHT - BORDER, 11, 11, BORDER, BORDER); // BOTTOM-RIGHT
-        graphics.blit(LAPTOP_GUI, posX, posY + ClientLaptop.DEVICE_HEIGHT - BORDER, 0, 11, BORDER, BORDER); // BOTTOM-LEFT
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LAPTOP_GUI, posX, posY, 0, 0, BORDER, BORDER, 256, 256); // TOP-LEFT
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LAPTOP_GUI, posX + ClientLaptop.DEVICE_WIDTH - BORDER, posY, 11, 0, BORDER, BORDER, 256, 256); // TOP-RIGHT
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LAPTOP_GUI, posX + ClientLaptop.DEVICE_WIDTH - BORDER, posY + ClientLaptop.DEVICE_HEIGHT - BORDER, 11, 11, BORDER, BORDER, 256, 256); // BOTTOM-RIGHT
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LAPTOP_GUI, posX, posY + ClientLaptop.DEVICE_HEIGHT - BORDER, 0, 11, BORDER, BORDER, 256, 256); // BOTTOM-LEFT
 
         // Edges
-        graphics.blit(LAPTOP_GUI, posX + BORDER, posY, ClientLaptop.SCREEN_WIDTH, BORDER, 10, 0, 1, BORDER, 256, 256); // TOP
-        graphics.blit(LAPTOP_GUI, posX + ClientLaptop.DEVICE_WIDTH - BORDER, posY + BORDER, BORDER, ClientLaptop.SCREEN_HEIGHT, 11, 10, BORDER, 1, 256, 256); // RIGHT
-        graphics.blit(LAPTOP_GUI, posX + BORDER, posY + ClientLaptop.DEVICE_HEIGHT - BORDER, ClientLaptop.SCREEN_WIDTH, BORDER, 10, 11, 1, BORDER, 256, 256); // BOTTOM
-        graphics.blit(LAPTOP_GUI, posX, posY + BORDER, BORDER, ClientLaptop.SCREEN_HEIGHT, 0, 11, BORDER, 1, 256, 256); // LEFT
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LAPTOP_GUI, posX + BORDER, posY, ClientLaptop.SCREEN_WIDTH, BORDER, 10, 0, 1, BORDER, 256, 256); // TOP
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LAPTOP_GUI, posX + ClientLaptop.DEVICE_WIDTH - BORDER, posY + BORDER, BORDER, ClientLaptop.SCREEN_HEIGHT, 11, 10, BORDER, 1, 256, 256); // RIGHT
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LAPTOP_GUI, posX + BORDER, posY + ClientLaptop.DEVICE_HEIGHT - BORDER, ClientLaptop.SCREEN_WIDTH, BORDER, 10, 11, 1, BORDER, 256, 256); // BOTTOM
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LAPTOP_GUI, posX, posY + BORDER, BORDER, ClientLaptop.SCREEN_HEIGHT, 0, 11, BORDER, 1, 256, 256); // LEFT
 
         // Center
-        graphics.blit(LAPTOP_GUI, posX + BORDER, posY + BORDER, ClientLaptop.SCREEN_WIDTH, ClientLaptop.SCREEN_HEIGHT, 10, 10, 1, 1, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LAPTOP_GUI, posX + BORDER, posY + BORDER, ClientLaptop.SCREEN_WIDTH, ClientLaptop.SCREEN_HEIGHT, 10, 10, 1, 1, 256, 256);
 
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         int posX = (width - ClientLaptop.DEVICE_WIDTH) / 2 + BORDER;
         int posY = (height - ClientLaptop.DEVICE_HEIGHT) / 2 + BORDER;
-        super.render(graphics, mouseX, mouseY, partialTick);
-        renderBezels(graphics, mouseX, mouseY, partialTick);
-        graphics.pose().translate(posX, posY, 0);
-        laptop.render(graphics, mouseX-posX, mouseY-posY, partialTick);
+        super.extractRenderState(graphics, mouseX, mouseY, a);
+        renderBezels(graphics, mouseX, mouseY, a);
+        graphics.pose().translate(posX, posY);
+        laptop.render(graphics, mouseX-posX, mouseY-posY, a);
     }
 
     @Override

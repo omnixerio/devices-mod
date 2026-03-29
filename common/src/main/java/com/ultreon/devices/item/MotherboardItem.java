@@ -2,15 +2,12 @@ package com.ultreon.devices.item;
 
 import com.ultreon.devices.util.KeyboardHelper;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.item.component.TooltipDisplay;
+import org.jspecify.annotations.NonNull;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * @author MrCrayfish
@@ -21,30 +18,31 @@ public class MotherboardItem extends ComponentItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, @NotNull List<net.minecraft.network.chat.Component> tooltip, @NotNull TooltipFlag isAdvanced) {
-        CompoundTag tag = stack.getTag();
+    public void appendHoverText(@NonNull ItemStack stack, @NonNull TooltipContext context, @NonNull TooltipDisplay display, Consumer<net.minecraft.network.chat.Component> builder, @NonNull TooltipFlag tooltipFlag) {
+        MotherboardComponents tag = stack.get(DeviceDataComponents.MOTHERBOARD_COMPONENTS.get());
+        builder.accept(net.minecraft.network.chat.Component.literal("Motherboard"));
         if (!KeyboardHelper.isShiftDown()) {
-            tooltip.add(net.minecraft.network.chat.Component.literal("CPU: " + getComponentStatus(tag, "cpu")));
-            tooltip.add(net.minecraft.network.chat.Component.literal("RAM: " + getComponentStatus(tag, "ram")));
-            tooltip.add(net.minecraft.network.chat.Component.literal("GPU: " + getComponentStatus(tag, "gpu")));
-            tooltip.add(net.minecraft.network.chat.Component.literal("WIFI: " + getComponentStatus(tag, "wifi")));
-            tooltip.add(net.minecraft.network.chat.Component.literal(ChatFormatting.YELLOW + "Hold shift for help"));
+            builder.accept(net.minecraft.network.chat.Component.literal("CPU: " + getComponentStatus(tag, "cpu")));
+            builder.accept(net.minecraft.network.chat.Component.literal("RAM: " + getComponentStatus(tag, "ram")));
+            builder.accept(net.minecraft.network.chat.Component.literal("GPU: " + getComponentStatus(tag, "gpu")));
+            builder.accept(net.minecraft.network.chat.Component.literal("WIFI: " + getComponentStatus(tag, "wifi")));
+            builder.accept(net.minecraft.network.chat.Component.literal(ChatFormatting.YELLOW + "Hold shift for help"));
         } else {
-            tooltip.add(net.minecraft.network.chat.Component.literal("To add the required components"));
-            tooltip.add(net.minecraft.network.chat.Component.literal("place the motherboard and the"));
-            tooltip.add(net.minecraft.network.chat.Component.literal("corresponding component into a"));
-            tooltip.add(net.minecraft.network.chat.Component.literal("crafting table to combine them."));
+            builder.accept(net.minecraft.network.chat.Component.literal("To add the required components"));
+            builder.accept(net.minecraft.network.chat.Component.literal("place the motherboard and the"));
+            builder.accept(net.minecraft.network.chat.Component.literal("corresponding component into a"));
+            builder.accept(net.minecraft.network.chat.Component.literal("crafting table to combine them."));
         }
     }
 
-    private String getComponentStatus(CompoundTag tag, String component) {
-        if (tag != null && tag.contains("components", Tag.TAG_COMPOUND)) {
-            CompoundTag components = tag.getCompound("components");
-            if (components.contains(component, Tag.TAG_BYTE)) {
-                return ChatFormatting.GREEN + "Added";
-            }
-        }
-        return ChatFormatting.RED + "Missing";
+    private String getComponentStatus(MotherboardComponents tag, String component) {
+        return switch (component) {
+            case "cpu" -> tag.cpu() ? "Installed" : "Missing";
+            case "ram" -> tag.ram() ? "Installed" : "Missing";
+            case "gpu" -> tag.gpu() ? "Installed" : "Missing";
+            case "wifi" -> tag.wifi() ? "Installed" : "Missing";
+            default -> "Unknown";
+        };
     }
 
     public static class Component extends ComponentItem {

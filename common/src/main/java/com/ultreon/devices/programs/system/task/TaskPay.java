@@ -31,8 +31,8 @@ public class TaskPay extends Task {
 
     @Override
     public void processRequest(CompoundTag tag, Level level, Player player) {
-        String uuid = tag.getString("uuid");
-        int amount = tag.getInt("amount");
+        String uuid = tag.getString("uuid").orElse(null);
+        int amount = tag.getIntOr("amount", 0);
         Account sender = BankUtil.INSTANCE.getAccount(player);
         Account recipient = BankUtil.INSTANCE.getAccount(UUID.fromString(uuid));
         if (recipient != null && sender.hasAmount(amount)) {

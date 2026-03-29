@@ -1,6 +1,5 @@
 package com.ultreon.devices.programs.email;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.ultreon.devices.Resources;
 import com.ultreon.devices.api.ApplicationManager;
 import com.ultreon.devices.api.app.Component;
@@ -15,6 +14,7 @@ import com.ultreon.devices.api.app.component.*;
 import com.ultreon.devices.api.app.renderer.ListItemRenderer;
 import com.ultreon.devices.api.io.File;
 import com.ultreon.devices.api.task.TaskManager;
+import com.ultreon.devices.api.utils.RenderUtil;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.object.AppInfo;
 import com.ultreon.devices.programs.email.object.Contact;
@@ -23,6 +23,7 @@ import com.ultreon.devices.programs.email.task.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.FormattedText;
@@ -208,8 +209,7 @@ public class EmailApp extends Application {
             TaskManager.sendTask(taskUpdateInbox);
         });
         layoutInbox.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) -> {
-            RenderSystem.setShaderTexture(0, ENDER_MAIL_BACKGROUND);
-            RenderUtil.drawRectWithTexture(ENDER_MAIL_BACKGROUND, graphics, x, y, 0, 0, width, height, 640, 360, 640, 360);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, ENDER_MAIL_BACKGROUND, x, y, 0, 0, width, height, 640, 360, 640, 360);
 
             Color temp = new Color(Laptop.getSystem().getSettings().getColorScheme().getBackgroundColor());
             Color color = new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), 150);
@@ -223,7 +223,7 @@ public class EmailApp extends Application {
                 graphics.fill(x + 130, y + 35, x + width - 5, y + height - 5, new Color(1f, 1f, 1f, 0.25f).getRGB());
                 RenderUtil.drawStringClipped(graphics, e.getSubject(), x + 135, y + 10, 120, Color.WHITE.getRGB(), true);
                 RenderUtil.drawStringClipped(graphics, e.getAuthor() + "@endermail.official", x + 135, y + 22, 120, Color.LIGHT_GRAY.getRGB(), false);
-                graphics.drawWordWrap(Laptop.getFontStatic(), FormattedText.of(e.getMessage()), x + 135, y + 40, 115, Color.WHITE.getRGB());
+                graphics.textWithWordWrap(Laptop.getFontStatic(), FormattedText.of(e.getMessage()), x + 135, y + 40, 115, Color.WHITE.getRGB());
             }
         });
 
@@ -234,15 +234,12 @@ public class EmailApp extends Application {
                 graphics.fill(x, y, x + width, y + height, selected ? Color.DARK_GRAY.getRGB() : Color.GRAY.getRGB());
 
                 if (!e.isRead()) {
-                    RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
                     RenderUtil.drawApplicationIcon(graphics, info, x + width - 16, y + 2);
                 }
 
                 if (e.getAttachment() != null) {
-                    RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
                     int posX = x + (!e.isRead() ? -12 : 0) + width;
-                    RenderSystem.setShaderTexture(0, ENDER_MAIL_ICONS);
-                    RenderUtil.drawRectWithTexture(ENDER_MAIL_ICONS, graphics, posX, y + 16, 20, 10, 7, 10, 13, 20);
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, ENDER_MAIL_ICONS, posX, y + 16, 20, 10, 7, 10, 13, 20, 256, 256);
                 }
                 RenderUtil.drawStringClipped(graphics, e.getSubject(), x + 5, y + 5, width - 20, Color.WHITE.getRGB(), false);
                 RenderUtil.drawStringClipped(graphics, e.getAuthor() + "@endermail.official", x + 5, y + 17, width - 20, Color.LIGHT_GRAY.getRGB(), false);
@@ -381,7 +378,7 @@ public class EmailApp extends Application {
         btnAttachedFile = new Button(26, 129, ENDER_MAIL_ICONS, 70, 0, 10, 10);
         btnAttachedFile.setToolTip("Attach File", "Select a file from computer to attach to this email");
         btnAttachedFile.setClickListener((event) -> {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 Dialog.OpenFile dialog = new Dialog.OpenFile(this);
                 dialog.setResponseHandler((success, file) -> {
                     if (!file.isFolder()) {
@@ -406,7 +403,7 @@ public class EmailApp extends Application {
         btnRemoveAttachedFile.setToolTip("Remove Attachment", "Delete the attached file from this email");
         btnRemoveAttachedFile.setVisible(false);
         btnRemoveAttachedFile.setClickListener((event) -> {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 resetAttachedFile();
             }
         });
@@ -426,7 +423,6 @@ public class EmailApp extends Application {
             graphics.fill(x, y + 50, x + layoutViewEmail.width, y + 156, COLOR_EMAIL_CONTENT_BACKGROUND.getRGB());
 
             if (attachedFile != null) {
-                RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
                 AppInfo info = ApplicationManager.getApplication(Objects.requireNonNull(Identifier.tryParse(attachedFile.getOpeningApp()), "Attached file has no opening app"));
                 RenderUtil.drawApplicationIcon(graphics, info, x + 204, y + 4);
             }
@@ -441,7 +437,7 @@ public class EmailApp extends Application {
 
         btnCancelViewEmail = new Button(5, 3, ENDER_MAIL_ICONS, 40, 0, 10, 10);
         btnCancelViewEmail.setClickListener((event) -> {
-            if (mouseButton == 0) {
+            if (event.button() == 0) {
                 attachedFile = null;
                 btnSaveAttachment.setVisible(false);
                 labelAttachmentName.setVisible(false);
@@ -460,7 +456,7 @@ public class EmailApp extends Application {
         btnSaveAttachment.setToolTip("Save Attachment", "Save the file attached to this email");
         btnSaveAttachment.setVisible(false);
         btnSaveAttachment.setClickListener((event) -> {
-            if (mouseButton == 0 && attachedFile != null) {
+            if (event.button() == 0 && attachedFile != null) {
                 Dialog.SaveFile dialog = new Dialog.SaveFile(this, attachedFile);
                 openDialog(dialog);
             }
@@ -477,7 +473,7 @@ public class EmailApp extends Application {
         TaskCheckEmailAccount taskCheckAccount = new TaskCheckEmailAccount();
         taskCheckAccount.setCallback((nbt, success) -> {
             if (success) {
-                currentName = Objects.requireNonNull(nbt, "Callback has no nbt attached").getString("Name");
+                currentName = Objects.requireNonNull(nbt, "Callback has no nbt attached").getString("Name").orElse(null);
                 listEmails.removeAll();
                 for (Email email : EmailManager.INSTANCE.getInbox()) {
                     listEmails.addItem(email);

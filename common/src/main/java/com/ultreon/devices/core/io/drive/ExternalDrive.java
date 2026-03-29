@@ -25,11 +25,11 @@ public final class ExternalDrive extends AbstractDrive {
         if (!PREDICATE_DRIVE_TAG.test(driveTag)) return null;
 
         ExternalDrive drive = new ExternalDrive();
-        drive.name = driveTag.getString("name").orElseThrow();
-        drive.uuid = UUID.fromString(driveTag.getString("uuid").orElseThrow());
+        drive.name = driveTag.getString("name").orElse(null);
+        drive.uuid = UUID.fromString(driveTag.getString("uuid").orElse(null));
 
-        CompoundTag folderTag = driveTag.getCompound("root").orElseThrow();
-        drive.root = ServerFolder.fromTag(folderTag.getString("file_name").orElseThrow(), folderTag.getCompound("data").orElseThrow());
+        CompoundTag folderTag = driveTag.getCompoundOrEmpty("root");
+        drive.root = ServerFolder.fromTag(folderTag.getString("file_name").orElse(null), folderTag.getCompoundOrEmpty("data"));
 
         return drive;
     }

@@ -1,15 +1,13 @@
 package com.ultreon.devices.block;
 
+import com.mojang.serialization.MapCodec;
 import com.ultreon.devices.Devices;
-import com.ultreon.devices.api.print.IPrint;
 import com.ultreon.devices.block.entity.PaperBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -41,8 +39,8 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
     private static final VoxelShape SELECTION_BOX_EAST = box(0, 0, 0, 16, 16, 1);
     private static final VoxelShape[] SELECTION_BOUNDING_BOX = {SELECTION_BOX_SOUTH, SELECTION_BOX_WEST, SELECTION_BOX_NORTH, SELECTION_BOX_EAST};
 
-    public PaperBlock() {
-        super(Properties.of().setId(ResourceKey.create(Registries.BLOCK, Devices.id("paper"))).noCollision().instabreak().noOcclusion().noLootTable());
+    public PaperBlock(Properties pProperties) {
+        super(pProperties.setId(ResourceKey.create(Registries.BLOCK, Devices.id("paper"))).noCollision().instabreak().noOcclusion().noLootTable());
 
         registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
     }
@@ -67,9 +65,9 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level level, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (!level.isClientSide) {
-            BlockEntity blockEntity = level.getBlockEntity(pPos);
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (!level.isClientSide()) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof PaperBlockEntity paper) {
                 paper.nextRotation();
             }
@@ -82,17 +80,18 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
         return new ArrayList<>();
     }
 
-    @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!level.isClientSide) {
-            BlockEntity tileEntity = level.getBlockEntity(pos);
-            if (tileEntity instanceof PaperBlockEntity paper) {
-                ItemStack drop = IPrint.generateItem(paper.getPrint());
-                level.addFreshEntity(new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop));
-            }
-        }
-        super.onRemove(state, level, pos, newState, isMoving);
-    }
+    // FixMe Port this to Minecraft 26.1
+//    @Override
+//    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+//        if (!level.isClientSide()) {
+//            BlockEntity tileEntity = level.getBlockEntity(pos);
+//            if (tileEntity instanceof PaperBlockEntity paper) {
+//                ItemStack drop = IPrint.generateItem(paper.getPrint());
+//                level.addFreshEntity(new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop));
+//            }
+//        }
+//        super.onRemove(state, level, pos, newState, isMoving);
+//    }
 
     @Override
     public boolean triggerEvent(@NotNull BlockState state, Level level, @NotNull BlockPos pos, int id, int param) {
@@ -114,5 +113,10 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new PaperBlockEntity(pos, state);
+    }
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return simpleCodec(PaperBlock::new);
     }
 }

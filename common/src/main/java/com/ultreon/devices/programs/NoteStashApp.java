@@ -210,8 +210,8 @@ public class NoteStashApp extends Application {
 
         CompoundTag data = file.getData();
         assert data != null;
-        noteTitle.setText(data.getString("title"));
-        noteContent.setText(data.getString("content"));
+        noteTitle.setText(data.getString("title").orElse(null));
+        noteContent.setText(data.getString("content").orElse(null));
         setCurrentLayout(layoutViewNote);
         return true;
     }
@@ -227,7 +227,7 @@ public class NoteStashApp extends Application {
         }
 
         public static Note fromFile(File file) {
-            Note note = new Note(Objects.requireNonNull(file.getData(), "File data doesn't exist.").getString("title"), file.getData().getString("content"));
+            Note note = new Note(Objects.requireNonNull(file.getData(), "File data doesn't exist.").getString("title").orElse(null), file.getData().getString("content").orElse(null));
             note.source = file;
             return note;
         }

@@ -132,7 +132,7 @@ public abstract class Devices {
         //LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
         LOGGER.info("Doing some common setup.");
 
-        PacketHandler.init();
+        DevicesNetworker.init();
 
         registerApplications();
 

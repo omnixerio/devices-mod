@@ -24,7 +24,6 @@ public class BuiltinApps {
 
         if (XinexPlatform.isDevelopmentEnvironment() || Devices.EARLY_CONFIG.enableBetaApps) {
             ApplicationManager.registerApplication(Devices.id("bank"), () -> BankApp::new, false);
-            ApplicationManager.registerApplication(Devices.id("boat_racers"), () -> BoatRacersApp::new, false);
             ApplicationManager.registerApplication(Devices.id("mine_bay"), () -> MineBayApp::new, false);
             ApplicationManager.registerApplication(Devices.id("snake"), () -> SnakeApp::new, false);
             ApplicationManager.registerApplication(Devices.id("themes"), () -> ThemesApp::new, false);

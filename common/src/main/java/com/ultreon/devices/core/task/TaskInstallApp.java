@@ -44,16 +44,16 @@ public class TaskInstallApp extends Task {
 
     @Override
     public void processRequest(CompoundTag tag, Level level, Player player) {
-        DebugLog.log("Proc message " + tag.getString("appId") + ", " +  BlockPos.of(tag.getLong("pos")) + ", " + tag.getBoolean("install"));
-        String appId = tag.getString("appId");
-        DebugLog.log(level.getBlockState(BlockPos.of(tag.getLong("pos"))).getBlock());
-        BlockEntity tileEntity = level.getChunkAt(BlockPos.of(tag.getLong("pos"))).getBlockEntity(BlockPos.of(tag.getLong("pos")), LevelChunk.EntityCreationType.IMMEDIATE);
+        DebugLog.log("Proc message " + tag.getString("appId").orElse(null) + ", " +  BlockPos.of(tag.getLongOr("pos", 0)) + ", " + tag.getBooleanOr("install", false));
+        String appId = tag.getString("appId").orElse(null);
+        DebugLog.log(level.getBlockState(BlockPos.of(tag.getLongOr("pos", 0))).getBlock());
+        BlockEntity tileEntity = level.getChunkAt(BlockPos.of(tag.getLongOr("pos", 0))).getBlockEntity(BlockPos.of(tag.getLongOr("pos", 0)), LevelChunk.EntityCreationType.IMMEDIATE);
         DebugLog.log(tileEntity);
         if (tileEntity instanceof ComputerBlockEntity laptop) {
             CompoundTag systemData = laptop.getSystemData();
-            ListTag list = systemData.getList("InstalledApps", Tag.TAG_STRING);
+            ListTag list = systemData.getListOrEmpty("InstalledApps");
 
-            if (tag.getBoolean("install")) {
+            if (tag.getBooleanOr("install", false)) {
                 for (int i = 0; i < list.size(); i++) {
                     if (list.getString(i).equals(appId)) {
                         Devices.LOGGER.warn("Found duplicate, noping out");
@@ -64,7 +64,7 @@ public class TaskInstallApp extends Task {
                 this.setSuccessful();
             } else {
                 list.removeIf(appTag -> {
-                    if (appTag.getAsString().equals(appId)) {
+                    if (appTag.asString().equals(appId)) {
                         this.setSuccessful();
                         return true;
                     } else {

@@ -26,7 +26,7 @@ public class DeviceItems {
     private static final Registrar<Item> REGISTER = Devices.REGISTRIES.get().getRegistrar(Registries.ITEM);
 
     // Laptops
-    public static final DyeableRegistration<Item> LAPTOPS = new DyeableRegistration<Item>() {
+    public static final DyeableRegistration<Item> LAPTOPS = new DyeableRegistration<>() {
         @Override
         public RegistrySupplier<Item, Item> register(Registrar<Item> registrar, DyeColor color) {
             return registrar.register(color.getName() + "_laptop", () -> new ColoredDeviceItem(DeviceBlocks.LAPTOPS.of(color).get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, Devices.id(color.getName() + "_laptop"))), color, ModDeviceTypes.COMPUTER));
@@ -116,7 +116,7 @@ public class DeviceItems {
         }
     };
 
-    public static final RegistrySupplier<BlockItem, Item> PAPER = REGISTER.register(Devices.id("paper"), () -> new BlockItem(DeviceBlocks.PAPER.get(), new Item.Properties()));
+    public static final RegistrySupplier<BlockItem, Item> PAPER = REGISTER.register("paper", () -> new BlockItem(DeviceBlocks.PAPER.get(), new Item.Properties()));
 
     public static final RegistrySupplier<BasicItem, Item> PLASTIC_UNREFINED = REGISTER.register("plastic_unrefined", () -> new BasicItem(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, Devices.id("plastic_unrefined")))));
     public static final RegistrySupplier<BasicItem, Item> PLASTIC = REGISTER.register("plastic", () -> new BasicItem(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, Devices.id("plastic")))));

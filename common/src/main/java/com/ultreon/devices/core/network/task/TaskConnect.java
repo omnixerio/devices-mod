@@ -36,11 +36,11 @@ public class TaskConnect extends Task {
 
     @Override
     public void processRequest(CompoundTag tag, Level level, Player player) {
-        BlockEntity tileEntity = level.getChunkAt(BlockPos.of(tag.getLong("routerPos"))).getBlockEntity(BlockPos.of(tag.getLong("routerPos")), LevelChunk.EntityCreationType.IMMEDIATE);
+        BlockEntity tileEntity = level.getChunkAt(BlockPos.of(tag.getLongOr("routerPos", 0))).getBlockEntity(BlockPos.of(tag.getLongOr("routerPos", 0)), LevelChunk.EntityCreationType.IMMEDIATE);
         if (tileEntity instanceof RouterBlockEntity tileEntityRouter) {
             Router router = tileEntityRouter.getRouter();
 
-            BlockEntity tileEntity1 = level.getChunkAt(BlockPos.of(tag.getLong("devicePos"))).getBlockEntity(BlockPos.of(tag.getLong("devicePos")), LevelChunk.EntityCreationType.IMMEDIATE);
+            BlockEntity tileEntity1 = level.getChunkAt(BlockPos.of(tag.getLongOr("devicePos", 0))).getBlockEntity(BlockPos.of(tag.getLongOr("devicePos", 0)), LevelChunk.EntityCreationType.IMMEDIATE);
             if (tileEntity1 instanceof NetworkDeviceBlockEntity tileEntityNetworkDevice) {
                 if (router.addDevice(tileEntityNetworkDevice)) {
                     tileEntityNetworkDevice.connect(router);

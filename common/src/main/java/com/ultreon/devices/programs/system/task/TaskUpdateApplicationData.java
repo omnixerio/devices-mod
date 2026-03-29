@@ -39,9 +39,9 @@ public class TaskUpdateApplicationData extends Task {
 
     @Override
     public void processRequest(CompoundTag tag, Level level, Player player) {
-        BlockEntity tileEntity = level.getBlockEntity(new BlockPos(tag.getInt("posX"), tag.getInt("posY"), tag.getInt("posZ")));
+        BlockEntity tileEntity = level.getBlockEntity(new BlockPos(tag.getIntOr("posX", 0), tag.getIntOr("posY", 0), tag.getInt("posZ")));
         if (tileEntity instanceof ComputerBlockEntity laptop) {
-            laptop.setApplicationData(tag.getString("appId"), tag.getCompound("appData"));
+            laptop.setApplicationData(tag.getString("appId").orElse(null), tag.getCompoundOrEmpty("appData"));
         }
         this.setSuccessful();
     }

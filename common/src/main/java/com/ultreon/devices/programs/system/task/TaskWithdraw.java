@@ -32,7 +32,7 @@ public class TaskWithdraw extends Task {
 
     @Override
     public void processRequest(CompoundTag tag, Level level, Player player) {
-        int amount = tag.getInt("amount");
+        int amount = tag.getIntOr("amount", 0);
         Account account = BankUtil.INSTANCE.getAccount(player);
         if (account.withdraw(amount)) {
             int stacks = amount / 64;

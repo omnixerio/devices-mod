@@ -7,8 +7,13 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 
 import java.util.List;
@@ -24,16 +29,16 @@ public class SeatEntity extends Entity
         this.setInvisible(true);
     }
 
-    @Override
-    protected float getEyeHeight(Pose pose, EntityDimensions dimensions) {
-        return 0;
-    }
-
     public SeatEntity(Level worldIn, BlockPos pos, double yOffset)
     {
         this(DeviceEntities.SEAT.get(), worldIn);
         this.setPos(pos.getX() + 0.5, pos.getY() + yOffset, pos.getZ() + 0.5);
         this.blockPos = pos;
+    }
+
+    @Override
+    public double getEyeY() {
+        return this.position().y + 0.5;
     }
 
 
@@ -55,16 +60,32 @@ public class SeatEntity extends Entity
 //    }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder entityData) {
+
     }
 
     @Override
     public void tick()
     {
-        if(!this.level().isClientSide && (blockPos == null || !this.hasExactlyOnePlayerPassenger() || this.level().isEmptyBlock(blockPos)))
+        if(!this.level().isClientSide() && (blockPos == null || !this.hasExactlyOnePlayerPassenger() || this.level().isEmptyBlock(blockPos)))
         {
-            this.kill();
+            this.kill((ServerLevel) level());
         }
+    }
+
+    @Override
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+        return false;
+    }
+
+    @Override
+    protected void readAdditionalSaveData(ValueInput input) {
+
+    }
+
+    @Override
+    protected void addAdditionalSaveData(ValueOutput output) {
+
     }
 
 
@@ -74,26 +95,22 @@ public class SeatEntity extends Entity
         return list.isEmpty() ? null : list.getFirst() instanceof LivingEntity livingEntity ? livingEntity : null;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket(this);
-    }
-
 //    @Override
 //    protected void.json init() {}
 
-    @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
-        if (compound.contains("DevicesChairX", Tag.TAG_INT) && compound.contains("DevicesChairY", Tag.TAG_INT) && compound.contains("DevicesChairZ", Tag.TAG_INT)) {
-            blockPos = new BlockPos(compound.getInt("DevicesChairX"), compound.getInt("DevicesChairY"), compound.getInt("DevicesChairZ"));
-        }
-    }
-
-    @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {
-        if (blockPos == null) return;
-        compound.putInt("DevicesChairX", blockPos.getX());
-        compound.putInt("DevicesChairY", blockPos.getY());
-        compound.putInt("DevicesChairZ", blockPos.getZ());
-    }
+    // FixMe - This is a temporary fix for the chair not being saved properly.
+//    @Override
+//    protected void readAdditionalSaveData(CompoundTag compound) {
+//        if (compound.contains("DevicesChairX", Tag.TAG_INT) && compound.contains("DevicesChairY", Tag.TAG_INT) && compound.contains("DevicesChairZ", Tag.TAG_INT)) {
+//            blockPos = new BlockPos(compound.getIntOr("DevicesChairX", 0), compound.getIntOr("DevicesChairY", 0), compound.getInt("DevicesChairZ"));
+//        }
+//    }
+//
+//    @Override
+//    protected void addAdditionalSaveData(CompoundTag compound) {
+//        if (blockPos == null) return;
+//        compound.putInt("DevicesChairX", blockPos.getX());
+//        compound.putInt("DevicesChairY", blockPos.getY());
+//        compound.putInt("DevicesChairZ", blockPos.getZ());
+//    }
 }

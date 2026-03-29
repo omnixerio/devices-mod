@@ -31,10 +31,10 @@ public class TaskUpdateSystemData extends Task {
 
     @Override
     public void processRequest(CompoundTag tag, Level level, Player player) {
-        BlockPos pos = BlockPos.of(tag.getLong("pos"));
+        BlockPos pos = BlockPos.of(tag.getLongOr("pos", 0));
         BlockEntity tileEntity = level.getChunkAt(pos).getBlockEntity(pos, LevelChunk.EntityCreationType.IMMEDIATE);
         if (tileEntity instanceof ComputerBlockEntity laptop)
-            laptop.setSystemData(tag.getCompound("data"));
+            laptop.setSystemData(tag.getCompoundOrEmpty("data"));
         this.setSuccessful();
     }
 

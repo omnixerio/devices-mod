@@ -455,7 +455,7 @@ public class File {
      * @return a file instance
      */
     public static File fromTag(String name, CompoundTag tag) {
-        return new File(name, tag.getString("openingApp").orElseThrow(), tag.getCompound("data").orElseThrow());
+        return new File(name, tag.getString("openingApp").orElse(null), tag.getCompoundOrEmpty("data"));
     }
 
     @Override

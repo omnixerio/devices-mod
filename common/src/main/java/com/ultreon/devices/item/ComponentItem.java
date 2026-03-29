@@ -5,6 +5,6 @@ import net.minecraft.world.item.Item;
 
 public class ComponentItem extends Item {
     public ComponentItem(Properties pProperties) {
-        super(pProperties.arch$tab(Devices.TAB_DEVICE));
+        super(pProperties);
     }
 }

@@ -30,19 +30,19 @@ public final class ServerFolder extends ServerFile {
     private ServerFolder(String name, boolean protect, CompoundTag tag) {
         this.name = name;
         this.protect = protect;
-        this.creationTime = tag.getLong("creationTime").orElseThrow();
-        this.lastModified = tag.getLong("lastModified").orElseThrow();
-        this.lastAccessed = tag.getLong("lastAccessed").orElseThrow();
+        this.creationTime = tag.getLongOr("creationTime", 0);
+        this.lastModified = tag.getLongOr("lastModified", 0);
+        this.lastAccessed = tag.getLongOr("lastAccessed", 0);
     }
 
     public static ServerFolder fromTag(String name, CompoundTag folderTag) {
         ServerFolder folder = new ServerFolder(name, false, folderTag);
 
-        if (folderTag.contains("protected")) folder.protect = folderTag.getBoolean("protected").orElseThrow();
+        if (folderTag.contains("protected")) folder.protect = folderTag.getBooleanOr("protected", false);
 
-        CompoundTag fileList = folderTag.getCompound("files").orElseThrow();
+        CompoundTag fileList = folderTag.getCompoundOrEmpty("files");
         for (String fileName : fileList.keySet()) {
-            CompoundTag fileTag = fileList.getCompound(fileName).orElseThrow();
+            CompoundTag fileTag = fileList.getCompoundOrEmpty(fileName);
             if (fileTag.contains("files")) {
                 folder.add(ServerFolder.fromTag(fileName, fileTag), false);
             } else {

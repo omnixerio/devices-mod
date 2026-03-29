@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.ultreon.devices.core.Laptop;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -46,22 +47,20 @@ public class BrewingBox extends ContainerBox {
     protected void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
         super.render(graphics, laptop, mc, x, y, mouseX, mouseY, windowActive, partialTicks);
 
-        RenderSystem.setShaderTexture(0, CONTAINER_BOXES_TEXTURE);
-
-        graphics.blit(CONTAINER_BOXES_TEXTURE, x + 56, y + 47, 152, 252, 18, 4);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_BOXES_TEXTURE, x + 56, y + 47, 152, 252, 18, 4, 256, 256);
 
         if (brewTimer > 0) {
             if (slots.size() > 1 && !slots.get(1).getStack().isEmpty()) {
                 int scaledPercent = (int) (28f * (1f - (float) brewTimer / 400f));
 
                 if (scaledPercent > 0) {
-                    graphics.blit(CONTAINER_BOXES_TEXTURE, x + 93, y + 19, 152, 223, 9, scaledPercent);
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_BOXES_TEXTURE, x + 93, y + 19, 152, 223, 9, scaledPercent, 256, 256);
                 }
 
                 scaledPercent = BUBBLELENGTHS[brewTimer / 2 % 7];
 
                 if (scaledPercent > 0) {
-                    graphics.blit(CONTAINER_BOXES_TEXTURE, x + 59, y + 16 + 29 - scaledPercent, 161, 251 - scaledPercent, 12, scaledPercent);
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_BOXES_TEXTURE, x + 59, y + 16 + 29 - scaledPercent, 161, 251 - scaledPercent, 12, scaledPercent, 256, 256);
                 }
             }
         }

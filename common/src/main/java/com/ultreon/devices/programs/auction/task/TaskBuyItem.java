@@ -31,7 +31,7 @@ public class TaskBuyItem extends Task {
 
     @Override
     public void processRequest(CompoundTag nbt, Level world, Player player) {
-        this.id = UUID.fromString(nbt.getString("id"));
+        this.id = UUID.fromString(nbt.getString("id").orElse(null));
         AuctionItem item = AuctionManager.INSTANCE.getItem(id);
         if (item != null && item.isValid()) {
             int price = item.getPrice();

@@ -3,9 +3,10 @@ package com.ultreon.devices.block.entity;
 import com.ultreon.devices.core.network.Router;
 import com.ultreon.devices.init.DeviceBlockEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueOutput;
+import org.jspecify.annotations.NonNull;
 
 @SuppressWarnings("unused")
 public class RouterBlockEntity extends DeviceBlockEntity.Colored {
@@ -51,11 +52,8 @@ public class RouterBlockEntity extends DeviceBlockEntity.Colored {
     }
 
     @Override
-    public void saveAdditional(ValueOutput tag) {
+    public void saveAdditional(@NonNull ValueOutput tag) {
         super.saveAdditional(tag);
-        if (tag.contains("router")) {
-            router = Router.fromTag(worldPosition, tag.getCompoundOrEmpty("router"));
-        }
     }
 
     public void syncDevicesToClient() {

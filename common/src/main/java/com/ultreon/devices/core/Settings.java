@@ -58,11 +58,11 @@ public class Settings {
     }
 
     public static Settings fromTag(CompoundTag tag) {
-        //showAllApps = tag.getBoolean("showAllApps");
+        //showAllApps = tag.getBooleanOr("showAllApps", false);
 
         Settings settings = new Settings();
-        settings.colorScheme = ColorScheme.fromTag(tag.getCompound("colorScheme").orElseThrow());
-        settings.preset = tag.contains("preset") ? Preset.fromTag(tag.getCompound("preset").orElseThrow()) : null;
+        settings.colorScheme = ColorScheme.fromTag(tag.getCompoundOrEmpty("colorScheme"));
+        settings.preset = tag.contains("preset") ? Preset.fromTag(tag.getCompoundOrEmpty("preset")) : null;
 
         return settings;
     }

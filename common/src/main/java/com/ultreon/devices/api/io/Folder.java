@@ -53,9 +53,9 @@ public class Folder extends File {
 
         if (folderTag.contains("protected")) folder.protect = folderTag.getBooleanOr("protected", false);
 
-        CompoundTag fileList = folderTag.getCompound("files").orElseThrow();
+        CompoundTag fileList = folderTag.getCompoundOrEmpty("files");
         for (String fileName : fileList.keySet()) {
-            CompoundTag fileTag = fileList.getCompound(fileName).orElseThrow();
+            CompoundTag fileTag = fileList.getCompoundOrEmpty(fileName);
             if (fileTag.contains("files")) {
                 File file = Folder.fromTag(fileName, fileTag);
                 file.parent = folder;
@@ -441,8 +441,8 @@ public class Folder extends File {
     public void syncFiles(ListTag list) {
         files.removeIf(f -> !f.isFolder());
         for (int i = 0; i < list.size(); i++) {
-            CompoundTag fileTag = list.getCompound(i).orElseThrow();
-            File file = File.fromTag(fileTag.getString("file_name").orElseThrow(), fileTag.getCompound("data").orElseThrow());
+            CompoundTag fileTag = list.getCompoundOrEmpty(i);
+            File file = File.fromTag(fileTag.getString("file_name").orElse(null), fileTag.getCompoundOrEmpty("data"));
             file.drive = drive;
             file.valid = true;
             file.parent = this;
@@ -466,7 +466,7 @@ public class Folder extends File {
             Task task = new TaskGetFiles(this, pos);
             task.setCallback((tag, success) -> {
                 if (success && Objects.requireNonNull(tag).contains("files")) {
-                    ListTag files = tag.getList("files").orElseThrow();
+                    ListTag files = tag.getListOrEmpty("files");
                     syncFiles(files);
                     if (callback != null) {
                         callback.execute(this, true);

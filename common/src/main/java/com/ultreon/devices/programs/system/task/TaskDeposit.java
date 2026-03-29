@@ -32,7 +32,7 @@ public class TaskDeposit extends Task {
     @Override
     public void processRequest(CompoundTag tag, Level level, Player player) {
         Account account = BankUtil.INSTANCE.getAccount(player);
-        int amount = tag.getInt("amount");
+        int amount = tag.getIntOr("amount", 0);
         long value = account.getBalance() + amount;
         if (value < 0) {
             amount = Integer.MAX_VALUE - account.getBalance();

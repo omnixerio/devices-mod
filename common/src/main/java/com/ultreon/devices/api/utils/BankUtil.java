@@ -109,9 +109,9 @@ public class BankUtil implements WorldSavedData {
     public void load(CompoundTag tag) {
         ListTag accountList = (ListTag) tag.get("accounts");
         for (int i = 0; i < accountList.size(); i++) {
-            CompoundTag accountTag = accountList.getCompound(i).orElseThrow();
-            UUID uuid = UUID.fromString(accountTag.getString("uuid").orElseThrow());
-            Account account = new Account(accountTag.getInt("balance").orElseThrow());
+            CompoundTag accountTag = accountList.getCompoundOrEmpty(i);
+            UUID uuid = UUID.fromString(accountTag.getString("uuid").orElse(null));
+            Account account = new Account(accountTag.getIntOr("balance", 0));
             uuidToAccount.put(uuid, account);
         }
     }

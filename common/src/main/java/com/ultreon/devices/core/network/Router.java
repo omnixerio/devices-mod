@@ -163,11 +163,11 @@ public class Router {
 
     public static Router fromTag(BlockPos pos, CompoundTag tag) {
         Router router = new Router(pos);
-        router.routerId = UUID.fromString(tag.getString("id").orElseThrow());
+        router.routerId = UUID.fromString(tag.getString("id").orElse(null));
 
-        ListTag deviceList = tag.getList("network_devices").orElseThrow();
+        ListTag deviceList = tag.getListOrEmpty("network_devices");
         for (int i = 0; i < deviceList.size(); i++) {
-            NetworkDevice device = NetworkDevice.fromTag(deviceList.getCompound(i).orElseThrow());
+            NetworkDevice device = NetworkDevice.fromTag(deviceList.getCompoundOrEmpty(i));
             router.NETWORK_DEVICES.put(device.getId(), device);
         }
         return router;

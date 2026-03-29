@@ -43,10 +43,10 @@ public class TaskSendAction extends Task {
 
     @Override
     public void processRequest(CompoundTag tag, Level level, Player player) {
-        FileAction action = FileAction.fromTag(tag.getCompound("action"));
-        BlockEntity tileEntity = level.getChunkAt(BlockPos.of(tag.getLong("pos"))).getBlockEntity(BlockPos.of(tag.getLong("pos")), LevelChunk.EntityCreationType.IMMEDIATE);
+        FileAction action = FileAction.fromTag(tag.getCompoundOrEmpty("action"));
+        BlockEntity tileEntity = level.getChunkAt(BlockPos.of(tag.getLongOr("pos", 0))).getBlockEntity(BlockPos.of(tag.getLongOr("pos", 0)), LevelChunk.EntityCreationType.IMMEDIATE);
         if (tileEntity instanceof ComputerBlockEntity laptop) {
-            response = laptop.getFileSystem().readAction(tag.getString("uuid"), action, level);
+            response = laptop.getFileSystem().readAction(tag.getString("uuid").orElse(null), action, level);
             this.setSuccessful();
         }
     }

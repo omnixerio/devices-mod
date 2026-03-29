@@ -1,5 +1,6 @@
 package com.ultreon.devices.debug;
 
+import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +11,7 @@ public class DebugLog {
     private static final Logger LOGGER = LoggerFactory.getLogger("Devices : Debugger");
 
     public static void log(String message) {
-        if (Platform.isDevelopmentEnvironment()) {
+        if (XinexPlatform.isDevelopmentEnvironment()) {
             LOGGER.info(message);
         }
     }
@@ -20,7 +21,7 @@ public class DebugLog {
     }
 
     public static void logTime(long ticks, String message) {
-        if (Platform.isDevelopmentEnvironment()) {
+        if (XinexPlatform.isDevelopmentEnvironment()) {
             LOGGER.info("(@" + ticks + " ticks) " + message);
         }
     }

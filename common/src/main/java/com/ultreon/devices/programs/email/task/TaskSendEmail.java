@@ -33,7 +33,7 @@ public class TaskSendEmail extends Task {
         if (name != null) {
             Email email = Email.readFromNBT(nbt);
             email.setAuthor(name);
-            if (EmailManager.INSTANCE.addEmailToInbox(email, nbt.getString("to"))) {
+            if (EmailManager.INSTANCE.addEmailToInbox(email, nbt.getString("to").orElse(null))) {
                 this.setSuccessful();
             }
         }

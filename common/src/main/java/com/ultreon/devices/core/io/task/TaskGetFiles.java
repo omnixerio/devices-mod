@@ -64,13 +64,13 @@ public class TaskGetFiles extends Task {
 
     @Override
     public void processRequest(CompoundTag tag, Level level, Player player) {
-        BlockEntity tileEntity = level.getChunkAt(BlockPos.of(tag.getLong("pos"))).getBlockEntity(BlockPos.of(tag.getLong("pos")), LevelChunk.EntityCreationType.IMMEDIATE);
+        BlockEntity tileEntity = level.getChunkAt(BlockPos.of(tag.getLongOr("pos", 0))).getBlockEntity(BlockPos.of(tag.getLongOr("pos", 0)), LevelChunk.EntityCreationType.IMMEDIATE);
         if (tileEntity instanceof ComputerBlockEntity laptop) {
             FileSystem fileSystem = laptop.getFileSystem();
-            UUID uuid = UUID.fromString(tag.getString("uuid"));
+            UUID uuid = UUID.fromString(tag.getString("uuid").orElse(null));
             AbstractDrive serverDrive = fileSystem.getAvailableDrives(level, true).get(uuid);
             if (serverDrive != null) {
-                ServerFolder found = serverDrive.getFolder(tag.getString("path"));
+                ServerFolder found = serverDrive.getFolder(tag.getString("path").orElse(null));
                 if (found != null) {
                     this.files = found.getFiles().stream().filter(f -> !f.isFolder()).collect(Collectors.toList());
                     this.setSuccessful();

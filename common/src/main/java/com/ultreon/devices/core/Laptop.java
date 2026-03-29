@@ -1,8 +1,6 @@
 package com.ultreon.devices.core;
 
-import ca.weblite.objc.Client;
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.opengl.GlStateManager;
 import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.ApplicationManager;
 import com.ultreon.devices.api.app.Dialog;
@@ -36,7 +34,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -54,7 +51,6 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2f;
@@ -1214,7 +1210,7 @@ public class Laptop extends Screen implements System {
 
         private Wallpaper(CompoundTag tag) {
             var url = tag.getString("url").orElse(null);
-            var location = tag.getInt("location");
+            var location = tag.getIntOr("location", 0);
             if (tag.contains("url")) {
                 if (!OnlineRequest.isSafeAddress(url)) {
                     // Reset to default wallpaper.
@@ -1226,7 +1222,7 @@ public class Laptop extends Screen implements System {
                 }
             } else {
                 this.url = null;
-                this.location = location.orElse(0);
+                this.location = location;
             }
         }
         private Wallpaper(String url) {

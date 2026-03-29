@@ -1,6 +1,8 @@
 package com.ultreon.devices.programs.auction.object;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.UUID;
@@ -29,12 +31,12 @@ public class AuctionItem {
     }
 
     public static AuctionItem readFromNBT(CompoundTag tag) {
-        UUID id = UUID.fromString(tag.getString("id"));
-        CompoundTag item = tag.getCompound("item");
-        ItemStack stack = ItemStack.of(item);
-        int price = tag.getInt("price");
-        long timeLeft = tag.getLong("time");
-        UUID sellerId = UUID.fromString(tag.getString("seller"));
+        UUID id = UUID.fromString(tag.getString("id").orElse(null));
+        CompoundTag item = tag.getCompoundOrEmpty("item");
+        ItemStack stack = ItemStack.CODEC.decode(NbtOps.INSTANCE, item).getOrThrow().getFirst();
+        int price = tag.getIntOr("price", 0);
+        long timeLeft = tag.getLongOr("time", 0);
+        UUID sellerId = UUID.fromString(tag.getString("seller").orElse(null));
         return new AuctionItem(id, stack, price, timeLeft, sellerId);
     }
 
@@ -74,8 +76,7 @@ public class AuctionItem {
 
     public void writeToNBT(CompoundTag tag) {
         tag.putString("id", id.toString());
-        CompoundTag item = new CompoundTag();
-        item = stack.save(item);
+        Tag item = ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, stack).getOrThrow();
         tag.put("item", item);
         tag.putInt("price", price);
         tag.putLong("time", timeLeft);
