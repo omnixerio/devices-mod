@@ -1,5 +1,6 @@
 package com.ultreon.devices.programs.auction;
 
+import com.google.common.base.Suppliers;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.app.Dialog;
 import com.ultreon.devices.api.app.Layout;
@@ -29,13 +30,14 @@ import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class MineBayApp extends Application {
     private static final Identifier CHEST_GUI_TEXTURE = Identifier.parse("textures/gui/container/generic_54.png");
     private static final Identifier MINEBAY_ASSETS = Identifier.parse("devices:textures/gui/minebay.png");
 
-    private static final ItemStack EMERALD = new ItemStack(Items.EMERALD);
+    private static final Supplier<ItemStack> EMERALD = Suppliers.memoize(() -> new ItemStack(Items.EMERALD));
 
     private final String[] categories = {"Building", "Combat", "Tools", "Food", "Materials", "Redstone", "Alchemy", "Rare", "Misc"};
 
@@ -272,7 +274,7 @@ public class MineBayApp extends Application {
             {
                 graphics.pose().translate(x + 92, y + 43);
                 graphics.pose().scale(2, 2);
-                graphics.item(EMERALD, 0, 0);
+                graphics.item(EMERALD.get(), 0, 0);
             }
             graphics.pose().popMatrix();
         });

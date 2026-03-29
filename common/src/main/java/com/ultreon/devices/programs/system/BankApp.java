@@ -1,6 +1,6 @@
 package com.ultreon.devices.programs.system;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.base.Suppliers;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.app.Dialog;
 import com.ultreon.devices.api.app.Layout;
@@ -25,12 +25,13 @@ import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.function.Supplier;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class BankApp extends Application {//The bank is not a system application
-    private static final ItemStack EMERALD = new ItemStack(Items.EMERALD);
+    private static final Supplier<ItemStack> EMERALD = Suppliers.memoize(() -> new ItemStack(Items.EMERALD));
     private static final Identifier BANK_ASSETS = Identifier.parse("devices:textures/gui/bank.png");
-    //    private static final Identifier villagerTextures = new Identifier("textures/entity/villager/villager.png");
+//    private static final Identifier villagerTextures = new Identifier("textures/entity/villager/villager.png");
 //    private static final VillagerModel<Villager> villagerModel = new VillagerModel<Villager>();
     private Layout layoutStart;
     private Label labelTeller;
@@ -58,9 +59,6 @@ public class BankApp extends Application {//The bank is not a system application
     private Label labelInventory;
     private int emeraldAmount;
     private int rotation;
-
-    {
-    }
 
     public BankApp() {
         //super(Reference.MOD_ID + "Bank", "The Emerald Bank");
@@ -149,7 +147,7 @@ public class BankApp extends Application {//The bank is not a system application
             graphics.fill(x + 62, y + 103, x + 115, y + 138, Color.BLACK.getRGB());
             graphics.fill(x + 63, y + 104, x + 114, y + 113, Color.DARK_GRAY.getRGB());
             graphics.fill(x + 63, y + 114, x + 114, y + 137, Color.GRAY.getRGB());
-            graphics.item(EMERALD, x + 65, y + 118);
+            graphics.item(EMERALD.get(), x + 65, y + 118);
         });
 
         labelBalance = new Label("Balance", 60, 5);

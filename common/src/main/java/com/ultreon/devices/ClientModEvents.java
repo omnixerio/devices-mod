@@ -68,7 +68,6 @@ public class ClientModEvents {
 
         // Register other stuff.
         registerRenderLayers();
-        registerRenderers();
         registerLayerDefinitions();
         if (XinexPlatform.getPlatformName() == ModPlatform.Forge || XinexPlatform.getPlatformName() == ModPlatform.NeoForge) { // Note: Forge requires the icon atlas to be generator beforehand.
             generateIconAtlas();
@@ -250,11 +249,11 @@ public class ClientModEvents {
     public static void registerRenderers() {
         LOGGER.info("Registering renderers.");
 
-        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.LAPTOP.get()), a -> new LaptopRenderer(a));
-        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.PRINTER.get()), a -> new PrinterRenderer(a));
-        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.PAPER.get()), a -> new PaperRenderer(a));
-        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.ROUTER.get()), a -> new RouterRenderer(a));
-        XinexPlatform.client().entityRenderers().register(Holder.direct(DeviceBlockEntities.SEAT.get()), a -> new OfficeChairRenderer(a));
+        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.LAPTOP::get, a -> new LaptopRenderer(a));
+        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.PRINTER::get, a -> new PrinterRenderer(a));
+        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.PAPER::get, a -> new PaperRenderer(a));
+        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.ROUTER::get, a -> new RouterRenderer(a));
+        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.SEAT::get, a -> new OfficeChairRenderer(a));
     }
 
     public static void registerLayerDefinitions() {
