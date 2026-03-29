@@ -1,6 +1,0 @@
-{
-  "parent": "devices:block/router",
-  "textures": {
-    "1": "minecraft:block/%1$s_wool"
-  }
-}

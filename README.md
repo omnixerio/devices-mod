@@ -1,24 +1,25 @@
-# Ultreon Devices Mod [![CircleCI](https://dl.circleci.com/status-badge/img/gh/Ultreon/devices-mod/tree/1.19.3-development.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Ultreon/devices-mod/tree/1.19.3-development)
-**Language:** Java  
-**Minecraft Version:** `1.19.3`, `1.20.1`  
-**Mod Loader:** [Forge](https://files.minecraftforge.net/), [NeoForge](https://neoforged.net/), [Fabric](https://fabricmc.net/)  
-**Download:** [[CurseForge]](https://curseforge.com/minecraft/mc-mods/devices-mod), [[CurseForge Legacy]](https://legacy.curseforge.com/minecraft/mc-mods/devices-mod), [[Modrinth]](https://modrinth.com/mod/devices-mod)
 
-*Fork of [MrCrayfish's Device Mod](https://github.com/MrCrayfish/MrCrayfishDeviceMod)*
+Installation information
+=======
 
-## License Notes
-Some code is used from other projects with other licenses.
-* The package `com.jab125` and all it's subpackages are licensed the GPL 3.0.
-* Everything in [updater/](updater) also is licensed under the GPL 3.0.
+This template repository can be directly cloned to get you started with a new
+mod. Simply create a new repository cloned from this one, by following the
+instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
 
-[@MrCrayfish](https://github.com/MrCrayfish) has said on his discord server that we can use his code and even the assets for this port.
+Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
 
+If at any point you are missing libraries in your IDE, or you've run into problems you can
+run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
+{this does not affect your code} and then start the process again.
 
-## Credits
-* Thanks to [@MrCrayfish](https://github.com/MrCrayfish) for the original Device Mod.
-* Thanks to [@Jab125](https://github.com/Jab125) for helping with porting this mod.
+Mapping Names:
+============
+By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
+in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
+license. For the latest license text, refer to the mapping file itself, or the reference copy here:
+https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
 
-## Related repos
-* [GitWeb Sites](https://github.com/Ultreon/gitweb-sites) (Websites for the GitWeb application)
-* [GitWeb Test Sites](https://github.com/Jab125/gitweb-sites) (Testing sites for the GitWeb application)
-* [App Certificates](https://github.com/Ultreon/device-mod-certificates) (Certificates for the applications)
+Additional Resources: 
+==========
+Community Documentation: https://docs.neoforged.net/  
+NeoForged Discord: https://discord.neoforged.net/
