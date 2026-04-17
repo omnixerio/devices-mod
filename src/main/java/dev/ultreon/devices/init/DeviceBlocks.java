@@ -1,70 +1,97 @@
 package dev.ultreon.devices.init;
 
-import dev.ultreon.devices.UltreonDevicesCommon;
+import com.google.common.collect.Lists;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.block.*;
 import dev.ultreon.devices.util.DyeableRegistration;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.function.Function;
 
 public class DeviceBlocks {
-    private static final DeferredRegister<Block> REGISTER = DeferredRegister.create(Registries.BLOCK, UltreonDevicesCommon.MOD_ID);
+    private static <T extends Block> T register(String name, Function<BlockBehaviour.Properties, T> blockFactory, BlockBehaviour.Properties settings, boolean shouldRegisterItem) {
+        // Create a registry key for the block
+        ResourceKey<Block> blockKey = keyOfBlock(name);
+        // Create the block instance
+        T block = blockFactory.apply(settings.setId(blockKey));
 
+        // Sometimes, you may not want to register an item for the block.
+        // Eg: if it's a technical block like `minecraft:moving_piston` or `minecraft:end_gateway`
+        if (shouldRegisterItem) {
+            // Items need to be registered with a different type of registry key, but the ID
+            // can be the same.
+            ResourceKey<Item> itemKey = keyOfItem(name);
+
+            BlockItem blockItem = new BlockItem(block, new Item.Properties().setId(itemKey).useBlockDescriptionPrefix());
+            Registry.register(BuiltInRegistries.ITEM, itemKey, blockItem);
+        }
+
+        return Registry.register(BuiltInRegistries.BLOCK, blockKey, block);
+    }
+
+
+    private static ResourceKey<Block> keyOfBlock(String name) {
+        return ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(OmnixerioDevicesCommon.MOD_ID, name));
+    }
+
+    private static ResourceKey<Item> keyOfItem(String name) {
+        return ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(OmnixerioDevicesCommon.MOD_ID, name));
+    }
     public static void register() {
     }
 
-    public static final DyeableRegistration<Block> LAPTOPS = new DyeableRegistration<>(REGISTER) {
-        public DeferredHolder<Block, LaptopBlock> register(DeferredRegister<Block> registrar, DyeColor color) {
-            return registrar.register(color.getName() + "_laptop", () -> new LaptopBlock(color, UltreonDevicesCommon.id(color.getName() + "_laptop")));
+    public static final DyeableRegistration<LaptopBlock> LAPTOPS = new DyeableRegistration<>() {
+        public LaptopBlock register(DyeColor color) {
+            return DeviceBlocks.register(color.getName() + "_laptop", (properties) -> new LaptopBlock(color, properties), BlockBehaviour.Properties.of().strength(2.5f).noOcclusion(), true);
         }
     };
 
-    public static final DeferredHolder<Block, MacMaxXBlock> MAC_MAX_X = REGISTER.register("mac_max_x", () -> new MacMaxXBlock(BlockBehaviour.Properties.of().strength(2.5f).noOcclusion()));
-    public static final DeferredHolder<Block, MacMaxXBlockPart> MAC_MAX_X_PART = REGISTER.register("mac_max_x_part", () -> new MacMaxXBlockPart(BlockBehaviour.Properties.of().strength(2.5f).noOcclusion()));
-    public static final DeferredHolder<Block, PaperBlock> PAPER = REGISTER.register("paper", () -> new PaperBlock(BlockBehaviour.Properties.of().strength(0.5f).noOcclusion()));
+    public static final MacMaxXBlock MAC_MAX_X = register("mac_max_x", MacMaxXBlock::new, BlockBehaviour.Properties.of().strength(2.5f).noOcclusion(), true);
+    public static final MacMaxXBlockPart MAC_MAX_X_PART = register("mac_max_x_part", MacMaxXBlockPart::new, BlockBehaviour.Properties.of().strength(2.5f).noOcclusion(), false);
+    public static final PaperBlock PAPER = register("paper", PaperBlock::new, BlockBehaviour.Properties.of().strength(0.5f).noOcclusion(), true);
 
-    public static final DyeableRegistration<Block> PRINTERS = new DyeableRegistration<>(REGISTER) {
+    public static final DyeableRegistration<PrinterBlock> PRINTERS = new DyeableRegistration<PrinterBlock>() {
         @Override
-        public DeferredHolder<Block, PrinterBlock> register(DeferredRegister<Block> registrar, DyeColor color) {
-            return registrar.register(color.getName() + "_printer", () -> new PrinterBlock(color, UltreonDevicesCommon.id(color.getName() + "_printer")));
+        public PrinterBlock register(DyeColor color) {
+            return DeviceBlocks.register(color.getName() + "_printer", properties -> new PrinterBlock(color, properties), BlockBehaviour.Properties.of().strength(2.5f).noOcclusion(), true);
         }
     };
 
-    public static final DyeableRegistration<Block> ROUTERS = new DyeableRegistration<>(REGISTER) {
-        public DeferredHolder<Block, RouterBlock> register(DeferredRegister<Block> registrar, DyeColor color) {
-            return registrar.register(color.getName() + "_router", () -> new RouterBlock(color, UltreonDevicesCommon.id(color.getName() + "_router")));
+    public static final DyeableRegistration<RouterBlock> ROUTERS = new DyeableRegistration<>() {
+        public RouterBlock register(DyeColor color) {
+            return DeviceBlocks.register(color.getName() + "_router", properties -> new RouterBlock(color, properties), BlockBehaviour.Properties.of().strength(2.5f).noOcclusion(), true);
         }
     };
 
-    public static final DyeableRegistration<Block> OFFICE_CHAIRS = new DyeableRegistration<>(REGISTER) {
-        public DeferredHolder<Block, OfficeChairBlock> register(DeferredRegister<Block> registrar, DyeColor color) {
-            return registrar.register(color.getName() + "_office_chair", () -> new OfficeChairBlock(color, UltreonDevicesCommon.id(color.getName() + "_office_chair")));
+    public static final DyeableRegistration<OfficeChairBlock> OFFICE_CHAIRS = new DyeableRegistration<>() {
+        public OfficeChairBlock register(DyeColor color) {
+            return DeviceBlocks.register(color.getName() + "_office_chair", properties -> new OfficeChairBlock(color, properties), BlockBehaviour.Properties.of().strength(2.5f).noOcclusion(), true);
         }
     };
-
-    public static Stream<Block> getAllBlocks() {
-        return REGISTER.getRegistry().get().stream();
-    }
 
     public static List<LaptopBlock> getAllLaptops() {
-        return getAllBlocks().filter(block -> block instanceof LaptopBlock).map(block -> (LaptopBlock) block).toList();
+        return Lists.newArrayList(LAPTOPS);
     }
 
     public static List<PrinterBlock> getAllPrinters() {
-        return getAllBlocks().filter(block -> block instanceof PrinterBlock).map(block -> (PrinterBlock) block).toList();
+        return Lists.newArrayList(PRINTERS);
     }
 
     public static List<RouterBlock> getAllRouters() {
-        return getAllBlocks().filter(block -> block instanceof RouterBlock).map(block -> (RouterBlock) block).toList();
+        return Lists.newArrayList(ROUTERS);
     }
 
     public static List<OfficeChairBlock> getAllOfficeChairs() {
-        return getAllBlocks().filter(block -> block instanceof OfficeChairBlock).map(block -> (OfficeChairBlock) block).toList();
+        return Lists.newArrayList(OFFICE_CHAIRS);
     }
 }

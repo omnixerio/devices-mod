@@ -1,6 +1,6 @@
 package dev.ultreon.devices.core.task;
 
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.block.entity.ComputerBlockEntity;
 import dev.ultreon.devices.debug.DebugLog;
@@ -55,7 +55,7 @@ public class TaskInstallApp extends Task {
             if (tag.getBooleanOr("install", false)) {
                 for (int i = 0; i < list.size(); i++) {
                     if (list.getString(i).equals(appId)) {
-                        UltreonDevicesCommon.LOGGER.warn("Found duplicate, noping out");
+                        OmnixerioDevicesCommon.LOGGER.warn("Found duplicate, noping out");
                         return;
                     }
                 }
@@ -74,7 +74,7 @@ public class TaskInstallApp extends Task {
             systemData.put("InstalledApps", list);
         }
         if (!this.isSucessful()) {
-            UltreonDevicesCommon.LOGGER.info("Installing {} unsuccessful", appId);
+            OmnixerioDevicesCommon.LOGGER.info("Installing {} unsuccessful", appId);
         }
     }
 

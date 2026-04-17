@@ -1,13 +1,11 @@
 package dev.ultreon.devices.network;
 
+import dev.ultreon.devices.api.task.TaskManager;
 import dev.ultreon.devices.block.entity.RouterBlockEntity;
-import dev.ultreon.devices.core.laptop.common.C2SUpdatePacket;
-import dev.ultreon.devices.core.laptop.common.S2CUpdatePacket;
+import dev.ultreon.devices.core.laptop.common.ServerboundUpdatePacket;
+import dev.ultreon.devices.core.laptop.common.ClientboundUpdatePacket;
 import dev.ultreon.devices.core.laptop.server.ServerLaptop;
-import dev.ultreon.devices.network.task.NotificationPacket;
-import dev.ultreon.devices.network.task.SyncApplicationPacket;
-import dev.ultreon.devices.network.task.SyncBlockPacket;
-import dev.ultreon.devices.network.task.SyncConfigPacket;
+import dev.ultreon.devices.network.task.*;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
@@ -22,7 +20,17 @@ import java.util.UUID;
 
 public class DevicesCommonNetworker {
     public static void init() {
-        ServerPlayNetworking.registerGlobalReceiver(C2SUpdatePacket.TYPE, (payload, context) -> {
+        PayloadTypeRegistry.serverboundPlay().register(ServerboundUpdatePacket.TYPE, ServerboundUpdatePacket.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(SyncBlockPacket.TYPE, SyncBlockPacket.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(ServerboundRequestPacket.TYPE, ServerboundRequestPacket.STREAM_CODEC);
+
+        PayloadTypeRegistry.clientboundPlay().register(ClientboundResponsePacket.TYPE, ClientboundResponsePacket.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(ClientboundUpdatePacket.TYPE, ClientboundUpdatePacket.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(NotificationPacket.TYPE, NotificationPacket.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(SyncConfigPacket.TYPE, SyncConfigPacket.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(SyncApplicationPacket.TYPE, SyncApplicationPacket.STREAM_CODEC);
+
+        ServerPlayNetworking.registerGlobalReceiver(ServerboundUpdatePacket.TYPE, (payload, context) -> {
             CompoundTag tag = payload.tag().asCompound().orElse(new CompoundTag());
             Optional<long[]> uuidArray = tag.getLongArray("uuid");
             Optional<String> type = tag.getString("type");
@@ -45,12 +53,9 @@ public class DevicesCommonNetworker {
                 router.syncDevicesToClient();
             }
         });
-        PayloadTypeRegistry.serverboundPlay().register(C2SUpdatePacket.TYPE, C2SUpdatePacket.STREAM_CODEC);
-        PayloadTypeRegistry.serverboundPlay().register(SyncBlockPacket.TYPE, SyncBlockPacket.STREAM_CODEC);
-
-        PayloadTypeRegistry.clientboundPlay().register(S2CUpdatePacket.TYPE, S2CUpdatePacket.STREAM_CODEC);
-        PayloadTypeRegistry.clientboundPlay().register(NotificationPacket.TYPE, NotificationPacket.STREAM_CODEC);
-        PayloadTypeRegistry.clientboundPlay().register(SyncConfigPacket.TYPE, SyncConfigPacket.STREAM_CODEC);
-        PayloadTypeRegistry.clientboundPlay().register(SyncApplicationPacket.TYPE, SyncApplicationPacket.STREAM_CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(ServerboundRequestPacket.TYPE, (payload, context) -> {
+            String request = payload.request();
+            TaskManager.getTask(request).processRequest(payload.tag(), context.player().level(), context.player());
+        });
     }
 }

@@ -1,7 +1,7 @@
 package dev.ultreon.devices.core.network;
 
 import dev.ultreon.devices.DeviceConfig;
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.api.app.Icons;
 import dev.ultreon.devices.api.app.Layout;
 import dev.ultreon.devices.api.app.component.Button;
@@ -36,7 +36,7 @@ public class TrayItemWifi extends TrayItem {
     private Strength strength = Strength.NONE;
 
     public TrayItemWifi() {
-        super(Icons.WIFI_NONE, UltreonDevicesCommon.id("wifi"));
+        super(Icons.WIFI_NONE, OmnixerioDevicesCommon.id("wifi"));
     }
 
     private static Layout createWifiMenu(TrayItem item) {

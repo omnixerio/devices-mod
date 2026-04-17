@@ -1,6 +1,6 @@
 package dev.ultreon.devices.debug;
 
-import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
+import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +11,7 @@ public class DebugLog {
     private static final Logger LOGGER = LoggerFactory.getLogger("Devices : Debugger");
 
     public static void log(String message) {
-        if (XinexPlatform.isDevelopmentEnvironment()) {
+        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             LOGGER.info(message);
         }
     }
@@ -21,7 +21,7 @@ public class DebugLog {
     }
 
     public static void logTime(long ticks, String message) {
-        if (XinexPlatform.isDevelopmentEnvironment()) {
+        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             LOGGER.info("(@" + ticks + " ticks) " + message);
         }
     }

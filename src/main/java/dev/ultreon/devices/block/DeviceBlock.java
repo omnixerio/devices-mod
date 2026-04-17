@@ -32,6 +32,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 
@@ -76,7 +77,7 @@ public abstract class DeviceBlock extends HorizontalDirectionalBlock implements 
 
 
     @Override
-    public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
+    public void destroy(LevelAccessor level, @NonNull BlockPos pos, @NonNull BlockState state) {
         if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof DeviceBlockEntity device) {

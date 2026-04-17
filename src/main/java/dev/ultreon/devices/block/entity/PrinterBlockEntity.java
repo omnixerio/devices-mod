@@ -38,7 +38,7 @@ public class PrinterBlockEntity extends NetworkDeviceBlockEntity.Colored {
     private int paperCount = 0;
 
     public PrinterBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
-        super(DeviceBlockEntities.PRINTER.get(), pWorldPosition, pBlockState);
+        super(DeviceBlockEntities.PRINTER, pWorldPosition, pBlockState);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class PrinterBlockEntity extends NetworkDeviceBlockEntity.Colored {
                     pipeline.putInt("remainingPrintTime", remainingPrintTime);
                     sync();
                     if (remainingPrintTime != 0 && state == PRINTING) {
-                        level.playSound(null, worldPosition, DeviceSounds.PRINTER_PRINTING.get(), SoundSource.BLOCKS, 0.5f, 1f);
+                        level.playSound(null, worldPosition, DeviceSounds.PRINTER_PRINTING, SoundSource.BLOCKS, 0.5f, 1f);
                     }
                 }
                 remainingPrintTime--;
@@ -147,7 +147,7 @@ public class PrinterBlockEntity extends NetworkDeviceBlockEntity.Colored {
 
     private void print(IPrint print) {
         assert level != null;
-        level.playSound(null, worldPosition, DeviceSounds.PRINTER_LOADING_PAPER.get(), SoundSource.BLOCKS, 0.5f, 1f);
+        level.playSound(null, worldPosition, DeviceSounds.PRINTER_LOADING_PAPER, SoundSource.BLOCKS, 0.5f, 1f);
 
         setState(LOADING_PAPER);
         currentPrint = print;

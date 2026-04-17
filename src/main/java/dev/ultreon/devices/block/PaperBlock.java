@@ -1,7 +1,7 @@
 package dev.ultreon.devices.block;
 
 import com.mojang.serialization.MapCodec;
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.block.entity.PaperBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -40,7 +40,7 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
     private static final VoxelShape[] SELECTION_BOUNDING_BOX = {SELECTION_BOX_SOUTH, SELECTION_BOX_WEST, SELECTION_BOX_NORTH, SELECTION_BOX_EAST};
 
     public PaperBlock(Properties pProperties) {
-        super(pProperties.setId(ResourceKey.create(Registries.BLOCK, UltreonDevicesCommon.id("paper"))).noCollision().instabreak().noOcclusion().noLootTable());
+        super(pProperties.setId(ResourceKey.create(Registries.BLOCK, OmnixerioDevicesCommon.id("paper"))).noCollision().instabreak().noOcclusion().noLootTable());
 
         registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
     }

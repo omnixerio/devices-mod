@@ -1,9 +1,10 @@
 package dev.ultreon.devices.api.task;
 
-import dev.ultreon.devices.UltreonDevicesCommon;
-import dev.ultreon.devices.network.DevicesCommonNetworker;
-import dev.ultreon.devices.network.task.RequestPacket;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
+import dev.ultreon.devices.network.task.ServerboundRequestPacket;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,7 @@ public final class TaskManager {
     public static void registerTask(Supplier<Task> clazz) {
         var task = clazz.get();
         try {
-            UltreonDevicesCommon.LOGGER.info("Registering task '" + task.getName() + "'");
+            OmnixerioDevicesCommon.LOGGER.info("Registering task '" + task.getName() + "'");
             get().registeredRequests.put(task.getName(), task);
         } catch (Exception e) {
             e.printStackTrace();
@@ -44,8 +45,11 @@ public final class TaskManager {
 
         int requestId = manager.currentId++;
         manager.requests.put(requestId, task);
-        if(Minecraft.getInstance().getConnection() != null)
-            DevicesCommonNetworker.INSTANCE.sendToServer(new RequestPacket(requestId, task));
+        if(Minecraft.getInstance().getConnection() != null) {
+            CompoundTag tag = new CompoundTag();
+            task.prepareRequest(tag);
+            ClientPlayNetworking.send(new ServerboundRequestPacket(requestId, task.getName(), tag));
+        }
     }
 
     public static Task getTask(String name) {

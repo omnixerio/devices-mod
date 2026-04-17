@@ -8,28 +8,27 @@ import dev.ultreon.devices.programs.email.EmailApp;
 import dev.ultreon.devices.programs.gitweb.GitWebApp;
 import dev.ultreon.devices.programs.snake.SnakeApp;
 import dev.ultreon.devices.programs.system.*;
-import dev.ultreon.devices.programs.system.*;
 import dev.ultreon.devices.programs.themes.ThemesApp;
-import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
+import net.fabricmc.loader.api.FabricLoader;
 
 public class BuiltinApps {
     public static void registerBuiltinApps() {
-        ApplicationManager.registerApplication(UltreonDevicesCommon.id("diagnostics"), () -> DiagnosticsApp::new, true);
-        ApplicationManager.registerApplication(UltreonDevicesCommon.id("settings"), () -> SettingsApp::new, true);
-        ApplicationManager.registerApplication(UltreonDevicesCommon.id("file_browser"), () -> FileBrowserApp::new, true);
-        ApplicationManager.registerApplication(UltreonDevicesCommon.id("gitweb"), () -> GitWebApp::new, false);
-        ApplicationManager.registerApplication(UltreonDevicesCommon.id("note_stash"), () -> NoteStashApp::new, false);
-        ApplicationManager.registerApplication(UltreonDevicesCommon.id("pixel_painter"), () -> PixelPainterApp::new, false);
-        ApplicationManager.registerApplication(UltreonDevicesCommon.id("ender_mail"), () -> EmailApp::new, false);
-        ApplicationManager.registerApplication(UltreonDevicesCommon.id("app_store"), () -> AppStore::new, true);
+        ApplicationManager.registerApplication(OmnixerioDevicesCommon.id("diagnostics"), () -> DiagnosticsApp::new, true);
+        ApplicationManager.registerApplication(OmnixerioDevicesCommon.id("settings"), () -> SettingsApp::new, true);
+        ApplicationManager.registerApplication(OmnixerioDevicesCommon.id("file_browser"), () -> FileBrowserApp::new, true);
+        ApplicationManager.registerApplication(OmnixerioDevicesCommon.id("gitweb"), () -> GitWebApp::new, false);
+        ApplicationManager.registerApplication(OmnixerioDevicesCommon.id("note_stash"), () -> NoteStashApp::new, false);
+        ApplicationManager.registerApplication(OmnixerioDevicesCommon.id("pixel_painter"), () -> PixelPainterApp::new, false);
+        ApplicationManager.registerApplication(OmnixerioDevicesCommon.id("ender_mail"), () -> EmailApp::new, false);
+        ApplicationManager.registerApplication(OmnixerioDevicesCommon.id("app_store"), () -> AppStore::new, true);
 
-        if (XinexPlatform.isDevelopmentEnvironment() || UltreonDevicesCommon.EARLY_CONFIG.enableBetaApps) {
-            ApplicationManager.registerApplication(UltreonDevicesCommon.id("bank"), () -> BankApp::new, false);
-            ApplicationManager.registerApplication(UltreonDevicesCommon.id("mine_bay"), () -> MineBayApp::new, false);
-            ApplicationManager.registerApplication(UltreonDevicesCommon.id("snake"), () -> SnakeApp::new, false);
-            ApplicationManager.registerApplication(UltreonDevicesCommon.id("themes"), () -> ThemesApp::new, false);
+        if (FabricLoader.getInstance().isDevelopmentEnvironment() || OmnixerioDevicesCommon.EARLY_CONFIG.enableBetaApps) {
+            ApplicationManager.registerApplication(OmnixerioDevicesCommon.id("bank"), () -> BankApp::new, false);
+            ApplicationManager.registerApplication(OmnixerioDevicesCommon.id("mine_bay"), () -> MineBayApp::new, false);
+            ApplicationManager.registerApplication(OmnixerioDevicesCommon.id("snake"), () -> SnakeApp::new, false);
+            ApplicationManager.registerApplication(OmnixerioDevicesCommon.id("themes"), () -> ThemesApp::new, false);
         }
 
-        ApplicationManager.registerApplication(UltreonDevicesCommon.id("vulnerability"), () -> VulnerabilityApp::new, true);
+        ApplicationManager.registerApplication(OmnixerioDevicesCommon.id("vulnerability"), () -> VulnerabilityApp::new, true);
     }
 }

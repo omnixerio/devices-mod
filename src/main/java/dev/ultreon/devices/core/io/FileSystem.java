@@ -1,6 +1,6 @@
 package dev.ultreon.devices.core.io;
 
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.api.app.Application;
 import dev.ultreon.devices.api.io.Drive;
 import dev.ultreon.devices.api.io.Folder;
@@ -79,8 +79,8 @@ public class FileSystem {
     }
 
     public static void getApplicationFolder(Application app, Callback<Folder> callback) {
-        if (UltreonDevicesCommon.hasAllowedApplications()) { // in arch we do not do instances
-            if (!UltreonDevicesCommon.getAllowedApplications().contains(app.getInfo())) {
+        if (OmnixerioDevicesCommon.hasAllowedApplications()) { // in arch we do not do instances
+            if (!OmnixerioDevicesCommon.getAllowedApplications().contains(app.getInfo())) {
                 callback.execute(null, false);
                 return;
             }
@@ -186,7 +186,7 @@ public class FileSystem {
             return constructor.newInstance(name, true);
         } catch (NoSuchMethodException | IllegalAccessException | InstantiationException |
                  InvocationTargetException e) {
-            e.printStackTrace();
+            OmnixerioDevicesCommon.LOGGER.error("Failed to create protected folder", e);
         }
         return null;
     }
@@ -255,7 +255,7 @@ public class FileSystem {
         if (attachedDrive != null) {
             ItemStack stack = new ItemStack(DeviceItems.getFlashDriveByColor(attachedDriveColor), 1);
             stack.set(DataComponents.CUSTOM_NAME, Component.literal(attachedDrive.getName()));
-            stack.set(DeviceDataComponents.DRIVE.get(), new DriveComponent(attachedDrive.toTag()));
+            stack.set(DeviceDataComponents.DRIVE, new DriveComponent(attachedDrive.toTag()));
             attachedDrive = null;
             return stack;
         }
@@ -263,22 +263,22 @@ public class FileSystem {
     }
 
     public static CompoundTag getExternalDriveTag(ItemStack stack) {
-        if (!stack.has(DeviceDataComponents.DRIVE.get())) {
+        if (!stack.has(DeviceDataComponents.DRIVE)) {
             DriveComponent driveComponent = new DriveComponent(new ExternalDrive(stack.getDisplayName().getString()).toTag());
-            stack.set(DeviceDataComponents.DRIVE.get(), driveComponent);
+            stack.set(DeviceDataComponents.DRIVE, driveComponent);
         }
 
-        return stack.get(DeviceDataComponents.DRIVE.get()).tag().asCompound().orElse(new CompoundTag());
+        return stack.get(DeviceDataComponents.DRIVE).tag().asCompound().orElse(new CompoundTag());
     }
 
     public static ExternalDrive getExternalDrive(ItemStack stack) {
-        if (!stack.has(DeviceDataComponents.DRIVE.get())) {
+        if (!stack.has(DeviceDataComponents.DRIVE)) {
             ExternalDrive externalDrive = new ExternalDrive(stack.getDisplayName().getString());
             stack.set(DataComponents.CUSTOM_NAME, Component.literal(externalDrive.getName()));
-            stack.set(DeviceDataComponents.DRIVE.get(), new DriveComponent(externalDrive.toTag()));
+            stack.set(DeviceDataComponents.DRIVE, new DriveComponent(externalDrive.toTag()));
             return externalDrive;
         }
-        return ExternalDrive.fromTag(stack.get(DeviceDataComponents.DRIVE.get()).tag().asCompound().orElse(new CompoundTag()));
+        return ExternalDrive.fromTag(stack.get(DeviceDataComponents.DRIVE).tag().asCompound().orElse(new CompoundTag()));
     }
 
     public CompoundTag toTag() {

@@ -1,5 +1,6 @@
 package dev.ultreon.devices.api.utils;
 
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.core.Laptop;
 import dev.ultreon.devices.object.AppInfo;
 import net.minecraft.ChatFormatting;
@@ -26,14 +27,14 @@ public class RenderUtil {
     public static void drawIcon(GuiGraphicsExtractor graphics, double x, double y, AppInfo info, int width, int height) {
         //Gui.blit(pose, (int) x, (int) y, width, height, u, v, sourceWidth, sourceHeight, (int) textureWidth, (int) textureHeight);
         if (info == null || info.getIcon().getBase().getU() == -1 && info.getIcon().getBase().getV() == -1) {
-            graphics.blit(RenderPipelines.GUI_TEXTURED, Laptop.ICON_TEXTURES, (int) x, (int) y, 0, 0, width, height, 14, 14, 224, 224);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, info.getIcon().getBase().getIdentifier(), (int) x, (int) y, width, height);
             return;
         }
         var glyphs = new AppInfo.Icon.Glyph[]{info.getIcon().getBase(), info.getIcon().getOverlay0(), info.getIcon().getOverlay1()};
         for (AppInfo.Icon.Glyph glyph : glyphs) {
             if (glyph.getU() == -1 || glyph.getV() == -1) continue;
             var col = new Color(info.getTint(glyph.getType()));
-            graphics.blit(RenderPipelines.GUI_TEXTURED, Laptop.ICON_TEXTURES, (int) x, (int) y, glyph.getU(), glyph.getV(), width, height, 14, 14, 224, 224, col.getRGB());
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, info.getIcon().getBase().getIdentifier(), (int) x, (int) y, width, height, col.getRGB());
             //image.init(layout);
         }
     }
@@ -43,7 +44,7 @@ public class RenderUtil {
         if (info != null) {
             drawIcon(graphics, x, y, info, 14, 14);
         } else {
-            graphics.blit(RenderPipelines.GUI_TEXTURED, Laptop.ICON_TEXTURES, (int) x, (int) y, 0, 0, 14, 14, 14, 14, 224, 224);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, OmnixerioDevicesCommon.id("app/icon/base/missing"), (int) x, (int) y, 14, 14);
         }
     }
 

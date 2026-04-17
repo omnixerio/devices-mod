@@ -1,50 +1,60 @@
 package dev.ultreon.devices.init;
 
-import dev.ultreon.devices.DeviceTab;
-import dev.ultreon.devices.UltreonDevicesCommon;
-import dev.ultreon.mods.xinexlib.registrar.Registrar;
-import net.minecraft.core.registries.Registries;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
+import dev.ultreon.devices.block.LaptopBlock;
+import dev.ultreon.devices.block.OfficeChairBlock;
+import dev.ultreon.devices.block.PrinterBlock;
+import dev.ultreon.devices.block.RouterBlock;
+import dev.ultreon.devices.item.FlashDriveItem;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class DeviceCreativeTabs {
-    private static final DeferredRegister<CreativeModeTab> REGISTER = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, UltreonDevicesCommon.MOD_ID);
-
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> DEVICE_TAB = REGISTER.register("device_tab", () -> CreativeModeTab.builder()
+    public static final ResourceKey<CreativeModeTab> CUSTOM_CREATIVE_TAB_KEY = ResourceKey.create(
+            BuiltInRegistries.CREATIVE_MODE_TAB.key(), Identifier.fromNamespaceAndPath(OmnixerioDevicesCommon.MOD_ID, "creative_tab")
+    );
+    public static final CreativeModeTab DEVICE_TAB = FabricCreativeModeTab.builder()
             .title(Component.literal("Omnixerio Devices Mod"))
-            .displayItems((_, output) -> {
-                for (DeferredHolder<Item, ? extends Item> laptop : DeviceItems.LAPTOPS) {
-                    output.accept(laptop.get());
+            .displayItems((parameters, output) -> {
+                for (LaptopBlock laptop : DeviceBlocks.LAPTOPS) {
+                    output.accept(laptop);
                 }
-                output.accept(DeviceItems.MAC_MAX_X.get());
-                for (DeferredHolder<Item, ? extends Item> printer : DeviceItems.PRINTERS) {
-                    output.accept(printer.get());
+                output.accept(DeviceBlocks.MAC_MAX_X);
+                for (PrinterBlock printer : DeviceBlocks.PRINTERS) {
+                    output.accept(printer);
                 }
-                for (DeferredHolder<Item, ? extends Item> router : DeviceItems.ROUTERS) {
-                    output.accept(router.get());
+                for (RouterBlock router : DeviceBlocks.ROUTERS) {
+                    output.accept(router);
                 }
-                for (DeferredHolder<Item, ? extends Item> office_chair : DeviceItems.OFFICE_CHAIRS) {
-                    output.accept(office_chair.get());
+                for (OfficeChairBlock office_chair : DeviceBlocks.OFFICE_CHAIRS) {
+                    output.accept(office_chair);
                 }
-                for (DeferredHolder<Item, ? extends Item> flashdrive : DeviceItems.FLASH_DRIVE) {
-                    output.accept(flashdrive.get());
+                for (FlashDriveItem flashDrive : DeviceItems.FLASH_DRIVE) {
+                    output.accept(flashDrive);
                 }
-                output.accept(DeviceItems.COMPONENT_CPU.get());
-                output.accept(DeviceItems.COMPONENT_SOLID_STATE_DRIVE.get());
-                output.accept(DeviceItems.COMPONENT_GPU.get());
-                output.accept(DeviceItems.COMPONENT_RAM.get());
-                output.accept(DeviceItems.COMPONENT_HARD_DRIVE.get());
-                output.accept(DeviceItems.COMPONENT_BATTERY.get());
-                output.accept(DeviceItems.COMPONENT_SCREEN.get());
-                output.accept(DeviceItems.COMPONENT_WIFI.get());
-                output.accept(DeviceItems.COMPONENT_CARRIAGE.get());
-                output.accept(DeviceItems.COMPONENT_FLASH_CHIP.get());
-                output.accept(DeviceItems.COMPONENT_CIRCUIT_BOARD.get());
-                output.accept(DeviceItems.COMPONENT_CONTROLLER_UNIT.get());
-                output.accept(DeviceItems.COMPONENT_SMALL_ELECTRIC_MOTOR.get());
-                output.accept(DeviceItems.COMPONENT_MOTHERBOARD.get());
-            }).build());
+                output.accept(DeviceItems.COMPONENT_CPU);
+                output.accept(DeviceItems.COMPONENT_SOLID_STATE_DRIVE);
+                output.accept(DeviceItems.COMPONENT_GPU);
+                output.accept(DeviceItems.COMPONENT_RAM);
+                output.accept(DeviceItems.COMPONENT_HARD_DRIVE);
+                output.accept(DeviceItems.COMPONENT_BATTERY);
+                output.accept(DeviceItems.COMPONENT_SCREEN);
+                output.accept(DeviceItems.COMPONENT_WIFI);
+                output.accept(DeviceItems.COMPONENT_CARRIAGE);
+                output.accept(DeviceItems.COMPONENT_FLASH_CHIP);
+                output.accept(DeviceItems.COMPONENT_CIRCUIT_BOARD);
+                output.accept(DeviceItems.COMPONENT_CONTROLLER_UNIT);
+                output.accept(DeviceItems.COMPONENT_SMALL_ELECTRIC_MOTOR);
+                output.accept(DeviceItems.COMPONENT_MOTHERBOARD);
+            })
+            .build();
+
+    public static void register() {
+        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, CUSTOM_CREATIVE_TAB_KEY, DEVICE_TAB);
+    }
 }

@@ -1,6 +1,7 @@
 package dev.ultreon.devices.core;
 
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
+import dev.ultreon.devices.api.TrayItemAdder;
 import dev.ultreon.devices.api.event.SetupTrayItemsEvent;
 import dev.ultreon.devices.api.utils.RenderUtil;
 import dev.ultreon.devices.core.network.TrayItemWifi;
@@ -17,9 +18,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
@@ -30,7 +28,7 @@ import java.util.List;
 public class TaskBar {
     public static final Identifier APP_BAR_GUI = Identifier.parse("devices:textures/gui/application_bar.png");
     public static final int BAR_HEIGHT = 18;
-    private static final int APPS_DISPLAYED = UltreonDevicesCommon.DEVELOPER_MODE ? 18 : 10;
+    private static final int APPS_DISPLAYED = OmnixerioDevicesCommon.DEVELOPER_MODE ? 18 : 10;
 
     private final CompoundTag tag;
 
@@ -61,7 +59,7 @@ public class TaskBar {
         addTrayItem(new AppStore.StoreTrayItem(), trayItemsTag);
         addTrayItem(new TrayItemWifi(), trayItemsTag);
 
-        NeoForge.EVENT_BUS.post(new SetupTrayItemsEvent(laptop, this.trayItems));
+        SetupTrayItemsEvent.EVENT.invoker().setupTrayItems(laptop, new TrayItemAdder(trayItems));
     }
 
     public void addTrayItem(TrayItem trayItem, CompoundTag tag) {
@@ -95,9 +93,11 @@ public class TaskBar {
         bgColor = new Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]));
 
         int trayItemsWidth = trayItems.size() * 14;
-        graphics.blit(RenderPipelines.GUI_TEXTURED, APP_BAR_GUI, x, y, 1, 18, 0, 0, 1, 18, 256, 256, bgColor.getRGB());
-        graphics.blit(RenderPipelines.GUI_TEXTURED, APP_BAR_GUI, x + 1, y, Laptop.getScreenWidth() - 36 - trayItemsWidth, 18, 1, 0, 1, 18, 256, 256, bgColor.getRGB());
-        graphics.blit(RenderPipelines.GUI_TEXTURED, APP_BAR_GUI, x + Laptop.getScreenWidth() - 35 - trayItemsWidth, y, 35 + trayItemsWidth, 18, 2, 0, 1, 18, 256, 256, bgColor.getRGB());
+//        graphics.blit(RenderPipelines.GUI_TEXTURED, APP_BAR_GUI, x, y, 1, 18, 0, 0, 1, 18, 256, 256, bgColor.getRGB());
+//        graphics.blit(RenderPipelines.GUI_TEXTURED, APP_BAR_GUI, x + 1, y, Laptop.getScreenWidth() - 36 - trayItemsWidth, 18, 1, 0, 1, 18, 256, 256, bgColor.getRGB());
+//        graphics.blit(RenderPipelines.GUI_TEXTURED, APP_BAR_GUI, x + Laptop.getScreenWidth() - 35 - trayItemsWidth, y, 35 + trayItemsWidth, 18, 2, 0, 1, 18, 256, 256, bgColor.getRGB());
+
+        graphics.fill(x, y, x + Laptop.getScreenWidth(), y + BAR_HEIGHT, bgColor.getRGB());
 
         for (int i = 0; i < APPS_DISPLAYED && i < laptop.installedApps.size(); i++) {
             AppInfo info = laptop.installedApps.get(i + offset);
@@ -132,7 +132,7 @@ public class TaskBar {
 
     public void handleClick(Laptop laptop, int x, int y, MouseButtonEvent event) {
         if (isMouseInside((int) event.x(), (int) event.y(), x + 1, y + 1, x + 236, y + 16)) {
-            UltreonDevicesCommon.LOGGER.debug(MARKER, "Clicked on task bar");
+            OmnixerioDevicesCommon.LOGGER.debug(MARKER, "Clicked on task bar");
             int appIndex = (int) ((event.x() - x - 1) / 16);
             if (appIndex >= 0 && appIndex <= offset + APPS_DISPLAYED && appIndex < laptop.installedApps.size()) {
                 laptop.openApplication(laptop.installedApps.get(appIndex));
@@ -146,7 +146,7 @@ public class TaskBar {
             if (isMouseInside((int) event.x(), (int) event.y(), posX, y + 2, posX + 13, y + 15)) {
                 TrayItem trayItem = trayItems.get(i);
                 trayItem.handleClick(event);
-                UltreonDevicesCommon.LOGGER.debug(MARKER, "Clicked on tray item (%d): %s".formatted(i, trayItem.getClass().getSimpleName()));
+                OmnixerioDevicesCommon.LOGGER.debug(MARKER, "Clicked on tray item (%d): %s".formatted(i, trayItem.getClass().getSimpleName()));
                 break;
             }
         }

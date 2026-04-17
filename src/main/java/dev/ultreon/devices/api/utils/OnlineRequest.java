@@ -1,6 +1,6 @@
 package dev.ultreon.devices.api.utils;
 
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.util.StreamUtils;
 
 import java.io.IOException;
@@ -139,7 +139,7 @@ public class OnlineRequest {
                             conn.disconnect();
                         }
                     } catch (Exception e) {
-                        UltreonDevicesCommon.LOGGER.error("Error making request to {}", wrapper.url, e);
+                        OmnixerioDevicesCommon.LOGGER.error("Error making request to {}", wrapper.url, e);
                         wrapper.handler.handle(false, "");
                     }
                 }

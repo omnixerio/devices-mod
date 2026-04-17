@@ -1,7 +1,7 @@
 package dev.ultreon.devices.core.laptop.common;
 
-import dev.ultreon.devices.UltreonDevicesCommon;
-import dev.ultreon.devices.core.laptop.client.ClientLaptop;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
+import dev.ultreon.devices.client.ClientLaptop;
 import dev.ultreon.devices.programs.system.object.ColorScheme;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -16,7 +16,7 @@ import java.awt.*;
 public class TaskBar {
     public static final Identifier APP_BAR_GUI = Identifier.parse("devices:textures/gui/application_bar.png");
     public static final int BAR_HEIGHT = 18;
-    private static final int APPS_DISPLAYED = UltreonDevicesCommon.DEVELOPER_MODE ? 18 : 10;
+    private static final int APPS_DISPLAYED = OmnixerioDevicesCommon.DEVELOPER_MODE ? 18 : 10;
     private final ClientLaptop laptop;
 
     private final int offset = 0;
@@ -89,7 +89,7 @@ public class TaskBar {
 
     public void handleClick(ClientLaptop laptop, int x, int y, MouseButtonEvent event) {
         if (isMouseInside((int) event.x(), (int) event.y(), x + 1, y + 1, x + 236, y + 16)) {
-            UltreonDevicesCommon.LOGGER.debug(MARKER, "Clicked on task bar");
+            OmnixerioDevicesCommon.LOGGER.debug(MARKER, "Clicked on task bar");
 //            int appIndex = (mouseX - x - 1) / 16;
 //            if (appIndex >= 0 && appIndex <= offset + APPS_DISPLAYED && appIndex < laptop.installedApps.size()) {
 //                laptop.openApplication(laptop.installedApps.get(appIndex));

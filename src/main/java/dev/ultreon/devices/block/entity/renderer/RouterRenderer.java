@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import org.jspecify.annotations.NonNull;
 
 /**
  * @author MrCrayfish
@@ -83,12 +84,12 @@ public record RouterRenderer(
 //    }
 
     @Override
-    public RouterRenderState createRenderState() {
+    public @NonNull RouterRenderState createRenderState() {
         return new RouterRenderState();
     }
 
     @Override
-    public void submit(RouterRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+    public void submit(@NonNull RouterRenderState state, @NonNull PoseStack poseStack, @NonNull SubmitNodeCollector submitNodeCollector, @NonNull CameraRenderState camera) {
 
     }
 }

@@ -4,11 +4,9 @@ import com.mojang.serialization.MapCodec;
 import dev.ultreon.devices.ModDeviceTypes;
 import dev.ultreon.devices.block.entity.LaptopBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +17,7 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -28,6 +27,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -44,8 +44,15 @@ public class LaptopBlock extends ComputerBlock.Colored {
     private static final VoxelShape SHAPE_CLOSED_SOUTH = Block.box(1, 0, 3, 15, 2, 15);
     private static final VoxelShape SHAPE_CLOSED_WEST = Block.box(1, 0, 1, 13, 2, 15);
 
-    public LaptopBlock(DyeColor color, Identifier id) {
-        super(Properties.of().setId(ResourceKey.create(Registries.BLOCK, id)).mapColor(color).strength(6f).sound(SoundType.METAL), color, ModDeviceTypes.COMPUTER);
+    public LaptopBlock(DyeColor color, Properties properties) {
+        super(properties.mapColor(color).strength(6f).sound(SoundType.METAL), color, ModDeviceTypes.COMPUTER);
+        registerDefaultState(this.getStateDefinition().any().setValue(TYPE, Type.BASE).setValue(FACING, Direction.NORTH).setValue(OPEN, false));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> pBuilder) {
+        super.createBlockStateDefinition(pBuilder);
+        pBuilder.add(OPEN, TYPE);
     }
 
     public LaptopBlock(Properties properties1) {
@@ -81,7 +88,7 @@ public class LaptopBlock extends ComputerBlock.Colored {
 
     @Override
     @SuppressWarnings("deprecation")
-    public @NotNull List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
+    public @NotNull List<ItemStack> getDrops(@NonNull BlockState state, LootParams.@NonNull Builder builder) {
         List<ItemStack> drops = super.getDrops(state, builder);
         BlockEntity parameter = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (parameter == null) return drops;
@@ -102,7 +109,7 @@ public class LaptopBlock extends ComputerBlock.Colored {
     }
 
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+    protected @NonNull MapCodec<? extends HorizontalDirectionalBlock> codec() {
         return simpleCodec(properties1 -> new LaptopBlock(properties1));
     }
 }

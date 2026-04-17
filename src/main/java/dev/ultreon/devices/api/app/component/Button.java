@@ -1,5 +1,6 @@
 package dev.ultreon.devices.api.app.component;
 
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.api.app.Component;
 import dev.ultreon.devices.api.app.IIcon;
 import dev.ultreon.devices.api.app.listener.ClickListener;
@@ -22,8 +23,10 @@ import java.util.Arrays;
 
 @SuppressWarnings("unused")
 public class Button extends Component {
-    protected static final Identifier BUTTON_TEXTURES = Identifier.parse("textures/gui/widgets.png");
-
+    protected static final Identifier BUTTON_SPRITE = OmnixerioDevicesCommon.id("button");
+    protected static final Identifier BUTTON_HOVER_SPRITE = OmnixerioDevicesCommon.id("button_hover");
+    protected static final Identifier BUTTON_DISABLED_SPRITE = OmnixerioDevicesCommon.id("button_disabled");
+    
     protected static final int TOOLTIP_DELAY = 20;
 
     protected String text;
@@ -211,46 +214,38 @@ public class Button extends Component {
 
     @Override
     public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
-        if (this.visible) {
-            Color color = new Color(Laptop.getSystem().getSettings().getColorScheme().getButtonColor());
+        if (!this.visible) return;
+        Color color = new Color(Laptop.getSystem().getSettings().getColorScheme().getButtonColor());
 
-            this.hovered = GuiHelper.isMouseWithin(mouseX, mouseY, x, y, width, height) && windowActive;
-            int i = this.getHoverState(this.hovered);
+        hovered = GuiHelper.isMouseWithin(mouseX, mouseY, x, y, width, height) && windowActive;
+        int i = this.getHoverState(hovered);
 
-            /* Corners */
-            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x, y, 2, 2, 96 + i * 5, 12, 2, 2, 256, 256, color.getRGB());
-            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x + width - 2, y, 2, 2, 99 + i * 5, 12, 2, 2, 256, 256, color.getRGB());
-            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x + width - 2, y + height - 2, 2, 2, 99 + i * 5, 15, 2, 2, 256, 256, color.getRGB());
-            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x, y + height - 2, 2, 2, 96 + i * 5, 15, 2, 2, 256, 256, color.getRGB());
+        if (!enabled) {
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BUTTON_DISABLED_SPRITE, x, y, width, height, color.getRGB());
+        } else if (hovered) {
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BUTTON_HOVER_SPRITE, x, y, width, height, color.getRGB());
+        } else {
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BUTTON_SPRITE, x, y, width, height, color.getRGB());
+        }
 
-            /* Middles */
-            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x + 2, y, width - 4, 2, 98 + i * 5, 12, 1, 2, 256, 256, color.getRGB());
-            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x + width - 2, y + 2, 2, height - 4, 99 + i * 5, 14, 2, 1, 256, 256, color.getRGB());
-            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x + 2, y + height - 2, width - 4, 2, 98 + i * 5, 15, 1, 2, 256, 256, color.getRGB());
-            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x, y + 2, 2, height - 4, 96 + i * 5, 14, 2, 1, 256, 256, color.getRGB());
+        if (hovered) {
+            graphics.outline(x, y, width, height, Laptop.getSystem().getSettings().getColorScheme().getButtonOutlineColor());
+        }
 
-            /* Center */
-            graphics.blit(RenderPipelines.GUI_TEXTURED, Component.COMPONENTS_GUI, x + 2, y + 2, width - 4, height - 4, 98 + i * 5, 14, 1, 1, 256, 256, color.getRGB());
+        int contentWidth = (iconResource != null ? iconWidth : 0) + getTextWidth(text);
+        if (iconResource != null && !StringUtils.isNotNullOrEmpty(text)) contentWidth += 3;
+        int contentX = (int) Math.ceil((width - contentWidth) / 2d);
 
-            if (this.hovered) {
-                graphics.outline(x, y, width, height, Laptop.getSystem().getSettings().getColorScheme().getButtonOutlineColor());
-            }
+        if (iconResource != null) {
+            int iconY = (height - iconHeight) / 2;
+            graphics.blit(RenderPipelines.GUI_TEXTURED, iconResource, x + contentX, y + iconY, iconU, iconV, iconWidth, iconHeight, iconVWidth, iconUHeight, iconSourceWidth, iconSourceHeight);
+        }
 
-            int contentWidth = (iconResource != null ? iconWidth : 0) + getTextWidth(text);
-            if (iconResource != null && !StringUtils.isNotNullOrEmpty(text)) contentWidth += 3;
-            int contentX = (int) Math.ceil((width - contentWidth) / 2d);
-
-            if (iconResource != null) {
-                int iconY = (height - iconHeight) / 2;
-                graphics.blit(RenderPipelines.GUI_TEXTURED, iconResource, x + contentX, y + iconY, iconWidth, iconHeight, iconU, iconV, iconVWidth, iconUHeight, iconSourceWidth, iconSourceHeight);
-            }
-
-            if (!StringUtils.isNullOrEmpty(text)) {
-                int textY = (height - mc.font.lineHeight) / 2 + 1;
-                int textOffsetX = iconResource != null ? iconWidth + 3 : 0;
-                int textColor = !Button.this.enabled ? 0xa0a0a0 : 0xe0e0e0;
-                graphics.text(mc.font, text, x + contentX + textOffsetX, y + textY, textColor);
-            }
+        if (!StringUtils.isNullOrEmpty(text)) {
+            int textY = (height - mc.font.lineHeight) / 2 + 1;
+            int textOffsetX = iconResource != null ? iconWidth + 3 : 0;
+            int textColor = !Button.this.enabled ? 0xffa0a0a0 : 0xffe0e0e0;
+            graphics.text(mc.font, text, x + contentX + textOffsetX, y + textY, textColor);
         }
     }
 

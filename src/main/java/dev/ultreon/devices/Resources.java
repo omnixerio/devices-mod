@@ -8,6 +8,6 @@ public final class Resources {
     }
 
 
-    public static final Identifier ENDER_MAIL_ICONS = UltreonDevicesCommon.id("textures/gui/ender_mail.png");
-    public static final Identifier ENDER_MAIL_BACKGROUND = UltreonDevicesCommon.id("textures/gui/ender_mail_background.png");
+    public static final Identifier ENDER_MAIL_ICONS = OmnixerioDevicesCommon.id("textures/gui/ender_mail.png");
+    public static final Identifier ENDER_MAIL_BACKGROUND = OmnixerioDevicesCommon.id("textures/gui/ender_mail_background.png");
 }

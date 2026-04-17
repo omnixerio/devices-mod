@@ -1,0 +1,48 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "devices:block/laptop1"
+	},
+	"elements": [
+		{
+			"name": "screen",
+			"from": [1, 0, 5],
+			"to": [15, 1, 15],
+			"faces": {
+				"north": {"uv": [2, 0, 16, 1], "texture": "#0"},
+				"east": {"uv": [1, 0, 11, 1], "texture": "#0"},
+				"south": {"uv": [1, 0, 15, 1], "texture": "#0"},
+				"west": {"uv": [1, 0, 11, 1], "texture": "#0"},
+				"up": {"uv": [1, 1, 15, 11], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [1, 1, 15, 11], "rotation": 180, "texture": "#0"}
+			}
+		},
+		{
+			"name": "screen_mount",
+			"from": [4.2, 0, 15],
+			"to": [11.8, 0.9, 16.5],
+			"faces": {
+				"north": {"uv": [0, 0, 7.6, 0.9], "texture": "#0"},
+				"east": {"uv": [7, 0, 8.5, 0.9], "texture": "#0"},
+				"south": {"uv": [0, 0, 7.6, 0.9], "texture": "#0"},
+				"west": {"uv": [7, 0, 8.5, 0.9], "texture": "#0"},
+				"up": {"uv": [4, 0, 11.6, 1.5], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [4, 0, 11.6, 1.5], "rotation": 180, "texture": "#0"}
+			}
+		},
+		{
+			"name": "actual_screen",
+			"from": [2, -0.1, 6],
+			"to": [14, 0, 14],
+			"faces": {
+				"north": {"uv": [0, 15, 1, 16], "texture": "#0"},
+				"east": {"uv": [0, 15, 1.1, 16], "texture": "#0"},
+				"south": {"uv": [0, 15, 1, 16], "texture": "#0"},
+				"west": {"uv": [0, 15, 1.1, 16], "texture": "#0"},
+				"up": {"uv": [0, 15, 1, 16], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [0, 15, 1, 16], "rotation": 180, "texture": "#0"}
+			}
+		}
+	]
+}

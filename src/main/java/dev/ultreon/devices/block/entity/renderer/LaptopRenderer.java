@@ -62,8 +62,8 @@ public class LaptopRenderer implements BlockEntityRenderer<LaptopBlockEntity, La
         state.itemB = null;
         BlockModelRenderState screenState = new BlockModelRenderState();
         BlockModelRenderState baseState = new BlockModelRenderState();
-        blockModelResolver.update(screenState, state.laptopState.setValue(LaptopBlock.TYPE, ComputerBlock.Type.SCREEN), BlockDisplayContext.create());
-        blockModelResolver.update(screenState, state.laptopState.setValue(LaptopBlock.TYPE, ComputerBlock.Type.BASE), BlockDisplayContext.create());
+        blockModelResolver.update(screenState, state.laptopState.setValue(LaptopBlock.FACING, Direction.NORTH).setValue(LaptopBlock.TYPE, ComputerBlock.Type.SCREEN), BlockDisplayContext.create());
+        blockModelResolver.update(baseState, state.laptopState.setValue(LaptopBlock.TYPE, ComputerBlock.Type.BASE), BlockDisplayContext.create());
         state.screenState = screenState;
         state.baseState = baseState;
     }

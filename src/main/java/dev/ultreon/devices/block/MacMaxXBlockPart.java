@@ -1,8 +1,8 @@
 package dev.ultreon.devices.block;
 
 import com.mojang.serialization.MapCodec;
-import dev.ultreon.devices.UltreonDevicesCommon;
-import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -24,9 +24,10 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /**
- * @author Qboi123
+ * @author QboiDev
  */
 public class MacMaxXBlockPart extends HorizontalDirectionalBlock {
     public static final EnumProperty<Part> PART = EnumProperty.create("part", Part.class);
@@ -257,7 +258,7 @@ public class MacMaxXBlockPart extends HorizontalDirectionalBlock {
             Block.box(6.5,   0 - 16,  17 - 16, 9, 0.5 - 16,  23 - 16));
 
     public MacMaxXBlockPart(Properties properties) {
-        super(properties.setId(ResourceKey.create(Registries.BLOCK, UltreonDevicesCommon.id("mac_max_x_part"))).mapColor(DyeColor.WHITE).strength(6f).sound(SoundType.METAL));
+        super(properties.setId(ResourceKey.create(Registries.BLOCK, OmnixerioDevicesCommon.id("mac_max_x_part"))).mapColor(DyeColor.WHITE).strength(6f).sound(SoundType.METAL));
         registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(PART, Part.T));
     }
 
@@ -314,7 +315,7 @@ public class MacMaxXBlockPart extends HorizontalDirectionalBlock {
     }
 
     @Override
-    public BlockState playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
+    public @NonNull BlockState playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
         BlockPos originPos = getOriginPos(pos, state);
         switch (state.getValue(FACING)) {
             case NORTH -> {
@@ -392,7 +393,7 @@ public class MacMaxXBlockPart extends HorizontalDirectionalBlock {
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+    protected @NonNull InteractionResult useWithoutItem(@NonNull BlockState state, Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull BlockHitResult hitResult) {
         BlockPos originPos = getOriginPos(pos, state);
         BlockState originState = level.getBlockState(originPos);
         if (originState.getBlock() instanceof MacMaxXBlock block) {
@@ -402,16 +403,16 @@ public class MacMaxXBlockPart extends HorizontalDirectionalBlock {
     }
 
     @Override
-    public MutableComponent getName() {
+    public @NonNull MutableComponent getName() {
         MutableComponent normalName = Component.translatable("block.devices.mac_max_x");
-        if (XinexPlatform.isModLoaded("emojiful")) {
+        if (FabricLoader.getInstance().isModLoaded("emojiful")) {
             return Component.translatable("block.devices.mac_max_x_emoji");
         }
         return normalName;
     }
 
     @Override
-    public RenderShape getRenderShape(@NotNull BlockState state) {
+    public @NonNull RenderShape getRenderShape(@NotNull BlockState state) {
         return RenderShape.INVISIBLE;
     }
 
@@ -422,7 +423,7 @@ public class MacMaxXBlockPart extends HorizontalDirectionalBlock {
     }
 
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+    protected @NonNull MapCodec<? extends HorizontalDirectionalBlock> codec() {
         return simpleCodec(MacMaxXBlockPart::new);
     }
 
@@ -430,7 +431,7 @@ public class MacMaxXBlockPart extends HorizontalDirectionalBlock {
         BL, BR, TL, T, TR;
 
         @Override
-        public String getSerializedName() {
+        public @NonNull String getSerializedName() {
             return switch (this) {
                 case BL -> "bottom_left";
                 case BR -> "bottom_right";

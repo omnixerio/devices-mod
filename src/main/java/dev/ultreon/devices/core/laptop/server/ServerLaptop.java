@@ -1,7 +1,7 @@
 package dev.ultreon.devices.core.laptop.server;
 
-import dev.ultreon.devices.core.laptop.common.S2CUpdatePacket;
-import dev.ultreon.devices.network.DevicesCommonNetworker;
+import dev.ultreon.devices.core.laptop.common.ClientboundUpdatePacket;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -15,7 +15,7 @@ public class ServerLaptop {
     ;
 
     public void sendPacket(ServerPlayer player, String type, CompoundTag nbt) {
-        DevicesCommonNetworker.INSTANCE.sendToClient(new S2CUpdatePacket(this.uuid, type, nbt), player);
+        ServerPlayNetworking.send(player, new ClientboundUpdatePacket(this.uuid, type, nbt));
     }
 
     public UUID getUuid() {
@@ -25,8 +25,6 @@ public class ServerLaptop {
     public void handlePacket(Player player, String type, CompoundTag data) {
         System.out.printf("Handling %s, %s%n", type, data);
         if (type.equals("mouseMoved")) {
-            var x = data.getDoubleOr("x", 0);
-            var y = data.getDoubleOr("y", 0);
             sendPacket((ServerPlayer) player, "placeSquare", data);
         }
     }

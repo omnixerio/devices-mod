@@ -16,6 +16,8 @@
 
 package com.jab125.version;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -246,7 +248,7 @@ public class SemanticVersionImpl implements SemanticVersion {
 	}
 
 	@Override
-	public int compareTo(Version other) {
+	public int compareTo(@NonNull Version other) {
 		if (!(other instanceof SemanticVersion)) {
 			return getFriendlyString().compareTo(other.getFriendlyString());
 		}

@@ -21,7 +21,7 @@ public class OfficeChairBlockEntity extends SyncBlockEntity implements Colorable
     private DyeColor color = DyeColor.RED;
 
     public OfficeChairBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
-        super(DeviceBlockEntities.SEAT.get(), pWorldPosition, pBlockState);
+        super(DeviceBlockEntities.SEAT, pWorldPosition, pBlockState);
     }
 
     @Override

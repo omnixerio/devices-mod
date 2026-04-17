@@ -17,12 +17,20 @@ import dev.ultreon.devices.util.InventoryUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.entity.state.VillagerRenderState;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.npc.villager.VillagerData;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.awt.*;
 import java.util.function.Supplier;
@@ -31,7 +39,8 @@ import java.util.function.Supplier;
 public class BankApp extends Application {//The bank is not a system application
     private static final Supplier<ItemStack> EMERALD = Suppliers.memoize(() -> new ItemStack(Items.EMERALD));
     private static final Identifier BANK_ASSETS = Identifier.parse("devices:textures/gui/bank.png");
-//    private static final Identifier villagerTextures = new Identifier("textures/entity/villager/villager.png");
+    private final VillagerRenderState renderState = new VillagerRenderState();
+    //    private static final Identifier villagerTextures = new Identifier("textures/entity/villager/villager.png");
 //    private static final VillagerModel<Villager> villagerModel = new VillagerModel<Villager>();
     private Layout layoutStart;
     private Label labelTeller;
@@ -61,7 +70,7 @@ public class BankApp extends Application {//The bank is not a system application
     private int rotation;
 
     public BankApp() {
-        //super(Reference.MOD_ID + "Bank", "The Emerald Bank");
+        renderState.villagerData = new VillagerData(BuiltInRegistries.VILLAGER_TYPE.getOrThrow(VillagerType.PLAINS), BuiltInRegistries.VILLAGER_PROFESSION.getOrThrow(VillagerProfession.NONE), 1);
     }
 
     @Override
@@ -78,31 +87,9 @@ public class BankApp extends Application {//The bank is not a system application
         layoutStart = new Layout();
         layoutStart.setBackground((graphics, mc, x, y, width, height, mouseX, mouseY, windowActive) -> {
             assert Minecraft.getInstance().level != null;
-            // TODO: get villager to render without instant game crash
             graphics.pose().pushMatrix();
             {
-//                graphics.pose().translate(x + 25, y + 33, 15);
-//                graphics.pose().scale((float) -2.5, (float) -2.5, (float) -2.5);
-//                // Todo: do rotations
-//              //  pose.mulPose(new Quaternion(1, 0, 0, -mouseX+mouseY));
-//               // pose.mulPose(new Quaternion(0, 0, 1, mouseX+mouseY));
-//              //  pose.mulPose(new Quaternion(0, 1, 0, -mouseX+mouseY));
-//                float scaleX = (mouseX - x - 25) / (float) width;
-//                float scaleY = (mouseY - y - 20) / (float) height;
-////                RenderSystem.setShaderTexture(villagerTextures);
-//
-//                MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-////                var renderer = new VillagerRenderer(new EntityRendererProvider.Context(Minecraft.getInstance().getEntityRenderDispatcher(), Minecraft.getInstance().getItemRenderer(), Minecraft.getInstance().getResourceManager(), Minecraft.getInstance().getEntityModels(), Minecraft.getInstance().font));
-//                var villager = EntityType.VILLAGER.create(Minecraft.getInstance().level);
-//                assert villager != null;
-//                villager.setVillagerData(new VillagerData(VillagerType.PLAINS, VillagerProfession.NITWIT, 1));
-//                villager.getVillagerData().setProfession(VillagerProfession.NITWIT);
-//                graphics.pose().pushMatrix();
-//                graphics.pose().scale(scaleX, scaleY, 1F);
-//        //        renderer.render(villager, 0F, 0F, pose, buffer, 15);
-//                graphics.pose().popMatrix();
-//
-//                RenderSystem.disableDepthTest();
+                graphics.entity(renderState, 30f, new Vector3f(), new Quaternionf(), new Quaternionf(), x + 25, y + 33, x + 75, y + 20);
             }
             graphics.pose().popMatrix();
 

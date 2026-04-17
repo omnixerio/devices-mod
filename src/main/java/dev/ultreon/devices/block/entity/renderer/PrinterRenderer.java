@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import org.jspecify.annotations.NonNull;
 
 /**
  * @author MrCrayfish
@@ -131,12 +132,12 @@ public record PrinterRenderer(
 //    }
 
     @Override
-    public PrinterRenderState createRenderState() {
+    public @NonNull PrinterRenderState createRenderState() {
         return new PrinterRenderState();
     }
 
     @Override
-    public void submit(PrinterRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+    public void submit(@NonNull PrinterRenderState state, @NonNull PoseStack poseStack, @NonNull SubmitNodeCollector submitNodeCollector, @NonNull CameraRenderState camera) {
 
     }
 

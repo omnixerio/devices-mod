@@ -21,7 +21,7 @@ public class SeatUtil {
                 playerIn.startRiding(seat);
             }
         } else {
-            EntityType<SeatEntity> entityType = DeviceEntities.SEAT.get();
+            EntityType<SeatEntity> entityType = DeviceEntities.SEAT;
             SeatEntity seat = entityType.create(worldIn, EntitySpawnReason.TRIGGERED);// new SeatEntity(worldIn, pos, yOffset);
             assert seat != null;
             seat.setYOffset(yOffset);

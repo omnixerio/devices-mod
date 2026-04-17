@@ -1,19 +1,25 @@
 package dev.ultreon.devices.init;
 
-import dev.ultreon.devices.UltreonDevicesCommon;
-import dev.ultreon.mods.xinexlib.registrar.Registrar;
-import dev.ultreon.mods.xinexlib.registrar.RegistrySupplier;
-import net.minecraft.core.registries.Registries;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
+
+import java.util.function.Function;
 
 /**
  * @author MrCrayfish
  */
 public class DeviceSounds {
-    private static final Registrar<SoundEvent> REGISTER = UltreonDevicesCommon.REGISTRIES.get().getRegistrar(Registries.SOUND_EVENT);
+    public static final SoundEvent PRINTER_PRINTING = register("printer_printing", SoundEvent::createVariableRangeEvent);
+    public static final SoundEvent PRINTER_LOADING_PAPER = register("printer_loading_paper", SoundEvent::createVariableRangeEvent);
 
-    public static final RegistrySupplier<SoundEvent, SoundEvent> PRINTER_PRINTING = REGISTER.register("printer_printing", () -> SoundEvent.createVariableRangeEvent(UltreonDevicesCommon.id("printer_printing")));
-    public static final RegistrySupplier<SoundEvent, SoundEvent> PRINTER_LOADING_PAPER = REGISTER.register("printer_loading_paper", () -> SoundEvent.createVariableRangeEvent(UltreonDevicesCommon.id("printer_loading_paper")));
+    private static SoundEvent register(String name, Function<Identifier, SoundEvent> func) {
+        SoundEvent apply = func.apply(OmnixerioDevicesCommon.id(name));
+        Registry.register(BuiltInRegistries.SOUND_EVENT, OmnixerioDevicesCommon.id(name), apply);
+        return apply;
+    }
 
     public static void register() {
 

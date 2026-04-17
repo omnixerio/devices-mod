@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 /**
  * @author MrCrayfish
@@ -22,7 +23,7 @@ public class PaperBlockEntity extends SyncBlockEntity {
     private byte rotation;
 
     public PaperBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
-        super(DeviceBlockEntities.PAPER.get(), pWorldPosition, pBlockState);
+        super(DeviceBlockEntities.PAPER, pWorldPosition, pBlockState);
     }
 
     public void nextRotation() {
@@ -45,14 +46,14 @@ public class PaperBlockEntity extends SyncBlockEntity {
     }
 
     @Override
-    public void loadAdditional(ValueInput compound) {
+    public void loadAdditional(@NonNull ValueInput compound) {
         super.loadAdditional(compound);
         print = compound.child("print").map(IPrint::load).orElse(null);
         rotation = compound.getByteOr("rotation", (byte) 0);
     }
 
     @Override
-    public void saveAdditional(ValueOutput compound) {
+    public void saveAdditional(@NonNull ValueOutput compound) {
         super.saveAdditional(compound);
         if (print != null) {
             compound.store("print", ExtraCodecs.NBT, IPrint.save(print));

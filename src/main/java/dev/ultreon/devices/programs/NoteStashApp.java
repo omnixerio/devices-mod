@@ -1,10 +1,9 @@
 package dev.ultreon.devices.programs;
 
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.api.app.Application;
 import dev.ultreon.devices.api.app.Dialog;
 import dev.ultreon.devices.api.app.Layout;
-import dev.ultreon.devices.api.app.component.*;
 import dev.ultreon.devices.api.app.component.*;
 import dev.ultreon.devices.api.io.File;
 import dev.ultreon.devices.core.io.FileSystem;
@@ -55,13 +54,13 @@ public class NoteStashApp extends Application {
         layoutMain = new Layout(180, 80);
         layoutMain.setInitListener(() -> {
             notes.getItems().clear();
-            UltreonDevicesCommon.LOGGER.debug(MARKER, "Loading notes...");
+            OmnixerioDevicesCommon.LOGGER.debug(MARKER, "Loading notes...");
             FileSystem.getApplicationFolder(this, (folder, success) -> {
                 if (success) {
                     assert folder != null;
                     folder.search(file -> file.isForApplication(this)).forEach(file -> notes.addItem(Note.fromFile(file)));
                 } else {
-                    UltreonDevicesCommon.LOGGER.error(MARKER, "Failed to get application folder");
+                    OmnixerioDevicesCommon.LOGGER.error(MARKER, "Failed to get application folder");
                     //TODO error dialog
                 }
             });
@@ -145,7 +144,7 @@ public class NoteStashApp extends Application {
                     assert folder != null;
                     folder.search(file -> file.isForApplication(this)).forEach(file -> notes.addItem(Note.fromFile(file)));
                 } else {
-                    UltreonDevicesCommon.LOGGER.error(MARKER, "Failed to get application folder");
+                    OmnixerioDevicesCommon.LOGGER.error(MARKER, "Failed to get application folder");
                     //TODO error dialog
                 }
             });

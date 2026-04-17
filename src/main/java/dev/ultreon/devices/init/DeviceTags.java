@@ -1,6 +1,6 @@
 package dev.ultreon.devices.init;
 
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -15,7 +15,7 @@ public class DeviceTags {
         public static final TagKey<Item> LAPTOPS = create("laptops");
 
         private static TagKey<Item> create(String path) {
-            return TagKey.create(Registries.ITEM, UltreonDevicesCommon.id(path));
+            return TagKey.create(Registries.ITEM, OmnixerioDevicesCommon.id(path));
         }
 
         public static void register() {

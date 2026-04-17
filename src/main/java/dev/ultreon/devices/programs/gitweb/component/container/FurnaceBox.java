@@ -1,12 +1,11 @@
 package dev.ultreon.devices.programs.gitweb.component.container;
 
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.core.Laptop;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 
 /**
@@ -24,12 +23,12 @@ public class FurnaceBox extends ContainerBox {
         slots.add(new Slot(26, 8, input));
         slots.add(new Slot(26, 44, fuel));
         slots.add(new Slot(85, 26, result));
-        this.fuelTime = UltreonDevicesCommon.getInstance().getBurnTime(fuel, RecipeType.SMELTING, Minecraft.getInstance().level);
+        this.fuelTime = OmnixerioDevicesCommon.getInstance().getBurnTime(fuel, Minecraft.getInstance().level);
     }
 
     @Deprecated
-    private static int getBurnTime(ItemStack stack, RecipeType<?> type) {
-        return UltreonDevicesCommon.getInstance().getBurnTime(stack, type, Minecraft.getInstance().level);
+    private static int getBurnTime(ItemStack stack) {
+        return OmnixerioDevicesCommon.getInstance().getBurnTime(stack, Minecraft.getInstance().level);
     }
 
     @Override

@@ -9,7 +9,6 @@ import dev.ultreon.devices.util.SeatUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
@@ -43,8 +42,8 @@ public class OfficeChairBlock extends DeviceBlock.Colored {
     private static final VoxelShape SELECTION_BOX = Shapes.box(0.0625f, 0, 0.0625f, 0.9375f, /*1.6875f*/0.625f, 0.9375f);
     private static final VoxelShape SEAT_BOUNDING_BOX = Shapes.box(0.0625f, 0, 0.0625f, 0.9375f, 0.625f, 0.9375f);
 
-    public OfficeChairBlock(DyeColor color, Identifier id) {
-        super(Properties.of().setId(ResourceKey.create(Registries.BLOCK, id)).mapColor(color), color, ModDeviceTypes.SEAT);
+    public OfficeChairBlock(DyeColor color, Properties id) {
+        super(id.mapColor(color), color, ModDeviceTypes.SEAT);
         //this.setUnlocalizedName("office_chair");
         //this.setRegistryName("office_chair");
         //this.setCreativeTab(MrCrayfishDeviceMod.TAB_DEVICE);

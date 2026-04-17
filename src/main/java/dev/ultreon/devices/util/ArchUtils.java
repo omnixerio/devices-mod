@@ -1,10 +1,10 @@
 package dev.ultreon.devices.util;
 
-import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
+import net.fabricmc.loader.api.FabricLoader;
 
 public class ArchUtils {
     @Deprecated
     public static boolean isProduction() {
-        return XinexPlatform.isDevelopmentEnvironment();
+        return FabricLoader.getInstance().isDevelopmentEnvironment();
     }
 }

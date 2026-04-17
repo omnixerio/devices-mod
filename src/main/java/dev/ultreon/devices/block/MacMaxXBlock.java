@@ -1,10 +1,10 @@
 package dev.ultreon.devices.block;
 
 import com.mojang.serialization.MapCodec;
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.block.entity.MacMaxXBlockEntity;
 import dev.ultreon.devices.init.DeviceBlocks;
-import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -32,11 +32,11 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 /**
- * @author Qboi123
+ * @author QboiDev
  */
-@SuppressWarnings("deprecation")
 public class MacMaxXBlock extends ComputerBlock {
     private static final VoxelShape SHAPE_NORTH = Shapes.or(
             Block.box(-16, 31, 5, 32, 32, 7),
@@ -88,7 +88,7 @@ public class MacMaxXBlock extends ComputerBlock {
     );
 
     public MacMaxXBlock(Properties properties) {
-        super(properties.setId(ResourceKey.create(Registries.BLOCK, UltreonDevicesCommon.id("mac_max_x"))).mapColor(DyeColor.WHITE).strength(6f).sound(SoundType.METAL).noOcclusion().dynamicShape());
+        super(properties.setId(ResourceKey.create(Registries.BLOCK, OmnixerioDevicesCommon.id("mac_max_x"))).mapColor(DyeColor.WHITE).strength(6f).sound(SoundType.METAL).noOcclusion().dynamicShape());
     }
 
 
@@ -155,7 +155,7 @@ public class MacMaxXBlock extends ComputerBlock {
 
     public void setPlacedBy(@NotNull Level level, @NotNull BlockPos pos, BlockState state, LivingEntity placer, @NotNull ItemStack stack) {
         if (state.isAir()) return;
-        BlockState partState = DeviceBlocks.MAC_MAX_X_PART.get().defaultBlockState();
+        BlockState partState = DeviceBlocks.MAC_MAX_X_PART.defaultBlockState();
         partState = partState.setValue(FACING, state.getValue(FACING));
         level.setBlock(pos.above(), partState.setValue(MacMaxXBlockPart.PART, MacMaxXBlockPart.Part.T), 3);
         switch (state.getValue(FACING)) {
@@ -188,7 +188,7 @@ public class MacMaxXBlock extends ComputerBlock {
     }
 
     @Override
-    public BlockState playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, BlockState state, @NotNull Player player) {
+    public @NonNull BlockState playerWillDestroy(@NotNull Level level, @NotNull BlockPos pos, BlockState state, @NotNull Player player) {
         switch (state.getValue(FACING)) {
             case NORTH -> {
                 level.setBlock(pos.above().west(), Blocks.AIR.defaultBlockState(), 3);
@@ -229,9 +229,9 @@ public class MacMaxXBlock extends ComputerBlock {
     }
 
     @Override
-    public MutableComponent getName() {
+    public @NonNull MutableComponent getName() {
         MutableComponent normalName = Component.translatable("block.devices.mac_max_x");
-        if (XinexPlatform.isModLoaded("emojiful")) {
+        if (FabricLoader.getInstance().isModLoaded("emojiful")) {
             return Component.translatable("block.devices.mac_max_x_emoji");
         }
         return normalName;
@@ -243,7 +243,7 @@ public class MacMaxXBlock extends ComputerBlock {
     }
 
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+    protected @NonNull MapCodec<? extends HorizontalDirectionalBlock> codec() {
         return simpleCodec( MacMaxXBlock::new);
     }
 }

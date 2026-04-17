@@ -3,9 +3,8 @@ package dev.ultreon.devices.event;
 import dev.ultreon.devices.api.WorldSavedData;
 import dev.ultreon.devices.api.utils.BankUtil;
 import dev.ultreon.devices.programs.email.EmailManager;
-import dev.ultreon.mods.xinexlib.event.server.ServerLevelSaveEvent;
-import dev.ultreon.mods.xinexlib.event.server.ServerStartingEvent;
-import dev.ultreon.mods.xinexlib.event.system.EventSystem;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLevelEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
@@ -23,8 +22,8 @@ public class WorldDataHandler {
     private static final LevelResource DEVICES_MOD_DATA = new LevelResource("data/devices-mod");
 
     static {
-        EventSystem.MAIN.on(ServerStartingEvent.class, event -> load(event.getServer()));
-        EventSystem.MAIN.on(ServerLevelSaveEvent.class, event -> save(event.getServerLevel()));
+        ServerLifecycleEvents.SERVER_STARTING.register(WorldDataHandler::load);
+        ServerLevelEvents.UNLOAD.register(WorldDataHandler::save);
     }
 
     public static void init() {
@@ -45,11 +44,10 @@ public class WorldDataHandler {
         loadData(modData, "bank.dat", BankUtil.INSTANCE);
     }
 
-    private static void save(ServerLevel serverLevel) {
+    private static void save(MinecraftServer server, ServerLevel serverLevel) {
         if (!serverLevel.dimension().equals(ServerLevel.OVERWORLD)) return;
 
 
-        final MinecraftServer server = serverLevel.getServer();
         File modData = server.getWorldPath(DEVICES_MOD_DATA).toFile();
         if (!modData.exists()) {
             try {

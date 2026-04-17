@@ -2,6 +2,7 @@ package dev.ultreon.devices.block.entity;
 
 import dev.ultreon.devices.util.BlockEntityUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
@@ -39,7 +40,8 @@ public abstract class SyncBlockEntity extends BlockEntity {
         }
     }
 
-    public CompoundTag getUpdateTag() {
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         if (!pipeline.isEmpty()) {
             CompoundTag updateTag = pipeline.copy();
             pipeline = new CompoundTag();

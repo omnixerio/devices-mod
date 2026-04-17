@@ -2,7 +2,7 @@ package dev.ultreon.devices.object;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.Reference;
 import dev.ultreon.devices.core.Laptop;
 import net.minecraft.client.Minecraft;
@@ -194,11 +194,11 @@ public class AppInfo {
         }
 
         private Icon(AppInfo info) {
-            this.base = Glyph.of(Identifier.fromNamespaceAndPath(info.appId.getNamespace(), "textures/app/icon/base/" + info.appId.getPath() + ".png"));
+            this.base = Glyph.of(Identifier.fromNamespaceAndPath(info.appId.getNamespace(), "app/icon/base/" + info.appId.getPath()));
             this.base.type = 0;
-            this.overlay0 = Glyph.of(Identifier.fromNamespaceAndPath(info.appId.getNamespace(), "textures/app/icon/overlay0/" + info.appId.getPath() + ".png"));
+            this.overlay0 = Glyph.of(Identifier.fromNamespaceAndPath(info.appId.getNamespace(), "app/icon/overlay0/" + info.appId.getPath()));
             this.overlay0.type = 1;
-            this.overlay1 = Glyph.of(Identifier.fromNamespaceAndPath(info.appId.getNamespace(), "textures/app/icon/overlay1/" + info.appId.getPath() + ".png"));
+            this.overlay1 = Glyph.of(Identifier.fromNamespaceAndPath(info.appId.getNamespace(), "app/icon/overlay1/" + info.appId.getPath()));
             this.overlay1.type = 2;
         }
 
@@ -300,7 +300,7 @@ public class AppInfo {
                     default -> throw new RuntimeException("Schema " + getSchemaVersion(json) + " is not implemented in " + Reference.VERSION + "!");
                 }
             } catch (JsonParseException e) {
-                UltreonDevicesCommon.LOGGER.error("Malformed app info json for '" + info.getFormattedId() + "'");
+                OmnixerioDevicesCommon.LOGGER.error("Malformed app info json for '" + info.getFormattedId() + "'");
             }
 
             return info;
@@ -321,9 +321,9 @@ public class AppInfo {
                 info.icon = new Icon();
                 info.icon.base = Icon.Glyph.of(Identifier.parse(json.getAsJsonObject().get("icon").getAsString()));
                 info.icon.base.type = 0;
-                info.icon.overlay0 = Icon.Glyph.of(Identifier.fromNamespaceAndPath(info.appId.getNamespace(), "textures/app/icon/overlay0/empty.png"));
+                info.icon.overlay0 = Icon.Glyph.of(Identifier.fromNamespaceAndPath(info.appId.getNamespace(), "app/icon/overlay0/empty.png"));
                 info.icon.overlay0.type = 1;
-                info.icon.overlay1 = Icon.Glyph.of(Identifier.fromNamespaceAndPath(info.appId.getNamespace(), "textures/app/icon/overlay1/empty.png"));
+                info.icon.overlay1 = Icon.Glyph.of(Identifier.fromNamespaceAndPath(info.appId.getNamespace(), "app/icon/overlay1/empty.png"));
                 info.icon.overlay1.type = 2;
             }
 
@@ -359,7 +359,7 @@ public class AppInfo {
             }
 
             if (json.getAsJsonObject().has("icon") && json.getAsJsonObject().get("icon").isJsonPrimitive()) {
-                UltreonDevicesCommon.LOGGER.warn("{} uses removed \"icon\"! Please advise {} to fix the icon!", info.name, info.authors[0]);
+                OmnixerioDevicesCommon.LOGGER.warn("{} uses removed \"icon\"! Please advise {} to fix the icon!", info.name, info.authors[0]);
             }
 
             if (json.getAsJsonObject().has("support") && json.getAsJsonObject().get("support").getAsJsonObject().size() > 0) {
@@ -407,7 +407,7 @@ public class AppInfo {
             if (json.getAsJsonObject().has("author") && json.getAsJsonObject().get("author").isJsonPrimitive()) {
                 if (info.authors == null) {
                     info.authors = new String[]{convertToLocal(json.getAsJsonObject().get("author").getAsString())};
-                    UltreonDevicesCommon.LOGGER.warn("{} uses deprecated \"author\"!, Please advise {} to replace \"author\": \"{}\" with the \"authors\": [] format", info.name, info.authors[0], info.authors[0]);
+                    OmnixerioDevicesCommon.LOGGER.warn("{} uses deprecated \"author\"!, Please advise {} to replace \"author\": \"{}\" with the \"authors\": [] format", info.name, info.authors[0], info.authors[0]);
                 }
             }
 
@@ -419,7 +419,7 @@ public class AppInfo {
             }
 
             if (json.getAsJsonObject().has("icon") && json.getAsJsonObject().get("icon").isJsonPrimitive()) {
-                UltreonDevicesCommon.LOGGER.warn("{} uses removed \"icon\"! Please advise {} to fix the icon!", info.name, info.authors[0]);
+                OmnixerioDevicesCommon.LOGGER.warn("{} uses removed \"icon\"! Please advise {} to fix the icon!", info.name, info.authors[0]);
             }
 
             if (d) info.authors = new String[0];

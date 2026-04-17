@@ -1,6 +1,6 @@
 package dev.ultreon.devices;
 
-import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
+import net.fabricmc.loader.api.FabricLoader;
 
 public class Reference {
     public static final String MOD_ID = "devices";
@@ -11,7 +11,7 @@ public class Reference {
     }
 
     public static String getVersion() {
-        return XinexPlatform.getMod(UltreonDevicesCommon.MOD_ID).orElseThrow().getVersion();
+        return FabricLoader.getInstance().getModContainer(OmnixerioDevicesCommon.MOD_ID).orElseThrow().getMetadata().getVersion().getFriendlyString();
     }
 
     public static String[] getVerInfo() {

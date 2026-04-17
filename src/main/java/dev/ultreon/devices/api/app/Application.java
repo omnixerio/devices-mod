@@ -1,6 +1,6 @@
 package dev.ultreon.devices.api.app;
 
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.api.io.File;
 import dev.ultreon.devices.core.Laptop;
 import dev.ultreon.devices.core.Window;
@@ -30,7 +30,7 @@ public abstract class Application extends Wrappable implements DataHandler {
     @SuppressWarnings("FieldMayBeFinal")
     protected AppInfo info = null;
     public void setInfo(AppInfo info) {
-        if (StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().equals(UltreonDevicesCommon.class)) {
+        if (StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().equals(OmnixerioDevicesCommon.class)) {
             this.info = info;
             return;
         }

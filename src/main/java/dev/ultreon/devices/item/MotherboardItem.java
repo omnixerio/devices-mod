@@ -18,8 +18,9 @@ public class MotherboardItem extends ComponentItem {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void appendHoverText(@NonNull ItemStack stack, @NonNull TooltipContext context, @NonNull TooltipDisplay display, Consumer<net.minecraft.network.chat.Component> builder, @NonNull TooltipFlag tooltipFlag) {
-        MotherboardComponents tag = stack.get(DeviceDataComponents.MOTHERBOARD_COMPONENTS.get());
+        MotherboardComponents tag = stack.get(DeviceDataComponents.MOTHERBOARD_COMPONENTS);
         builder.accept(net.minecraft.network.chat.Component.literal("Motherboard"));
         if (!KeyboardHelper.isShiftDown()) {
             builder.accept(net.minecraft.network.chat.Component.literal("CPU: " + getComponentStatus(tag, "cpu")));

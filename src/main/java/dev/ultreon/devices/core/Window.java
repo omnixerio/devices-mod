@@ -1,8 +1,9 @@
 package dev.ultreon.devices.core;
 
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.api.app.Application;
 import dev.ultreon.devices.api.app.Dialog;
-import dev.ultreon.devices.gui.GuiButtonClose;
+import dev.ultreon.devices.client.gui.GuiButtonClose;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.CharacterEvent;
@@ -13,10 +14,17 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.opengl.GLUtil;
+
 import java.awt.*;
 
+import static dev.ultreon.devices.util.GLHelper.popScissor;
+import static dev.ultreon.devices.util.GLHelper.pushScissor;
+
 public class Window<T extends Wrappable> {
-    public static final Identifier WINDOW_GUI = Identifier.parse("devices:textures/gui/application.png");
+    public static final Identifier WINDOW_GUI = OmnixerioDevicesCommon.id("window");
+    public static final Identifier CLOSE = OmnixerioDevicesCommon.id("close");
+    public static final Identifier CLOSE_HOVER = OmnixerioDevicesCommon.id("close_hover");
 
     public static final int COLOR_WINDOW_DARK = new Color(0f, 0f, 0f, 0.25f).getRGB();
     final Laptop laptop;
@@ -90,20 +98,8 @@ public class Window<T extends Wrappable> {
         graphics.pose().pushMatrix();
 
         Color color = new Color(Laptop.getSystem().getSettings().getColorScheme().getWindowBackgroundColor());
-        /* Corners */
-        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX, y + offsetY, 0, 0, 1, 1, 256, 256);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX + width - 13, y + offsetY, 2, 0, 13, 13, 256, 256);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX + width - 1, y + offsetY + height - 1, 14, 14, 1, 1, 256, 256);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX, y + offsetY + height - 1, 0, 14, 1, 1, 256, 256);
 
-        /* Edges */
-        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX + 1, y + offsetY, width - 14, 13, 1, 0, 1, 13, 256, 256);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX + width - 1, y + offsetY + 13, 1, height - 14, 14, 13, 1, 1, 256, 256);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX + 1, y + offsetY + height - 1, width - 2, 1, 1, 14, 13, 1, 256, 256);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI,x + offsetX, y + offsetY + 13, 1, height - 14, 0, 13, 1, 1, 256, 256);
-
-        /* Center */
-        graphics.blit(RenderPipelines.GUI_TEXTURED, WINDOW_GUI, x + offsetX + 1, y + offsetY + 13, width - 2, height - 14, 1, 13, 13, 1, 256, 256);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, WINDOW_GUI, x + offsetX - 5, y + offsetY - 5, width + 10, height + 10, color.getRGB());
 
         String windowTitle = content.getWindowTitle();
         if (mc.font.width(windowTitle) > width - 2 - 13 - 3) { // window width, border, close button, padding, padding
@@ -112,6 +108,9 @@ public class Window<T extends Wrappable> {
         graphics.text(mc.font, windowTitle, x + offsetX + 3, y + offsetY + 3, Color.WHITE.getRGB(), true);
 
         btnClose.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+
+        graphics.enableScissor(x + offsetX + 1, y + offsetY + 13, x + offsetX + width - 1, y + offsetY + height - 1);
+        graphics.fill(x + offsetX, y + offsetY, x + offsetX + width, y + offsetY + height, COLOR_WINDOW_DARK);
 
         /* Render content */
         content.render(graphics, gui, mc, x + offsetX + 1, y + offsetY + 13, mouseX, mouseY, active && dialogWindow == null, partialTicks);
@@ -124,6 +123,7 @@ public class Window<T extends Wrappable> {
         }
 
         graphics.pose().popMatrix();
+        graphics.disableScissor();
     }
 
     public void handleCharTyped(CharacterEvent event) {

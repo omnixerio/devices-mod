@@ -1,0 +1,10 @@
+{
+    "schemaVersion": 2,
+    "name": "Boat Racers",
+    "authors": ["MrCrayfish", "MinecraftDoodler", "Jab125", "QboiDev"],
+    "description": "VERY VERY WIP",
+    "version": "0.0.1",
+    "screenshots": [
+        "devices:textures/app/screenshot/gitweb_screenshot_1.png"
+    ]
+}

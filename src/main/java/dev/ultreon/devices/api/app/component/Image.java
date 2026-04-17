@@ -1,7 +1,7 @@
 package dev.ultreon.devices.api.app.component;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.api.app.Component;
 import dev.ultreon.devices.api.app.IIcon;
 import dev.ultreon.devices.api.app.Layout;
@@ -28,6 +28,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
@@ -37,6 +38,7 @@ public class Image extends Component {
         private AppInfo.Icon.Glyph[] glyphs;
         private int componentWidth;
         private int componentHeight;
+
         public AppImage(int left, int top, AppInfo resource) {
             this(left, top, 14, 14, resource);
             this.glyphs = new AppInfo.Icon.Glyph[]{resource.getIcon().getBase(), resource.getIcon().getOverlay0(), resource.getIcon().getOverlay1()};
@@ -55,13 +57,15 @@ public class Image extends Component {
         public void init(Layout layout) {
             super.init(layout);
             if (appInfo.getIcon().getBase().getU() == -1 && appInfo.getIcon().getBase().getV() == -1) {
-                var image = new Image(0, 0, componentWidth, componentHeight, 0, 0, 14, 14, 224, 224, Laptop.ICON_TEXTURES);
+                var image = new Image(0, 0, componentWidth, componentHeight);
+                image.setImageSprite(appInfo.getIcon().getBase().getIdentifier());
                 this.addComponent(image);
                 return;
             }
             for (AppInfo.Icon.Glyph glyph : glyphs) {
                 if (glyph.getU() == -1 || glyph.getV() == -1) continue;
-                var image = new Image(0, 0, componentWidth, componentHeight, glyph.getU(), glyph.getV(), 14, 14, 224, 224, Laptop.ICON_TEXTURES);
+                var image = new Image(0, 0, componentWidth, componentHeight);
+                image.setImageSprite(glyph.getIdentifier());
                 Supplier<ColorSupplier> suscs = () -> {
                     int tint = appInfo.getTint(glyph.getType());
                     var col = new Color(tint);
@@ -265,11 +269,7 @@ public class Image extends Component {
             if (image != null && image.texture != null) {
                 image.restore();
 
-                if (drawFull) {
-                    graphics.blit(RenderPipelines.GUI_TEXTURED, Identifier.withDefaultNamespace(""), x + borderThickness, y + borderThickness, 0, imageU, imageV, componentWidth - borderThickness * 2, componentHeight - borderThickness * 2, 256, 256, tint.get().toRGB());
-                } else {
-                    graphics.blit(RenderPipelines.GUI_TEXTURED, Identifier.withDefaultNamespace(""), x + borderThickness, y + borderThickness, imageU, imageV, componentWidth - borderThickness * 2, componentHeight - borderThickness * 2, imageWidth, imageHeight, sourceWidth, sourceHeight);
-                }
+                image.render(graphics, laptop, mc, x, y, componentWidth, componentHeight, mouseX, mouseY, windowActive, partialTicks);
             } else {
                 graphics.fill(x + borderThickness, y + borderThickness, x + componentWidth - borderThickness, y + componentHeight - borderThickness, Color.LIGHT_GRAY.getRGB());
             }
@@ -284,6 +284,11 @@ public class Image extends Component {
 
     public void setImage(Identifier resource) {
         setLoader(new StandardLoader(resource));
+        this.drawFull = true;
+    }
+
+    public void setImageSprite(Identifier resource) {
+        setLoader(new SpriteLoader(resource));
         this.drawFull = true;
     }
 
@@ -397,11 +402,43 @@ public class Image extends Component {
         public CachedImage load(Image image) {
             @Nullable AbstractTexture textureObj = Minecraft.getInstance().getTextureManager().getTexture(resource);
             if (textureObj != null) {
-                return new CachedImage(textureObj, 0, 0, false);
+                return new CachedImage(textureObj, resource, false, 0, 0, false);
             } else {
                 AbstractTexture texture = new SimpleTexture(resource);
                 Minecraft.getInstance().getTextureManager().register(resource, texture);
-                return new CachedImage(texture, 0, 0, false);
+                return new CachedImage(texture, resource, false, 0, 0, false);
+            }
+        }
+
+        public AbstractTexture getTexture() {
+            return texture;
+        }
+    }
+
+    private static class SpriteLoader extends ImageLoader {
+        private final AbstractTexture texture;
+        private final Identifier resource;
+
+        public SpriteLoader(Identifier resource) {
+            this.texture = new SimpleTexture(resource);
+            this.resource = resource;
+        }
+
+        @Override
+        protected void setup(Image image) {
+            setup = true;
+        }
+
+        @Override
+        @SuppressWarnings("ConstantConditions")
+        public CachedImage load(Image image) {
+            @Nullable AbstractTexture textureObj = Minecraft.getInstance().getTextureManager().getTexture(resource);
+            if (textureObj != null) {
+                return new CachedImage(textureObj, resource, true, 0, 0, false);
+            } else {
+                AbstractTexture texture = new SimpleTexture(resource);
+                Minecraft.getInstance().getTextureManager().register(resource, texture);
+                return new CachedImage(texture, resource, true, 0, 0, false);
             }
         }
 
@@ -413,6 +450,7 @@ public class Image extends Component {
     private static class DynamicLoader extends ImageLoader {
         private final String url;
         private AbstractTexture texture;
+        private Identifier id;
 
         public DynamicLoader(String url) {
             this.url = url;
@@ -443,14 +481,15 @@ public class Image extends Component {
                     NativeImage nativeImage = NativeImage.read(in);
 
                     Laptop.runLater(() -> {
-                        UltreonDevicesCommon.LOGGER.debug("Loaded image: " + url);
-                        texture = new DynamicTexture(() -> "devices_mod", nativeImage);
+                        id = OmnixerioDevicesCommon.id("generated/" + UUID.randomUUID().toString().replace("-", ""));
+                        DynamicTexture texture = new DynamicTexture(() -> "devices_mod_" + UUID.randomUUID().toString().replace("-", ""), nativeImage);
+                        Minecraft.getInstance().getTextureManager().register(id, texture);
+                        this.texture = texture;
                         setup = true;
                     });
                 } catch (IOException e) {
-//                    texture = MissingTextureAtlasSprite.getTexture();
                     setup = true;
-                    e.printStackTrace();
+                    OmnixerioDevicesCommon.LOGGER.error("Failed to load image from url: " + url, e);
                 }
             };
             Thread thread = new Thread(r, "Image Loader");
@@ -466,7 +505,7 @@ public class Image extends Component {
                 return cachedImage;
             }
 
-            CachedImage cachedImage = new CachedImage(texture, image.imageWidth, image.imageHeight, true);
+            CachedImage cachedImage = new CachedImage(texture, id, false, image.imageWidth, image.imageHeight, true);
             if (texture != null)
                 CACHE.put(url, cachedImage);
             return cachedImage;
@@ -496,13 +535,17 @@ public class Image extends Component {
         private final int width;
         private final int height;
         private final boolean dynamic;
+        private final boolean sprite;
         private boolean delete = false;
+        private final Identifier id;
 
-        private CachedImage(@Nullable AbstractTexture texture, int width, int height, boolean dynamic) {
+        private CachedImage(@Nullable AbstractTexture texture, Identifier id, boolean sprite, int width, int height, boolean dynamic) {
             this.texture = texture;
             this.width = width;
             this.height = height;
             this.dynamic = dynamic;
+            this.sprite = sprite;
+            this.id = id;
         }
 
         public @Nullable AbstractTexture getTexture() {
@@ -523,6 +566,14 @@ public class Image extends Component {
 
         public boolean isPendingDeletion() {
             return delete;
+        }
+
+        public void render(GuiGraphicsExtractor graphics, Laptop laptop, Minecraft mc, int x, int y, int componentWidth, int componentHeight, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
+            if (sprite) {
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, id, x, y, componentWidth, componentHeight);
+            } else {
+                graphics.blit(RenderPipelines.GUI_TEXTURED, id, x, y, 0, 0, componentWidth, componentHeight, width, height, width, height);
+            }
         }
     }
 }

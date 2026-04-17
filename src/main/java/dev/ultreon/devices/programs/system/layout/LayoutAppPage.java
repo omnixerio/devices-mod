@@ -170,7 +170,7 @@ public class LayoutAppPage extends Layout {
         if (store.certifiedApps.contains(entry)) {
             int width = Laptop.getFontStatic().width(entry.name()) * 2;
             if (GuiHelper.isMouseWithin(mouseX, mouseY, xPosition + 38 + width + 3, yPosition + 29, 20, 20)) {
-                laptop.renderComponentTooltip(graphics, Lists.newArrayList(Component.literal("Certified App").withStyle(ChatFormatting.GREEN)), mouseX, mouseY);
+                laptop.renderComponentTooltip(graphics, Lists.newArrayList(net.minecraft.network.chat.Component.literal("Certified App").withStyle(ChatFormatting.GREEN)), mouseX, mouseY);
             }
         }
     }

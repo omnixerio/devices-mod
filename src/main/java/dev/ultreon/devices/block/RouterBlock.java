@@ -3,13 +3,10 @@ package dev.ultreon.devices.block;
 import com.mojang.serialization.MapCodec;
 import dev.ultreon.devices.ModDeviceTypes;
 import dev.ultreon.devices.block.entity.RouterBlockEntity;
-import dev.ultreon.devices.network.DevicesCommonNetworker;
 import dev.ultreon.devices.network.task.SyncBlockPacket;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
@@ -28,6 +25,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * @author MrCrayfish
@@ -61,8 +59,8 @@ public class RouterBlock extends DeviceBlock.Colored {
             box(13, 0, 1, 16, 10, 15)
     };
 
-    public RouterBlock(DyeColor color, Identifier id) {
-        super(Properties.of().setId(ResourceKey.create(Registries.BLOCK, id)).mapColor(color).strength(6f).sound(SoundType.METAL), color, ModDeviceTypes.ROUTER);
+    public RouterBlock(DyeColor color, Properties id) {
+        super(id.mapColor(color).strength(6f).sound(SoundType.METAL), color, ModDeviceTypes.ROUTER);
         this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(VERTICAL, false));
     }
 
@@ -83,13 +81,13 @@ public class RouterBlock extends DeviceBlock.Colored {
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+    protected @NonNull InteractionResult useWithoutItem(@NonNull BlockState state, Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull BlockHitResult hitResult) {
         if (level.isClientSide() && player.isCreative()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof RouterBlockEntity router) {
                 router.setDebug(true);
                 if (router.isDebug()) {
-                    DevicesCommonNetworker.INSTANCE.sendToServer(new SyncBlockPacket(pos));
+                    ClientPlayNetworking.send(new SyncBlockPacket(pos));
                 }
             }
             return InteractionResult.SUCCESS;
@@ -128,7 +126,7 @@ public class RouterBlock extends DeviceBlock.Colored {
     }
 
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+    protected @NonNull MapCodec<? extends HorizontalDirectionalBlock> codec() {
         return simpleCodec(RouterBlock::new);
     }
 }

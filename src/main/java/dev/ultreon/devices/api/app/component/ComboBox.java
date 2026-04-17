@@ -175,7 +175,9 @@ public abstract class ComboBox<T> extends Component {
         }
 
         private static int getListHeight(ItemList<?> list) {
-            int size = Math.clamp(list.visibleItems, 1, list.getItems().size());
+            int size1 = list.getItems().size();
+            if (size1 < 1) size1 = 1;
+            int size = Math.clamp(list.visibleItems, 1, size1);
             return (list.renderer != null ? list.renderer.getHeight() : 13) * size + size + 1;
         }
 

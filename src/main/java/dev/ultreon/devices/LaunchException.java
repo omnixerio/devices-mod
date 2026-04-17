@@ -1,7 +1,5 @@
 package dev.ultreon.devices;
 
-import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
-
 public class LaunchException extends RuntimeException {
     @Override
     public String getMessage() {
@@ -10,11 +8,6 @@ public class LaunchException extends RuntimeException {
     }
 
     private static String getPlatform() {
-        return switch (XinexPlatform.getPlatformName()) {
-            case Fabric -> "Fabric";
-            case Forge -> "Forge";
-            case NeoForge -> "NeoForge";
-            case Quilt -> "Quilt";
-        };
+        return "Fabric";
     }
 }

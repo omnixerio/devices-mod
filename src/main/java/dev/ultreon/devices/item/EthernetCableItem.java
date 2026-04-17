@@ -1,7 +1,6 @@
 package dev.ultreon.devices.item;
 
 import dev.ultreon.devices.DeviceConfig;
-import dev.ultreon.devices.UltreonDevicesCommon;
 import dev.ultreon.devices.block.entity.NetworkDeviceBlockEntity;
 import dev.ultreon.devices.block.entity.RouterBlockEntity;
 import dev.ultreon.devices.core.network.Router;
@@ -9,9 +8,7 @@ import dev.ultreon.devices.util.KeyboardHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -24,6 +21,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -33,8 +31,8 @@ import java.util.function.Consumer;
  * @author MrCrayfish
  */
 public class EthernetCableItem extends Item {
-    public EthernetCableItem() {
-        super(new Properties().setId(ResourceKey.create(Registries.ITEM, UltreonDevicesCommon.id("ethernet_cable"))).stacksTo(1));
+    public EthernetCableItem(Properties properties) {
+        super(properties);
     }
 
     private static double getDistance(BlockPos source, BlockPos target) {
@@ -42,7 +40,7 @@ public class EthernetCableItem extends Item {
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
+    public @NonNull InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
         Player player = context.getPlayer();
         BlockPos pos = context.getClickedPos();
@@ -53,14 +51,14 @@ public class EthernetCableItem extends Item {
             BlockEntity blockEntity = level.getBlockEntity(pos);
 
             if (blockEntity instanceof RouterBlockEntity routerBE) {
-                if (!heldItem.has(DeviceDataComponents.ETHERNET_CONNECTION.get())) {
+                if (!heldItem.has(DeviceDataComponents.ETHERNET_CONNECTION)) {
                     sendGameInfoMessage(player, "message.devices.invalid_cable");
                     return InteractionResult.SUCCESS;
                 }
 
                 Router router = routerBE.getRouter();
 
-                EthernetConnection tag = heldItem.get(DeviceDataComponents.ETHERNET_CONNECTION.get());
+                EthernetConnection tag = heldItem.get(DeviceDataComponents.ETHERNET_CONNECTION);
                 assert tag != null;
                 Optional<BlockPos> optionalDevicePos = tag.pos();
                 if (optionalDevicePos.isEmpty()) {
@@ -104,7 +102,7 @@ public class EthernetCableItem extends Item {
             }
 
             if (blockEntity instanceof NetworkDeviceBlockEntity networkDeviceBlockEntity) {
-                heldItem.set(DeviceDataComponents.ETHERNET_CONNECTION.get(), new EthernetConnection(Optional.of(networkDeviceBlockEntity.getBlockPos()), Optional.of(networkDeviceBlockEntity.getId()), Optional.of(networkDeviceBlockEntity.getCustomName())));
+                heldItem.set(DeviceDataComponents.ETHERNET_CONNECTION, new EthernetConnection(Optional.of(networkDeviceBlockEntity.getBlockPos()), Optional.of(networkDeviceBlockEntity.getId()), Optional.of(networkDeviceBlockEntity.getCustomName())));
                 sendGameInfoMessage(player, "message.devices.select_router");
                 return InteractionResult.SUCCESS;
             }
@@ -119,11 +117,11 @@ public class EthernetCableItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level level, @NotNull Player player, @NotNull InteractionHand usedHand) {
+    public @NonNull InteractionResult use(Level level, @NotNull Player player, @NotNull InteractionHand usedHand) {
         if (!level.isClientSide()) {
             ItemStack heldItem = player.getItemInHand(usedHand);
             if (player.isCrouching()) {
-                DataComponentType<EthernetConnection> ethernetConnectionType = DeviceDataComponents.ETHERNET_CONNECTION.get();
+                DataComponentType<EthernetConnection> ethernetConnectionType = DeviceDataComponents.ETHERNET_CONNECTION;
                 if (heldItem.has(ethernetConnectionType)) {
                     heldItem.remove(ethernetConnectionType);
                 }
@@ -134,8 +132,8 @@ public class EthernetCableItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag tooltipFlag) {
-        DataComponentType<EthernetConnection> type = DeviceDataComponents.ETHERNET_CONNECTION.get();
+    public void appendHoverText(ItemStack stack, @NonNull TooltipContext context, @NonNull TooltipDisplay display, @NonNull Consumer<Component> builder, @NonNull TooltipFlag tooltipFlag) {
+        DataComponentType<EthernetConnection> type = DeviceDataComponents.ETHERNET_CONNECTION;
         if (stack.has(type)) {
             EthernetConnection ethernetConnection = stack.get(type);
             BlockPos devicePos = ethernetConnection.pos().orElse(null);
@@ -172,13 +170,13 @@ public class EthernetCableItem extends Item {
     }
 
     public boolean hasEffect(ItemStack stack) {
-        return stack.has(DeviceDataComponents.ETHERNET_CONNECTION.get());
+        return stack.has(DeviceDataComponents.ETHERNET_CONNECTION);
     }
 
     @NotNull
     @Override
     public Component getName(ItemStack stack) {
-        if (stack.has(DeviceDataComponents.ETHERNET_CONNECTION.get())) {
+        if (stack.has(DeviceDataComponents.ETHERNET_CONNECTION)) {
             return super.getName(stack).copy().withStyle(ChatFormatting.GRAY, ChatFormatting.BOLD);
         }
         return super.getName(stack);

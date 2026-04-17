@@ -14,7 +14,7 @@ public class RouterBlockEntity extends DeviceBlockEntity.Colored {
     private int debugTimer;
 
     public RouterBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
-        super(DeviceBlockEntities.ROUTER.get(), pWorldPosition, pBlockState);
+        super(DeviceBlockEntities.ROUTER, pWorldPosition, pBlockState);
     }
 
     public Router getRouter() {

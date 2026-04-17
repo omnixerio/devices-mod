@@ -1,7 +1,7 @@
 package dev.ultreon.devices.api.print;
 
 import com.google.common.collect.HashBiMap;
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import net.minecraft.resources.Identifier;
 
 import org.jetbrains.annotations.Nullable;
@@ -27,16 +27,16 @@ public class PrintingManager {
     public static void registerPrint(Identifier identifier, Class<? extends IPrint> classPrint) {
         try {
             classPrint.getConstructor().newInstance();
-            if (UltreonDevicesCommon.getInstance().registerPrint(identifier, classPrint)) {
-                UltreonDevicesCommon.LOGGER.info("Registering print '" + classPrint.getName() + "'");
+            if (OmnixerioDevicesCommon.getInstance().registerPrint(identifier, classPrint)) {
+                OmnixerioDevicesCommon.LOGGER.info("Registering print '{}'", classPrint.getName());
                 registeredPrints.put(identifier.toString(), classPrint);
             } else {
-                UltreonDevicesCommon.LOGGER.error("The print '" + classPrint.getName() + "' could not be registered due to a critical error!");
+                OmnixerioDevicesCommon.LOGGER.error("The print '{}' could not be registered due to a critical error!", classPrint.getName());
             }
         } catch (NoSuchMethodException e) {
-            UltreonDevicesCommon.LOGGER.error("The print '" + classPrint.getName() + "' is missing an empty constructor and could not be registered!");
+            OmnixerioDevicesCommon.LOGGER.error("The print '{}' is missing an empty constructor and could not be registered!", classPrint.getName());
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            UltreonDevicesCommon.LOGGER.error("The print '" + classPrint.getName() + "' could not be registered due to a critical error!");
+            OmnixerioDevicesCommon.LOGGER.error("The print '{}' could not be registered due to a critical error!", classPrint.getName());
         }
     }
 

@@ -1,7 +1,7 @@
 package dev.ultreon.devices.programs.system;
 
 import com.google.common.base.CaseFormat;
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.Reference;
 import dev.ultreon.devices.api.ApplicationManager;
 import dev.ultreon.devices.api.app.Dialog;
@@ -150,7 +150,7 @@ public class SettingsApp extends SystemApp {
 //
 //                    Credits:
 //                    - MrCrayfish (https://mrcrayfish.com/)
-//                    - Qboi123
+//                    - QboiDev
 //                    - Jab125
 //                    - lizterzapzap
 //                    - MrBean6000
@@ -240,7 +240,7 @@ public class SettingsApp extends SystemApp {
         final Layout layoutColorSchemes = new Menu("Themes");
         layoutColorSchemes.addComponent(backBtn);
 
-        Preset custom = new Preset(null, UltreonDevicesCommon.id("custom"));
+        Preset custom = new Preset(null, OmnixerioDevicesCommon.id("custom"));
 
         ItemList<Preset> list = new ItemList<>(0, 21, layoutColorSchemes.width, layoutColorSchemes.height - 21);
         for (Preset colorScheme : ColorSchemePresetRegistry.getValues()) {
@@ -257,7 +257,7 @@ public class SettingsApp extends SystemApp {
             @Override
             public void render(GuiGraphicsExtractor graphics, Preset scheme, Minecraft mc, int x, int y, int width, int height, boolean selected) {
                 Identifier key = ColorSchemePresetRegistry.getKey(scheme);
-                if (key == null) key = UltreonDevicesCommon.id("custom");
+                if (key == null) key = OmnixerioDevicesCommon.id("custom");
                 graphics.text(mc.font, CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, key.getPath()).replaceAll("[A-Z]", " $0").substring(1), x + 5, y + 5, Color.WHITE.getRGB());
             }
         });
@@ -504,12 +504,12 @@ public class SettingsApp extends SystemApp {
 
     public static class SettingsTrayItem extends TrayItem {
         public SettingsTrayItem() {
-            super(Icons.WRENCH, UltreonDevicesCommon.id("settings"));
+            super(Icons.WRENCH, OmnixerioDevicesCommon.id("settings"));
         }
 
         @Override
         public void handleClick(MouseButtonEvent event) {
-            AppInfo info = ApplicationManager.getApplication(UltreonDevicesCommon.id("settings"));
+            AppInfo info = ApplicationManager.getApplication(OmnixerioDevicesCommon.id("settings"));
             if (info != null) {
                 Laptop.getSystem().openApplication(info);
             }

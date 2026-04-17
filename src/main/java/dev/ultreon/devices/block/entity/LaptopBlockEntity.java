@@ -8,7 +8,7 @@ public class LaptopBlockEntity extends ComputerBlockEntity {
     private int attachmentCooldown;
 
     public LaptopBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
-        super(DeviceBlockEntities.LAPTOP.get(), pWorldPosition, pBlockState);
+        super(DeviceBlockEntities.LAPTOP, pWorldPosition, pBlockState);
     }
 
     @Override

@@ -459,6 +459,15 @@ public class PixelPainterApp extends Application {
             return false;
         }
 
+        public int getResolution() {
+            return resolution;
+        }
+
+        @Override
+        public int[] getPixels() {
+            return pixels;
+        }
+
         @Override
         public CompoundTag toTag() {
             CompoundTag tag = new CompoundTag();

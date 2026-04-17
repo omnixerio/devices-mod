@@ -1,15 +1,14 @@
 package dev.ultreon.devices.network.task;
 
 import com.google.common.collect.ImmutableList;
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.api.ApplicationManager;
 import dev.ultreon.devices.object.AppInfo;
-import dev.ultreon.mods.xinexlib.network.Networker;
-import dev.ultreon.mods.xinexlib.network.packet.PacketToClient;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
@@ -17,7 +16,12 @@ import java.util.List;
  * @author MrCrayfish
  */
 public class SyncApplicationPacket implements CustomPacketPayload {
-    private final List<AppInfo> allowedApps;
+    public static final Type<SyncApplicationPacket> TYPE = new Type<>(OmnixerioDevicesCommon.id("sync_application"));
+    public static final StreamCodec<FriendlyByteBuf, SyncApplicationPacket> STREAM_CODEC = StreamCodec.of(
+            (output, value) -> value.write(output),
+            SyncApplicationPacket::new
+    );
+    public final List<AppInfo> allowedApps;
 
     public SyncApplicationPacket(FriendlyByteBuf buf) {
         int size = buf.readInt();
@@ -28,7 +32,7 @@ public class SyncApplicationPacket implements CustomPacketPayload {
             if (info != null) {
                 builder.add(info);
             } else {
-                UltreonDevicesCommon.LOGGER.error("Missing application '{}'", appId);
+                OmnixerioDevicesCommon.LOGGER.error("Missing application '{}'", appId);
             }
         }
 
@@ -39,13 +43,7 @@ public class SyncApplicationPacket implements CustomPacketPayload {
         this.allowedApps = allowedApps;
     }
 
-    @Override
-    public void handle(Networker connection) {
-        UltreonDevicesCommon.setAllowedApps(allowedApps);
-    }
-
-    @Override
-    public void write(RegistryFriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeInt(allowedApps.size());
         for (AppInfo appInfo : allowedApps) {
             buffer.writeIdentifier(appInfo.getId());
@@ -53,7 +51,7 @@ public class SyncApplicationPacket implements CustomPacketPayload {
     }
 
     @Override
-    public Type<? extends CustomPacketPayload> type() {
-
+    public @NonNull Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

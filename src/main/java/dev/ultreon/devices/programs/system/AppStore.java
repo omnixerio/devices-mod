@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import dev.ultreon.devices.Reference;
 import dev.ultreon.devices.api.ApplicationManager;
 import dev.ultreon.devices.api.app.Component;
@@ -69,7 +69,7 @@ public class AppStore extends SystemApp {
         });
 
         Image imageBanner = new Image(0, 0, LAYOUT_WIDTH, 60);
-        imageBanner.setImage(Identifier.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/app_market_background.png"));
+        imageBanner.setImageSprite(Identifier.fromNamespaceAndPath(Reference.MOD_ID, "app_market_background"));
         imageBanner.setDrawFull(true);
         homePageLayout.addComponent(imageBanner);
 
@@ -96,7 +96,7 @@ public class AppStore extends SystemApp {
         Label labelCertified = new Label(ChatFormatting.WHITE + ChatFormatting.BOLD.toString() + "Certified Apps", 10, 66);
         homePageLayout.addComponent(labelCertified);
 
-        Label labelCertifiedDesc = new Label(ChatFormatting.GRAY + "Verified by Ultreon Team", LAYOUT_WIDTH - 10, 66);
+        Label labelCertifiedDesc = new Label(ChatFormatting.WHITE + "Verified by Omnixerio", LAYOUT_WIDTH - 10, 66);
         labelCertifiedDesc.setAlignment(Component.ALIGN_RIGHT);
         labelCertifiedDesc.setScale(1d);
         labelCertifiedDesc.setShadow(false);
@@ -191,12 +191,12 @@ public class AppStore extends SystemApp {
 
     public static class StoreTrayItem extends TrayItem {
         public StoreTrayItem() {
-            super(Icons.SHOP, UltreonDevicesCommon.id("app_store"));
+            super(Icons.SHOP, OmnixerioDevicesCommon.id("app_store"));
         }
 
         @Override
         public void handleClick(MouseButtonEvent event) {
-            AppInfo info = ApplicationManager.getApplication(UltreonDevicesCommon.id("app_store"));
+            AppInfo info = ApplicationManager.getApplication(OmnixerioDevicesCommon.id("app_store"));
             if (info != null) {
                 Laptop.getSystem().openApplication(info);
             }

@@ -4,6 +4,7 @@ import dev.ultreon.devices.api.task.Task;
 import dev.ultreon.devices.core.client.ClientNotification;
 import dev.ultreon.devices.network.DevicesCommonNetworker;
 import dev.ultreon.devices.network.task.NotificationPacket;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.commons.lang3.StringUtils;
@@ -76,6 +77,6 @@ public class Notification {
      * @param player the target player
      */
     public void pushTo(ServerPlayer player) {
-        DevicesCommonNetworker.INSTANCE.sendToClient(new NotificationPacket(this), player);
+        ServerPlayNetworking.send(player, new NotificationPacket(toTag()));
     }
 }

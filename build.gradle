@@ -16,15 +16,19 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+
+	maven {
+		name = "Fuzs Mod Resources"
+		url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+	}
 }
 
 loom {
-	splitEnvironmentSourceSets()
+	accessWidenerPath = file("src/main/resources/devices.accesswidener")
 
 	mods {
-		"modid" {
+		"devices" {
 			sourceSet sourceSets.main
-			sourceSet sourceSets.client
 		}
 	}
 
@@ -32,13 +36,13 @@ loom {
 
 dependencies {
 	// To change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	minecraft "com.mojang:minecraft:$minecraft_version"
 	
-	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc:fabric-loader:$loader_version"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
-	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-	
+	implementation "net.fabricmc.fabric-api:fabric-api:$fabric_api_version"
+	implementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:$forge_config_api_port_version"
 }
 
 processResources {

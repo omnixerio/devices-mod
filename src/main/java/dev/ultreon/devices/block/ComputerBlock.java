@@ -6,8 +6,6 @@ import dev.ultreon.devices.debug.DebugLog;
 import dev.ultreon.devices.item.FlashDriveItem;
 import dev.ultreon.devices.util.BlockEntityUtil;
 import dev.ultreon.devices.util.Colorable;
-import dev.ultreon.mods.xinexlib.Env;
-import dev.ultreon.mods.xinexlib.EnvExecutor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -39,7 +37,6 @@ public abstract class ComputerBlock extends DeviceBlock {
 
     public ComputerBlock(Properties properties) {
         super(properties, ModDeviceTypes.COMPUTER);
-        registerDefaultState(this.getStateDefinition().any().setValue(TYPE, Type.BASE).setValue(OPEN, false));
     }
 
     @Override
@@ -69,13 +66,12 @@ public abstract class ComputerBlock extends DeviceBlock {
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    protected @NonNull InteractionResult useWithoutItem(@NonNull BlockState state, Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull BlockHitResult hit) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof LaptopBlockEntity laptop) {
             if (player.isCrouching()) {
-                if (!level.isClientSide()) {
-                    laptop.openClose(player);
-                }
+                laptop.openClose(player);
+                return InteractionResult.SUCCESS_SERVER;
             } else {
                 if (hit.getDirection() == state.getValue(FACING).getClockWise(Direction.Axis.Y)) {
                     if (laptop.canChangeAttachment()) {
@@ -92,17 +88,16 @@ public abstract class ComputerBlock extends DeviceBlock {
                     return InteractionResult.FAIL;
                 }
 
-                if (laptop.isOpen()) {
+                if (true) {
                     if (level.isClientSide()) {
-                        EnvExecutor.runInEnv(Env.CLIENT, () -> () -> {
-                            ClientLaptopWrapper.execute(laptop);
-                        });
+                        ClientLaptopWrapper.execute(laptop);
                     }
                     return InteractionResult.SUCCESS_SERVER;
                 }
             }
         }
         return InteractionResult.PASS;
+
     }
 
     public abstract boolean isDesktopPC();
@@ -119,7 +114,7 @@ public abstract class ComputerBlock extends DeviceBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> pBuilder) {
         super.createBlockStateDefinition(pBuilder);
-        pBuilder.add(TYPE, OPEN, FACING);
+        pBuilder.add(FACING);
     }
 
     public enum Type implements StringRepresentable {

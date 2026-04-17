@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.NonNull;
 
 /**
  * @author MrCrayfish
@@ -25,17 +26,17 @@ public class ClientNotification implements Toast {
     }
 
     @Override
-    public Visibility getWantedVisibility() {
+    public @NonNull Visibility getWantedVisibility() {
         return Visibility.SHOW;
     }
 
     @Override
-    public void update(ToastManager manager, long fullyVisibleForMs) {
+    public void update(@NonNull ToastManager manager, long fullyVisibleForMs) {
 
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, Font font, long fullyVisibleForMs) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, @NonNull Font font, long fullyVisibleForMs) {
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE_TOASTS, 0, 0, 0, 0, 160, 32, 256, 256);
 
         if (subTitle == null) {

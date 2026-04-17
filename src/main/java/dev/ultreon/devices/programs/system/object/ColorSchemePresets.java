@@ -1,6 +1,6 @@
 package dev.ultreon.devices.programs.system.object;
 
-import dev.ultreon.devices.UltreonDevicesCommon;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import net.minecraft.resources.Identifier;
 
 import java.util.function.Consumer;
@@ -36,7 +36,7 @@ public class ColorSchemePresets {
 
     private static Preset createPreset(String name, ColorScheme colorScheme, Consumer<ColorScheme> consumer) {
         consumer.accept(colorScheme);
-        Identifier id = UltreonDevicesCommon.id(name);
+        Identifier id = OmnixerioDevicesCommon.id(name);
         Preset preset = new Preset(colorScheme, id);
         ColorSchemePresetRegistry.register(id, preset);
 

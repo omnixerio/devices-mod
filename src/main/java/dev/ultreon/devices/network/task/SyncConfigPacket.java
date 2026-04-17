@@ -1,8 +1,6 @@
 package dev.ultreon.devices.network.task;
 
-import dev.ultreon.devices.UltreonDevicesCommon;
-import dev.ultreon.mods.xinexlib.network.Networker;
-import dev.ultreon.mods.xinexlib.network.packet.PacketToClient;
+import dev.ultreon.devices.OmnixerioDevicesCommon;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -15,7 +13,7 @@ import org.jspecify.annotations.NonNull;
  * @author MrCrayfish
  */
 public record SyncConfigPacket(Tag syncData) implements CustomPacketPayload {
-    public static final Type<SyncConfigPacket> TYPE = new Type<>(UltreonDevicesCommon.id("sync_config"));
+    public static final Type<SyncConfigPacket> TYPE = new Type<>(OmnixerioDevicesCommon.id("sync_config"));
     public static final StreamCodec<FriendlyByteBuf, SyncConfigPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.tagCodec(NbtAccounter::unlimitedHeap), SyncConfigPacket::syncData,
             SyncConfigPacket::new

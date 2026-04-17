@@ -1,12 +1,15 @@
 package dev.ultreon.devices.api.print;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.ultreon.devices.init.DeviceBlockEntities;
 import dev.ultreon.devices.init.DeviceBlocks;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 
+import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.level.storage.ValueInput;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +28,7 @@ public interface IPrint {
 
     @Nullable
     static IPrint load(ValueInput tag) {
-        IPrint print = PrintingManager.getPrint(tag.getStringOr("type", "default"));
+        IPrint print = PrintingManager.getPrint(tag.getStringOr("type", "picture"));
         if (print != null) {
             print.fromTag(tag.read("data", ExtraCodecs.NBT).orElse(new CompoundTag()).asCompound().orElse(new CompoundTag()));
             return print;
@@ -37,10 +40,9 @@ public interface IPrint {
         CompoundTag blockEntityTag = new CompoundTag();
         blockEntityTag.put("print", save(print));
 
-        CompoundTag itemTag = new CompoundTag();
-        itemTag.put("BlockEntityTag", blockEntityTag);
-
-        ItemStack stack = new ItemStack(DeviceBlocks.PAPER.get());
+        ItemStack stack = new ItemStack(DeviceBlocks.PAPER);
+        stack.setCount(1);
+        stack.set(DataComponents.BLOCK_ENTITY_DATA, TypedEntityData.of(DeviceBlockEntities.PAPER, blockEntityTag));
 //        stack.setTag(itemTag);
 //
 //        if (print.getName() != null && !print.getName().isEmpty()) {
@@ -75,6 +77,10 @@ public interface IPrint {
     void fromTag(CompoundTag tag);
 
     Class<? extends Renderer> getRenderer();
+
+    int[] getPixels();
+
+    int getResolution();
 
     interface Renderer {
         boolean render(GuiGraphicsExtractor graphics, PoseStack pose, CompoundTag data);

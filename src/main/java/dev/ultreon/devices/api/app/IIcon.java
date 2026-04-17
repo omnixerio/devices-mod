@@ -43,6 +43,6 @@ public interface IIcon {
         int assetHeight = getGridHeight() * size;
 //        java.lang.DebugLog.log("assetHeight = " + assetHeight);
 //        GuiComponent.blit(pose, x + contentX, y + iconY, iconWidth, iconHeight, iconU, iconV, iconWidth, iconHeight, iconSourceWidth, iconSourceHeight);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, getIconAsset(), x, y, size, size, getU(), getV(), size, size, assetWidth, assetHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, getIconAsset(), x, y, getU(), getV(), size, size, size, size, assetWidth, assetHeight);
     }
 }

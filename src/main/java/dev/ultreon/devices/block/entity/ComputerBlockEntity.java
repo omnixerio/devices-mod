@@ -9,6 +9,7 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -46,10 +47,6 @@ public abstract class ComputerBlockEntity extends NetworkDeviceBlockEntity.Color
         super.tick();
         Level level = this.level;
         if (level == null) return;
-
-        if (getBlockState().getValue(LaptopBlock.OPEN) != open) {
-            level.setBlock(getBlockPos(), this.getBlockState().setValue(LaptopBlock.OPEN, open), 2);
-        }
 
         if (level.isClientSide()) {
             prevRotation = rotation;

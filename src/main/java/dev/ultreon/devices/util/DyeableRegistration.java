@@ -3,24 +3,19 @@ package dev.ultreon.devices.util;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.world.item.DyeColor;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 
-public abstract class DyeableRegistration<T> implements Iterable<DeferredHolder<T, ? extends T>> {
-    private final HashMap<DyeColor, DeferredHolder<T, ? extends T>> map = new HashMap<>();
-    private final List<DeferredHolder<T, ? extends T>> l = new ArrayList<>();
+public abstract class DyeableRegistration<T> implements Iterable<T> {
+    private final HashMap<DyeColor, T> map = new HashMap<>();
+    private final List<T> l = new ArrayList<>();
 
-    protected DyeableRegistration(DeferredRegister<T> registrar) {
-        register(registrar, this);
-    }
-
-    private static <T> void register(DeferredRegister<T> registrar, DyeableRegistration<T> dyeableRegistration) {
+    protected DyeableRegistration() {
         for (DyeColor dye : getDyes()) {
-            var dg = dyeableRegistration.register(registrar, dye);
-            dyeableRegistration.l.add(dg);
-            dyeableRegistration.map.put(dye, dg);
+            T register = register(dye);
+            map.put(dye, register);
+            l.add(register);
         }
     }
 
@@ -45,18 +40,18 @@ public abstract class DyeableRegistration<T> implements Iterable<DeferredHolder<
         );
     }
 
-    public abstract DeferredHolder<T, ? extends T> register(DeferredRegister<T> registrar, DyeColor color);
+    public abstract T register(DyeColor color);
 
-    public Map<DyeColor, DeferredHolder<T, ? extends T>> getMap() {
+    public Map<DyeColor, T> getMap() {
         return ImmutableMap.copyOf(map);
     }
 
-    public DeferredHolder<T, ? extends T> of(DyeColor dyeColor) {
+    public T of(DyeColor dyeColor) {
         return map.get(dyeColor);
     }
 
     @Override
-    public Iterator<DeferredHolder<T, ? extends T>> iterator() {
+    public @NonNull Iterator<T> iterator() {
         return l.iterator();
     }
 }

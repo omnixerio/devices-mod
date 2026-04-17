@@ -3,25 +3,27 @@ package dev.ultreon.devices;
 import com.mojang.blaze3d.platform.NativeImage;
 import dev.ultreon.devices.api.ApplicationManager;
 import dev.ultreon.devices.block.entity.renderer.*;
-import dev.ultreon.devices.client.RenderRegistry;
+import dev.ultreon.devices.client.entity.renderer.SeatEntityRenderer;
 import dev.ultreon.devices.core.Laptop;
 import dev.ultreon.devices.debug.DebugFlags;
 import dev.ultreon.devices.debug.DebugUtils;
 import dev.ultreon.devices.debug.DumpType;
 import dev.ultreon.devices.init.DeviceBlockEntities;
+import dev.ultreon.devices.init.DeviceEntities;
 import dev.ultreon.devices.object.AppInfo;
 import dev.ultreon.devices.programs.system.object.ColorSchemePresets;
-import dev.ultreon.mods.xinexlib.ModPlatform;
-import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
@@ -37,39 +39,36 @@ import java.util.concurrent.Executor;
 
 public class ClientModEvents {
     private static final Marker SETUP = MarkerFactory.getMarker("SETUP");
-    private static final Logger LOGGER = UltreonDevicesCommon.LOGGER;
+    private static final Logger LOGGER = OmnixerioDevicesCommon.LOGGER;
 
     public static void clientSetup() {
         LOGGER.info("Doing some client setup.");
 
-        if (UltreonDevicesCommon.DEVELOPER_MODE) {
+        if (OmnixerioDevicesCommon.DEVELOPER_MODE) {
             LOGGER.info(SETUP, "Adding developer wallpaper.");
-            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/developer_wallpaper.png"));
+            Laptop.addWallpaper(OmnixerioDevicesCommon.id("developer_wallpaper"));
         } else {
             LOGGER.info(SETUP, "Adding default wallpapers.");
-            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_1.png"));
-            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_2.png"));
-            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_3.png"));
-            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_4.png"));
-            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_5.png"));
-            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_6.png"));
-            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_7.png"));
-            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_8.png"));
-            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_9.png"));
-            Laptop.addWallpaper(Identifier.parse("devices:textures/gui/laptop_wallpaper_10.png"));
+            Laptop.addWallpaper(OmnixerioDevicesCommon.id("laptop_wallpaper_1"));
+            Laptop.addWallpaper(OmnixerioDevicesCommon.id("laptop_wallpaper_2"));
+            Laptop.addWallpaper(OmnixerioDevicesCommon.id("laptop_wallpaper_3"));
+            Laptop.addWallpaper(OmnixerioDevicesCommon.id("laptop_wallpaper_4"));
+            Laptop.addWallpaper(OmnixerioDevicesCommon.id("laptop_wallpaper_5"));
+            Laptop.addWallpaper(OmnixerioDevicesCommon.id("laptop_wallpaper_6"));
+            Laptop.addWallpaper(OmnixerioDevicesCommon.id("laptop_wallpaper_7"));
+            Laptop.addWallpaper(OmnixerioDevicesCommon.id("laptop_wallpaper_8"));
+            Laptop.addWallpaper(OmnixerioDevicesCommon.id("laptop_wallpaper_9"));
+            Laptop.addWallpaper(OmnixerioDevicesCommon.id("laptop_wallpaper_10"));
         }
 
 
         // Register other stuff.
         registerRenderLayers();
         registerLayerDefinitions();
-        if (XinexPlatform.getPlatformName() == ModPlatform.Forge || XinexPlatform.getPlatformName() == ModPlatform.NeoForge) { // Note: Forge requires the icon atlas to be generator beforehand.
-            generateIconAtlas();
-        }
-
+        registerRenderers();
         registerOSContent();
 
-//        ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new ReloaderListener());
+        ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(OmnixerioDevicesCommon.id("reloader"), new ReloaderListener());
     }
 
     private static void registerOSContent() {
@@ -78,13 +77,12 @@ public class ClientModEvents {
 
     @ApiStatus.Internal
     public static class ReloaderListener implements PreparableReloadListener {
-
         @Override
-        public CompletableFuture<Void> reload(SharedState currentReload, Executor taskExecutor, PreparationBarrier preparationBarrier, Executor reloadExecutor) {
+        public @NonNull CompletableFuture<Void> reload(@NonNull SharedState currentReload, @NonNull Executor taskExecutor, PreparationBarrier preparationBarrier, @NonNull Executor reloadExecutor) {
             LOGGER.debug("Reloading resources from the Device Mod.");
 
             return CompletableFuture.runAsync(() -> {
-                if (ApplicationManager.getAllApplications().size() > 0) {
+                if (!ApplicationManager.getAllApplications().isEmpty()) {
                     ApplicationManager.getAllApplications().forEach(AppInfo::reload);
                     generateIconAtlas(currentReload.resourceManager()); // FIXME: Broken resource reloading, can't find image resource while definitely exists.
                 }
@@ -94,7 +92,6 @@ public class ClientModEvents {
     }
 
     private static void registerRenderLayers() {
-        if (true) return;
 //        DeviceBlocks.getAllLaptops().forEach(block -> {
 //            LOGGER.debug(SETUP, "Setting render layer for laptop {}", RegistrarManager.getId(block, Registries.BLOCK));
 //            RenderTypeRegistry.register(RenderType.cutout(), block);
@@ -127,7 +124,7 @@ public class ClientModEvents {
             int mode = 0;
             ResourceManager rm = resourceManager;
 
-            public boolean writeImage(AppInfo info, Identifier location) {
+            public void writeImage(AppInfo info, Identifier location) {
                 String path = "/assets/" + location.getNamespace() + "/" + location.getPath();
                 try {
                     if (rm == null) {
@@ -145,8 +142,8 @@ public class ClientModEvents {
                     }
                     BufferedImage icon = ImageIO.read(input);
                     if (icon.getWidth() != ICON_SIZE || icon.getHeight() != ICON_SIZE) {
-                        UltreonDevicesCommon.LOGGER.error("Incorrect icon size for " + (info == null ? null : info.getId()) + " (Must be 14 by 14 pixels)");
-                        return false;
+                        OmnixerioDevicesCommon.LOGGER.error("Incorrect icon size for " + (info == null ? null : info.getId()) + " (Must be 14 by 14 pixels)");
+                        return;
                     }
                     int iconU = index % 16 * ICON_SIZE;
                     int iconV = index / 16 * ICON_SIZE;
@@ -163,21 +160,19 @@ public class ClientModEvents {
                     }
                     index++;
                     if (DebugFlags.LOG_APP_ICON_STITCHES) {
-                        UltreonDevicesCommon.LOGGER.info("Stitching texture: " + location);
+                        OmnixerioDevicesCommon.LOGGER.info("Stitching texture: " + location);
                     }
-                    return true;
                 } catch (FileNotFoundException e) {
-                    UltreonDevicesCommon.LOGGER.error("Unable to load icon for '" + (info == null ? null : info.getId()) + "': " + e.getMessage());
+                    OmnixerioDevicesCommon.LOGGER.error("Unable to load icon for '" + (info == null ? null : info.getId()) + "': " + e.getMessage());
                     if (DebugFlags.PRINT_MISSING_APP_ICONS_STACK_TRACES) {
                         e.printStackTrace();
                     }
                 } catch (Exception e) {
-                    UltreonDevicesCommon.LOGGER.error("Unable to load icon for " + (info == null ? null : info.getId()));
+                    OmnixerioDevicesCommon.LOGGER.error("Unable to load icon for " + (info == null ? null : info.getId()));
                     if (DebugFlags.PRINT_APP_ICONS_STACK_TRACES) {
                         e.printStackTrace();
                     }
                 }
-                return false;
             }
 
             public void finish() {
@@ -185,7 +180,6 @@ public class ClientModEvents {
 
                 if (DebugFlags.DUMP_APP_ICON_ATLAS) {
                     try {
-                        DebugUtils.dump(DumpType.ATLAS, Laptop.ICON_TEXTURES, stream -> ImageIO.write(atlas, "png", stream));
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -196,12 +190,12 @@ public class ClientModEvents {
                     ImageIO.write(atlas, "png", output);
                     byte[] bytes = output.toByteArray();
                     ByteArrayInputStream input = new ByteArrayInputStream(bytes);
-                    Minecraft.getInstance().submit(() -> {
-                        try {
-                            Minecraft.getInstance().getTextureManager().register(Laptop.ICON_TEXTURES, new DynamicTexture(() -> "devices_mod_" + UUID.randomUUID().toString().replace("_", ""), NativeImage.read(input)));
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                    Minecraft.getInstance().execute(() -> {
+//                        try {
+//                            Minecraft.getInstance().getTextureManager().register(Laptop.ICON_TEXTURES, new DynamicTexture(() -> "devices_mod_" + UUID.randomUUID().toString().replace("_", ""), NativeImage.read(input)));
+//                        } catch (IOException e) {
+//                            throw new RuntimeException(e);
+//                        }
                     });
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -228,30 +222,19 @@ public class ClientModEvents {
         imageWriter.finish();
     }
 
-//    @ExpectPlatform
-//    private static void.json updateIcon(AppInfo info, int iconU, int iconV) {
-//        throw new AssertionError();
-////        ObfuscationReflectionHelper.setPrivateValue(AppInfo.class, info, iconU, "iconU");
-////        ObfuscationReflectionHelper.setPrivateValue(AppInfo.class, info, iconV, "iconV");
-//    }
-
-    public static void setRenderLayer(Block block, RenderType type) {
-        RenderRegistry.register(block, type
-        );
-    }
-
     public static void registerRenderers() {
         LOGGER.info("Registering renderers.");
 
-        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.LAPTOP::get, a -> new LaptopRenderer(a));
-        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.PRINTER::get, a -> new PrinterRenderer(a));
-        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.PAPER::get, a -> new PaperRenderer(a));
-        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.ROUTER::get, a -> new RouterRenderer(a));
-        XinexPlatform.client().entityRenderers().register(DeviceBlockEntities.SEAT::get, a -> new OfficeChairRenderer(a));
+        EntityRenderers.register(DeviceEntities.SEAT, SeatEntityRenderer::new);
+
+        BlockEntityRenderers.register(DeviceBlockEntities.LAPTOP, LaptopRenderer::new);
+        BlockEntityRenderers.register(DeviceBlockEntities.PRINTER, PrinterRenderer::new);
+        BlockEntityRenderers.register(DeviceBlockEntities.PAPER, PaperRenderer::new);
+        BlockEntityRenderers.register(DeviceBlockEntities.ROUTER, RouterRenderer::new);
+        BlockEntityRenderers.register(DeviceBlockEntities.SEAT, OfficeChairRenderer::new);
     }
 
     public static void registerLayerDefinitions() {
         LOGGER.info("Registering layer definitions.");
-//        EntityModelLayerRegistry.register(PrinterRenderer.PaperModel.LAYER_LOCATION, PrinterRenderer.PaperModel::createBodyLayer);
     }
 }

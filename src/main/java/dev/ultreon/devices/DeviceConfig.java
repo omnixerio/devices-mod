@@ -1,6 +1,6 @@
 package dev.ultreon.devices;
 
-import dev.ultreon.mods.xinexlib.platform.XinexPlatform;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -52,7 +52,7 @@ public class DeviceConfig {
                 .define(CATEGORY_PIXEL_PAINTER + ".renderPrintedIn3d", false);
 
         DEBUG_BUTTON = builder.comment("Display a button to access a worldless laptop")
-                .define(CATEGORY_DEBUG + ".debugButton", XinexPlatform.isDevelopmentEnvironment());
+                .define(CATEGORY_DEBUG + ".debugButton", FabricLoader.getInstance().isDevelopmentEnvironment());
 
         CONFIG = builder.build();
     }
