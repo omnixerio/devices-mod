@@ -1,0 +1,54 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "${description}",
+    "authors": [
+        "${mod_author}"
+    ],
+    "contact": {
+        "homepage": "https://fabricmc.net/",
+        "sources": "https://github.com/FabricMC/fabric-example-mod"
+    },
+    "contributors": [
+        "QboiDev",
+        "Jab125",
+        "MrCrayfish",
+        "MinecraftDoodler",
+        "Mastef Chief",
+        "lizterzapzap",
+        "Haunted Corpse",
+        "Jake Crowley",
+        "fabbe50",
+        "PlayDashGaming",
+        "jack jook",
+        "Hunstagamez",
+        "Techyy YT",
+        "Norge100YT",
+        "Cyberman2208",
+        "CreepergamingsMC"
+    ],
+    "license": "${license}",
+    "icon": "${mod_id}.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "dev.ultreon.devices.fabric.FabricDevicesMod"
+        ]
+    },
+    "mixins": [
+        "${mod_id}.mixins.json",
+        "${mod_id}.fabric.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=${fabric_loader_version}",
+        "fabric-api": "*",
+        "minecraft": "~${minecraft_version}",
+        "java": ">=${java_version}"
+    },
+    "suggests": {
+        "another-mod": "*"
+    }
+}
+  
