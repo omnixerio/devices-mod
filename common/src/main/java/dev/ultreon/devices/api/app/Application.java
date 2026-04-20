@@ -205,8 +205,7 @@ public abstract class Application extends Wrappable implements DataHandler {
      * Called when a key is typed from your keyboard. Note if you override, make
      * sure you call this super method.
      *
-     * @param character the typed character
-     * @param modifiers the typed character modifiers
+     * @param event the character event
      */
     @Override
     public void handleCharTyped(CharacterEvent event) {

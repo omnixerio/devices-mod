@@ -12,7 +12,7 @@ public interface ClickListener {
     /**
      * Called when component is clicked
      *
-     * @param mouseButton the mouse button used to click
+     * @param event the mouse button event
      */
     void onClick(MouseButtonEvent event);
 }

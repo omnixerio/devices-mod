@@ -48,7 +48,7 @@ public abstract class Wrappable {
      * Called when a key is typed from your keyboard. Note if you override, make
      * sure you call this super method.
      *
-     * @param character the typed character
+     * @param event the character event
      */
     public abstract void handleCharTyped(CharacterEvent event);
 

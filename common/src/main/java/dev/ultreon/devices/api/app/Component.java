@@ -134,8 +134,7 @@ public abstract class Component {
     /**
      * Called when a character is typed from your keyboard.
      *
-     * @param codePoint the typed character
-     * @param modifiers the typed character modifiers
+     * @param event the character event
      */
     public void handleCharTyped(CharacterEvent event) {
 
