@@ -77,7 +77,9 @@ public final class UltreonDevicesNeo {
         // Common side stuff
         LOGGER.info("Initializing registration handler and mod config.");
         RegistrationHandler.register();
-        container.registerConfig(ModConfig.Type.CLIENT, DeviceConfig.CONFIG);
+        // COMMON (not CLIENT) so the config loads on a dedicated server too — devices:sync_config
+        // reads it on player join and would otherwise fail to encode ("Cannot get config value before config is loaded").
+        container.registerConfig(ModConfig.Type.COMMON, DeviceConfig.CONFIG);
 
         LOGGER.info("Registering common setup handler, and load complete handler.");
         if (XinexPlatform.getEnv() == Env.CLIENT) {
