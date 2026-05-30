@@ -77,7 +77,9 @@ public final class UltreonDevicesNeo {
         // Common side stuff
         LOGGER.info("Initializing registration handler and mod config.");
         RegistrationHandler.register();
-        container.registerConfig(ModConfig.Type.CLIENT, DeviceConfig.CONFIG);
+        // COMMON (not CLIENT) so the config loads on a dedicated server too — devices:sync_config
+        // reads it on player join and would otherwise fail to encode ("Cannot get config value before config is loaded").
+        container.registerConfig(ModConfig.Type.COMMON, DeviceConfig.CONFIG);
 
         LOGGER.info("Registering common setup handler, and load complete handler.");
         if (XinexPlatform.getEnv() == Env.CLIENT) {
@@ -91,8 +93,9 @@ public final class UltreonDevicesNeo {
 
         instance.registerApplications();
 
-        // Client side stuff
-        if (!DatagenModLoader.isRunningDataGen()) {
+        // Client side stuff — guard with the client env check so the dedicated
+        // server never touches net.minecraft.client.Minecraft (fixes server crash).
+        if (XinexPlatform.getEnv() == Env.CLIENT && !DatagenModLoader.isRunningDataGen()) {
             LOGGER.info("Registering the reload listener.");
             ((ReloadableResourceManager ) Minecraft.getInstance().getResourceManager()).registerReloadListener(new ClientModEvents.ReloaderListener());
         }
