@@ -33,7 +33,7 @@ jobs:
       fail-fast: false
       matrix:
         language: [ 'java' ]
-        java: [ 17 ]  # Minimum supported by Minecraft
+        java: [ 21 ]  # Minimum supported by Minecraft
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby' ]
         # Use only 'java' to analyze code written in Java, Kotlin or both
         # Use only 'javascript' to analyze code written in JavaScript, TypeScript or both

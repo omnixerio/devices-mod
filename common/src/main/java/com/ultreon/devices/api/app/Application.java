@@ -1,8 +1,7 @@
 package com.ultreon.devices.api.app;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.ultreon.devices.Devices;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.api.io.File;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.core.Window;
@@ -29,7 +28,7 @@ public abstract class Application extends Wrappable implements DataHandler {
     @SuppressWarnings("FieldMayBeFinal")
     protected AppInfo info = null;
     public void setInfo(AppInfo info) {
-        if (StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().equals(Devices.class)) {
+        if (StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().equals(OmnixerioDevicesMod.class)) {
             this.info = info;
             return;
         }
@@ -279,7 +278,7 @@ public abstract class Application extends Wrappable implements DataHandler {
      * method is called after {{@link Wrappable#init(CompoundTag)} so you can update any
      * Components with this data.
      *
-     * @param tag the tag compound where you saved data is
+     * @param tag the requestData compound where you saved data is
      */
     public abstract void load(CompoundTag tag);
 
@@ -288,7 +287,7 @@ public abstract class Application extends Wrappable implements DataHandler {
      * {@link #isDirty()} returns true. You can mark your application as dirty
      * by calling {@link #markDirty()}.
      *
-     * @param tag the tag compound to save your data to
+     * @param tag the requestData compound to save your data to
      */
     public abstract void save(CompoundTag tag);
 

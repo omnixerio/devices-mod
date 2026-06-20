@@ -3,8 +3,7 @@ package com.ultreon.devices.api.app.component;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.ultreon.devices.Devices;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.IIcon;
 import com.ultreon.devices.api.app.Layout;
@@ -469,7 +468,7 @@ public class Image extends Component {
                     NativeImage nativeImage = NativeImage.read(in);
 
                     Laptop.runLater(() -> {
-                        Devices.LOGGER.debug("Loaded image: " + url);
+                        OmnixerioDevicesMod.LOGGER.debug("Loaded image: " + url);
                         texture = new DynamicTexture(nativeImage);
                         setup = true;
                     });
@@ -518,7 +517,7 @@ public class Image extends Component {
         @Override
         public void load(@NotNull ResourceManager resourceManager) throws IOException {
             NativeImage nativeImage = NativeImage.read(in);
-            Minecraft.getInstance().getTextureManager().register(Devices.id("dynamic_loaded/" + getId()), this);
+            Minecraft.getInstance().getTextureManager().register(OmnixerioDevicesMod.id("dynamic_loaded/" + getId()), this);
             this.upload(nativeImage);
         }
 

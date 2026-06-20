@@ -1,0 +1,30 @@
+{
+  "parent": "minecraft:devices/root",
+  "criteria": {
+    "got_laptop": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#devices:laptops"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "minecraft:textures/block/copper_block",
+    "description": "Build your first laptop",
+    "icon": {
+      "count": 1,
+      "id": "devices:red_laptop"
+    },
+    "title": "Portable Computing"
+  },
+  "requirements": [
+    [
+      "got_laptop"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

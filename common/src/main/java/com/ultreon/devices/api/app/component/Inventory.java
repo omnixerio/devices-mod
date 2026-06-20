@@ -25,7 +25,7 @@ import java.awt.*;
  * @author MrCrayfish
  */
 public class Inventory extends Component {
-    protected static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
+    protected static final ResourceLocation CHEST_GUI_TEXTURE = ResourceLocation.withDefaultNamespace("textures/gui/container/generic_54.png");
 
     protected int selectedColor = new Color(1f, 1f, 0f, 0.15f).getRGB();
     protected int hoverColor = new Color(1f, 1f, 1f, 0.15f).getRGB();

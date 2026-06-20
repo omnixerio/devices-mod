@@ -1,0 +1,30 @@
+{
+  "parent": "minecraft:devices/root",
+  "criteria": {
+    "got_circuit_board": {
+      "conditions": {
+        "items": [
+          {
+            "items": "devices:circuit_board"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "minecraft:textures/block/copper_block",
+    "description": "Create a circuit board",
+    "icon": {
+      "count": 1,
+      "id": "devices:circuit_board"
+    },
+    "title": "It Was All His Fault"
+  },
+  "requirements": [
+    [
+      "got_circuit_board"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

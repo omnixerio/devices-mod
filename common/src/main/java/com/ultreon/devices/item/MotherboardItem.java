@@ -1,15 +1,13 @@
 package com.ultreon.devices.item;
 
+import com.ultreon.devices.init.ModDataComponents;
+import com.ultreon.devices.item.data.MotherboardComponents;
 import com.ultreon.devices.util.KeyboardHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -22,13 +20,18 @@ public class MotherboardItem extends ComponentItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, @NotNull List<net.minecraft.network.chat.Component> tooltip, @NotNull TooltipFlag isAdvanced) {
-        CompoundTag tag = stack.getTag();
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<net.minecraft.network.chat.Component> tooltip, TooltipFlag flag) {
+        MotherboardComponents components = stack.get(ModDataComponents.MOTHERBOARD_COMPONENTS.get());
+        if (components == null) {
+            components = new MotherboardComponents(false, false, false, false);
+            stack.set(ModDataComponents.MOTHERBOARD_COMPONENTS.get(), components);
+        }
+
         if (!KeyboardHelper.isShiftDown()) {
-            tooltip.add(net.minecraft.network.chat.Component.literal("CPU: " + getComponentStatus(tag, "cpu")));
-            tooltip.add(net.minecraft.network.chat.Component.literal("RAM: " + getComponentStatus(tag, "ram")));
-            tooltip.add(net.minecraft.network.chat.Component.literal("GPU: " + getComponentStatus(tag, "gpu")));
-            tooltip.add(net.minecraft.network.chat.Component.literal("WIFI: " + getComponentStatus(tag, "wifi")));
+            tooltip.add(net.minecraft.network.chat.Component.literal("CPU: " + (components.hasCpu() ? "Added" : "Missing")));
+            tooltip.add(net.minecraft.network.chat.Component.literal("RAM: " + (components.hasRam() ? "Added" : "Missing")));
+            tooltip.add(net.minecraft.network.chat.Component.literal("GPU: " + (components.hasGpu() ? "Added" : "Missing")));
+            tooltip.add(net.minecraft.network.chat.Component.literal("WIFI: " + (components.hasWifi() ? "Added" : "Missing")));
             tooltip.add(net.minecraft.network.chat.Component.literal(ChatFormatting.YELLOW + "Hold shift for help"));
         } else {
             tooltip.add(net.minecraft.network.chat.Component.literal("To add the required components"));

@@ -1,48 +1,30 @@
-//file:noinspection GradlePackageUpdate
 architectury {
-    common platforms.split(",")
+    common(enabled_platforms.split(","))
 }
 
 loom {
-    accessWidenerPath = file "src/main/resources/devices.accesswidener"
-}
-
-repositories {
-    maven { url = "https://cursemaven.com" }
+    accessWidenerPath = file("src/main/resources/devices.accesswidener")
 }
 
 dependencies {
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader
-    modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     // Remove the next line if you don't want to depend on the API
-    modApi "dev.architectury:architectury:$architectury_version"
-
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.10"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10"
-//    modApi "com.ultreon:ultranlang:0.1.0+6"
-
-    modCompileOnly "fuzs.forgeconfigapiport:forgeconfigapiport-common:8.0.0"
-    modCompileOnly 'com.electronwill.night-config:core:3.6.3'
-    modCompileOnly 'com.electronwill.night-config:toml:3.6.3'
-
+    modApi "dev.architectury:architectury:${architectury_version}"
+    modApi("fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:21.1.6")
 }
 
 sourceSets {
     main {
-        resources {
-            srcDirs += [
-                    "src/main/generated/resources"
-            ]
-            System.out.println(srcDirs)
-        }
+        resources.srcDirs(project(":fabric").file("src/main/generated"))
     }
 }
 
 publishing {
     publications {
         mavenCommon(MavenPublication) {
-            artifactId = rootProject.archives_base_name
+            artifactId = archives_base_name
             from components.java
         }
     }
@@ -51,5 +33,4 @@ publishing {
     repositories {
         // Add repositories to publish to here.
     }
-    rootProject.setupRepositories(repositories)
 }

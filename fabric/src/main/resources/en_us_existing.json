@@ -52,5 +52,5 @@
     "message.devices.device_already_connected": "The selected device is already connected to this router.",
     "message.devices.successful_connection": "Successfully connected the selected device to this router.",
     "message.devices.successful_registered": "Successfully registered the selected device to this router.",
-    "itemGroup.devices.devices_tab_device": "Devices"
+    "itemGroup.devices.devices": "Devices"
 }

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-import com.ultreon.devices.Devices;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.Reference;
 import com.ultreon.devices.api.ApplicationManager;
 import com.ultreon.devices.api.app.Component;
@@ -25,7 +25,6 @@ import com.ultreon.devices.programs.system.object.AppEntry;
 import com.ultreon.devices.programs.system.object.RemoteEntry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 
@@ -68,7 +67,7 @@ public class AppStore extends SystemApp {
         });
 
         com.ultreon.devices.api.app.component.Image imageBanner = new com.ultreon.devices.api.app.component.Image(0, 0, LAYOUT_WIDTH, 60);
-        imageBanner.setImage(new ResourceLocation(Reference.MOD_ID, "textures/gui/app_market_background.png"));
+        imageBanner.setImage(OmnixerioDevicesMod.id("textures/gui/app_market_background.png"));
         imageBanner.setDrawFull(true);
         homePageLayout.addComponent(imageBanner);
 
@@ -143,7 +142,7 @@ public class AppStore extends SystemApp {
         super.onTick();
         if (this.queuedApp != null) {
             for (AppEntry appEntry : localAppList) {
-                if (appEntry.id().equals(this.queuedApp.getId().toString())) {
+                if (appEntry.id().equals(this.queuedApp.getAppId().toString())) {
                     this.openApplication(appEntry);
                     this.queuedApp = null;
                     break;
@@ -190,12 +189,12 @@ public class AppStore extends SystemApp {
 
     public static class StoreTrayItem extends TrayItem {
         public StoreTrayItem() {
-            super(Icons.SHOP, Devices.id("app_store"));
+            super(Icons.SHOP, OmnixerioDevicesMod.id("app_store"));
         }
 
         @Override
         public void handleClick(int mouseX, int mouseY, int mouseButton) {
-            AppInfo info = ApplicationManager.getApplication(Devices.id("app_store"));
+            AppInfo info = ApplicationManager.getApplication(OmnixerioDevicesMod.id("app_store"));
             if (info != null) {
                 Laptop.getSystem().openApplication(info);
             }

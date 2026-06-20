@@ -6,14 +6,13 @@ import com.mojang.math.Axis;
 import com.ultreon.devices.block.ComputerBlock;
 import com.ultreon.devices.block.LaptopBlock;
 import com.ultreon.devices.block.entity.LaptopBlockEntity;
-import com.ultreon.devices.init.DeviceItems;
+import com.ultreon.devices.init.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -50,7 +49,7 @@ public class LaptopRenderer implements BlockEntityRenderer<LaptopBlockEntity> {
 
         entityItem.bobOffs = 0;
         entityItem.setYRot(0);
-        BlockState state = blockEntity.getBlock().defaultBlockState().setValue(ComputerBlock.TYPE, LaptopBlock.Type.SCREEN);
+        BlockState state = blockEntity.getBlock().defaultBlockState().setValue(LaptopBlock.TYPE, LaptopBlock.Type.SCREEN);
 
         RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
         poseStack.pushPose();
@@ -67,8 +66,8 @@ public class LaptopRenderer implements BlockEntityRenderer<LaptopBlockEntity> {
 //                    poseStack.translate(0.1, 0, 0);
 
                     entityItem.flyDist = 0.0F;
-                    assert DeviceItems.getFlashDriveByColor(blockEntity.getExternalDriveColor()) != null;
-                    entityItem.setItem(new ItemStack(DeviceItems.getFlashDriveByColor(blockEntity.getExternalDriveColor()), 1/*, blockEntity.getExternalDriveColor().*/));
+                    assert ModItems.getFlashDriveByColor(blockEntity.getExternalDriveColor()) != null;
+                    entityItem.setItem(new ItemStack(ModItems.getFlashDriveByColor(blockEntity.getExternalDriveColor()), 1/*, blockEntity.getExternalDriveColor().*/));
                     Minecraft.getInstance().getEntityRenderDispatcher().render(entityItem, 0, 0, 0, 0, 0, poseStack, bufferSource, packedLight);
                 }
                 poseStack.popPose();

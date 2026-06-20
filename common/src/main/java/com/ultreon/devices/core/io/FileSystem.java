@@ -1,6 +1,6 @@
 package com.ultreon.devices.core.io;
 
-import com.ultreon.devices.Devices;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.io.Drive;
 import com.ultreon.devices.api.io.Folder;
@@ -17,10 +17,14 @@ import com.ultreon.devices.core.io.task.TaskGetFiles;
 import com.ultreon.devices.core.io.task.TaskGetMainDrive;
 import com.ultreon.devices.core.io.task.TaskSendAction;
 import com.ultreon.devices.debug.DebugLog;
-import com.ultreon.devices.init.DeviceItems;
+import com.ultreon.devices.init.ModItems;
+import com.ultreon.devices.item.data.FlashDriveComponent;
+import com.ultreon.devices.item.data.ExternalDriveComponent;
+import com.ultreon.devices.init.ModDataComponents;
 import com.ultreon.devices.item.FlashDriveItem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -80,8 +84,8 @@ public class FileSystem {
     }
 
     public static void getApplicationFolder(Application app, Callback<Folder> callback) {
-        if (Devices.hasAllowedApplications()) { // in arch we do not do instances
-            if (!Devices.getAllowedApplications().contains(app.getInfo())) {
+        if (OmnixerioDevicesMod.hasAllowedApplications()) { // in arch we do not do instances
+            if (!OmnixerioDevicesMod.getAllowedApplications().contains(app.getInfo())) {
                 callback.execute(null, false);
                 return;
             }
@@ -187,7 +191,7 @@ public class FileSystem {
             return constructor.newInstance(name, true);
         } catch (NoSuchMethodException | IllegalAccessException | InstantiationException |
                  InvocationTargetException e) {
-            e.printStackTrace();
+            OmnixerioDevicesMod.LOGGER.error("Failed to create protected folder", e);
         }
         return null;
     }
@@ -254,37 +258,25 @@ public class FileSystem {
     @Nullable
     public ItemStack detachDrive() {
         if (attachedDrive != null) {
-            ItemStack stack = new ItemStack(DeviceItems.getFlashDriveByColor(attachedDriveColor), 1);
-            stack.setHoverName(Component.literal(attachedDrive.getName()));
-            stack.getOrCreateTag().put("drive", attachedDrive.toTag());
+            FlashDriveItem flashDriveByColor = ModItems.getFlashDriveByColor(attachedDriveColor);
+            if (flashDriveByColor == null) return null;
+            ItemStack stack = new ItemStack(flashDriveByColor, 1);
+            stack.set(DataComponents.CUSTOM_NAME, Component.literal(attachedDrive.getName()));
+            stack.set(ModDataComponents.FLASH_DRIVE.get(), new FlashDriveComponent(attachedDrive.toTag()));
             attachedDrive = null;
             return stack;
         }
         return null;
     }
 
-    public static CompoundTag getExternalDriveTag(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag == null) tag = new CompoundTag();
-
-        if (!tag.contains("drive", Tag.TAG_COMPOUND)) {
-            tag.put("drive", new ExternalDrive(stack.getDisplayName().getString()).toTag());
-            stack.setTag(tag);
-        }
-        return tag;
-    }
-
     public static ExternalDrive getExternalDrive(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag == null) tag = new CompoundTag();
-
-        if (!tag.contains("drive", Tag.TAG_COMPOUND)) {
+        ExternalDriveComponent driveData = stack.get(ModDataComponents.EXTERNAL_DRIVE.get());
+        if (driveData == null || driveData.drive() == null || driveData.drive().isEmpty()) {
             ExternalDrive externalDrive = new ExternalDrive(stack.getDisplayName().getString());
-            tag.put("drive", externalDrive.toTag());
-            stack.setTag(tag);
+            stack.set(ModDataComponents.EXTERNAL_DRIVE.get(), new ExternalDriveComponent(externalDrive.toTag()));
             return externalDrive;
         } else {
-            return ExternalDrive.fromTag(tag.getCompound("drive"));
+            return ExternalDrive.fromTag(driveData.drive());
         }
     }
 

@@ -1,11 +1,9 @@
 package com.ultreon.devices.datagen;
 
-import com.ultreon.devices.Devices;
-import com.ultreon.devices.init.DeviceItems;
-import com.ultreon.devices.init.DeviceTags;
-import com.ultreon.devices.init.ModTags;
+import com.ultreon.devices.OmnixerioDevicesMod;
+import com.ultreon.devices.init.ModItems;
+import com.ultreon.devices.init.tags.ModItemTags;
 import dev.architectury.registry.registries.Registrar;
-import dev.architectury.registry.registries.RegistrySupplier;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.Util;
@@ -24,15 +22,15 @@ public class DevicesItemTagProvider extends FabricTagProvider<Item> {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        Registrar<Item> items = Devices.REGISTRIES.get().get(Registries.ITEM);
-        TagAppender<Item> laptops = this.tag(ModTags.Items.LAPTOPS);
-        TagAppender<Item> printers = this.tag(ModTags.Items.PRINTERS);
-        TagAppender<Item> routers = this.tag(ModTags.Items.ROUTERS);
-        TagAppender<Item> flashDrives = this.tag(ModTags.Items.FLASH_DRIVES);
+        Registrar<Item> items = OmnixerioDevicesMod.REGISTRIES.get().get(Registries.ITEM);
+        TagAppender<Item> laptops = this.tag(ModItemTags.LAPTOPS);
+        TagAppender<Item> printers = this.tag(ModItemTags.PRINTERS);
+        TagAppender<Item> routers = this.tag(ModItemTags.ROUTERS);
+        TagAppender<Item> flashDrives = this.tag(ModItemTags.FLASH_DRIVES);
 
-        DeviceItems.getAllLaptops().forEach(o -> laptops.addOptional(Objects.requireNonNull(items.getId(o))));
-        DeviceItems.getAllPrinters().forEach(o -> printers.addOptional(Objects.requireNonNull(items.getId(o))));
-        DeviceItems.getAllRouters().forEach(o -> routers.addOptional(Objects.requireNonNull(items.getId(o))));
-        DeviceItems.getAllFlashDrives().forEach(o -> flashDrives.addOptional(Objects.requireNonNull(items.getId(o))));
+        ModItems.getAllLaptops().forEach(o -> laptops.addOptional(Objects.requireNonNull(items.getId(o))));
+        ModItems.getAllPrinters().forEach(o -> printers.addOptional(Objects.requireNonNull(items.getId(o))));
+        ModItems.getAllRouters().forEach(o -> routers.addOptional(Objects.requireNonNull(items.getId(o))));
+        ModItems.getAllFlashDrives().forEach(o -> flashDrives.addOptional(Objects.requireNonNull(items.getId(o))));
     }
 }

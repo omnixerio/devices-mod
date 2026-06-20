@@ -1,7 +1,6 @@
 package com.ultreon.devices.programs.system.layout;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.api.app.Icons;
 import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.api.app.ScrollableLayout;
@@ -21,7 +20,6 @@ import com.ultreon.devices.util.GuiHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -64,14 +62,14 @@ public class LayoutAppPage extends Layout {
             graphics.fill(x, y + 60, x + width, y + 61, color.darker().getRGB());
         });
 
-        ResourceLocation resource = new ResourceLocation(entry.id());
+        ResourceLocation resource = ResourceLocation.parse(entry.id());
 
         imageBanner = new com.ultreon.devices.api.app.component.Image(0, 0, 250, 40);
         imageBanner.setDrawFull(true);
         imageBanner.setBorderVisible(true);
         imageBanner.setBorderThickness(0);
         if (entry instanceof LocalEntry) {
-            imageBanner.setImage(new ResourceLocation(resource.getNamespace(), "textures/app/banner/" + resource.getPath() + ".png"));
+            imageBanner.setImage(ResourceLocation.fromNamespaceAndPath(resource.getNamespace(), "textures/app/banner/" + resource.getPath() + ".png"));
         } else if (entry instanceof RemoteEntry) {
             imageBanner.setImage(AppStore.CERTIFICATES_BASE_URL + "/assets/" + resource.getNamespace() + "/" + resource.getPath() + "/banner.png");
         }
@@ -111,12 +109,11 @@ public class LayoutAppPage extends Layout {
                     if (image.startsWith("http://") || image.startsWith("https://")) {
                         slideShow.addImage(image);
                     } else {
-                        slideShow.addImage(new ResourceLocation(image));
+                        slideShow.addImage(ResourceLocation.parse(image));
                     }
                 }
             }
-        } else if (entry instanceof RemoteEntry) {
-            RemoteEntry remoteEntry = (RemoteEntry) entry;
+        } else if (entry instanceof RemoteEntry remoteEntry) {
             String screenshotUrl = AppStore.CERTIFICATES_BASE_URL + "/assets/" + resource.getNamespace() + "/" + resource.getPath() + "/screenshots/screenshot_%d.png";
             for (int i = 0; i < remoteEntry.screenshots; i++) {
                 slideShow.addImage(String.format(screenshotUrl, i));

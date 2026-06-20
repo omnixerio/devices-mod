@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_flash_chip": {
+      "conditions": {
+        "items": [
+          {
+            "items": "devices:flash_chip"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "devices:solid_state_drive"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_flash_chip"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "devices:solid_state_drive"
+    ]
+  }
+}

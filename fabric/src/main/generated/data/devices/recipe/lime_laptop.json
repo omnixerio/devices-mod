@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "devices:laptop",
+  "key": {
+    "#": {
+      "item": "devices:screen"
+    },
+    "$": {
+      "item": "devices:battery"
+    },
+    "+": {
+      "item": "minecraft:lime_wool"
+    },
+    ".": {
+      "item": "minecraft:iron_nugget"
+    },
+    "/": {
+      "item": "minecraft:iron_ingot"
+    },
+    "@": {
+      "item": "devices:motherboard_full"
+    },
+    "O": {
+      "tag": "devices:internal_storage"
+    }
+  },
+  "pattern": [
+    "+#+",
+    ".@$",
+    "/O/"
+  ],
+  "result": {
+    "count": 1,
+    "id": "devices:lime_laptop"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_motherboard": {
+      "conditions": {
+        "items": [
+          {
+            "items": "devices:motherboard_full"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "devices:mac_max_x"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_motherboard"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "devices:mac_max_x"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "devices:router",
+  "key": {
+    "b": {
+      "item": "devices:battery"
+    },
+    "c": {
+      "item": "devices:circuit_board"
+    },
+    "d": {
+      "item": "minecraft:magenta_dye"
+    },
+    "p": {
+      "item": "devices:plastic_frame"
+    },
+    "r": {
+      "item": "minecraft:end_rod"
+    },
+    "w": {
+      "item": "devices:wifi"
+    }
+  },
+  "pattern": [
+    "rdr",
+    "ppp",
+    "wcb"
+  ],
+  "result": {
+    "count": 1,
+    "id": "devices:magenta_router"
+  }
+}

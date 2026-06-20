@@ -2,6 +2,7 @@ package com.ultreon.devices.core.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.api.app.IIcon;
 import com.ultreon.devices.api.utils.RenderUtil;
 import net.minecraft.client.Minecraft;
@@ -19,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
  * @author MrCrayfish
  */
 public class ClientNotification implements Toast {
-    private static final ResourceLocation TEXTURE_TOASTS = new ResourceLocation("devices:textures/gui/toast.png");
+    private static final ResourceLocation TEXTURE_TOASTS = OmnixerioDevicesMod.id("textures/gui/toast.png");
 
     private IIcon icon;
     private String title;

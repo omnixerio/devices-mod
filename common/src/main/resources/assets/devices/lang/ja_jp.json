@@ -126,7 +126,7 @@
   "item.devices.white_flash_drive": "白色のUSBスティック",
   "item.devices.wifi": "WiFi モジュール",
   "item.devices.yellow_flash_drive": "黄色のUSBスティック",
-  "itemGroup.devices.devices_tab_device": "デバイス",
+  "itemGroup.devices.devices": "デバイス",
   "itemGroup.devices_tab_device": "デバイスモッド",
   "message.devices.device_already_connected": "The selected device is already connected to this router.",
   "message.devices.invalid_cable": "Please select a device first before adding it to this router.",

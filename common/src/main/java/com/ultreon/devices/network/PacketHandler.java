@@ -1,136 +1,78 @@
 package com.ultreon.devices.network;
 
-import com.ultreon.devices.Devices;
-import com.ultreon.devices.core.laptop.common.C2SUpdatePacket;
-import com.ultreon.devices.core.laptop.common.S2CUpdatePacket;
-import com.ultreon.devices.network.task.*;
-import dev.architectury.networking.NetworkChannel;
+import com.ultreon.devices.api.task.TaskManager;
+import com.ultreon.devices.block.entity.RouterBlockEntity;
+import com.ultreon.devices.network.serverbound.C2SUpdatePacket;
+import com.ultreon.devices.network.clientbound.S2CUpdatePacket;
+import com.ultreon.devices.core.laptop.server.ServerLaptop;
+import com.ultreon.devices.network.clientbound.S2CNotificationPacket;
+import com.ultreon.devices.network.clientbound.S2CResponsePacket;
+import com.ultreon.devices.network.clientbound.S2CSyncApplicationsPacket;
+import com.ultreon.devices.network.clientbound.S2CSyncConfigPacket;
+import com.ultreon.devices.network.serverbound.C2SRequestPacket;
+import com.ultreon.devices.network.serverbound.C2SSyncBlockPacket;
 import dev.architectury.networking.NetworkManager;
+import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
+
+import java.util.Objects;
 
 public class PacketHandler {
-    public static final NetworkChannel INSTANCE = NetworkChannel.create(Devices.id("main_channel"));
-    private static int id = 0;
-
     public static void init() {
-        INSTANCE.register(RequestPacket.class, RequestPacket::toBytes, RequestPacket::new, RequestPacket::onMessage);
-        INSTANCE.register(ResponsePacket.class, Packet::toBytes, ResponsePacket::new, ResponsePacket::onMessage);
-        INSTANCE.register(SyncApplicationPacket.class, Packet::toBytes, SyncApplicationPacket::new, SyncApplicationPacket::onMessage);
-        INSTANCE.register(SyncConfigPacket.class, Packet::toBytes, SyncConfigPacket::new, SyncConfigPacket::onMessage);
-        INSTANCE.register(SyncBlockPacket.class, Packet::toBytes, SyncBlockPacket::new, SyncBlockPacket::onMessage);
-        INSTANCE.register(NotificationPacket.class, Packet::toBytes, NotificationPacket::new, NotificationPacket::onMessage);
-        INSTANCE.register(S2CUpdatePacket.class, Packet::toBytes, S2CUpdatePacket::new, S2CUpdatePacket::onMessage);
-        INSTANCE.register(C2SUpdatePacket.class, Packet::toBytes, C2SUpdatePacket::new, C2SUpdatePacket::onMessage);
-    }
+        if (Platform.getEnvironment() == Env.CLIENT) {
+            ClientPacketHandler.init();
+        } else {
+            NetworkManager.registerS2CPayloadType(S2CUpdatePacket.TYPE, S2CUpdatePacket.CODEC);
+            NetworkManager.registerS2CPayloadType(S2CResponsePacket.TYPE, S2CResponsePacket.CODEC);
+            NetworkManager.registerS2CPayloadType(S2CSyncApplicationsPacket.TYPE, S2CSyncApplicationsPacket.CODEC);
+            NetworkManager.registerS2CPayloadType(S2CSyncConfigPacket.TYPE, S2CSyncConfigPacket.CODEC);
+            NetworkManager.registerS2CPayloadType(S2CNotificationPacket.TYPE, S2CNotificationPacket.CODEC);
+        }
 
-    private static int nextId() {
-        return id++;
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, C2SRequestPacket.TYPE, C2SRequestPacket.CODEC, PacketHandler::onRequestPacket);
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, C2SSyncBlockPacket.TYPE, C2SSyncBlockPacket.CODEC, PacketHandler::onSyncBlockPacket);
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, C2SUpdatePacket.TYPE, C2SUpdatePacket.CODEC, PacketHandler::onUpdatePacket);
     }
 
     @Environment(EnvType.CLIENT)
-    public static <T extends Packet<T>> void sendToServer(T message) {
-        if (Minecraft.getInstance().getConnection() != null) {
-            INSTANCE.sendToServer(message);
-        } else {
-            Minecraft.getInstance().doRunTask(() ->
-            message.onMessage(() -> new NetworkManager.PacketContext() {
+    public static <T extends CustomPacketPayload> void sendToServer(T message) {
+        NetworkManager.sendToServer(message);
+    }
 
-                @Override
-                public Player getPlayer() {
-                    return Minecraft.getInstance().player;
-                }
+    public static <T extends CustomPacketPayload> void sendToClient(T messageNotification, ServerPlayer player) { // has to be ServerPlayer if world is not null
+        NetworkManager.sendToPlayer(player, messageNotification);
+    }
 
-                @Override
-                public void queue(Runnable runnable) {
+    private static void onRequestPacket(C2SRequestPacket value, NetworkManager.PacketContext context) {
+        var id = value.id();
+        String name = value.taskName();
+        var request = TaskManager.getTask(name);
+        var tag = value.requestData();
 
-                }
+        //DebugLog.log("RECEIVED from " + ctx.get().getPlayer().getUUID());
+        request.processRequest(tag, Objects.requireNonNull(context.getPlayer()).level(), context.getPlayer());
+        if (context.getPlayer() instanceof ServerPlayer player)
+            NetworkManager.sendToPlayer(player, S2CResponsePacket.create(id, request));
+    }
 
-                @Override
-                public Env getEnvironment() {
-                    return Env.SERVER;
-                }
-            }));
+    private static void onSyncBlockPacket(C2SSyncBlockPacket value, NetworkManager.PacketContext context) {
+        Level level = Objects.requireNonNull(context.getPlayer()).level();
+        BlockEntity blockEntity = level.getChunkAt(value.routerPos()).getBlockEntity(value.routerPos(), LevelChunk.EntityCreationType.IMMEDIATE);
+        if (blockEntity instanceof RouterBlockEntity router) {
+            router.syncDevicesToClient();
         }
     }
 
-    public static <T extends Packet<T>> void sendToClient(Packet<T> messageNotification, Player player) { // has to be ServerPlayer if world is not null
-        if (player == null || player.level() == null) {
-            messageNotification.onMessage(() -> new NetworkManager.PacketContext() {
-                @Override
-                public Player getPlayer() {
-                    return player;
-                }
-
-                @Override
-                public void queue(Runnable runnable) {
-
-                }
-
-                @Override
-                public Env getEnvironment() {
-                    return Env.CLIENT;
-                }
-            });
-            return;
+    private static void onUpdatePacket(C2SUpdatePacket value, NetworkManager.PacketContext context) {
+        if (context.getEnv().equals(EnvType.SERVER)) {
+            ServerLaptop.laptops.get(value.laptop()).handlePacket(context.getPlayer(), value.typeName(), value.data());
         }
-        INSTANCE.sendToPlayer((ServerPlayer) player, messageNotification);
-        //INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), messageNotification);
     }
-
-    // seems to be unused
-    public static <T extends Packet<T>> void sendToDimension(Packet<T> messageNotification, ResourceKey<Level> level) {
-        //INSTANCE.sendToServer();
-        //INSTANCE.send(PacketDistributor.DIMENSION.with(() -> level), messageNotification);
-    }
-
-//    public static <T extends Packet<T>> void.json sendToDimension(Packet<T> messageNotification, Level level) {
-//        INSTANCE.send(PacketDistributor.DIMENSION.with(level::dimension), messageNotification);
-//    }
-//
-//    public static <T extends Packet<T>> void.json sendToServer(Packet<T> messageNotification) {
-//        INSTANCE.send(PacketDistributor.SERVER.noArg(), messageNotification);
-//    }
-//
-//    public static <T extends Packet<T>> void.json sendToAll(Packet<T> messageNotification) {
-//        INSTANCE.send(PacketDistributor.ALL.noArg(), messageNotification);
-//    }
-//
-//    public static <T extends Packet<T>> void.json sendToAllAround(Packet<T> messageNotification, ResourceKey<Level> level, double x, double y, double z, double radius) {
-//        INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(x, y, z, radius, level)), messageNotification);
-//    }
-//
-//    public static <T extends Packet<T>> void.json sendToAllAround(Packet<T> messageNotification, Level level, double x, double y, double z, double radius) {
-//        INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(x, y, z, radius, level.dimension())), messageNotification);
-//    }
-//
-//    public static <T extends Packet<T>> void.json sendToTrackingChunk(Packet<T> messageNotification, LevelChunk chunk) {
-//        INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), messageNotification);
-//    }
-//
-//    public static <T extends Packet<T>> void.json sendToTrackingChunk(Packet<T> messageNotification, Level level, int x, int z) {
-//        INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunk(x, z)), messageNotification);
-//    }
-//
-//    public static <T extends Packet<T>> void.json sendToTrackingEntity(Packet<T> messageNotification, Entity entity) {
-//        INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), messageNotification);
-//    }
-//
-//    public static <T extends Packet<T>> void.json sendToTrackingEntity(Packet<T> messageNotification, Level level, int entityId) {
-//        INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> level.getEntity(entityId)), messageNotification);
-//    }
-//
-//    public static <T extends Packet<T>> void.json sendToTrackingEntityAndSelf(Packet<T> messageNotification, Entity entity) {
-//        INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), messageNotification);
-//    }
-//
-//    public static <T extends Packet<T>> void.json sendToTrackingEntityAndSelf(Packet<T> messageNotification, Level level, int entityId) {
-//        INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> level.getEntity(entityId)), messageNotification);
-//    }
 }

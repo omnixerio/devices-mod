@@ -126,7 +126,7 @@
   "item.devices.white_flash_drive": "White Flash Drive",
   "item.devices.wifi": "WiFi Module",
   "item.devices.yellow_flash_drive": "Yellow Flash Drive",
-  "itemGroup.devices.devices_tab_device": "Devices",
+  "itemGroup.devices.devices": "Devices",
   "itemGroup.devices_tab_device": "Devices Mod",
   "message.devices.device_already_connected": "The selected device is already connected to this router.",
   "message.devices.invalid_cable": "Please select a device first before adding it to this router.",

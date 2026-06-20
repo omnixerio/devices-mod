@@ -2,36 +2,51 @@ package com.ultreon.devices.object;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import com.ultreon.devices.Devices;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.Reference;
 import com.ultreon.devices.core.Laptop;
-import dev.architectury.injectables.annotations.PlatformOnly;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.awt.*;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
 public class AppInfo {
+    public static final StreamCodec<ByteBuf, AppInfo> STREAM_CODEC = StreamCodec.of((buf, appInfo) -> {
+        ResourceLocation.STREAM_CODEC.encode(buf, appInfo.appId);
+        ByteBufCodecs.STRING_UTF8.encode(buf, appInfo.name);
+        ByteBufCodecs.<ByteBuf, String, List<String>>collection(ArrayList::new, ByteBufCodecs.STRING_UTF8).encode(buf, appInfo.getAuthors());
+        ByteBufCodecs.STRING_UTF8.encode(buf, appInfo.description);
+        ByteBufCodecs.STRING_UTF8.encode(buf, appInfo.version);
+        ByteBufCodecs.<ByteBuf, String, List<String>>collection(ArrayList::new, ByteBufCodecs.STRING_UTF8).encode(buf, appInfo.getScreenshots());
+        Support.STREAM_CODEC.encode(buf, appInfo.support);
+    }, buf -> new AppInfo(
+            ResourceLocation.STREAM_CODEC.decode(buf),
+            ByteBufCodecs.STRING_UTF8.decode(buf),
+            ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.STRING_UTF8).decode(buf),
+            ByteBufCodecs.STRING_UTF8.decode(buf),
+            ByteBufCodecs.STRING_UTF8.decode(buf),
+            ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.STRING_UTF8).decode(buf),
+            Support.STREAM_CODEC.decode(buf)
+    ));
     public static final Comparator<AppInfo> SORT_NAME = Comparator.comparing(AppInfo::getName);
 
-    private transient final ResourceLocation APP_ID;
+    private transient final ResourceLocation appId;
 
     private final transient boolean systemApp;
 
@@ -63,6 +78,7 @@ public class AppInfo {
     private TintProvider tintProvider = DEFAULT_TINT_PROVIDER;
 
     private String name;
+
     private String[] authors;
     private String[] contributors;
     private String description;
@@ -72,8 +88,22 @@ public class AppInfo {
     private Support support;
 
     public AppInfo(ResourceLocation identifier, boolean isSystemApp) {
-        this.APP_ID = identifier;
+        this.appId = identifier;
         this.systemApp = isSystemApp;
+    }
+
+    public AppInfo(ResourceLocation appId, String name, List<String> authors, String description, String version, List<String> screenshots, Support support) {
+        this(appId, false);
+        this.name = name;
+        this.authors = authors.toArray(new String[0]);
+        this.description = description;
+        this.version = version;
+        this.screenshots = screenshots.toArray(new String[0]);
+        this.support = support;
+    }
+
+    public AppInfo(ResourceLocation identifier) {
+        this(identifier, false);
     }
 
     /**
@@ -81,8 +111,8 @@ public class AppInfo {
      *
      * @return the app resource location
      */
-    public ResourceLocation getId() {
-        return APP_ID;
+    public ResourceLocation getAppId() {
+        return appId;
     }
 
     /**
@@ -91,7 +121,7 @@ public class AppInfo {
      * @return a formatted id
      */
     public String getFormattedId() {
-        return getId().toString();
+        return getAppId().toString();
     }
 
     /**
@@ -103,17 +133,17 @@ public class AppInfo {
         return name;
     }
 
-    public String[] getAuthors() {
-        return authors;
+    public List<String> getAuthors() {
+        return List.of(authors);
     }
 
     /**
      * {@code contributors} should include all authors, plus extra contributors
      * <p><code>
-     *     {
-     *         "authors": ["Me!"],
-     *         "contributors": ["You!"]
-     *     }
+     * {
+     * "authors": ["Me!"],
+     * "contributors": ["You!"]
+     * }
      * </code><br/>
      * should return ["Me!", "You!"] with this method.</p>
      */
@@ -156,14 +186,17 @@ public class AppInfo {
         Glyph base;
         Glyph overlay0;
         Glyph overlay1;
+
         public static class Glyph {
             private ResourceLocation resourceLocation;
             private int u = -1;
             private int v = -1;
             private int type;
+
             private Glyph(ResourceLocation res) {
                 this.resourceLocation = res;
             }
+
             private static Glyph of(ResourceLocation res) {
                 return new Glyph(res);
             }
@@ -194,11 +227,11 @@ public class AppInfo {
         }
 
         private Icon(AppInfo info) {
-            this.base = Glyph.of(new ResourceLocation(info.APP_ID.getNamespace(), "textures/app/icon/base/" + info.APP_ID.getPath() + ".png"));
+            this.base = Glyph.of(ResourceLocation.fromNamespaceAndPath(info.appId.getNamespace(), "textures/app/icon/base/" + info.appId.getPath() + ".png"));
             this.base.type = 0;
-            this.overlay0 = Glyph.of(new ResourceLocation(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/" + info.APP_ID.getPath() + ".png"));
+            this.overlay0 = Glyph.of(ResourceLocation.fromNamespaceAndPath(info.appId.getNamespace(), "textures/app/icon/overlay0/" + info.appId.getPath() + ".png"));
             this.overlay0.type = 1;
-            this.overlay1 = Glyph.of(new ResourceLocation(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/" + info.APP_ID.getPath() + ".png"));
+            this.overlay1 = Glyph.of(ResourceLocation.fromNamespaceAndPath(info.appId.getNamespace(), "textures/app/icon/overlay1/" + info.appId.getPath() + ".png"));
             this.overlay1.type = 2;
         }
 
@@ -222,8 +255,8 @@ public class AppInfo {
         }
     }
 
-    public String[] getScreenshots() {
-        return screenshots;
+    public List<String> getScreenshots() {
+        return List.of(screenshots);
     }
 
     public Support getSupport() {
@@ -245,10 +278,10 @@ public class AppInfo {
         resetInfo();
         if (Minecraft.getInstance().getResourceManager() == null) return;
         // TODO "Check if the resource manager can be used on client side."
-        Resource resource = Minecraft.getInstance().getResourceManager().getResource(new ResourceLocation(APP_ID.getNamespace(), "/apps/" + APP_ID.getPath() + ".json")).orElse(null);
+        Resource resource = Minecraft.getInstance().getResourceManager().getResource(ResourceLocation.fromNamespaceAndPath(appId.getNamespace(), "/apps/" + appId.getPath() + ".json")).orElse(null);
 
         if (resource == null)
-            throw new RuntimeException("Missing app info json for '" + APP_ID + "'");
+            throw new RuntimeException("Missing app info json for '" + appId + "'");
 
         try (Reader reader = resource.openAsReader()) {
             JsonElement obj = JsonParser.parseReader(reader);
@@ -272,12 +305,25 @@ public class AppInfo {
         support = null;
     }
 
-    private static class Support {
-        private String paypal;
-        private String patreon;
-        public String kofi;
-        private String twitter;
-        private String youtube;
+    private record Support(
+            Optional<String> paypal,
+            Optional<String> patreon,
+            Optional<String> kofi,
+            Optional<String> twitter,
+            Optional<String> youtube
+    ) {
+        public static final StreamCodec<ByteBuf, Support> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8), Support::paypal,
+                ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8), Support::patreon,
+                ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8), Support::kofi,
+                ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8), Support::twitter,
+                ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8), Support::youtube,
+                Support::new
+        );
+
+        public Support() {
+            this(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+        }
     }
 
     public static class Deserializer implements JsonDeserializer<AppInfo> {
@@ -297,10 +343,11 @@ public class AppInfo {
                     case 1 -> deserializeSchemaVersion1(json, context);
                     case 2 -> deserializeSchemaVersion2(json, context);
                     case 3 -> deserializeSchemaVersion3(json, context);
-                    default -> throw new RuntimeException("Schema " + getSchemaVersion(json) + " is not implemented in " + Reference.VERSION + "!");
+                    default ->
+                            throw new RuntimeException("Schema " + getSchemaVersion(json) + " is not implemented in " + Reference.VERSION + "!");
                 }
             } catch (JsonParseException e) {
-                Devices.LOGGER.error("Malformed app info json for '" + info.getFormattedId() + "'");
+                OmnixerioDevicesMod.LOGGER.error("Malformed app info json for '" + info.getFormattedId() + "'");
             }
 
             return info;
@@ -319,32 +366,45 @@ public class AppInfo {
 
             if (json.getAsJsonObject().has("icon") && json.getAsJsonObject().get("icon").isJsonPrimitive()) {
                 info.icon = new Icon();
-                info.icon.base = Icon.Glyph.of(new ResourceLocation(json.getAsJsonObject().get("icon").getAsString()));
+                info.icon.base = Icon.Glyph.of(ResourceLocation.parse(json.getAsJsonObject().get("icon").getAsString()));
                 info.icon.base.type = 0;
-                info.icon.overlay0 = Icon.Glyph.of(new ResourceLocation(info.APP_ID.getNamespace(), "textures/app/icon/overlay0/empty.png"));
+                info.icon.overlay0 = Icon.Glyph.of(ResourceLocation.fromNamespaceAndPath(info.appId.getNamespace(), "textures/app/icon/overlay0/empty.png"));
                 info.icon.overlay0.type = 1;
-                info.icon.overlay1 = Icon.Glyph.of(new ResourceLocation(info.APP_ID.getNamespace(), "textures/app/icon/overlay1/empty.png"));
+                info.icon.overlay1 = Icon.Glyph.of(ResourceLocation.fromNamespaceAndPath(info.appId.getNamespace(), "textures/app/icon/overlay1/empty.png"));
                 info.icon.overlay1.type = 2;
             }
 
             if (json.getAsJsonObject().has("support") && json.getAsJsonObject().get("support").getAsJsonObject().size() > 0) {
                 JsonObject supportObj = json.getAsJsonObject().get("support").getAsJsonObject();
-                Support support = new Support();
-
+                Optional<String> paypal = Optional.empty();
+                Optional<String> patreon = Optional.empty();
+                Optional<String> kofi = Optional.empty();
+                Optional<String> twitter = Optional.empty();
+                Optional<String> youtube = Optional.empty();
                 if (supportObj.has("paypal")) {
-                    support.paypal = supportObj.get("paypal").getAsString();
+                    paypal = Optional.of(supportObj.get("paypal").getAsString());
                 }
                 if (supportObj.has("patreon")) {
-                    support.patreon = supportObj.get("patreon").getAsString();
+                    patreon = Optional.of(supportObj.get("patreon").getAsString());
+                }
+                if (supportObj.has("kofi")) {
+                    kofi = Optional.of(supportObj.get("kofi").getAsString());
                 }
                 if (supportObj.has("twitter")) {
-                    support.twitter = supportObj.get("twitter").getAsString();
+                    twitter = Optional.of(supportObj.get("twitter").getAsString());
                 }
                 if (supportObj.has("youtube")) {
-                    support.youtube = supportObj.get("youtube").getAsString();
+                    youtube = Optional.of(supportObj.get("youtube").getAsString());
                 }
 
-                info.support = support;
+                info.support = new Support(
+                        paypal,
+                        patreon,
+                        kofi,
+                        twitter,
+                        youtube
+                );
+
             }
         }
 
@@ -359,27 +419,39 @@ public class AppInfo {
             }
 
             if (json.getAsJsonObject().has("icon") && json.getAsJsonObject().get("icon").isJsonPrimitive()) {
-                Devices.LOGGER.warn("{} uses removed \"icon\"! Please advise {} to fix the icon!", info.name, info.authors[0]);
+                OmnixerioDevicesMod.LOGGER.warn("{} uses removed \"icon\"! Please advise {} to fix the icon!", info.name, info.authors[0]);
             }
 
             if (json.getAsJsonObject().has("support") && json.getAsJsonObject().get("support").getAsJsonObject().size() > 0) {
                 JsonObject supportObj = json.getAsJsonObject().get("support").getAsJsonObject();
-                Support support = new Support();
-
+                Optional<String> paypal = Optional.empty();
+                Optional<String> patreon = Optional.empty();
+                Optional<String> kofi = Optional.empty();
+                Optional<String> twitter = Optional.empty();
+                Optional<String> youtube = Optional.empty();
                 if (supportObj.has("paypal")) {
-                    support.paypal = supportObj.get("paypal").getAsString();
+                    paypal = Optional.of(supportObj.get("paypal").getAsString());
                 }
                 if (supportObj.has("patreon")) {
-                    support.patreon = supportObj.get("patreon").getAsString();
+                    patreon = Optional.of(supportObj.get("patreon").getAsString());
+                }
+                if (supportObj.has("kofi")) {
+                    kofi = Optional.of(supportObj.get("kofi").getAsString());
                 }
                 if (supportObj.has("twitter")) {
-                    support.twitter = supportObj.get("twitter").getAsString();
+                    twitter = Optional.of(supportObj.get("twitter").getAsString());
                 }
                 if (supportObj.has("youtube")) {
-                    support.youtube = supportObj.get("youtube").getAsString();
+                    youtube = Optional.of(supportObj.get("youtube").getAsString());
                 }
 
-                info.support = support;
+                info.support = new Support(
+                        paypal,
+                        patreon,
+                        kofi,
+                        twitter,
+                        youtube
+                );
             }
             info.icon = new Icon(info);
         }
@@ -407,7 +479,7 @@ public class AppInfo {
             if (json.getAsJsonObject().has("author") && json.getAsJsonObject().get("author").isJsonPrimitive()) {
                 if (info.authors == null) {
                     info.authors = new String[]{convertToLocal(json.getAsJsonObject().get("author").getAsString())};
-                    Devices.LOGGER.warn("{} uses deprecated \"author\"!, Please advise {} to replace \"author\": \"{}\" with the \"authors\": [] format", info.name, info.authors[0], info.authors[0]);
+                    OmnixerioDevicesMod.LOGGER.warn("{} uses deprecated \"author\"!, Please advise {} to replace \"author\": \"{}\" with the \"authors\": [] format", info.name, info.authors[0], info.authors[0]);
                 }
             }
 
@@ -419,31 +491,44 @@ public class AppInfo {
             }
 
             if (json.getAsJsonObject().has("icon") && json.getAsJsonObject().get("icon").isJsonPrimitive()) {
-                Devices.LOGGER.warn("{} uses removed \"icon\"! Please advise {} to fix the icon!", info.name, info.authors[0]);
+                OmnixerioDevicesMod.LOGGER.warn("{} uses removed \"icon\"! Please advise {} to fix the icon!", info.name, info.authors[0]);
             }
 
             if (d) info.authors = new String[0];
-            var l = new ArrayList<String>(List.of(info.authors));l.addAll(contributors);
+            var l = new ArrayList<String>(List.of(info.authors));
+            l.addAll(contributors);
             info.contributors = l.toArray(new String[0]);
 
             if (json.getAsJsonObject().has("support") && json.getAsJsonObject().get("support").getAsJsonObject().size() > 0) {
                 JsonObject supportObj = json.getAsJsonObject().get("support").getAsJsonObject();
-                Support support = new Support();
-
+                Optional<String> paypal = Optional.empty();
+                Optional<String> patreon = Optional.empty();
+                Optional<String> kofi = Optional.empty();
+                Optional<String> twitter = Optional.empty();
+                Optional<String> youtube = Optional.empty();
                 if (supportObj.has("paypal")) {
-                    support.paypal = supportObj.get("paypal").getAsString();
+                    paypal = Optional.of(supportObj.get("paypal").getAsString());
                 }
                 if (supportObj.has("patreon")) {
-                    support.patreon = supportObj.get("patreon").getAsString();
+                    patreon = Optional.of(supportObj.get("patreon").getAsString());
+                }
+                if (supportObj.has("kofi")) {
+                    kofi = Optional.of(supportObj.get("kofi").getAsString());
                 }
                 if (supportObj.has("twitter")) {
-                    support.twitter = supportObj.get("twitter").getAsString();
+                    twitter = Optional.of(supportObj.get("twitter").getAsString());
                 }
                 if (supportObj.has("youtube")) {
-                    support.youtube = supportObj.get("youtube").getAsString();
+                    youtube = Optional.of(supportObj.get("youtube").getAsString());
                 }
 
-                info.support = support;
+                info.support = new Support(
+                        paypal,
+                        patreon,
+                        kofi,
+                        twitter,
+                        youtube
+                );
             }
             info.icon = new Icon(info);
         }
@@ -473,30 +558,40 @@ public class AppInfo {
                 }.getType());
             }
 
-            var l = new ArrayList<String>(List.of(info.authors));l.addAll(contributors);
+            var l = new ArrayList<String>(List.of(info.authors));
+            l.addAll(contributors);
             info.contributors = l.toArray(new String[0]);
 
             if (json.getAsJsonObject().has("support") && json.getAsJsonObject().get("support").getAsJsonObject().size() > 0) {
                 JsonObject supportObj = json.getAsJsonObject().get("support").getAsJsonObject();
-                Support support = new Support();
-
+                Optional<String> paypal = Optional.empty();
+                Optional<String> patreon = Optional.empty();
+                Optional<String> kofi = Optional.empty();
+                Optional<String> twitter = Optional.empty();
+                Optional<String> youtube = Optional.empty();
                 if (supportObj.has("paypal")) {
-                    support.paypal = supportObj.get("paypal").getAsString();
+                    paypal = Optional.of(supportObj.get("paypal").getAsString());
                 }
                 if (supportObj.has("patreon")) {
-                    support.patreon = supportObj.get("patreon").getAsString();
+                    patreon = Optional.of(supportObj.get("patreon").getAsString());
                 }
-                if (supportObj.has("ko-fi")) {
-                    support.kofi = supportObj.get("ko-fi").getAsString();
+                if (supportObj.has("kofi")) {
+                    kofi = Optional.of(supportObj.get("kofi").getAsString());
                 }
                 if (supportObj.has("twitter")) {
-                    support.twitter = supportObj.get("twitter").getAsString();
+                    twitter = Optional.of(supportObj.get("twitter").getAsString());
                 }
                 if (supportObj.has("youtube")) {
-                    support.youtube = supportObj.get("youtube").getAsString();
+                    youtube = Optional.of(supportObj.get("youtube").getAsString());
                 }
 
-                info.support = support;
+                info.support = new Support(
+                        paypal,
+                        patreon,
+                        kofi,
+                        twitter,
+                        youtube
+                );
             }
             info.icon = new Icon(info);
         }

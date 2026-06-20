@@ -3,7 +3,7 @@ package com.ultreon.devices.api.app;
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.core.client.ClientNotification;
 import com.ultreon.devices.network.PacketHandler;
-import com.ultreon.devices.network.task.NotificationPacket;
+import com.ultreon.devices.network.clientbound.S2CNotificationPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.commons.lang3.StringUtils;
@@ -49,9 +49,9 @@ public class Notification {
     }
 
     /**
-     * Writes the notification to a tag for the client
+     * Writes the notification to a requestData for the client
      *
-     * @return the notification tag
+     * @return the notification requestData
      */
     public CompoundTag toTag() {
         CompoundTag tag = new CompoundTag();
@@ -76,6 +76,6 @@ public class Notification {
      * @param player the target player
      */
     public void pushTo(ServerPlayer player) {
-        PacketHandler.sendToClient(new NotificationPacket(this), player);
+        PacketHandler.sendToClient(S2CNotificationPacket.create(this), player);
     }
 }

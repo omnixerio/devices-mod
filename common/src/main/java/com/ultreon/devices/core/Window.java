@@ -1,6 +1,7 @@
 package com.ultreon.devices.core;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.app.Dialog;
 import com.ultreon.devices.gui.GuiButtonClose;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 
 public class Window<T extends Wrappable> {
-    public static final ResourceLocation WINDOW_GUI = new ResourceLocation("devices:textures/gui/application.png");
+    public static final ResourceLocation WINDOW_GUI = OmnixerioDevicesMod.id("textures/gui/application.png");
 
     public static final int COLOR_WINDOW_DARK = new Color(0f, 0f, 0f, 0.25f).getRGB();
     final Laptop laptop;

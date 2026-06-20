@@ -2,6 +2,10 @@ package com.ultreon.devices.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.minecraft.core.HolderLookup;
+
+import java.util.concurrent.CompletableFuture;
 
 public class DevicesDataGenerator implements DataGeneratorEntrypoint {
     @Override
@@ -13,8 +17,10 @@ public class DevicesDataGenerator implements DataGeneratorEntrypoint {
 //        pack.addProvider((FabricDataOutput output) -> new DevicesLanguageGenerator(output, "en_pt"));
 //        pack.addProvider((FabricDataOutput output) -> new DevicesLanguageGenerator(output, "lol_us"));
 //        pack.addProvider((FabricDataOutput output) -> new DevicesLanguageGenerator(output, "ja_jp"));
-        pack.addProvider(DevicesRecipeProvider::new);
-        pack.addProvider(DevicesLootTableGenerator::new);
+        CompletableFuture<HolderLookup.Provider> registries = fabricDataGenerator.getRegistries();
+        pack.addProvider((FabricDataOutput output) -> new DevicesRecipeProvider(output, registries));
+        pack.addProvider((FabricDataOutput output) -> new DevicesAdvancementsProvider(output, registries));
+        pack.addProvider((FabricDataOutput output) -> new DevicesLootTableGenerator(output, registries));
         pack.addProvider(DevicesBlockTagProvider::new);
         pack.addProvider(DevicesItemTagProvider::new);
     }

@@ -2,6 +2,8 @@ package com.ultreon.devices.programs.system.object;
 
 import com.ultreon.devices.object.AppInfo;
 
+import java.util.List;
+
 /**
  * @author MrCrayfish
  */
@@ -9,7 +11,7 @@ public record LocalEntry(AppInfo info) implements AppEntry {
 
     @Override
     public String id() {
-        return info.getId().toString();
+        return info.getAppId().toString();
     }
 
     @Override
@@ -24,7 +26,7 @@ public record LocalEntry(AppInfo info) implements AppEntry {
     }
 
     @Override
-    public String[] authors() {
+    public List<String> authors() {
         return info.getAuthors();
     }
 
@@ -44,7 +46,7 @@ public record LocalEntry(AppInfo info) implements AppEntry {
     }
 
     @Override
-    public String[] screenshots() {
+    public List<String> screenshots() {
         return info.getScreenshots();
     }
 

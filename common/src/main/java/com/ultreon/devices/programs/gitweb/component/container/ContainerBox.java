@@ -2,6 +2,7 @@ package com.ultreon.devices.programs.gitweb.component.container;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.Reference;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.utils.RenderUtil;
@@ -22,7 +23,7 @@ import java.util.Optional;
  */
 public abstract class ContainerBox extends Component {
     public static final int WIDTH = 128;
-    protected static final ResourceLocation CONTAINER_BOXES_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/container_boxes.png");
+    protected static final ResourceLocation CONTAINER_BOXES_TEXTURE = OmnixerioDevicesMod.id("textures/gui/container_boxes.png");
     protected List<Slot> slots = new ArrayList<>();
     protected int boxU, boxV;
     protected int height;

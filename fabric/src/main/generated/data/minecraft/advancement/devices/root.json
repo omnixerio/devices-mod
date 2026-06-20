@@ -1,0 +1,31 @@
+{
+  "criteria": {
+    "has_crafting_table": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:crafting_table"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "minecraft:textures/block/copper_block",
+    "description": "Install Devices Mod",
+    "icon": {
+      "count": 1,
+      "id": "devices:circuit_board"
+    },
+    "show_toast": false,
+    "title": "Devices Mod"
+  },
+  "requirements": [
+    [
+      "has_crafting_table"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

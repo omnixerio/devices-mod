@@ -1,9 +1,8 @@
 package com.ultreon.devices.datagen;
 
-import com.ultreon.devices.Devices;
-import com.ultreon.devices.init.DeviceBlocks;
-import com.ultreon.devices.init.DeviceItems;
-import com.ultreon.devices.init.ModTags;
+import com.ultreon.devices.OmnixerioDevicesMod;
+import com.ultreon.devices.init.ModBlocks;
+import com.ultreon.devices.init.tags.ModBlockTags;
 import dev.architectury.registry.registries.Registrar;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
@@ -11,7 +10,6 @@ import net.minecraft.Util;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.registries.VanillaRegistries;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 import java.util.Objects;
@@ -24,13 +22,13 @@ public class DevicesBlockTagProvider extends FabricTagProvider<Block> {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        Registrar<Block> blocks = Devices.REGISTRIES.get().get(Registries.BLOCK);
-        TagAppender<Block> laptops = this.tag(ModTags.Blocks.LAPTOPS);
-        TagAppender<Block> printers = this.tag(ModTags.Blocks.PRINTERS);
-        TagAppender<Block> routers = this.tag(ModTags.Blocks.ROUTERS);
+        Registrar<Block> blocks = OmnixerioDevicesMod.REGISTRIES.get().get(Registries.BLOCK);
+        TagAppender<Block> laptops = this.tag(ModBlockTags.LAPTOPS);
+        TagAppender<Block> printers = this.tag(ModBlockTags.PRINTERS);
+        TagAppender<Block> routers = this.tag(ModBlockTags.ROUTERS);
 
-        DeviceBlocks.getAllLaptops().forEach(o -> laptops.addOptional(Objects.requireNonNull(blocks.getId(o))));
-        DeviceBlocks.getAllPrinters().forEach(o -> printers.addOptional(Objects.requireNonNull(blocks.getId(o))));
-        DeviceBlocks.getAllRouters().forEach(o -> routers.addOptional(Objects.requireNonNull(blocks.getId(o))));
+        ModBlocks.getAllLaptops().forEach(o -> laptops.addOptional(Objects.requireNonNull(blocks.getId(o))));
+        ModBlocks.getAllPrinters().forEach(o -> printers.addOptional(Objects.requireNonNull(blocks.getId(o))));
+        ModBlocks.getAllRouters().forEach(o -> routers.addOptional(Objects.requireNonNull(blocks.getId(o))));
     }
 }

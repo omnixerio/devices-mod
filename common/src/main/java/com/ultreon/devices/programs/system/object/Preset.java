@@ -13,7 +13,7 @@ public record Preset(ColorScheme colorScheme, ResourceLocation id) {
     }
 
     public static Preset fromTag(CompoundTag tag) {
-        ResourceLocation id = new ResourceLocation(tag.getString("id"));
+        ResourceLocation id = ResourceLocation.parse(tag.getString("id"));
         return ColorSchemePresetRegistry.getPreset(id);
     }
 }

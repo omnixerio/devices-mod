@@ -44,10 +44,10 @@ public interface System {
     Application openApplication(AppInfo info);
 
     /**
-     * Opens the specified application with an intent tag
+     * Opens the specified application with an intent requestData
      *
      * @param info      the app info instance of the application to be opened
-     * @param intentTag the tag to pass data to the initialization of an application
+     * @param intentTag the requestData to pass data to the initialization of an application
      */
     Application openApplication(AppInfo info, CompoundTag intentTag);
 

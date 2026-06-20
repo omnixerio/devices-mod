@@ -1,23 +1,22 @@
 package com.ultreon.devices.datagen;
 
-import com.ultreon.devices.init.DeviceBlocks;
+import com.ultreon.devices.init.ModBlocks;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.core.HolderLookup;
 
-import java.util.function.BiConsumer;
+import java.util.concurrent.CompletableFuture;
 
 public class DevicesBlockLootTableGenerator extends FabricBlockLootTableProvider {
-    public DevicesBlockLootTableGenerator(FabricDataOutput output) {
-        super(output);
+    public DevicesBlockLootTableGenerator(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registryLookup) {
+        super(output, registryLookup);
     }
 
     @Override
     public void generate() {
-        DeviceBlocks.getAllLaptops().forEach(this::dropSelf);
-        DeviceBlocks.getAllOfficeChairs().forEach(this::dropSelf);
-        DeviceBlocks.getAllPrinters().forEach(this::dropSelf);
-        DeviceBlocks.getAllRouters().forEach(this::dropSelf);
+        ModBlocks.getAllLaptops().forEach(this::dropSelf);
+        ModBlocks.getAllOfficeChairs().forEach(this::dropSelf);
+        ModBlocks.getAllPrinters().forEach(this::dropSelf);
+        ModBlocks.getAllRouters().forEach(this::dropSelf);
     }
 }

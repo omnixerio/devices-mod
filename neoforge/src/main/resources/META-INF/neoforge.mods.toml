@@ -1,0 +1,56 @@
+# Mods.toml for the devices mod by ultreon (originally created my MrCrayfish)
+# Copyright (c) 2022 - Ultreon Team, GPLv3 License. See the license at https://www.gnu.org/licenses/gpl-3.0-standalone.html
+
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "GPL-3.0"
+issueTrackerURL = "https://github.com/Ultreon/devices-mod/issues"
+
+# The main mod, and all sub-mods.
+[[mods]]
+modId = "devices"
+version = "${version}"
+displayName = "Devices Mod"
+#updateJSONURL="http://myurl.me/"
+displayURL = "https://github.com/Ultreon/devices-mod"
+logoFile="devices_mod.png"
+credits = "Thanks to MrCrayfish for the idea and the original mod that was made in 1.12.2. Thank you to MinecraftDoodler for helping with textures. Thank you to lizterzapzap for the Devices Mod icon. Cheers to these people for donating during the development: Mastef Chief, Haunted Corpse, Jake Crowley, fabbe50, PlayDashGaming, jack jook, Hunstagamez, Techyy YT, MinecraftDoodler, Norge100YT, Cyberman2208, CreepergamingsMC"
+authors = "Qboi123, Jab125"
+description = """
+Adds working electronic devices into Minecraft!
+CurseForge: https://curseforge.com/minecraft/mc-mods/devices-mod
+Modrinth: https://modrinth.com/mod/devices-mod
+Source Code: https://github.com/Ultreon/devices-mod
+
+Original mod made by MrCrayfish called "MrCrayfish's Device Mod".
+Available at: https://mrcrayfish.com/mods/cdm
+Source Code: https://github.com/MrCrayfish/MrCrayfishDeviceMod
+"""
+itemIcon = "devices:red_laptop"
+
+[[mixins]]
+config = "omnixerio-devices.mixins.json"
+[[mixins]]
+config = "omnixerio-devices-common.mixins.json
+
+# Dependencies for the main mod.
+[[dependencies.devices]]
+modId = "neoforge"
+mandatory = true
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.devices]]
+modId = "minecraft"
+mandatory = true
+versionRange = "1.21.1"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.devices]]
+modId = "architectury"
+mandatory = true
+versionRange = "[13,14)"
+ordering = "NONE"
+side = "BOTH"

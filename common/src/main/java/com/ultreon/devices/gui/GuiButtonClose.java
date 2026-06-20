@@ -1,19 +1,16 @@
 package com.ultreon.devices.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.core.Window;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentContents;
-import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 
 public class GuiButtonClose extends Button {
     public GuiButtonClose(int x, int y) {
         super(x, y, 11, 11, Component.literal(""),
-                (button) -> { }, (output)-> MutableComponent.create(ComponentContents.EMPTY));
+                (button) -> { }, (output)-> Component.empty());
     }
 
     @Override

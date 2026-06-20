@@ -2,8 +2,8 @@ package com.ultreon.devices.datagen;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.ultreon.devices.init.DeviceBlocks;
-import com.ultreon.devices.init.DeviceItems;
+import com.ultreon.devices.init.ModBlocks;
+import com.ultreon.devices.init.ModItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.data.models.BlockModelGenerators;
@@ -29,7 +29,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
 
     @Override
     public void generateBlockStateModels(BlockModelGenerators blockStateModelGenerator) {
-        DeviceBlocks.LAPTOPS.getMap().forEach((dye, block) -> {
+        ModBlocks.LAPTOPS.getMap().forEach((dye, block) -> {
             blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get(), "_closed"), () -> new Gson().fromJson(String.format(laptopClosedPain(), dye.getName()), JsonElement.class));
             blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get(), "_full"), () -> new Gson().fromJson(String.format(laptopFullPain(), dye.getName()), JsonElement.class));
             blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get(), "_flitem"), () -> new Gson().fromJson(String.format(laptopFullItemPain(), dye.getName()), JsonElement.class));
@@ -49,7 +49,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
             blockStateModelGenerator.delegateItemModel(block.get(), ModelLocationUtils.getModelLocation(block.get(), "_flitem"));
         });
 
-        DeviceBlocks.OFFICE_CHAIRS.getMap().forEach((dye, block) -> {
+        ModBlocks.OFFICE_CHAIRS.getMap().forEach((dye, block) -> {
             blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get(), "_legs"), () -> new Gson().fromJson(String.format(officeChairFullLegsPain(), dye.getName()), JsonElement.class));
             blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get(), "_full"), () -> new Gson().fromJson(String.format(officeChairFullItemPain(), dye.getName()), JsonElement.class));
             blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get(), "_seat"), () -> new Gson().fromJson(String.format(officeChairFullSeatPain(), dye.getName()), JsonElement.class));
@@ -69,7 +69,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
             blockStateModelGenerator.delegateItemModel(block.get(), ModelLocationUtils.getModelLocation(block.get(), "_full"));
         });
 
-        DeviceBlocks.ROUTERS.getMap().forEach((dye, block) -> {
+        ModBlocks.ROUTERS.getMap().forEach((dye, block) -> {
             blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get()), () -> new Gson().fromJson(String.format(routerPain(), dye.getName()), JsonElement.class));
             //blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get()), () -> new Gson().fromJson(String.format(laptopPain(), dye.getName()), JsonElement.class));
             blockStateModelGenerator.blockStateOutput.accept(new BlockStateGenerator() {
@@ -87,7 +87,7 @@ public class DevicesModelGenerator extends FabricModelProvider {
             blockStateModelGenerator.delegateItemModel(block.get(), ModelLocationUtils.getModelLocation(block.get()));
         });
 
-        DeviceBlocks.PRINTERS.getMap().forEach((dye, block) -> {
+        ModBlocks.PRINTERS.getMap().forEach((dye, block) -> {
             blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get()), () -> new Gson().fromJson(String.format(printerPain(), dye.getName()), JsonElement.class));
             //blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get()), () -> new Gson().fromJson(String.format(laptopPain(), dye.getName()), JsonElement.class));
             blockStateModelGenerator.blockStateOutput.accept(new BlockStateGenerator() {
@@ -238,6 +238,6 @@ public class DevicesModelGenerator extends FabricModelProvider {
 
     @Override
     public void generateItemModels(ItemModelGenerators generators) {
-        generators.generateFlatItem(DeviceItems.GLASS_DUST.get(), ModelTemplates.FLAT_ITEM);
+        generators.generateFlatItem(ModItems.GLASS_DUST.get(), ModelTemplates.FLAT_ITEM);
     }
 }

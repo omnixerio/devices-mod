@@ -1,11 +1,12 @@
 package com.ultreon.devices.block;
 
+import com.mojang.serialization.MapCodec;
 import com.ultreon.devices.ModDeviceTypes;
+import com.ultreon.devices.block.entity.ComputerBlockEntity;
 import com.ultreon.devices.block.entity.LaptopBlockEntity;
+import com.ultreon.devices.debug.DebugLog;
 import com.ultreon.devices.item.FlashDriveItem;
 import com.ultreon.devices.util.BlockEntityUtil;
-import dev.architectury.utils.Env;
-import dev.architectury.utils.EnvExecutor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -19,12 +20,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
@@ -35,7 +37,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Locale;
 
 public class LaptopBlock extends ComputerBlock.Colored {
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
@@ -49,9 +50,12 @@ public class LaptopBlock extends ComputerBlock.Colored {
     private static final VoxelShape SHAPE_CLOSED_EAST = Block.box(3, 0, 1, 15, 2, 15);
     private static final VoxelShape SHAPE_CLOSED_SOUTH = Block.box(1, 0, 3, 15, 2, 15);
     private static final VoxelShape SHAPE_CLOSED_WEST = Block.box(1, 0, 1, 13, 2, 15);
+    private final DyeColor color;
 
     public LaptopBlock(DyeColor color) {
         super(Properties.of().mapColor(color).strength(6f).sound(SoundType.METAL), color, ModDeviceTypes.COMPUTER);
+        registerDefaultState(this.getStateDefinition().any().setValue(TYPE, Type.BASE).setValue(OPEN, false));
+        this.color = color;
     }
 
     @Override
@@ -69,6 +73,69 @@ public class LaptopBlock extends ComputerBlock.Colored {
             case WEST -> SHAPE_CLOSED_WEST;
             default -> throw new IllegalStateException("Unexpected value: " + pState.getValue(FACING));
         };
+    }
+
+    @Override
+    public @NotNull InteractionResult use(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
+        if (!(level.getBlockEntity(pos) instanceof LaptopBlockEntity laptop)) return InteractionResult.FAIL;
+
+        if (player.isCrouching()) {
+            if (!level.isClientSide) {
+                laptop.openClose(player);
+            }
+            return InteractionResult.SUCCESS;
+        } else if (hit.getDirection() == state.getValue(FACING).getClockWise(Direction.Axis.Y)) {
+            return manageFlashDrive(state, level, pos, player, hand, laptop);
+        }
+
+        if (laptop.isOpen()) {
+            accessComputer(level, laptop);
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+        return InteractionResult.PASS;
+    }
+
+    @Override
+    public void accessComputer(Level level, ComputerBlockEntity computer) {
+        if (computer instanceof LaptopBlockEntity laptop && laptop.isOpen()) {
+            super.accessComputer(level, computer);
+        }
+    }
+
+    private static @NotNull InteractionResult manageFlashDrive(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, LaptopBlockEntity laptop) {
+        ItemStack heldItem = player.getItemInHand(hand);
+        if (!heldItem.isEmpty() && heldItem.getItem() instanceof FlashDriveItem && laptop.canChangeAttachment()) {
+            return attachDrive(level, laptop, heldItem);
+        }
+
+        if (!laptop.canChangeAttachment())
+            return InteractionResult.FAIL;
+
+        ItemStack stack = laptop.getFileSystem().detachDrive();
+        if (stack != null) {
+            return detachDrive(state, level, pos, laptop, stack);
+        }
+        return InteractionResult.FAIL;
+    }
+
+    private static @NotNull InteractionResult attachDrive(@NotNull Level level, LaptopBlockEntity laptop, ItemStack heldItem) {
+        if (laptop.getFileSystem().attachDrive(heldItem.copy())) {
+            DebugLog.logTime(level.getGameTime(), "Attached Drive");
+            laptop.setAttachmentCooldown(10);
+            heldItem.shrink(1);
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        } else {
+            return InteractionResult.FAIL;
+        }
+    }
+
+    private static @NotNull InteractionResult detachDrive(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, LaptopBlockEntity laptop, ItemStack stack) {
+        DebugLog.logTime(level.getGameTime(), "Detached Drive");
+        laptop.setAttachmentCooldown(10);
+        BlockPos summonPos = pos.relative(state.getValue(FACING).getClockWise(Direction.Axis.Y));
+        level.addFreshEntity(new ItemEntity(level, summonPos.getX() + 0.5, summonPos.getY(), summonPos.getZ() + 0.5, stack));
+        BlockEntityUtil.markBlockForUpdate(level, pos);
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     @Override
@@ -90,7 +157,7 @@ public class LaptopBlock extends ComputerBlock.Colored {
         for (ItemStack drop : drops) {
             if (drop.getItem() instanceof BlockItem blockItem) {
                 if (blockItem.getBlock() instanceof LaptopBlock) {
-                    parameter.saveToItem(drop);
+                    parameter.saveToItem(drop, builder.getLevel().registryAccess());
                 }
             }
         }
@@ -101,5 +168,16 @@ public class LaptopBlock extends ComputerBlock.Colored {
     @Override
     public @Nullable BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new LaptopBlockEntity(pos, state);
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> pBuilder) {
+        super.createBlockStateDefinition(pBuilder);
+        pBuilder.add(TYPE, OPEN);
+    }
+
+    @Override
+    protected @NotNull MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return simpleCodec(properties1 -> new LaptopBlock(color));
     }
 }

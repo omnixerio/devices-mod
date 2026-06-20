@@ -8,6 +8,6 @@ public final class Resources {
     }
 
 
-    public static final ResourceLocation ENDER_MAIL_ICONS = Devices.id("textures/gui/ender_mail.png");
-    public static final ResourceLocation ENDER_MAIL_BACKGROUND = Devices.id("textures/gui/ender_mail_background.png");
+    public static final ResourceLocation ENDER_MAIL_ICONS = OmnixerioDevicesMod.id("textures/gui/ender_mail.png");
+    public static final ResourceLocation ENDER_MAIL_BACKGROUND = OmnixerioDevicesMod.id("textures/gui/ender_mail_background.png");
 }

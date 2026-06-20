@@ -12,9 +12,9 @@ import net.minecraft.world.level.Level;
  * client-server like applications, e.g. Emails, Instant Messaging, etc</p>
  *
  * <p>Any global variables that are initialized in this class, wont be on the server side.
- * To initialize them, first store the data in the NBT tag provided in {@link #prepareRequest(CompoundTag)},
+ * To initialize them, first store the data in the NBT requestData provided in {@link #prepareRequest(CompoundTag)},
  * then once your Task gets to the server, use {@link #processRequest(CompoundTag, Level, Player)} to
- * get the data from the NBT tag parameter. Initialize the variables as normal.
+ * get the data from the NBT requestData parameter. Initialize the variables as normal.
  *
  * <p>Please check out the example applications to get a better understanding
  * how this could be useful to your application.</p>
@@ -99,8 +99,8 @@ public abstract class Task {
 
     /**
      * Called when the request arrives to the server. Here you can perform actions
-     * with your request. Data attached to the NBT from {@link Task#prepareRequest(CompoundTag tag)}
-     * can be accessed from the NBT tag parameter.
+     * with your request. Data attached to the NBT from {@link Task#prepareRequest(CompoundTag requestData)}
+     * can be accessed from the NBT requestData parameter.
      *
      * @param tag The NBT Tag received from the client
      */

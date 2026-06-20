@@ -26,9 +26,9 @@ public class DeviceItem extends BlockItem implements IDeviceType {
 //    @Override
     public CompoundTag getShareTag(ItemStack stack) {
         CompoundTag tag = new CompoundTag();
-        if (stack.getTag() != null && stack.getTag().contains("display", Tag.TAG_COMPOUND)) {
-            tag.put("display", Objects.requireNonNull(stack.getTag().get("display")));
-        }
+//        if (stack.get() != null && stack.getTag().contains("display", Tag.TAG_COMPOUND)) {
+//            tag.put("display", Objects.requireNonNull(stack.getTag().get("display")));
+//        }
         return tag;
     }
 

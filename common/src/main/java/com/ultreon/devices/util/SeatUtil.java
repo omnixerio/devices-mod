@@ -2,7 +2,7 @@ package com.ultreon.devices.util;
 
 import com.ultreon.devices.debug.DebugLog;
 import com.ultreon.devices.entity.SeatEntity;
-import com.ultreon.devices.init.DeviceEntities;
+import com.ultreon.devices.init.ModEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -19,7 +19,7 @@ public class SeatUtil {
                 playerIn.startRiding(seat);
             }
         } else {
-            SeatEntity seat = DeviceEntities.SEAT.get().create(worldIn);// new SeatEntity(worldIn, pos, yOffset);
+            SeatEntity seat = ModEntities.SEAT.get().create(worldIn);// new SeatEntity(worldIn, pos, yOffset);
             assert seat != null;
             seat.setYOffset(yOffset);
             seat.setViaYOffset(pos);

@@ -6,13 +6,13 @@ import com.ultreon.devices.core.network.Router;
 import com.ultreon.devices.util.Colorable;
 import com.ultreon.devices.util.Tickable;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -100,16 +100,16 @@ public abstract class NetworkDeviceBlockEntity extends DeviceBlockEntity impleme
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         if (connection != null) {
             tag.put("connection", connection.toTag());
         }
     }
 
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         if (tag.contains("connection", Tag.TAG_COMPOUND)) {
             connection = Connection.fromTag(tag.getCompound("connection"));
         }
@@ -123,16 +123,16 @@ public abstract class NetworkDeviceBlockEntity extends DeviceBlockEntity impleme
         }
 
         @Override
-        public void load(@NotNull CompoundTag tag) {
-            super.load(tag);
+        protected void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+            super.loadAdditional(tag, provider);
             if (tag.contains("color", Tag.TAG_STRING)) {
                 color = DyeColor.byId(tag.getByte("color"));
             }
         }
 
         @Override
-        public void saveAdditional(@NotNull CompoundTag tag) {
-            super.saveAdditional(tag);
+        protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+            super.saveAdditional(tag, provider);
             tag.putByte("color", (byte) color.getId());
         }
 

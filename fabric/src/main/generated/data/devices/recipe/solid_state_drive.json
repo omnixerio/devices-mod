@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "f": {
+      "item": "devices:flash_chip"
+    },
+    "o": {
+      "item": "minecraft:obsidian"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "oro",
+    "ofo",
+    "ofo"
+  ],
+  "result": {
+    "count": 1,
+    "id": "devices:solid_state_drive"
+  }
+}

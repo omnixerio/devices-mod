@@ -8,6 +8,7 @@ import com.ultreon.devices.programs.gitweb.component.GitWebFrame;
 import com.ultreon.devices.programs.gitweb.component.container.ContainerBox;
 import com.ultreon.devices.programs.gitweb.component.container.CraftingBox;
 import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
 
@@ -72,7 +73,7 @@ public abstract class ContainerModule extends Module {
     protected static ItemStack getItem(Map<String, String> data, String key) {
         if (data.containsKey(key)) {
             try {
-                return ItemStack.of(TagParser.parseTag(data.get(key)));
+                return ItemStack.CODEC.decode(NbtOps.INSTANCE, TagParser.parseTag(data.get(key))).getOrThrow().getFirst();
             } catch (CommandSyntaxException e) {
                 return ItemStack.EMPTY;
             }

@@ -2,6 +2,7 @@ package com.ultreon.devices.programs.system;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.app.Dialog;
 import com.ultreon.devices.api.app.Layout;
@@ -23,6 +24,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.VillagerRenderer;
 import net.minecraft.nbt.CompoundTag;
@@ -36,12 +38,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
+
 import java.awt.*;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class BankApp extends Application {//The bank is not a system application
     private static final ItemStack EMERALD = new ItemStack(Items.EMERALD);
-    private static final ResourceLocation BANK_ASSETS = new ResourceLocation("devices:textures/gui/bank.png");
+    private static final ResourceLocation BANK_ASSETS = OmnixerioDevicesMod.id("textures/gui/bank.png");
     //    private static final ResourceLocation villagerTextures = new ResourceLocation("textures/entity/villager/villager.png");
 //    private static final VillagerModel<Villager> villagerModel = new VillagerModel<Villager>();
     private Layout layoutStart;
@@ -99,23 +103,28 @@ public class BankApp extends Application {//The bank is not a system application
                 graphics.pose().translate(x + 25, y + 33, 15);
                 graphics.pose().scale((float) -2.5, (float) -2.5, (float) -2.5);
                 // Todo: do rotations
-              //  pose.mulPose(new Quaternion(1, 0, 0, -mouseX+mouseY));
-               // pose.mulPose(new Quaternion(0, 0, 1, mouseX+mouseY));
-              //  pose.mulPose(new Quaternion(0, 1, 0, -mouseX+mouseY));
+                graphics.pose().mulPose(new Quaternionf(1, 0, 0, -mouseX+mouseY));
+                graphics.pose().mulPose(new Quaternionf(0, 0, 1, mouseX+mouseY));
+                graphics.pose().mulPose(new Quaternionf(0, 1, 0, -mouseX+mouseY));
                 float scaleX = (mouseX - x - 25) / (float) width;
                 float scaleY = (mouseY - y - 20) / (float) height;
-//                RenderSystem.setShaderTexture(villagerTextures);
 
-                MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-//                var renderer = new VillagerRenderer(new EntityRendererProvider.Context(Minecraft.getInstance().getEntityRenderDispatcher(), Minecraft.getInstance().getItemRenderer(), Minecraft.getInstance().getResourceManager(), Minecraft.getInstance().getEntityModels(), Minecraft.getInstance().font));
                 var villager = EntityType.VILLAGER.create(Minecraft.getInstance().level);
-                assert villager != null;
+                if (villager == null) {
+                    OmnixerioDevicesMod.LOGGER.error("Could not create villager");
+                    return;
+                }
                 villager.setVillagerData(new VillagerData(VillagerType.PLAINS, VillagerProfession.NITWIT, 1));
                 villager.getVillagerData().setProfession(VillagerProfession.NITWIT);
                 graphics.pose().pushPose();
                 graphics.pose().scale(scaleX, scaleY, 1F);
-        //        renderer.render(villager, 0F, 0F, pose, buffer, 15);
+
+                EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+                entityrenderdispatcher.setRenderShadow(false);
+                RenderSystem.runAsFancy(() -> entityrenderdispatcher.render(villager, 0.0, 0.0, 0.0, 0.0F, 1.0F, graphics.pose(), graphics.bufferSource(), 15728880));
+
                 graphics.pose().popPose();
+
 
                 RenderSystem.disableDepthTest();
             }

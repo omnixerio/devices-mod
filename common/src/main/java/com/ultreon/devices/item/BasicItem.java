@@ -1,6 +1,6 @@
 package com.ultreon.devices.item;
 
-import com.ultreon.devices.Devices;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import net.minecraft.world.item.Item;
 
 /**
@@ -9,6 +9,6 @@ import net.minecraft.world.item.Item;
 @SuppressWarnings("UnstableApiUsage")
 public class BasicItem extends Item {
     public BasicItem(Properties properties) {
-        super(properties.arch$tab(Devices.TAB_DEVICE));
+        super(properties.arch$tab(OmnixerioDevicesMod.TAB_DEVICE));
     }
 }

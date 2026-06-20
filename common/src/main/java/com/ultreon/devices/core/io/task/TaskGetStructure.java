@@ -1,13 +1,12 @@
 package com.ultreon.devices.core.io.task;
 
-import com.ultreon.devices.Devices;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.api.io.Drive;
 import com.ultreon.devices.api.task.Task;
 import com.ultreon.devices.block.entity.ComputerBlockEntity;
 import com.ultreon.devices.core.io.FileSystem;
 import com.ultreon.devices.core.io.ServerFolder;
 import com.ultreon.devices.core.io.drive.AbstractDrive;
-import com.ultreon.devices.debug.DebugLog;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -45,7 +44,7 @@ public class TaskGetStructure extends Task {
     public void processRequest(CompoundTag tag, Level level, Player player) {
         BlockPos pos1 = BlockPos.of(tag.getLong("pos"));
 
-        Devices.getServer().submit(() -> {
+        OmnixerioDevicesMod.getServer().submit(() -> {
             BlockEntity tileEntity = level.getBlockEntity(pos1);
             if (tileEntity instanceof ComputerBlockEntity laptop) {
                 FileSystem fileSystem = laptop.getFileSystem();

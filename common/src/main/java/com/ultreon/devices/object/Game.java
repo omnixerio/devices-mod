@@ -3,6 +3,7 @@ package com.ultreon.devices.object;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.exception.WorldLessException;
@@ -17,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Game extends Component {
-    public static final ResourceLocation ICONS = new ResourceLocation("devices:textures/gui/mine_racer.png");
+    public static final ResourceLocation ICONS = OmnixerioDevicesMod.id("textures/gui/mine_racer.png");
 
     private static final Map<Integer, Tile> registeredTiles = new HashMap<Integer, Tile>();
     private final Player player;

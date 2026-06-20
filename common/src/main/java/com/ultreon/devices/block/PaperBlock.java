@@ -1,10 +1,10 @@
 package com.ultreon.devices.block;
 
+import com.mojang.serialization.MapCodec;
 import com.ultreon.devices.api.print.IPrint;
 import com.ultreon.devices.block.entity.PaperBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -39,8 +38,8 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
     private static final VoxelShape SELECTION_BOX_EAST = box(0, 0, 0, 16, 16, 1);
     private static final VoxelShape[] SELECTION_BOUNDING_BOX = {SELECTION_BOX_SOUTH, SELECTION_BOX_WEST, SELECTION_BOX_NORTH, SELECTION_BOX_EAST};
 
-    public PaperBlock() {
-        super(Properties.of().noCollission().instabreak().noOcclusion().noLootTable());
+    public PaperBlock(Properties properties) {
+        super(properties.noCollission().instabreak().noOcclusion().noLootTable());
 
         registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
     }
@@ -65,9 +64,9 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level level, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    protected InteractionResult useWithoutItem(BlockState blockState, Level level, BlockPos pos, Player player, BlockHitResult blockHitResult) {
         if (!level.isClientSide) {
-            BlockEntity blockEntity = level.getBlockEntity(pPos);
+            BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof PaperBlockEntity paper) {
                 paper.nextRotation();
             }
@@ -112,5 +111,10 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new PaperBlockEntity(pos, state);
+    }
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return simpleCodec(PaperBlock::new);
     }
 }

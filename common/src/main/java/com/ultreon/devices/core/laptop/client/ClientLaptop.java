@@ -2,31 +2,15 @@ package com.ultreon.devices.core.laptop.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.ultreon.devices.Devices;
-import com.ultreon.devices.Reference;
-import com.ultreon.devices.core.laptop.common.C2SUpdatePacket;
+import com.ultreon.devices.network.serverbound.C2SUpdatePacket;
 import com.ultreon.devices.core.laptop.common.TaskBar;
-import com.ultreon.devices.core.laptop.server.ServerLaptop;
 import com.ultreon.devices.debug.DebugLog;
 import com.ultreon.devices.network.PacketHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Screenshot;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.ContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ChestMenu;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 

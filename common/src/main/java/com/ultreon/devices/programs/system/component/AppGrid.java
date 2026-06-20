@@ -124,7 +124,7 @@ public class AppGrid extends Component {
          //   com.ultreon.devices.api.app.component.Image image = new com.ultreon.devices.api.app.component.Image(iconOffset, padding, 14 * 3, 14 * 3, localEntry.info().getIconU(), localEntry.info().getIconV(), 14, 14, 224, 224, Laptop.ICON_TEXTURES);
             layout.addComponent(appImage);
         } else if (entry instanceof RemoteEntry remoteEntry) {
-            ResourceLocation resource = new ResourceLocation(remoteEntry.id);
+            ResourceLocation resource = ResourceLocation.parse(remoteEntry.id);
             com.ultreon.devices.api.app.component.Image image = new com.ultreon.devices.api.app.component.Image(iconOffset, padding, 14 * 3, 14 * 3, AppStore.CERTIFICATES_BASE_URL + "/assets/" + resource.getNamespace() + "/" + resource.getPath() + "/icon.png");
             layout.addComponent(image);
         }

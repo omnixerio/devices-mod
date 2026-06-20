@@ -1,10 +1,15 @@
 package com.ultreon.devices.item;
 
-import com.ultreon.devices.Devices;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class ComponentItem extends Item {
     public ComponentItem(Properties pProperties) {
-        super(pProperties.arch$tab(Devices.TAB_DEVICE));
+        super(pProperties.arch$tab(OmnixerioDevicesMod.TAB_DEVICE));
+    }
+
+    public static boolean isComponent(ItemStack item) {
+        return item.getItem() instanceof ComponentItem;
     }
 }

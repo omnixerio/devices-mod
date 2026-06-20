@@ -1,15 +1,11 @@
 package com.ultreon.devices.programs.gitweb.module;
 
 import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.datafixers.util.Pair;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.Layout;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.debug.DebugLog;
 import com.ultreon.devices.programs.gitweb.component.GitWebFrame;
-import com.ultreon.devices.programs.gitweb.component.container.ContainerBox;
-import com.ultreon.devices.programs.gitweb.component.container.LoomBox;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.geom.ModelLayers;
@@ -18,16 +14,12 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BannerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BannerBlockEntity;
-import net.minecraft.world.level.block.entity.BannerPattern;
+import net.minecraft.world.level.block.entity.BannerPatternLayers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +54,7 @@ public class BannerIIModule extends Module {
         public static final int HEIGHT = 84;
         private final ItemStack banner;
         private final ModelPart flag;
-        private final List<Pair<Holder<BannerPattern>, DyeColor>> resultBannerPatterns;
+        private final BannerPatternLayers resultBannerPatterns;
 
         public LoomBox(ItemStack banner, boolean waving) {
             super(0, 0);
@@ -70,9 +62,9 @@ public class BannerIIModule extends Module {
             this.flag = Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.BANNER).getChild("flag");
 
             if (!banner.isEmpty())
-                this.resultBannerPatterns = BannerBlockEntity.createPatterns(((BannerItem)this.banner.getItem()).getColor(), BannerBlockEntity.getItemPatterns(this.banner));
+                this.resultBannerPatterns = banner.get(DataComponents.BANNER_PATTERNS);
             else
-                this.resultBannerPatterns = new ArrayList<>();
+                this.resultBannerPatterns = new BannerPatternLayers(List.of());
         }
 
         @Override
@@ -99,7 +91,7 @@ public class BannerIIModule extends Module {
             this.flag.xRot = (-0.0125f + 0.01f * Mth.cos((float)Math.PI * 2 * h)) * (float)Math.PI;
            // this.flag.xRot = 0.0F;
             this.flag.y = -32.0F;
-            BannerRenderer.renderPatterns(graphics.pose(), bufferSource, 15728880, OverlayTexture.NO_OVERLAY, this.flag, ModelBakery.BANNER_BASE, true, this.resultBannerPatterns);
+            BannerRenderer.renderPatterns(graphics.pose(), bufferSource, 15728880, OverlayTexture.NO_OVERLAY, this.flag, ModelBakery.BANNER_BASE, true, DyeColor.GRAY, this.resultBannerPatterns);
             graphics.pose().popPose();
             bufferSource.endBatch();
 

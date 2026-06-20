@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.5,
+  "ingredient": {
+    "item": "devices:plastic_unrefined"
+  },
+  "result": {
+    "id": "devices:plastic"
+  }
+}

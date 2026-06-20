@@ -1,6 +1,6 @@
 package com.ultreon.devices.util;
 
-import com.ultreon.devices.Devices;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.programs.gitweb.component.GitWebFrame;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
@@ -20,14 +20,14 @@ public record SiteRegistration(String registrant, String string, Type type, Stri
     public static String getURL(String website) {
         Matcher matcher = GitWebFrame.PATTERN_LINK.matcher(website);
         if (!matcher.matches()) {
-            Devices.LOGGER.error("No Match Found For " + website + "!");
+            OmnixerioDevicesMod.LOGGER.error("No Match Found For " + website + "!");
             return "https://raw.githubusercontent.com/Ultreon/gitweb-sites/main/";
         }
         String domain = matcher.group("domain");
         String extension = matcher.group("extension");
         String directory = matcher.group("directory");
         var url = "https://raw.githubusercontent.com/Ultreon/gitweb-sites/main/";
-        for (SiteRegistration siteRegistration : Devices.SITE_REGISTRATIONS) {
+        for (SiteRegistration siteRegistration : OmnixerioDevicesMod.SITE_REGISTRATIONS) {
             if (siteRegistration.type == ALL) {
                 url = siteRegistration.site;
             } else if (siteRegistration.type == EXTENSION && siteRegistration.string.equals(extension)) {
@@ -44,7 +44,7 @@ public record SiteRegistration(String registrant, String string, Type type, Stri
                 }
             }
         }
-        Devices.LOGGER.info(MARKER, "Registered Sites: " + Devices.SITE_REGISTRATIONS.size() + ", " + "URL: " + url);
+        OmnixerioDevicesMod.LOGGER.info(MARKER, "Registered Sites: " + OmnixerioDevicesMod.SITE_REGISTRATIONS.size() + ", " + "URL: " + url);
         return url;
     }
 

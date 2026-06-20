@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "devices:laptop",
+  "key": {
+    "c": {
+      "item": "devices:circuit_board"
+    },
+    "d": {
+      "item": "minecraft:blue_dye"
+    },
+    "f": {
+      "item": "devices:flash_chip"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    },
+    "p": {
+      "item": "devices:plastic_frame"
+    }
+  },
+  "pattern": [
+    "did",
+    "pfp",
+    "pcp"
+  ],
+  "result": {
+    "count": 1,
+    "id": "devices:blue_flash_drive"
+  }
+}

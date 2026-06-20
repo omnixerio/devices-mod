@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "i": {
+      "item": "minecraft:iron_block"
+    },
+    "p": {
+      "item": "devices:plastic_frame"
+    }
+  },
+  "pattern": [
+    "p p",
+    "pip",
+    "p p"
+  ],
+  "result": {
+    "count": 1,
+    "id": "devices:wheel"
+  }
+}

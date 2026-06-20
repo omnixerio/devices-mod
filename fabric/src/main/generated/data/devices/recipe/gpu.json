@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "c": {
+      "item": "devices:circuit_board"
+    },
+    "g": {
+      "item": "minecraft:gold_ingot"
+    },
+    "m": {
+      "item": "devices:ram"
+    },
+    "o": {
+      "item": "minecraft:obsidian"
+    },
+    "p": {
+      "item": "minecraft:prismarine_shard"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "ogo",
+    "rmp",
+    "ccc"
+  ],
+  "result": {
+    "count": 1,
+    "id": "devices:gpu"
+  }
+}

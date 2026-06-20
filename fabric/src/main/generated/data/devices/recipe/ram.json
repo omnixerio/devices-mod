@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "b": {
+      "item": "devices:circuit_board"
+    },
+    "c": {
+      "item": "minecraft:ender_eye"
+    },
+    "g": {
+      "item": "minecraft:gold_nugget"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "bbb",
+    "rcr",
+    "ggg"
+  ],
+  "result": {
+    "count": 1,
+    "id": "devices:ram"
+  }
+}

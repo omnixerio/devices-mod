@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "c": {
+      "item": "minecraft:copper_ingot"
+    },
+    "i": {
+      "item": "minecraft:iron_nugget"
+    },
+    "p": {
+      "item": "devices:plastic"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "iri",
+    "rcr",
+    "ppp"
+  ],
+  "result": {
+    "count": 1,
+    "id": "devices:circuit_board"
+  }
+}

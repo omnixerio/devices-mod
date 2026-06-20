@@ -1,11 +1,10 @@
 package com.ultreon.devices.api.task;
 
-import com.ultreon.devices.Devices;
-import com.ultreon.devices.network.PacketHandler;
-import com.ultreon.devices.network.task.RequestPacket;
+import com.ultreon.devices.OmnixerioDevicesMod;
+import com.ultreon.devices.network.serverbound.C2SRequestPacket;
+import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.Minecraft;
 
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -30,7 +29,7 @@ public final class TaskManager {
     public static void registerTask(Supplier<Task> clazz) {
         var task = clazz.get();
         try {
-            Devices.LOGGER.info("Registering task '" + task.getName() + "'");
+            OmnixerioDevicesMod.LOGGER.info("Registering task '" + task.getName() + "'");
             get().registeredRequests.put(task.getName(), task);
         } catch (Exception e) {
             e.printStackTrace();
@@ -46,7 +45,7 @@ public final class TaskManager {
         int requestId = manager.currentId++;
         manager.requests.put(requestId, task);
         if(Minecraft.getInstance().getConnection() != null)
-        PacketHandler.INSTANCE.sendToServer(new RequestPacket(requestId, task));
+        NetworkManager.sendToServer(C2SRequestPacket.create(requestId, task));
     }
 
     public static Task getTask(String name) {

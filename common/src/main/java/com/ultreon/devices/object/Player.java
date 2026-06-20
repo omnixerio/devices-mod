@@ -2,18 +2,16 @@ package com.ultreon.devices.object;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.object.tiles.Tile;
 import com.ultreon.devices.util.KeyboardHelper;
 import com.ultreon.devices.util.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.BoatRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.vehicle.Boat;
 import org.joml.Quaternionf;
@@ -21,7 +19,7 @@ import org.joml.Quaternionf;
 import java.util.Objects;
 
 public class Player {
-    private static final ResourceLocation boatTextures = new ResourceLocation("textures/entity/boat/oak.png");
+    private static final ResourceLocation boatTextures = ResourceLocation.withDefaultNamespace("textures/entity/boat/oak.png");
     boolean canMove = false;
     private final Game game;
     private double posX, posY;
@@ -49,7 +47,7 @@ public class Player {
         this.velocity = new Vec2d(0, 0);
         this.boatModel = new BoatRenderer(createEntityRendererContext(), false);
 		assert Minecraft.getInstance().player != null;
-		boolean slim = Minecraft.getInstance().player.getModelName().equals("slim");
+		boolean slim = Minecraft.getInstance().player.getSkin().model().equals(PlayerSkin.Model.SLIM);
         if (!Laptop.isWorldLess()) {
             boat = new Boat(Objects.requireNonNull(Minecraft.getInstance().level), 0, 0, 0);
         }
@@ -133,7 +131,7 @@ public class Player {
         graphics.pose().mulPose(new Quaternionf(rot, 0f, 1f, 0f));
         RenderSystem.setShaderTexture(0, boatTextures);
         EntityRenderDispatcher entityRender = Minecraft.getInstance().getEntityRenderDispatcher();
-        entityRender.render(this.boat, 0, 0, 0, 0f, partialTicks, graphics.pose(), MultiBufferSource.immediate(Tesselator.getInstance().getBuilder()), 1);
+        entityRender.render(this.boat, 0, 0, 0, 0f, partialTicks, graphics.pose(), graphics.bufferSource(), 1);
 //        boatModel.render(boat, 0f, 0f, pose, Minecraft.getInstance().renderBuffers().bufferSource(), 1);
         graphics.pose().popPose();
 

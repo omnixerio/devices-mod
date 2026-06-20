@@ -1,0 +1,30 @@
+{
+  "parent": "minecraft:devices/root",
+  "criteria": {
+    "got_flash_chip": {
+      "conditions": {
+        "items": [
+          {
+            "items": "devices:flash_chip"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "minecraft:textures/block/copper_block",
+    "description": "Create your first flash chip",
+    "icon": {
+      "count": 1,
+      "id": "devices:flash_chip"
+    },
+    "title": "Flashy Chips"
+  },
+  "requirements": [
+    [
+      "got_flash_chip"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

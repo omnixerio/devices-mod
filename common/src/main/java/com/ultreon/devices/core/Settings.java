@@ -5,8 +5,6 @@ import com.ultreon.devices.programs.system.object.ColorScheme;
 import com.ultreon.devices.programs.system.object.Preset;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
-import org.intellij.lang.annotations.Identifier;
 
 /**
  * @author MrCrayfish
@@ -54,13 +52,13 @@ public class Settings {
     private CompoundTag appTintInfo() {
         var ct = new CompoundTag();
         for (AppInfo installedApplication : Laptop.getSystem().getInstalledApplications()) {
-            ct.put(installedApplication.getId().toString(), installedApplication.getTintProvider().toTag());
+            ct.put(installedApplication.getAppId().toString(), installedApplication.getTintProvider().toTag());
         }
         return ct;
     }
 
     public static Settings fromTag(CompoundTag tag) {
-        //showAllApps = tag.getBoolean("showAllApps");
+        //showAllApps = requestData.getBoolean("showAllApps");
 
         Settings settings = new Settings();
         settings.colorScheme = ColorScheme.fromTag(tag.getCompound("colorScheme"));

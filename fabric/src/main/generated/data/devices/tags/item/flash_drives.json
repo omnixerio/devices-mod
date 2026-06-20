@@ -1,0 +1,68 @@
+{
+  "values": [
+    {
+      "id": "devices:magenta_flash_drive",
+      "required": false
+    },
+    {
+      "id": "devices:green_flash_drive",
+      "required": false
+    },
+    {
+      "id": "devices:pink_flash_drive",
+      "required": false
+    },
+    {
+      "id": "devices:gray_flash_drive",
+      "required": false
+    },
+    {
+      "id": "devices:light_gray_flash_drive",
+      "required": false
+    },
+    {
+      "id": "devices:black_flash_drive",
+      "required": false
+    },
+    {
+      "id": "devices:purple_flash_drive",
+      "required": false
+    },
+    {
+      "id": "devices:yellow_flash_drive",
+      "required": false
+    },
+    {
+      "id": "devices:red_flash_drive",
+      "required": false
+    },
+    {
+      "id": "devices:lime_flash_drive",
+      "required": false
+    },
+    {
+      "id": "devices:light_blue_flash_drive",
+      "required": false
+    },
+    {
+      "id": "devices:brown_flash_drive",
+      "required": false
+    },
+    {
+      "id": "devices:blue_flash_drive",
+      "required": false
+    },
+    {
+      "id": "devices:cyan_flash_drive",
+      "required": false
+    },
+    {
+      "id": "devices:orange_flash_drive",
+      "required": false
+    },
+    {
+      "id": "devices:white_flash_drive",
+      "required": false
+    }
+  ]
+}

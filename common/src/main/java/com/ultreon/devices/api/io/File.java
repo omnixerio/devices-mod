@@ -435,10 +435,10 @@ public class File {
     }
 
     /**
-     * Converts this file into a tag compound. Due to how the file system works, this tag does not
+     * Converts this file into a requestData compound. Due to how the file system works, this requestData does not
      * include the name of the file and will have to be set manually for any storage.
      *
-     * @return the file tag
+     * @return the file requestData
      */
     public CompoundTag toTag() {
         CompoundTag tag = new CompoundTag();
@@ -448,10 +448,10 @@ public class File {
     }
 
     /**
-     * Converts a tag compound to a file instance.
+     * Converts a requestData compound to a file instance.
      *
      * @param name the name of the file
-     * @param tag  the tag compound from {@link #toTag()}
+     * @param tag  the requestData compound from {@link #toTag()}
      * @return a file instance
      */
     public static File fromTag(String name, CompoundTag tag) {

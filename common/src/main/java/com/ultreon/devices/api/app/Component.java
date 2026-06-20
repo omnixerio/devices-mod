@@ -1,5 +1,6 @@
 package com.ultreon.devices.api.app;
 
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.core.Laptop;
 import com.ultreon.devices.programs.system.object.ColorScheme;
 import net.minecraft.client.Minecraft;
@@ -10,7 +11,7 @@ public abstract class Component {
     /**
      * The default components textures
      */
-    public static final ResourceLocation COMPONENTS_GUI = new ResourceLocation("devices:textures/gui/components.png");
+    public static final ResourceLocation COMPONENTS_GUI = OmnixerioDevicesMod.id("textures/gui/components.png");
     public static final int ALIGN_LEFT = 0;
     public static final int ALIGN_RIGHT = 1;
     public static final int ALIGN_CENTER = 2;
@@ -240,8 +241,6 @@ public abstract class Component {
 
     /**
      * Gets the laptop's Color scheme. A simple helper method to clean up code.
-     *
-     * @return
      */
     protected ColorScheme getColorScheme() {
         return Laptop.getSystem().getSettings().getColorScheme();

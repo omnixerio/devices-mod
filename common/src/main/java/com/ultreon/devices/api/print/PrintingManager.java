@@ -1,7 +1,7 @@
 package com.ultreon.devices.api.print;
 
 import com.google.common.collect.HashBiMap;
-import com.ultreon.devices.Devices;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import dev.architectury.injectables.annotations.PlatformOnly;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -33,16 +33,16 @@ public class PrintingManager {
     public static void registerPrint(ResourceLocation identifier, Class<? extends IPrint> classPrint) {
         try {
             classPrint.getConstructor().newInstance();
-            if (Devices.getInstance().registerPrint(identifier, classPrint)) {
-                Devices.LOGGER.info("Registering print '" + classPrint.getName() + "'");
+            if (OmnixerioDevicesMod.getInstance().registerPrint(identifier, classPrint)) {
+                OmnixerioDevicesMod.LOGGER.info("Registering print '" + classPrint.getName() + "'");
                 registeredPrints.put(identifier.toString(), classPrint);
             } else {
-                Devices.LOGGER.error("The print '" + classPrint.getName() + "' could not be registered due to a critical error!");
+                OmnixerioDevicesMod.LOGGER.error("The print '" + classPrint.getName() + "' could not be registered due to a critical error!");
             }
         } catch (NoSuchMethodException e) {
-            Devices.LOGGER.error("The print '" + classPrint.getName() + "' is missing an empty constructor and could not be registered!");
+            OmnixerioDevicesMod.LOGGER.error("The print '" + classPrint.getName() + "' is missing an empty constructor and could not be registered!");
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            Devices.LOGGER.error("The print '" + classPrint.getName() + "' could not be registered due to a critical error!");
+            OmnixerioDevicesMod.LOGGER.error("The print '" + classPrint.getName() + "' could not be registered due to a critical error!");
         }
     }
 

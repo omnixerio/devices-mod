@@ -2,6 +2,7 @@ package com.ultreon.devices.block.entity.renderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.block.PrinterBlock;
 import com.ultreon.devices.block.RouterBlock;
 import com.ultreon.devices.block.entity.RouterBlockEntity;
@@ -35,9 +36,6 @@ public record RouterRenderer(
         if (blockEntity.isDebug()) {
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(770, 771, 1, 0);
-//            RenderSystem.disableLighting();
-            //            RenderSystem.disableTexture();
-//            RenderSystem.enableAlpha();
             pose.pushPose();
             {
                 pose.translate(blockEntity.getBlockPos().getX(), blockEntity.getBlockPos().getY(), blockEntity.getBlockPos().getZ());
@@ -50,7 +48,6 @@ public record RouterRenderer(
                 final double startLineZ = linePositions.z;
 
                 Tesselator tesselator = Tesselator.getInstance();
-                BufferBuilder buffer = tesselator.getBuilder();
 
                 final Collection<NetworkDevice> DEVICES = router.getConnectedDevices(Minecraft.getInstance().level);
                 DEVICES.forEach(networkDevice -> {
@@ -59,23 +56,23 @@ public record RouterRenderer(
                     Objects.requireNonNull(devicePos, "Connection device has no position, weird.");
 
                     RenderSystem.lineWidth(14F);
-                    buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-                    buffer.vertex(startLineX, startLineY, startLineZ).color(0f, 0f, 0f, 0.5f).endVertex();
-                    buffer.vertex((devicePos.getX() - routerPos.getX()) + 0.5f, (devicePos.getY() - routerPos.getY()), (devicePos.getZ() - routerPos.getZ()) + 0.5f).color(1f, 1f, 1f, 0.35f).endVertex();
-                    tesselator.end();
+                    BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+                    OmnixerioDevicesMod.LOGGER.warn("DEBUG :: StartLine = {}, {}, {}", startLineX, startLineY, startLineZ);
+                    buffer.addVertex((float) startLineX, (float) startLineY, (float) startLineZ).setColor(0f, 0f, 0f, 0.5f);
+                    buffer.addVertex((devicePos.getX() - routerPos.getX()) + 0.5f, (devicePos.getY() - routerPos.getY()), (devicePos.getZ() - routerPos.getZ()) + 0.5f).setColor(1f, 1f, 1f, 0.35f);
+                    BufferUploader.drawWithShader(buffer.buildOrThrow());
 
                     RenderSystem.lineWidth(4F);
-                    buffer.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
-                    buffer.vertex(startLineX, startLineY, startLineZ).color(0f, 0f, 0f, 0.5f).endVertex();
-                    buffer.vertex((devicePos.getX() - routerPos.getX()) + 0.5f, (devicePos.getY() - routerPos.getY()), (devicePos.getZ() - routerPos.getZ()) + 0.5f).color(0f, 1f, 0f, 0.5f).endVertex();
-                    tesselator.end();
+                    buffer = tesselator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
+
+                    OmnixerioDevicesMod.LOGGER.warn("DEBUG :: StartLine = {}, {}, {}", startLineX, startLineY, startLineZ);
+                    buffer.addVertex((float) startLineX, (float) startLineY, (float) startLineZ).setColor(0f, 0f, 0f, 0.5f);
+                    buffer.addVertex((devicePos.getX() - routerPos.getX()) + 0.5f, (devicePos.getY() - routerPos.getY()), (devicePos.getZ() - routerPos.getZ()) + 0.5f).setColor(0f, 1f, 0f, 0.5f);
+                    BufferUploader.drawWithShader(buffer.buildOrThrow());
                 });
             }
             pose.popPose();
             RenderSystem.disableBlend();
-//            RenderSystem.disableAlpha();
-//            RenderSystem.enableLighting();
-       //     RenderSystem.enableTexture();
         }
     }
 

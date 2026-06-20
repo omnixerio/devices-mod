@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "devices:printer",
+  "key": {
+    "b": {
+      "item": "devices:controller_unit"
+    },
+    "c": {
+      "item": "devices:carriage"
+    },
+    "d": {
+      "item": "minecraft:gray_dye"
+    },
+    "m": {
+      "item": "devices:small_electric_motor"
+    },
+    "p": {
+      "item": "devices:plastic_frame"
+    },
+    "s": {
+      "item": "devices:screen"
+    }
+  },
+  "pattern": [
+    "psp",
+    "mcb",
+    "pdp"
+  ],
+  "result": {
+    "count": 1,
+    "id": "devices:gray_printer"
+  }
+}

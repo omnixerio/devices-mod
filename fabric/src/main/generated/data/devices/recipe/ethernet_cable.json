@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "g": {
+      "item": "minecraft:gold_nugget"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    },
+    "l": {
+      "item": "devices:plastic"
+    },
+    "p": {
+      "item": "minecraft:prismarine_crystals"
+    }
+  },
+  "pattern": [
+    "pil",
+    "gig",
+    "lip"
+  ],
+  "result": {
+    "count": 1,
+    "id": "devices:ethernet_cable"
+  }
+}

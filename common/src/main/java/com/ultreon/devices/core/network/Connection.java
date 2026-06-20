@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class Connection {
@@ -76,7 +77,13 @@ public class Connection {
         Connection connection = new Connection();
         connection.routerId = UUID.fromString(tag.getString("id"));
         if (tag.contains("Pos", Tag.TAG_COMPOUND)) {
-            connection.routerPos = NbtUtils.readBlockPos(tag.getCompound("Pos"));
+            Optional<BlockPos> pos = NbtUtils.readBlockPos(tag, "Pos");
+            if (pos.isPresent())
+                connection.routerPos = pos.get();
+            else {
+                connection.routerId = null;
+                connection.routerPos = null;
+            }
         }
         return connection;
     }

@@ -6,12 +6,14 @@ import com.ultreon.devices.block.entity.DeviceBlockEntity;
 import com.ultreon.devices.util.BlockEntityUtil;
 import com.ultreon.devices.util.Colorable;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -19,6 +21,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -32,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-@SuppressWarnings("deprecation")
 public abstract class DeviceBlock extends HorizontalDirectionalBlock implements EntityBlock, IDeviceType {
     private final ModDeviceTypes deviceType;
 
@@ -41,10 +43,10 @@ public abstract class DeviceBlock extends HorizontalDirectionalBlock implements 
         this.deviceType = deviceType;
     }
 
-//    @Override
-//    public RenderShape getRenderShape(BlockState state) {
-//        return RenderShape.INVISIBLE;
-//    }
+    @Override
+    protected @NotNull RenderShape getRenderShape(BlockState blockState) {
+        return RenderShape.INVISIBLE;
+    }
 
     @NotNull
     @Override
@@ -65,8 +67,9 @@ public abstract class DeviceBlock extends HorizontalDirectionalBlock implements 
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof DeviceBlockEntity deviceBlockEntity) {
-            if (stack.hasCustomHoverName()) {
-                deviceBlockEntity.setCustomName(stack.getHoverName().getString());
+            Component component = stack.get(DataComponents.CUSTOM_NAME);
+            if (component != null) {
+                deviceBlockEntity.setCustomName(component.getString());
             }
         }
     }
@@ -78,7 +81,7 @@ public abstract class DeviceBlock extends HorizontalDirectionalBlock implements 
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof DeviceBlockEntity device) {
                 CompoundTag blockEntityTag = new CompoundTag();
-                blockEntity.saveWithoutMetadata();
+                blockEntity.saveWithoutMetadata(level.registryAccess());
                 blockEntityTag.remove("id");
 
                 removeTagsForDrop(blockEntityTag);
@@ -92,10 +95,10 @@ public abstract class DeviceBlock extends HorizontalDirectionalBlock implements 
                 } else {
                     drop = new ItemStack(this);
                 }
-                drop.setTag(tag);
+                drop.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(tag));
 
                 if (device.hasCustomName()) {
-                    drop.setHoverName(Component.literal(device.getCustomName()));
+                    drop.set(DataComponents.CUSTOM_NAME, Component.literal(device.getCustomName()));
                 }
 
                 level.addFreshEntity(new ItemEntity((Level) level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop));
@@ -133,7 +136,7 @@ public abstract class DeviceBlock extends HorizontalDirectionalBlock implements 
     }
 
     public static abstract class Colored extends DeviceBlock implements ColoredBlock {
-        private final DyeColor color;
+        protected final DyeColor color;
 
         protected Colored(Properties properties, DyeColor color, ModDeviceTypes deviceType) {
             super(properties, deviceType);

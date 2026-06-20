@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "c": {
+      "item": "devices:circuit_board"
+    },
+    "d": {
+      "item": "minecraft:ender_pearl"
+    },
+    "e": {
+      "item": "minecraft:end_rod"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    " e ",
+    "idi",
+    "rcr"
+  ],
+  "result": {
+    "count": 1,
+    "id": "devices:wifi"
+  }
+}

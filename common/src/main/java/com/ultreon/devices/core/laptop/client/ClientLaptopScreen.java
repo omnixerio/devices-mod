@@ -2,6 +2,7 @@ package com.ultreon.devices.core.laptop.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.Reference;
 import com.ultreon.devices.debug.DebugLog;
 import net.minecraft.client.gui.Gui;
@@ -15,7 +16,7 @@ import java.util.Arrays;
 
 
 public class ClientLaptopScreen extends Screen {
-    static final ResourceLocation LAPTOP_GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/laptop.png");
+    static final ResourceLocation LAPTOP_GUI = OmnixerioDevicesMod.id("textures/gui/laptop.png");
     private static final int BORDER = 10;
     private final ClientLaptop laptop;
 
@@ -26,7 +27,7 @@ public class ClientLaptopScreen extends Screen {
     }
 
     public void renderBezels(final @NotNull GuiGraphics graphics, final int mouseX, final int mouseY, float partialTicks) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
 
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, LAPTOP_GUI);

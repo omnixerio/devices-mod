@@ -43,10 +43,10 @@ public class Folder extends File {
     }
 
     /**
-     * Converts a tag compound to a folder instance.
+     * Converts a requestData compound to a folder instance.
      *
      * @param name      the name of the folder
-     * @param folderTag the tag compound from {@link #toTag()}
+     * @param folderTag the requestData compound from {@link #toTag()}
      * @return a folder instance
      */
     public static Folder fromTag(String name, CompoundTag folderTag) {
@@ -437,7 +437,7 @@ public class Folder extends File {
     /**
      * Do not use! Syncs files from the file system
      *
-     * @param list the tag list to read from
+     * @param list the requestData list to read from
      */
     public void syncFiles(ListTag list) {
         files.removeIf(f -> !f.isFolder());
@@ -512,10 +512,10 @@ public class Folder extends File {
     }
 
     /**
-     * Converts this folder into a tag compound. Due to how the file system works, this tag does not
+     * Converts this folder into a requestData compound. Due to how the file system works, this requestData does not
      * include the name of the folder and will have to be set manually for any storage.
      *
-     * @return the folder tag
+     * @return the folder requestData
      */
     @Override
     public CompoundTag toTag() {

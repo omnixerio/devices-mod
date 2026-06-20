@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "devices:office_chair",
+  "key": {
+    "c": {
+      "item": "minecraft:gray_concrete"
+    },
+    "d": {
+      "item": "minecraft:white_wool"
+    },
+    "f": {
+      "item": "minecraft:cobblestone_wall"
+    },
+    "l": {
+      "item": "minecraft:leather"
+    },
+    "w": {
+      "item": "devices:wheel"
+    }
+  },
+  "pattern": [
+    "cdc",
+    "clc",
+    "wfw"
+  ],
+  "result": {
+    "count": 1,
+    "id": "devices:white_office_chair"
+  }
+}

@@ -1,6 +1,7 @@
 package com.ultreon.devices.programs.system.component;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.api.ApplicationManager;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.Dialog;
@@ -50,7 +51,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("FieldCanBeLocal")
 public class FileBrowser extends Component {
-    private static final ResourceLocation ASSETS = new ResourceLocation("devices:textures/gui/file_browser.png");
+    private static final ResourceLocation ASSETS = OmnixerioDevicesMod.id("textures/gui/file_browser.png");
 
     private static final Color HEADER_BACKGROUND = Color.decode("0x535861");
     private static final Color ITEM_BACKGROUND = Color.decode("0x9E9E9E");

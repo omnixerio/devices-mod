@@ -1,6 +1,6 @@
 package com.ultreon.devices.api;
 
-import com.ultreon.devices.Devices;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.object.AppInfo;
 import net.minecraft.resources.ResourceLocation;
@@ -36,9 +36,9 @@ public final class ApplicationManager {
      */
     @Nullable
     public static Application registerApplication(ResourceLocation identifier, Supplier<Supplier<Application>> app, boolean isSystem) {
-        Devices.LOGGER.debug(MARKER, "Registering application {}", identifier);
+        OmnixerioDevicesMod.LOGGER.debug(MARKER, "Registering application {}", identifier);
         @SuppressWarnings("deprecation")
-        Application application = Devices.getInstance().registerApplication(identifier, new Devices.ApplicationSupplier() {
+        Application application = OmnixerioDevicesMod.getInstance().registerApplication(identifier, new OmnixerioDevicesMod.ApplicationSupplier() {
             @Override
             public Supplier<Application> get() {
                 return app.get();
@@ -64,7 +64,7 @@ public final class ApplicationManager {
      * @return the application list
      */
     public static List<AppInfo> getAvailableApplications() {
-        final Predicate<AppInfo> FILTER = info -> !info.isSystemApp() && (!Devices.hasAllowedApplications() || Devices.getAllowedApplications().contains(info));
+        final Predicate<AppInfo> FILTER = info -> !info.isSystemApp() && (!OmnixerioDevicesMod.hasAllowedApplications() || OmnixerioDevicesMod.getAllowedApplications().contains(info));
         return APP_INFO.values().stream().filter(FILTER).collect(Collectors.toList());
     }
 

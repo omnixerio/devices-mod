@@ -1,11 +1,8 @@
 package com.ultreon.devices.debug;
 
-import com.ultreon.devices.Devices;
 import dev.architectury.platform.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 
 import java.util.Arrays;
 import java.util.Objects;

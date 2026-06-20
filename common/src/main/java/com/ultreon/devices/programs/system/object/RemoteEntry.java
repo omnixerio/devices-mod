@@ -4,6 +4,8 @@ import com.ultreon.devices.object.AppInfo;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 /**
  * @author MrCrayfish
  */
@@ -33,8 +35,8 @@ public class RemoteEntry implements AppEntry {
     }
 
     @Override
-    public String[] authors() {
-        return new String[]{author};
+    public List<String> authors() {
+        return List.of(authors);
     }
 
     @Override
@@ -54,7 +56,7 @@ public class RemoteEntry implements AppEntry {
     }
 
     @Override
-    public String[] screenshots() {
+    public List<String> screenshots() {
         return null;
     }
 

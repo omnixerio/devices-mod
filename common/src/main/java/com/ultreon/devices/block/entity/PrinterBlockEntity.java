@@ -2,9 +2,10 @@ package com.ultreon.devices.block.entity;
 
 import com.ultreon.devices.DeviceConfig;
 import com.ultreon.devices.api.print.IPrint;
-import com.ultreon.devices.init.DeviceBlockEntities;
-import com.ultreon.devices.init.DeviceSounds;
+import com.ultreon.devices.init.ModBlockEntities;
+import com.ultreon.devices.init.ModSounds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -36,7 +37,7 @@ public class PrinterBlockEntity extends NetworkDeviceBlockEntity.Colored {
     private int paperCount = 0;
 
     public PrinterBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
-        super(DeviceBlockEntities.PRINTER.get(), pWorldPosition, pBlockState);
+        super(ModBlockEntities.PRINTER.get(), pWorldPosition, pBlockState);
     }
 
     @Override
@@ -48,7 +49,7 @@ public class PrinterBlockEntity extends NetworkDeviceBlockEntity.Colored {
                     pipeline.putInt("remainingPrintTime", remainingPrintTime);
                     sync();
                     if (remainingPrintTime != 0 && state == PRINTING) {
-                        level.playSound(null, worldPosition, DeviceSounds.PRINTER_PRINTING.get(), SoundSource.BLOCKS, 0.5f, 1f);
+                        level.playSound(null, worldPosition, ModSounds.PRINTER_PRINTING.get(), SoundSource.BLOCKS, 0.5f, 1f);
                     }
                 }
                 remainingPrintTime--;
@@ -79,26 +80,26 @@ public class PrinterBlockEntity extends NetworkDeviceBlockEntity.Colored {
     }
 
     @Override
-    public void load(@NotNull CompoundTag compound) {
-        super.load(compound);
-        if (compound.contains("currentPrint", Tag.TAG_COMPOUND)) {
-            currentPrint = IPrint.load(compound.getCompound("currentPrint"));
+    public void loadAdditional(@NotNull CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
+        if (tag.contains("currentPrint", Tag.TAG_COMPOUND)) {
+            currentPrint = IPrint.load(tag.getCompound("currentPrint"));
         }
-        if (compound.contains("totalPrintTime", Tag.TAG_INT)) {
-            totalPrintTime = compound.getInt("totalPrintTime");
+        if (tag.contains("totalPrintTime", Tag.TAG_INT)) {
+            totalPrintTime = tag.getInt("totalPrintTime");
         }
-        if (compound.contains("remainingPrintTime", Tag.TAG_INT)) {
-            remainingPrintTime = compound.getInt("remainingPrintTime");
+        if (tag.contains("remainingPrintTime", Tag.TAG_INT)) {
+            remainingPrintTime = tag.getInt("remainingPrintTime");
         }
-        if (compound.contains("state", Tag.TAG_INT)) {
-            state = State.values()[compound.getInt("state")];
+        if (tag.contains("state", Tag.TAG_INT)) {
+            state = State.values()[tag.getInt("state")];
         }
-        if (compound.contains("paperCount", Tag.TAG_INT)) {
-            paperCount = compound.getInt("paperCount");
+        if (tag.contains("paperCount", Tag.TAG_INT)) {
+            paperCount = tag.getInt("paperCount");
         }
-        if (compound.contains("queue", Tag.TAG_LIST)) {
+        if (tag.contains("queue", Tag.TAG_LIST)) {
             printQueue.clear();
-            ListTag queue = compound.getList("queue", Tag.TAG_COMPOUND);
+            ListTag queue = tag.getList("queue", Tag.TAG_COMPOUND);
             for (int i = 0; i < queue.size(); i++) {
                 IPrint print = IPrint.load(queue.getCompound(i));
                 printQueue.offer(print);
@@ -107,8 +108,8 @@ public class PrinterBlockEntity extends NetworkDeviceBlockEntity.Colored {
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(@NotNull CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.putInt("totalPrintTime", totalPrintTime);
         tag.putInt("remainingPrintTime", remainingPrintTime);
         tag.putInt("state", state.ordinal());
@@ -157,7 +158,7 @@ public class PrinterBlockEntity extends NetworkDeviceBlockEntity.Colored {
 
     private void print(IPrint print) {
         assert level != null;
-        level.playSound(null, worldPosition, DeviceSounds.PRINTER_LOADING_PAPER.get(), SoundSource.BLOCKS, 0.5f, 1f);
+        level.playSound(null, worldPosition, ModSounds.PRINTER_LOADING_PAPER.get(), SoundSource.BLOCKS, 0.5f, 1f);
 
         setState(LOADING_PAPER);
         currentPrint = print;

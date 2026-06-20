@@ -1,20 +1,19 @@
 package com.ultreon.devices.event;
 
-import com.ultreon.devices.Devices;
 import com.ultreon.devices.api.WorldSavedData;
 import com.ultreon.devices.api.utils.BankUtil;
 import com.ultreon.devices.programs.email.EmailManager;
 import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.LevelResource;
-import net.minecraft.world.level.storage.ServerLevelData;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 
 //TODO
@@ -31,10 +30,10 @@ public class WorldDataHandler {
     }
 
     private static void load(MinecraftServer minecraftServer) {
-        final File modData = Objects.requireNonNull(minecraftServer, "World loaded without server").getWorldPath(DEVICES_MOD_DATA).toFile();
-        if (!modData.exists()) {
+        final Path modData = Objects.requireNonNull(minecraftServer, "World loaded without server").getWorldPath(DEVICES_MOD_DATA);
+        if (Files.notExists(modData)) {
             try {
-                Files.createDirectories(modData.toPath());
+                Files.createDirectories(modData);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -49,10 +48,10 @@ public class WorldDataHandler {
 
 
         final MinecraftServer server = serverLevel.getServer();
-        File modData = server.getWorldPath(DEVICES_MOD_DATA).toFile();
-        if (!modData.exists()) {
+        Path modData = server.getWorldPath(DEVICES_MOD_DATA);
+        if (Files.notExists(modData)) {
             try {
-                Files.createDirectories(modData.toPath());
+                Files.createDirectories(modData);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -62,24 +61,24 @@ public class WorldDataHandler {
         saveData(modData, "bank.dat", BankUtil.INSTANCE);
     }
 
-    private static void loadData(File modData, String fileName, WorldSavedData data) {
-        File dataFile = new File(modData, fileName);
-        if (!dataFile.exists()) {
+    private static void loadData(Path modData, String fileName, WorldSavedData data) {
+        Path dataFile = modData.resolve(fileName);
+        if (Files.notExists(dataFile))
             return;
-        }
+
         try {
-            CompoundTag nbt = NbtIo.readCompressed(dataFile);
+            CompoundTag nbt = NbtIo.readCompressed(dataFile, NbtAccounter.unlimitedHeap());
             data.load(nbt);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void saveData(File modData, String fileName, WorldSavedData data) {
+    private static void saveData(Path modData, String fileName, WorldSavedData data) {
         try {
-            File dataFile = new File(modData, fileName);
-            if (!dataFile.exists()) {
-                Files.createFile(dataFile.toPath());
+            Path dataFile = modData.resolve(fileName);
+            if (Files.notExists(dataFile)) {
+                Files.createFile(dataFile);
             }
 
             CompoundTag nbt = new CompoundTag();

@@ -1,19 +1,23 @@
 package com.ultreon.devices.block;
 
+import com.mojang.serialization.MapCodec;
 import com.ultreon.devices.ModDeviceTypes;
 import com.ultreon.devices.block.entity.RouterBlockEntity;
 import com.ultreon.devices.network.PacketHandler;
-import com.ultreon.devices.network.task.SyncBlockPacket;
+import com.ultreon.devices.network.serverbound.C2SSyncBlockPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -57,7 +61,7 @@ public class RouterBlock extends DeviceBlock.Colored {
             box(13, 0, 1, 16, 10, 15)
     };
 
-    public RouterBlock(DyeColor color) {
+    public RouterBlock(Properties properties, DyeColor color) {
         super(Properties.of().mapColor(color).strength(6f).sound(SoundType.METAL), color, ModDeviceTypes.ROUTER);
         this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(VERTICAL, false));
     }
@@ -74,17 +78,23 @@ public class RouterBlock extends DeviceBlock.Colored {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    protected @NotNull ItemInteractionResult useItemOn(ItemStack itemStack, BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
+        return super.useItemOn(itemStack, blockState, level, blockPos, player, interactionHand, blockHitResult);
+    }
+
+    @Override
+    protected @NotNull InteractionResult useWithoutItem(BlockState blockState, Level level, BlockPos blockPos, Player player, BlockHitResult blockHitResult) {
         if (level.isClientSide && player.isCreative()) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
+            BlockEntity blockEntity = level.getBlockEntity(blockPos);
             if (blockEntity instanceof RouterBlockEntity router) {
                 router.setDebug(true);
                 if (router.isDebug()) {
-                    PacketHandler.INSTANCE.sendToServer(new SyncBlockPacket(pos));
+                    PacketHandler.sendToServer(new C2SSyncBlockPacket(blockPos));
                 }
             }
             return InteractionResult.SUCCESS;
         }
+
         return InteractionResult.PASS;
     }
 
@@ -93,17 +103,6 @@ public class RouterBlock extends DeviceBlock.Colored {
         BlockState state = super.getStateForPlacement(pContext);
         return state != null ? state.setValue(FACING, pContext.getHorizontalDirection().getOpposite()).setValue(VERTICAL, pContext.getClickLocation().y - pContext.getClickLocation().y > 0.5) : null;
     }
-
-//    @Override
-//    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
-//        IBlockState state = super.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand);
-//        return state.withProperty(VERTICAL, facing.getHorizontalIndex() != -1);
-//    }
-
-//    @Override
-//    public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side) {
-//        return side != EnumFacing.DOWN;
-//    }
 
     @NotNull
     @Override
@@ -116,5 +115,10 @@ public class RouterBlock extends DeviceBlock.Colored {
     protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> pBuilder) {
         super.createBlockStateDefinition(pBuilder);
         pBuilder.add(VERTICAL);
+    }
+
+    @Override
+    protected @NotNull MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return simpleCodec(properties1 -> new RouterBlock(properties, color));
     }
 }

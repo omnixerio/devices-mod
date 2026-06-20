@@ -4,6 +4,7 @@ import com.ultreon.devices.object.AppInfo;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author MrCrayfish
@@ -16,13 +17,15 @@ public interface AppEntry {
     @Deprecated
     default String author() {
         StringBuilder a = new StringBuilder();
-        Arrays.stream(authors()).forEach((str -> a.append(str).append(", ")));
+        for (String str : authors()) {
+            a.append(str).append(", ");
+        }
         a.deleteCharAt(a.length()-1);
         a.deleteCharAt(a.length()-1);
         return a.toString();
     }
 
-    String[] authors();
+    List<String> authors();
 
     String description();
 
@@ -32,6 +35,5 @@ public interface AppEntry {
     @Nullable
     AppInfo.Icon icon();
 
-    @Nullable
-    String[] screenshots();
+    List<String> screenshots();
 }

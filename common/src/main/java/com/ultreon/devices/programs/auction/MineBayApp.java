@@ -2,6 +2,7 @@ package com.ultreon.devices.programs.auction;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.api.app.Application;
 import com.ultreon.devices.api.app.Dialog;
 import com.ultreon.devices.api.app.Layout;
@@ -35,8 +36,8 @@ import java.util.Objects;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class MineBayApp extends Application {
-    private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
-    private static final ResourceLocation MINEBAY_ASSETS = new ResourceLocation("devices:textures/gui/minebay.png");
+    private static final ResourceLocation CHEST_GUI_TEXTURE = ResourceLocation.withDefaultNamespace("textures/gui/container/generic_54.png");
+    private static final ResourceLocation MINEBAY_ASSETS = OmnixerioDevicesMod.id("textures/gui/minebay.png");
 
     private static final ItemStack EMERALD = new ItemStack(Items.EMERALD);
 
@@ -340,7 +341,7 @@ public class MineBayApp extends Application {
                 {
                     if (success) {
                         List<AuctionItem> auctionItems = AuctionManager.INSTANCE.getItems();
-                        items.addItem(auctionItems.get(auctionItems.size() - 1));
+                        items.addItem(auctionItems.getLast());
                     }
                 });
                 TaskManager.sendTask(task);
@@ -383,7 +384,7 @@ public class MineBayApp extends Application {
         BankUtil.getBalance((nbt, success) ->
         {
             if (success) {
-                labelMoney.setText("$" + Objects.requireNonNull(nbt, "Expected to get a tag from the get-balance task response.").getInt("balance"));
+                labelMoney.setText("$" + Objects.requireNonNull(nbt, "Expected to get a requestData from the get-balance task response.").getInt("balance"));
             }
         });
 

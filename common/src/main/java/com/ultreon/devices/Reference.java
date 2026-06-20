@@ -1,6 +1,5 @@
 package com.ultreon.devices;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.platform.Platform;
 
 public class Reference {
@@ -12,7 +11,7 @@ public class Reference {
     }
 
     public static String getVersion() {
-        return Platform.getMod(Devices.MOD_ID).getVersion();
+        return Platform.getMod(OmnixerioDevicesMod.MOD_ID).getVersion();
     }
 
     public static String[] getVerInfo() {

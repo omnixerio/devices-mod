@@ -81,13 +81,12 @@ public class Palette extends Component {
 //        RenderSystem.shadeModel(GL11.GL_SMOOTH);
 
         Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder buffer = tessellator.getBuilder();
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        buffer.vertex((double) x + 1, y + 1 + 50, 1).color(0f, 0f, 0f, 1f).endVertex();
-        buffer.vertex(x + 1 + 50, y + 1 + 50, 1).color(0f, 0f, 0f, 1f).endVertex();
-        buffer.vertex(x + 1 + 50, (double) y + 1, 1).color(currentColor.getRed() / 255f, currentColor.getGreen() / 255f, currentColor.getBlue() / 255f, 1f).endVertex();
-        buffer.vertex((double) x + 1, (double) y + 1, 1).color(1f, 1f, 1f, 1f).endVertex();
-        tessellator.end();
+        BufferBuilder buffer = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        buffer.addVertex((float) ((double) x + 1), y + 1 + 50, 1).setColor(0f, 0f, 0f, 1f);
+        buffer.addVertex(x + 1 + 50, y + 1 + 50, 1).setColor(0f, 0f, 0f, 1f);
+        buffer.addVertex((float) (x + 1 + 50), (float) ((double) y + 1), 1).setColor(currentColor.getRed() / 255f, currentColor.getGreen() / 255f, currentColor.getBlue() / 255f, 1f);
+        buffer.addVertex((float) ((double) x + 1), (float) ((double) y + 1), 1).setColor(1f, 1f, 1f, 1f);
+        BufferUploader.draw(buffer.buildOrThrow());
 
         // Todo: Make shade model flag again.
 //        GlStateManager.shadeModel(GL11.GL_FLAT);

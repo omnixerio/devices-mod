@@ -1,0 +1,30 @@
+{
+  "parent": "minecraft:devices/root",
+  "criteria": {
+    "got_router": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#devices:routers"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "minecraft:textures/block/copper_block",
+    "description": "Build your first router",
+    "icon": {
+      "count": 1,
+      "id": "devices:red_router"
+    },
+    "title": "The World Wide Web"
+  },
+  "requirements": [
+    [
+      "got_router"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

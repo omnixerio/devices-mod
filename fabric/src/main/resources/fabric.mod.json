@@ -3,7 +3,7 @@
   "id": "devices",
   "version": "${version}",
   "name": "Devices Mod",
-  "description": "${description}",
+  "description": "Adds working electronic devices into Minecraft!\nCurseForge: https://curseforge.com/minecraft/mc-mods/devices-mod\nModrinth: https://modrinth.com/mod/devices-mod\nSource Code: https://github.com/Ultreon/devices-mod\n\nOriginal mod made by MrCrayfish called \"MrCrayfish's Device Mod\".\nAvailable at: https://mrcrayfish.com/mods/cdm\nSource Code: https://github.com/MrCrayfish/MrCrayfishDeviceMod",
   "authors": [
     "Ultreon Team"
   ],
@@ -36,7 +36,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.ultreon.devices.fabric.DevicesFabric"
+      "com.ultreon.devices.fabric.OmnixerioDevicesModFabric"
     ],
     "devices:application_registration": [
       "com.ultreon.devices.fabric.BuiltinAppsRegistration"
@@ -46,13 +46,13 @@
     ]
   },
   "mixins": [
-    "devices.mixins.json",
-    "devices-common.mixins.json"
+    "omnixerio-devices.mixins.json",
+    "omnixerio-devices-common.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=${loaderVersion}",
-    "minecraft": [">=1.20 <=1.20.1"],
-    "architectury": ">=9.1 <10"
+    "fabricloader": ">=0.17",
+    "minecraft": ["1.21.1"],
+    "architectury": ">=13 <14"
   },
   "custom": {
     "modmenu": {

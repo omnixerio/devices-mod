@@ -1,10 +1,11 @@
 package com.ultreon.devices.block.entity;
 
 import com.ultreon.devices.core.network.Router;
-import com.ultreon.devices.init.DeviceBlockEntities;
+import com.ultreon.devices.init.ModBlockEntities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,7 +18,7 @@ public class RouterBlockEntity extends DeviceBlockEntity.Colored {
     private int debugTimer;
 
     public RouterBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
-        super(DeviceBlockEntities.ROUTER.get(), pWorldPosition, pBlockState);
+        super(ModBlockEntities.ROUTER.get(), pWorldPosition, pBlockState);
     }
 
     public Router getRouter() {
@@ -56,8 +57,8 @@ public class RouterBlockEntity extends DeviceBlockEntity.Colored {
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         if (tag.contains("router", Tag.TAG_COMPOUND)) {
             router = Router.fromTag(worldPosition, tag.getCompound("router"));
         }

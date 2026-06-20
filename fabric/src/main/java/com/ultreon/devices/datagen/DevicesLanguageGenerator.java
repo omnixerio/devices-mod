@@ -2,10 +2,11 @@ package com.ultreon.devices.datagen;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.ultreon.devices.init.DeviceItems;
+import com.ultreon.devices.init.ModItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.DyeColor;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
@@ -16,21 +17,22 @@ import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.CompletableFuture;
 
 public class DevicesLanguageGenerator extends FabricLanguageProvider {
     private final String languageCode;
-    public DevicesLanguageGenerator(FabricDataOutput dataGenerator) {
-        super(dataGenerator);
+    public DevicesLanguageGenerator(FabricDataOutput dataGenerator, CompletableFuture<HolderLookup.Provider> registryLookup) {
+        super(dataGenerator, registryLookup);
         this.languageCode = "en_us";
     }
 
-    public DevicesLanguageGenerator(FabricDataOutput dataGenerator, String languageCode) {
-        super(dataGenerator, languageCode);
+    public DevicesLanguageGenerator(FabricDataOutput dataGenerator, String languageCode, CompletableFuture<HolderLookup.Provider> registryLookup) {
+        super(dataGenerator, languageCode, registryLookup);
         this.languageCode = languageCode;
     }
 
     @Override
-    public void generateTranslations(TranslationBuilder translationBuilder) {
+    public void generateTranslations(HolderLookup.Provider registryLookup, TranslationBuilder translationBuilder) {
         if (this.languageCode.equals("en_pt")) {
             createTranslationsForPirateSpeak(translationBuilder);
         } else if (this.languageCode.startsWith("en_")) { // engurishu
@@ -74,31 +76,31 @@ public class DevicesLanguageGenerator extends FabricLanguageProvider {
         @NotNull
         var pathode = getJSON(dataOutput.getModContainer().findPath("translations/" + file + ".json").orElseThrow());
 
-        DeviceItems.LAPTOPS.getMap().forEach((dye, item) -> {
+        ModItems.LAPTOPS.getMap().forEach((dye, item) -> {
             var laptop = pathode.get("laptop").getAsString();
             var laptop_block = String.format(pathode.get("laptop_block").getAsString(), laptop,get(dye));
             translationBuilder.add(item.get().getDescriptionId(), laptop_block);
         });
 
-        DeviceItems.PRINTERS.getMap().forEach((dye, item) -> {
+        ModItems.PRINTERS.getMap().forEach((dye, item) -> {
             var printer = pathode.get("printer").getAsString();
             var printer_block = String.format(pathode.get("printer_block").getAsString(), printer,get(dye));
             translationBuilder.add(item.get().getDescriptionId(), printer_block);
         });
 
-        DeviceItems.FLASH_DRIVE.getMap().forEach((dye, item) -> {
+        ModItems.FLASH_DRIVE.getMap().forEach((dye, item) -> {
             var flash_drive = pathode.get("flash_drive").getAsString();
             var flash_drive_item = String.format(pathode.get("flash_drive_item").getAsString(), flash_drive,get(dye));
             translationBuilder.add(item.get().getDescriptionId(), flash_drive_item);
         });
 
-        DeviceItems.ROUTERS.getMap().forEach((dye, item) -> {
+        ModItems.ROUTERS.getMap().forEach((dye, item) -> {
             var router = pathode.get("router").getAsString();
             var router_block = String.format(pathode.get("router_block").getAsString(), router, get(dye));
             translationBuilder.add(item.get().getDescriptionId(), router_block);
         });
 
-        DeviceItems.OFFICE_CHAIRS.getMap().forEach((dye, item) -> {
+        ModItems.OFFICE_CHAIRS.getMap().forEach((dye, item) -> {
             var office_chair = pathode.get("office_chair").getAsString();
             var office_chair_block = String.format(pathode.get("office_chair_block").getAsString(), office_chair, get(dye));
             translationBuilder.add(item.get().getDescriptionId(), office_chair_block);

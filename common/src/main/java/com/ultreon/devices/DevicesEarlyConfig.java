@@ -22,13 +22,13 @@ public class DevicesEarlyConfig {
      */
     public static DevicesEarlyConfig load() {
         try (FileReader reader = new FileReader(FILE)) {
-            return Devices.GSON.fromJson(reader, DevicesEarlyConfig.class);
+            return OmnixerioDevicesMod.GSON.fromJson(reader, DevicesEarlyConfig.class);
         } catch (FileNotFoundException e) {
             DevicesEarlyConfig devicesEarlyConfig = new DevicesEarlyConfig();
             devicesEarlyConfig.save();
             return devicesEarlyConfig;
         } catch (IOException e) {
-            Devices.LOGGER.error("Failed to load devices early config", e);
+            OmnixerioDevicesMod.LOGGER.error("Failed to load devices early config", e);
             return new DevicesEarlyConfig();
         }
     }
@@ -38,9 +38,9 @@ public class DevicesEarlyConfig {
      */
     public void save() {
         try (FileWriter writer = new FileWriter(FILE)) {
-            Devices.GSON.toJson(this, writer);
+            OmnixerioDevicesMod.GSON.toJson(this, writer);
         } catch (IOException e) {
-            Devices.LOGGER.error("Failed to save devices early config", e);
+            OmnixerioDevicesMod.LOGGER.error("Failed to save devices early config", e);
         }
     }
 }

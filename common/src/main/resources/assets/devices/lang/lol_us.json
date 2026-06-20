@@ -126,7 +126,7 @@
   "item.devices.white_flash_drive": "Wite Short Sticc",
   "item.devices.wifi": "WiFi Module",
   "item.devices.yellow_flash_drive": "Yello Short Sticc",
-  "itemGroup.devices.devices_tab_device": "Devices",
+  "itemGroup.devices.devices": "Devices",
   "itemGroup.devices_tab_device": "Devices Mod",
   "message.devices.device_already_connected": "The selected device is already connected to this router.",
   "message.devices.invalid_cable": "Please select a device first before adding it to this router.",

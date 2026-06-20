@@ -1,8 +1,10 @@
 package com.ultreon.devices.core.laptop.server;
 
-import com.ultreon.devices.core.laptop.common.S2CUpdatePacket;
+import com.google.common.graph.Network;
+import com.ultreon.devices.OmnixerioDevicesMod;
+import com.ultreon.devices.network.clientbound.S2CUpdatePacket;
 import com.ultreon.devices.network.PacketHandler;
-import kotlin.jvm.internal.MutablePropertyReference0Impl;
+import dev.architectury.networking.NetworkManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -14,7 +16,9 @@ public class ServerLaptop {
     public static HashMap<UUID, ServerLaptop> laptops = new HashMap<>();
     private final UUID uuid = new UUID(430985038594038L, 493058808830598L);
     public void sendPacket(Player player, String type, CompoundTag nbt) {
-        PacketHandler.sendToClient(new S2CUpdatePacket(this.uuid, type, nbt), player);
+        if (player instanceof ServerPlayer serverPlayer)
+            NetworkManager.sendToPlayer(serverPlayer, new S2CUpdatePacket(this.uuid, type, nbt));
+        else OmnixerioDevicesMod.LOGGER.error("Tried to send packet '{}' to non-server player", type);
     }
 
     public UUID getUuid() {

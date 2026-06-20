@@ -1,8 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "devices:laptop",
-    "devices:printer",
-    "devices:mac_max_x"
-  ]
-}

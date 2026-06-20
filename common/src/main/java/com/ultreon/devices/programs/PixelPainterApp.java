@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.Reference;
 import com.ultreon.devices.api.app.Component;
 import com.ultreon.devices.api.app.Dialog;
@@ -38,7 +39,7 @@ import java.util.Objects;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class PixelPainterApp extends Application {
-    private static final ResourceLocation PIXEL_PAINTER_ICONS = new ResourceLocation("devices:textures/gui/pixel_painter.png");
+    private static final ResourceLocation PIXEL_PAINTER_ICONS = OmnixerioDevicesMod.id("textures/gui/pixel_painter.png");
 
     private static final Color ITEM_BACKGROUND = new Color(170, 176, 194);
     private static final Color ITEM_SELECTED = new Color(200, 176, 174);
@@ -487,7 +488,7 @@ public class PixelPainterApp extends Application {
     }
 
     public static class PictureRenderer implements IPrint.Renderer {
-        public static final ResourceLocation TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/model/paper.png");
+        public static final ResourceLocation TEXTURE = OmnixerioDevicesMod.id("textures/model/paper.png");
 
         @SuppressWarnings("resource")
         @Override

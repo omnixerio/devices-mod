@@ -1,13 +1,15 @@
 package com.ultreon.devices.api.print;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.ultreon.devices.init.DeviceBlocks;
+import com.ultreon.devices.init.ModBlocks;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
+import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.Nullable;
 
 //printing somethings takes makes ink cartridge take damage. cartridge can only stack to one
@@ -37,14 +39,11 @@ public interface IPrint {
         CompoundTag blockEntityTag = new CompoundTag();
         blockEntityTag.put("print", save(print));
 
-        CompoundTag itemTag = new CompoundTag();
-        itemTag.put("BlockEntityTag", blockEntityTag);
-
-        ItemStack stack = new ItemStack(DeviceBlocks.PAPER.get());
-        stack.setTag(itemTag);
+        ItemStack stack = new ItemStack(ModBlocks.PAPER.get());
+        stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityTag));
 
         if (print.getName() != null && !print.getName().isEmpty()) {
-            stack.setHoverName(Component.literal(print.getName()));
+            stack.set(DataComponents.CUSTOM_NAME, Component.literal(print.getName()));
         }
         return stack;
     }
@@ -66,7 +65,7 @@ public interface IPrint {
     boolean requiresColor();
 
     /**
-     * Converts print into an NBT tag compound. Used for the renderer.
+     * Converts print into an NBT requestData compound. Used for the renderer.
      *
      * @return nbt form of print
      */
