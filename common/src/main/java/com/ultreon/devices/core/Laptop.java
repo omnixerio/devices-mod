@@ -712,7 +712,7 @@ public class Laptop extends Screen implements System {
                 if (isMouseInside((int) mouseX, (int) mouseY, dropdownX, dropdownY, dropdownX + context.width, dropdownY + context.height)) {
                     this.context.handleMouseRelease((int) mouseX, (int) mouseY, state);
                 }
-            } else if (windows.getFirst() != null) {
+            } else if (!windows.isEmpty() && windows.getFirst() != null) {
                 windows.getFirst().handleMouseRelease((int) mouseX, (int) mouseY, state);
             }
         } catch (Exception e) {

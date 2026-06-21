@@ -59,6 +59,12 @@ public class RouterBlockEntity extends DeviceBlockEntity.Colored {
     @Override
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
+
         if (tag.contains("router", Tag.TAG_COMPOUND)) {
             router = Router.fromTag(worldPosition, tag.getCompound("router"));
         }

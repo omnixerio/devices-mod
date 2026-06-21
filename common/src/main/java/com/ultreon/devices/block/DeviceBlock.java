@@ -43,11 +43,6 @@ public abstract class DeviceBlock extends HorizontalDirectionalBlock implements 
         this.deviceType = deviceType;
     }
 
-    @Override
-    protected @NotNull RenderShape getRenderShape(BlockState blockState) {
-        return RenderShape.INVISIBLE;
-    }
-
     @NotNull
     @Override
     public VoxelShape getShape(@NotNull BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {

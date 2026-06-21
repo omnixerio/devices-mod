@@ -45,8 +45,12 @@ public record PrinterRenderer(BlockEntityRendererProvider.Context context) imple
     public void render(PrinterBlockEntity blockEntity, float partialTick, @NotNull PoseStack pose, @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         PaperModel paperModel = new PaperModel(Minecraft.getInstance().getEntityModels().bakeLayer(PaperModel.LAYER_LOCATION));
 
+
         BlockState state = Objects.requireNonNull(blockEntity.getLevel()).getBlockState(blockEntity.getBlockPos());
-        if (state.getBlock() != blockEntity.getBlock()) return;
+        if (state.getBlock() != blockEntity.getBlock())
+            return;
+
+        context.getBlockRenderDispatcher().renderSingleBlock(state, pose, bufferSource, packedLight, packedOverlay);
 
         pose.pushPose();
 

@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:devices/root",
+  "parent": "minecraft:devices/get_motherboard",
   "criteria": {
     "got_laptop": {
       "conditions": {

@@ -25,7 +25,7 @@ public class ModCreativeTabs {
         });
     }));
     public static final RegistrySupplier<CreativeModeTab> TAB_UTILITY = register("utility", () -> CreativeTabRegistry.create(builder -> {
-        builder.icon(() -> new ItemStack(ModItems.ETHERNET_CABLE.get()));
+        builder.icon(() -> new ItemStack(ModItems.FLASH_DRIVE.of(DyeColor.RED).get()));
         builder.title(Component.translatable("itemGroup.devices.utility"));
         builder.displayItems((parameters, output) -> {
             ModItems.FLASH_DRIVE.forEach(flashdrive -> output.accept(flashdrive.get()));
@@ -45,6 +45,7 @@ public class ModCreativeTabs {
             output.accept(ModItems.COMPONENT_HARD_DRIVE.get());
             output.accept(ModItems.COMPONENT_SOLID_STATE_DRIVE.get());
             output.accept(ModItems.COMPONENT_MOTHERBOARD.get());
+            output.accept(ModItems.COMPONENT_MOTHERBOARD_FULL.get());
             output.accept(ModItems.COMPONENT_FLASH_CHIP.get());
             output.accept(ModItems.COMPONENT_SCREEN.get());
             output.accept(ModItems.COMPONENT_BATTERY.get());
@@ -54,7 +55,7 @@ public class ModCreativeTabs {
         });
     }));
     public static final RegistrySupplier<CreativeModeTab> TAB_INGREDIENTS = register("ingredients", () -> CreativeTabRegistry.create(builder -> {
-        builder.icon(() -> new ItemStack(ModBlocks.LAPTOPS.of(DyeColor.RED).get()));
+        builder.icon(() -> new ItemStack(ModItems.PLASTIC_UNREFINED.get()));
         builder.title(Component.translatable("itemGroup.devices.ingredients"));
         builder.displayItems((parameters, output) -> {
             output.accept(ModItems.PLASTIC_UNREFINED.get());

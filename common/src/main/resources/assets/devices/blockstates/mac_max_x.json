@@ -1,66 +1,18 @@
 {
     "variants": {
-        "facing=north,open=true,type=base": {
+        "facing=north": {
             "model": "devices:block/mac_max_x",
             "y": 0
         },
-        "facing=east,open=true,type=base": {
+        "facing=east": {
             "model": "devices:block/mac_max_x",
             "y": 90
         },
-        "facing=south,open=true,type=base": {
+        "facing=south": {
             "model": "devices:block/mac_max_x",
             "y": 180
         },
-        "facing=west,open=true,type=base": {
-            "model": "devices:block/mac_max_x",
-            "y": 270
-        },
-        "facing=north,open=false,type=base": {
-            "model": "devices:block/mac_max_x",
-            "y": 0
-        },
-        "facing=east,open=false,type=base": {
-            "model": "devices:block/mac_max_x",
-            "y": 90
-        },
-        "facing=south,open=false,type=base": {
-            "model": "devices:block/mac_max_x",
-            "y": 180
-        },
-        "facing=west,open=false,type=base": {
-            "model": "devices:block/mac_max_x",
-            "y": 270
-        },
-        "facing=north,open=true,type=screen": {
-            "model": "devices:block/mac_max_x",
-            "y": 0
-        },
-        "facing=east,open=true,type=screen": {
-            "model": "devices:block/mac_max_x",
-            "y": 90
-        },
-        "facing=south,open=true,type=screen": {
-            "model": "devices:block/mac_max_x",
-            "y": 180
-        },
-        "facing=west,open=true,type=screen": {
-            "model": "devices:block/mac_max_x",
-            "y": 270
-        },
-        "facing=north,open=false,type=screen": {
-            "model": "devices:block/mac_max_x",
-            "y": 0
-        },
-        "facing=east,open=false,type=screen": {
-            "model": "devices:block/mac_max_x",
-            "y": 90
-        },
-        "facing=south,open=false,type=screen": {
-            "model": "devices:block/mac_max_x",
-            "y": 180
-        },
-        "facing=west,open=false,type=screen": {
+        "facing=west": {
             "model": "devices:block/mac_max_x",
             "y": 270
         }

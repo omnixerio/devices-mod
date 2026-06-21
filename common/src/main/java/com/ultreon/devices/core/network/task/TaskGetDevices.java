@@ -88,7 +88,7 @@ public class TaskGetDevices extends Task {
             return;
         }
 
-        this.foundDevices = targetType != null ? router.getConnectedDevices(level) : router.getConnectedDevices(level, targetType);
+        this.foundDevices = targetType == null ? router.getConnectedDevices(level) : router.getConnectedDevices(level, targetType);
         this.setSuccessful();
     }
 

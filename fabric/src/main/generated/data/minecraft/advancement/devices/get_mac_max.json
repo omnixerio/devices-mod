@@ -1,11 +1,11 @@
 {
-  "parent": "minecraft:devices/get_flash_chip",
+  "parent": "minecraft:devices/get_motherboard",
   "criteria": {
-    "got_flash_drive": {
+    "got_mac_max": {
       "conditions": {
         "items": [
           {
-            "items": "#devices:flash_drives"
+            "items": "devices:mac_max_x"
           }
         ]
       },
@@ -14,16 +14,16 @@
   },
   "display": {
     "background": "minecraft:textures/block/copper_block",
-    "description": "Build your first flash drive",
+    "description": "Build your first Mac Max X",
     "icon": {
       "count": 1,
-      "id": "devices:red_flash_drive"
+      "id": "devices:red_laptop"
     },
-    "title": "Portable Storage"
+    "title": "Mac Max X What?"
   },
   "requirements": [
     [
-      "got_flash_drive"
+      "got_mac_max"
     ]
   ],
   "sends_telemetry_event": true

@@ -30,10 +30,10 @@ public class DevicesModelGenerator extends FabricModelProvider {
     @Override
     public void generateBlockStateModels(BlockModelGenerators blockStateModelGenerator) {
         ModBlocks.LAPTOPS.getMap().forEach((dye, block) -> {
-            blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get(), "_closed"), () -> new Gson().fromJson(String.format(laptopClosedPain(), dye.getName()), JsonElement.class));
+            blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get(), "_screen"), () -> new Gson().fromJson(String.format(laptopClosedPain(), dye.getName()), JsonElement.class));
             blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get(), "_full"), () -> new Gson().fromJson(String.format(laptopFullPain(), dye.getName()), JsonElement.class));
             blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get(), "_flitem"), () -> new Gson().fromJson(String.format(laptopFullItemPain(), dye.getName()), JsonElement.class));
-            blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get()), () -> new Gson().fromJson(String.format(laptopPain(), dye.getName()), JsonElement.class));
+            blockStateModelGenerator.modelOutput.accept(ModelLocationUtils.getModelLocation(block.get(), "_base"), () -> new Gson().fromJson(String.format(laptopPain(), dye.getName()), JsonElement.class));
             blockStateModelGenerator.blockStateOutput.accept(new BlockStateGenerator() {
                 @NotNull
                 @Override

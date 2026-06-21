@@ -1,15 +1,22 @@
 package com.ultreon.devices.api.print;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.ultreon.devices.OmnixerioDevicesMod;
+import com.ultreon.devices.init.ModBlockEntities;
 import com.ultreon.devices.init.ModBlocks;
+import com.ultreon.devices.init.ModDataComponents;
+import com.ultreon.devices.init.ModItems;
+import com.ultreon.devices.item.data.Print;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.jetbrains.annotations.Nullable;
 
 //printing somethings takes makes ink cartridge take damage. cartridge can only stack to one
@@ -38,6 +45,13 @@ public interface IPrint {
     static ItemStack generateItem(IPrint print) {
         CompoundTag blockEntityTag = new CompoundTag();
         blockEntityTag.put("print", save(print));
+
+        ResourceLocation resourceLocation = BlockEntityType.getKey(ModBlockEntities.PAPER.get());
+        if (resourceLocation == null) {
+            OmnixerioDevicesMod.LOGGER.error("Failed to generate item for print: {}", print.getName());
+            return new ItemStack(ModItems.PAPER.get());
+        }
+        blockEntityTag.putString("id", resourceLocation.toString());
 
         ItemStack stack = new ItemStack(ModBlocks.PAPER.get());
         stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityTag));

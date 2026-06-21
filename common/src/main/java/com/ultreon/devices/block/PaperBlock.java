@@ -32,10 +32,10 @@ import java.util.List;
 public class PaperBlock extends HorizontalDirectionalBlock implements EntityBlock {
     private static final VoxelShape SELECTION_BOUNDS = box(15, 0, 0, 16, 16, 16);
 
-    private static final VoxelShape SELECTION_BOX_NORTH = box(15, 0, 0, 16, 16, 16);
-    private static final VoxelShape SELECTION_BOX_SOUTH = box(0, 0, 0, 1, 16, 16);
-    private static final VoxelShape SELECTION_BOX_WEST = box(0, 0, 15, 16, 16, 16);
-    private static final VoxelShape SELECTION_BOX_EAST = box(0, 0, 0, 16, 16, 1);
+    private static final VoxelShape SELECTION_BOX_EAST = box(15, 0, 0, 16, 16, 16);
+    private static final VoxelShape SELECTION_BOX_WEST = box(0, 0, 0, 1, 16, 16);
+    private static final VoxelShape SELECTION_BOX_SOUTH = box(0, 0, 15, 16, 16, 16);
+    private static final VoxelShape SELECTION_BOX_NORTH = box(0, 0, 0, 16, 16, 1);
     private static final VoxelShape[] SELECTION_BOUNDING_BOX = {SELECTION_BOX_SOUTH, SELECTION_BOX_WEST, SELECTION_BOX_NORTH, SELECTION_BOX_EAST};
 
     public PaperBlock(Properties properties) {
@@ -80,7 +80,11 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (player.isCreative()) {
+            return super.playerWillDestroy(level, pos, state, player);
+        }
+
         if (!level.isClientSide) {
             BlockEntity tileEntity = level.getBlockEntity(pos);
             if (tileEntity instanceof PaperBlockEntity paper) {
@@ -88,7 +92,7 @@ public class PaperBlock extends HorizontalDirectionalBlock implements EntityBloc
                 level.addFreshEntity(new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop));
             }
         }
-        super.onRemove(state, level, pos, newState, isMoving);
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override

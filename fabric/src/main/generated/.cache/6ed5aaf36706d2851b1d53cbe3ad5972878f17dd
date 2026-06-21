@@ -1,8 +1,9 @@
-// 1.21.1	2026-06-20T21:04:51.3673065	Devices Mod/Advancements
+// 1.21.1	2026-06-21T06:54:45.1711682	Devices Mod/Advancements
 e66e7edc039ef15f1d85abc684681d17c8590846 data\minecraft\advancement\devices\get_flash_chip.json
 4d4f463d41a9c858c83b1a2914f8aea8b6d3ab98 data\minecraft\advancement\devices\get_circuit_board.json
 8b33c11d834a6a3aeb3b32ebec3430e249460e07 data\minecraft\advancement\devices\get_router.json
-4079898ad2b40e757d72633738f610d21b206795 data\minecraft\advancement\devices\get_flash_drive.json
-de9eb07585405612c70f56bd738aca44e19719ca data\minecraft\advancement\devices\get_ram.json
-0be3394abbfd36e590afb96eaf222de050249e01 data\minecraft\advancement\devices\get_laptop.json
+a7d9c5c73c188892df63a1d18167e087748987e3 data\minecraft\advancement\devices\get_mac_max.json
+f0b0b206976eaebdb2e0df43c578f97f81d5d4fd data\minecraft\advancement\devices\get_flash_drive.json
+51edce7073aad440efe47a9d601239036163bb0b data\minecraft\advancement\devices\get_laptop.json
+397277e4662190eef96c400056f504faffe4122b data\minecraft\advancement\devices\get_motherboard.json
 e219566e0d87e2974284e79af1f4fbd5d6648d93 data\minecraft\advancement\devices\root.json

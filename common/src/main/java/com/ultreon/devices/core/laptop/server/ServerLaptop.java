@@ -26,7 +26,6 @@ public class ServerLaptop {
     }
 
     public void handlePacket(Player player, String type, CompoundTag data) {
-        System.out.printf("Handling %s, %s%n", type, data);
         if (type.equals("mouseMoved")) {
             var x = data.getDouble("x");
             var y = data.getDouble("y");

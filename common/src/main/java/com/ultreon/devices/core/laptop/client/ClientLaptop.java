@@ -48,7 +48,6 @@ public class ClientLaptop {
     }
 
     public void sendPacket(String type, CompoundTag nbt) {
-        System.out.printf("Sending packet %s, %s%n", type, nbt);
         PacketHandler.sendToServer(new C2SUpdatePacket(this.uuid, type, nbt));
     }
 

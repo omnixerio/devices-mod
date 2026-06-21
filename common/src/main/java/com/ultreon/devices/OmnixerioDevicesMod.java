@@ -10,7 +10,6 @@ import com.ultreon.devices.api.print.IPrint;
 import com.ultreon.devices.api.print.PrintingManager;
 import com.ultreon.devices.api.task.TaskManager;
 import com.ultreon.devices.api.utils.OnlineRequest;
-import com.ultreon.devices.block.PrinterBlock;
 import com.ultreon.devices.core.client.ClientNotification;
 import com.ultreon.devices.core.io.task.*;
 import com.ultreon.devices.core.network.task.TaskConnect;
@@ -39,9 +38,7 @@ import com.ultreon.devices.programs.system.SystemApp;
 import com.ultreon.devices.programs.system.task.*;
 import com.ultreon.devices.util.SiteRegistration;
 import com.ultreon.devices.util.Vulnerability;
-import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientPlayerEvent;
-import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.injectables.targets.ArchitecturyTarget;
@@ -59,9 +56,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -384,16 +379,6 @@ public abstract class OmnixerioDevicesMod {
     private static void setupEvents() {
         LifecycleEvent.SERVER_STARTING.register((instance -> server = instance));
         LifecycleEvent.SERVER_STOPPED.register(instance -> server = null);
-        InteractionEvent.RIGHT_CLICK_BLOCK.register(((player, hand, pos, face) -> {
-            Level level = player.level();
-            if (!player.getItemInHand(hand).isEmpty() && player.getItemInHand(hand).getItem() == Items.PAPER) {
-                if (level.getBlockState(pos).getBlock() instanceof PrinterBlock) {
-                    return EventResult.interruptTrue();
-                    //event.setUseBlock(Event.Result.ALLOW); //todo
-                }
-            }
-            return EventResult.pass();
-        }));
 
         PlayerEvent.PLAYER_JOIN.register((player -> {
             LOGGER.info("Player logged in: " + player.getName());

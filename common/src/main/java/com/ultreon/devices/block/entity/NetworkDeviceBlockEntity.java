@@ -32,8 +32,9 @@ public abstract class NetworkDeviceBlockEntity extends DeviceBlockEntity impleme
             return;
 
         if (connection != null) {
-            if (++counter >= DeviceConfig.BEACON_INTERVAL.get() * 2) {
-                connection.setRouterPos(null);
+            Router router = connection.getRouter(level);
+            if (router != null && ++counter >= DeviceConfig.BEACON_INTERVAL.get() * 2 && router.getPos().distSqr(worldPosition) > DeviceConfig.SIGNAL_RANGE.get() * DeviceConfig.SIGNAL_RANGE.get()) {
+                connection = null;
                 counter = 0;
             }
         }
@@ -54,6 +55,7 @@ public abstract class NetworkDeviceBlockEntity extends DeviceBlockEntity impleme
         }
         connection = new Connection(router);
         counter = 0;
+        router.addDevice(this);
         this.setChanged();
     }
 

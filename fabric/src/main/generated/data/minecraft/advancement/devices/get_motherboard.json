@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:devices/root",
   "criteria": {
-    "got_ram": {
+    "got_motherboard": {
       "conditions": {
         "items": [
           {
-            "items": "devices:ram"
+            "items": "devices:motherboard_full"
           }
         ]
       },
@@ -14,16 +14,16 @@
   },
   "display": {
     "background": "minecraft:textures/block/copper_block",
-    "description": "Create your first stick of RAM",
+    "description": "Create your first motherboard",
     "icon": {
       "count": 1,
-      "id": "devices:ram"
+      "id": "devices:motherboard_full"
     },
-    "title": "Thinking Space"
+    "title": "Motherboard"
   },
   "requirements": [
     [
-      "got_ram"
+      "got_motherboard"
     ]
   ],
   "sends_telemetry_event": true

@@ -18,6 +18,7 @@ import com.ultreon.devices.core.io.FileSystem;
 import com.ultreon.devices.core.network.NetworkDevice;
 import com.ultreon.devices.core.network.task.TaskGetDevices;
 import com.ultreon.devices.core.print.task.TaskPrint;
+import com.ultreon.devices.init.ModBlockEntities;
 import com.ultreon.devices.programs.system.component.FileBrowser;
 import com.ultreon.devices.programs.system.object.ColorScheme;
 import com.ultreon.devices.util.GLHelper;
@@ -861,7 +862,7 @@ public abstract class Dialog extends Wrappable {
         private void getPrinters(ItemList<NetworkDevice> itemList) {
             itemList.removeAll();
             itemList.setLoading(true);
-            Task task = new TaskGetDevices(Laptop.getPos(), PrinterBlockEntity.class);
+            Task task = new TaskGetDevices(Laptop.getPos(), ModBlockEntities.PRINTER.get());
             task.setCallback((tag, success) -> {
                 if (success) {
                     assert tag != null;

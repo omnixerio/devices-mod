@@ -1,63 +1,63 @@
 {
   "variants": {
     "facing=east,open=false,type=base": {
-      "model": "devices:block/pink_laptop",
+      "model": "devices:block/pink_laptop_base",
       "y": 270
     },
     "facing=east,open=false,type=screen": {
-      "model": "devices:block/pink_laptop_closed",
+      "model": "devices:block/pink_laptop_screen",
       "y": 270
     },
     "facing=east,open=true,type=base": {
-      "model": "devices:block/pink_laptop",
+      "model": "devices:block/pink_laptop_base",
       "y": 270
     },
     "facing=east,open=true,type=screen": {
-      "model": "devices:block/pink_laptop_closed",
+      "model": "devices:block/pink_laptop_screen",
       "y": 270
     },
     "facing=north,open=false,type=base": {
-      "model": "devices:block/pink_laptop",
+      "model": "devices:block/pink_laptop_base",
       "y": 180
     },
     "facing=north,open=false,type=screen": {
-      "model": "devices:block/pink_laptop_closed",
+      "model": "devices:block/pink_laptop_screen",
       "y": 180
     },
     "facing=north,open=true,type=base": {
-      "model": "devices:block/pink_laptop",
+      "model": "devices:block/pink_laptop_base",
       "y": 180
     },
     "facing=north,open=true,type=screen": {
-      "model": "devices:block/pink_laptop_closed",
+      "model": "devices:block/pink_laptop_screen",
       "y": 180
     },
     "facing=south,open=false,type=base": {
-      "model": "devices:block/pink_laptop"
+      "model": "devices:block/pink_laptop_base"
     },
     "facing=south,open=false,type=screen": {
-      "model": "devices:block/pink_laptop_closed"
+      "model": "devices:block/pink_laptop_screen"
     },
     "facing=south,open=true,type=base": {
-      "model": "devices:block/pink_laptop"
+      "model": "devices:block/pink_laptop_base"
     },
     "facing=south,open=true,type=screen": {
-      "model": "devices:block/pink_laptop_closed"
+      "model": "devices:block/pink_laptop_screen"
     },
     "facing=west,open=false,type=base": {
-      "model": "devices:block/pink_laptop",
+      "model": "devices:block/pink_laptop_base",
       "y": 90
     },
     "facing=west,open=false,type=screen": {
-      "model": "devices:block/pink_laptop_closed",
+      "model": "devices:block/pink_laptop_screen",
       "y": 90
     },
     "facing=west,open=true,type=base": {
-      "model": "devices:block/pink_laptop",
+      "model": "devices:block/pink_laptop_base",
       "y": 90
     },
     "facing=west,open=true,type=screen": {
-      "model": "devices:block/pink_laptop_closed",
+      "model": "devices:block/pink_laptop_screen",
       "y": 90
     }
   }

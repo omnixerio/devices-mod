@@ -2,15 +2,18 @@ package com.ultreon.devices.block;
 
 import com.mojang.serialization.MapCodec;
 import com.ultreon.devices.ModDeviceTypes;
+import com.ultreon.devices.OmnixerioDevicesMod;
 import com.ultreon.devices.block.entity.PrinterBlockEntity;
 import com.ultreon.devices.util.Colored;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -101,8 +104,8 @@ public class PrinterBlock extends DeviceBlock.Colored implements Colored {
     protected @NotNull ItemInteractionResult useItemOn(ItemStack itemStack, BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
         ItemStack heldItem = player.getItemInHand(interactionHand);
         BlockEntity tileEntity = level.getChunkAt(blockPos).getBlockEntity(blockPos, LevelChunk.EntityCreationType.IMMEDIATE);
-        if (tileEntity instanceof PrinterBlockEntity) {
-            return ((PrinterBlockEntity) tileEntity).addPaper(heldItem, player.isCrouching()) ? ItemInteractionResult.SUCCESS : ItemInteractionResult.FAIL;
+        if (heldItem.is(Items.PAPER) && tileEntity instanceof PrinterBlockEntity printer) {
+            return printer.addPaper(heldItem, player.isCrouching()) ? ItemInteractionResult.SUCCESS : ItemInteractionResult.FAIL;
         }
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
