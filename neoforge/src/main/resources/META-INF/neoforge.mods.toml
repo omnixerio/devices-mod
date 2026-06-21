@@ -13,7 +13,7 @@ version = "${version}"
 displayName = "Devices Mod"
 #updateJSONURL="http://myurl.me/"
 displayURL = "https://github.com/omnixerio/devices-mod"
-logoFile="devices_mod.png"
+logoFile = "devices_mod.png"
 credits = "Thanks to MrCrayfish for the idea and the original mod that was made in 1.12.2. Thank you to MinecraftDoodler for helping with textures. Thank you to lizterzapzap for the Devices Mod icon. Cheers to these people for donating during the development: Mastef Chief, Haunted Corpse, Jake Crowley, fabbe50, PlayDashGaming, jack jook, Hunstagamez, Techyy YT, MinecraftDoodler, Norge100YT, Cyberman2208, CreepergamingsMC"
 authors = "Qboi123, Jab125"
 description = """
@@ -31,7 +31,7 @@ itemIcon = "devices:red_laptop"
 [[mixins]]
 config = "omnixerio-devices.mixins.json"
 [[mixins]]
-config = "omnixerio-devices-common.mixins.json
+config = "omnixerio-devices-common.mixins.json"
 
 # Dependencies for the main mod.
 [[dependencies.devices]]

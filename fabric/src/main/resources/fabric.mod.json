@@ -36,13 +36,13 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.ultreon.devices.fabric.OmnixerioDevicesModFabric"
+      "dev.ultreon.devices.fabric.OmnixerioDevicesModFabric"
     ],
     "devices:application_registration": [
-      "com.ultreon.devices.fabric.BuiltinAppsRegistration"
+      "dev.ultreon.devices.fabric.BuiltinAppsRegistration"
     ],
     "fabric-datagen": [
-      "com.ultreon.devices.datagen.DevicesDataGenerator"
+      "dev.ultreon.devices.datagen.DevicesDataGenerator"
     ]
   },
   "mixins": [

@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "devices:clock",
+  "key": {
+    "b": {
+      "item": "devices:battery"
+    },
+    "c": {
+      "item": "devices:circuit_board"
+    },
+    "d": {
+      "item": "minecraft:brown_dye"
+    },
+    "p": {
+      "item": "devices:plastic_frame"
+    },
+    "s": {
+      "item": "devices:screen"
+    }
+  },
+  "pattern": [
+    "psp",
+    "dcd",
+    "pbp"
+  ],
+  "result": {
+    "count": 1,
+    "id": "devices:brown_clock"
+  }
+}

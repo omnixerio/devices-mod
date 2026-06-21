@@ -1,9 +1,9 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.ultreon.devices.mixin.common",
+  "package": "dev.ultreon.devices.mixin.common",
   "compatibilityLevel": "JAVA_17",
-  "plugin": "com.ultreon.devices.mixin.common.MixinPlugin",
+  "plugin": "dev.ultreon.devices.mixin.common.MixinPlugin",
   "mixins": [
 
   ],

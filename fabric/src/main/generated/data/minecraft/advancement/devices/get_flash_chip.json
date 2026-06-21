@@ -13,7 +13,7 @@
     }
   },
   "display": {
-    "background": "minecraft:textures/block/copper_block",
+    "background": "devices:textures/gui/advancement_background.png",
     "description": "Create your first flash chip",
     "icon": {
       "count": 1,

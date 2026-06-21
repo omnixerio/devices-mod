@@ -1,0 +1,6 @@
+{
+  "parent": "devices:block/clock",
+  "textures": {
+    "1": "minecraft:block/blue_wool"
+  }
+}

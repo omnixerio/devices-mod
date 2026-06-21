@@ -31,33 +31,33 @@
       "y": 270
     },
     "facing=north,open=false,type=screen": {
-      "model": "devices:block/%1$s_laptop_closed",
+      "model": "devices:block/%1$s_laptop_screen",
       "y": 180
     },
     "facing=south,open=false,type=screen": {
-      "model": "devices:block/%1$s_laptop_closed"
+      "model": "devices:block/%1$s_laptop_screen"
     },
     "facing=west,open=false,type=screen": {
-      "model": "devices:block/%1$s_laptop_closed",
+      "model": "devices:block/%1$s_laptop_screen",
       "y": 90
     },
     "facing=east,open=false,type=screen": {
-      "model": "devices:block/%1$s_laptop_closed",
+      "model": "devices:block/%1$s_laptop_screen",
       "y": 270
     },
     "facing=north,open=true,type=screen": {
-      "model": "devices:block/%1$s_laptop_closed",
+      "model": "devices:block/%1$s_laptop_screen",
       "y": 180
     },
     "facing=south,open=true,type=screen": {
-      "model": "devices:block/%1$s_laptop_closed"
+      "model": "devices:block/%1$s_laptop_screen"
     },
     "facing=west,open=true,type=screen": {
-      "model": "devices:block/%1$s_laptop_closed",
+      "model": "devices:block/%1$s_laptop_screen",
       "y": 90
     },
     "facing=east,open=true,type=screen": {
-      "model": "devices:block/%1$s_laptop_closed",
+      "model": "devices:block/%1$s_laptop_screen",
       "y": 270
     }
   }

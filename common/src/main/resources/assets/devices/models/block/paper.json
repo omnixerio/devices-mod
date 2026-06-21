@@ -1,5 +1,5 @@
 {
     "textures": {
-        "particle": "devices:model/paper"
+        "particle": "devices:block/paper"
     }
 }

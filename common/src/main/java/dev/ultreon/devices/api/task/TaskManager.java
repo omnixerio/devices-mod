@@ -1,0 +1,58 @@
+package dev.ultreon.devices.api.task;
+
+import dev.architectury.networking.NetworkManager;
+import dev.ultreon.devices.OmnixerioDevicesMod;
+import dev.ultreon.devices.network.serverbound.C2SRequestPacket;
+import net.minecraft.client.Minecraft;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
+public final class TaskManager {
+    private static TaskManager instance = null;
+
+    private final Map<String, Task> registeredRequests = new HashMap<String, Task>();
+    private final Map<Integer, Task> requests = new HashMap<Integer, Task>();
+    private int currentId = 0;
+
+    private TaskManager() {
+    }
+
+    private static TaskManager get() {
+        if (instance == null) {
+            instance = new TaskManager();
+        }
+        return instance;
+    }
+
+    public static void registerTask(Supplier<Task> clazz) {
+        var task = clazz.get();
+        try {
+            OmnixerioDevicesMod.LOGGER.info("Registering task '" + task.getName() + "'");
+            get().registeredRequests.put(task.getName(), task);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void sendTask(Task task) {
+        TaskManager manager = get();
+        if (!manager.registeredRequests.containsKey(task.getName())) {
+            throw new RuntimeException("Unregistered Task: " + task.getClass().getName() + ". Use TaskManager#requestRequest to register your task.");
+        }
+
+        int requestId = manager.currentId++;
+        manager.requests.put(requestId, task);
+        if(Minecraft.getInstance().getConnection() != null)
+        NetworkManager.sendToServer(C2SRequestPacket.create(requestId, task));
+    }
+
+    public static Task getTask(String name) {
+        return get().registeredRequests.get(name);
+    }
+
+    public static Task getTaskAndRemove(int id) {
+        return get().requests.remove(id);
+    }
+}

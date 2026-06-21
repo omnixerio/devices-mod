@@ -13,11 +13,11 @@
   },
   "display": {
     "announce_to_chat": false,
-    "background": "minecraft:textures/block/copper_block",
+    "background": "devices:textures/gui/advancement_background.png",
     "description": "Install Devices Mod",
     "icon": {
       "count": 1,
-      "id": "devices:circuit_board"
+      "id": "devices:white_laptop"
     },
     "show_toast": false,
     "title": "Devices Mod"

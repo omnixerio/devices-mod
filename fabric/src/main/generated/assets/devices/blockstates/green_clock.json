@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "devices:block/green_clock",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "devices:block/green_clock",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "devices:block/green_clock"
+    },
+    "facing=west": {
+      "model": "devices:block/green_clock",
+      "y": 90
+    }
+  }
+}

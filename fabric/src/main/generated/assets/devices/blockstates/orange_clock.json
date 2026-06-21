@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "devices:block/orange_clock",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "devices:block/orange_clock",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "devices:block/orange_clock"
+    },
+    "facing=west": {
+      "model": "devices:block/orange_clock",
+      "y": 90
+    }
+  }
+}
