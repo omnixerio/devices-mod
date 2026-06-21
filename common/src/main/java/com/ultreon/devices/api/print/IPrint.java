@@ -4,11 +4,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.ultreon.devices.init.ModBlocks;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-
 import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,7 +65,7 @@ public interface IPrint {
     boolean requiresColor();
 
     /**
-     * Converts print into an NBT requestData compound. Used for the renderer.
+     * Converts print into an NBT tag compound. Used for the renderer.
      *
      * @return nbt form of print
      */
@@ -77,6 +77,10 @@ public interface IPrint {
     Class<? extends Renderer> getRenderer();
 
     interface Renderer {
-        boolean render(PoseStack pose, CompoundTag data);
+        default boolean render(PoseStack pose, CompoundTag data) {
+            return render(pose, data, 0, 0, Direction.NORTH);
+        }
+
+        boolean render(PoseStack pose, CompoundTag data, int packedLight, int packedOverlay, Direction direction);
     }
 }

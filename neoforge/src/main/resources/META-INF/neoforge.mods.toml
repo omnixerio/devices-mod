@@ -4,7 +4,7 @@
 modLoader = "javafml"
 loaderVersion = "[1,)"
 license = "GPL-3.0"
-issueTrackerURL = "https://github.com/Ultreon/devices-mod/issues"
+issueTrackerURL = "https://github.com/omnixerio/devices-mod/issues"
 
 # The main mod, and all sub-mods.
 [[mods]]
@@ -12,7 +12,7 @@ modId = "devices"
 version = "${version}"
 displayName = "Devices Mod"
 #updateJSONURL="http://myurl.me/"
-displayURL = "https://github.com/Ultreon/devices-mod"
+displayURL = "https://github.com/omnixerio/devices-mod"
 logoFile="devices_mod.png"
 credits = "Thanks to MrCrayfish for the idea and the original mod that was made in 1.12.2. Thank you to MinecraftDoodler for helping with textures. Thank you to lizterzapzap for the Devices Mod icon. Cheers to these people for donating during the development: Mastef Chief, Haunted Corpse, Jake Crowley, fabbe50, PlayDashGaming, jack jook, Hunstagamez, Techyy YT, MinecraftDoodler, Norge100YT, Cyberman2208, CreepergamingsMC"
 authors = "Qboi123, Jab125"
@@ -20,7 +20,7 @@ description = """
 Adds working electronic devices into Minecraft!
 CurseForge: https://curseforge.com/minecraft/mc-mods/devices-mod
 Modrinth: https://modrinth.com/mod/devices-mod
-Source Code: https://github.com/Ultreon/devices-mod
+Source Code: https://github.com/omnixerio/devices-mod
 
 Original mod made by MrCrayfish called "MrCrayfish's Device Mod".
 Available at: https://mrcrayfish.com/mods/cdm

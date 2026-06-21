@@ -22,15 +22,20 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.awt.*;
 import java.util.Objects;
+
+import static net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY;
 
 /**
  * @author MrCrayfish
  */
 public record PaperRenderer(
         BlockEntityRendererProvider.Context context) implements BlockEntityRenderer<PaperBlockEntity> {
+    private static long TextureIndex = 0;
+
 
     @SuppressWarnings("SameParameterValue")
     private static void drawCuboid(double x, double y, double z, double width, double height, double depth, MultiBufferSource bufferSource) {
@@ -57,33 +62,52 @@ public record PaperRenderer(
         double textureWidth = Math.abs(xTo - xFrom);
         double textureHeight = Math.abs(yTo - yFrom);
         double textureDepth = Math.abs(zTo - zFrom);
-        VertexConsumer buffer = bufferSource.getBuffer(RenderType.solid());
 
+        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        switch (direction.getAxis()) {
+            case X -> {
+                buffer.addVertex((float) xFrom, (float) yFrom, (float) zFrom).setUv((float) (1 - xFrom + textureDepth), (float) (1 - yFrom + textureHeight));
+                buffer.addVertex((float) xFrom, (float) yTo, (float) zFrom).setUv((float) (1 - xFrom + textureDepth), (float) (1 - yFrom));
+                buffer.addVertex((float) xTo, (float) yTo, (float) zTo).setUv((float) (1 - xFrom), (float) (1 - yFrom));
+                buffer.addVertex((float) xTo, (float) yFrom, (float) zTo).setUv((float) (1 - xFrom), (float) (1 - yFrom + textureHeight));
+            }
+            case Y -> {
+                buffer.addVertex((float) xFrom, (float) yFrom, (float) zFrom).setUv((float) (1 - xFrom + textureWidth), (float) (1 - yFrom + textureDepth));
+                buffer.addVertex((float) xFrom, (float) yFrom, (float) zTo).setUv((float) (1 - xFrom + textureWidth), (float) (1 - yFrom));
+                buffer.addVertex((float) xTo, (float) yFrom, (float) zTo).setUv((float) (1 - xFrom), (float) (1 - yFrom));
+                buffer.addVertex((float) xTo, (float) yFrom, (float) zFrom).setUv((float) (1 - xFrom), (float) (1 - yFrom + textureDepth));
+            }
+            case Z -> {
+                buffer.addVertex((float) xFrom, (float) yFrom, (float) zFrom).setUv((float) (1 - xFrom + textureWidth), (float) (1 - yFrom + textureHeight));
+                buffer.addVertex((float) xFrom, (float) yTo, (float) zFrom).setUv((float) (1 - xFrom + textureWidth), (float) (1 - yFrom));
+                buffer.addVertex((float) xTo, (float) yTo, (float) zTo).setUv((float) (1 - xFrom), (float) (1 - yFrom));
+                buffer.addVertex((float) xTo, (float) yFrom, (float) zTo).setUv((float) (1 - xFrom), (float) (1 - yFrom + textureHeight));
+            }
+        }
     }
 
-    private static long AA = 0;
-    private static void drawPixels(PoseStack poseStack, int[] pixels, int resolution, boolean cut, int packedLight, MultiBufferSource bufferSource) {
-        double scale = 16 / (double) resolution;
+    private static void drawPixels(PoseStack poseStack, int[] pixels, int resolution, boolean cut, int packedLight, int packedOverlay, MultiBufferSource bufferSource) {
         var d = new DynamicTexture(resolution, resolution, true);
         for (int i = 0; i < resolution; i++) {
             for (int j = 0; j < resolution; j++) {
-
                 int r = (pixels[j + i * resolution] >> 16 & 255);
                 int g = (pixels[j + i * resolution] >> 8 & 255);
                 int b = (pixels[j + i * resolution] & 255);
-                int a = (int) Math.floor((pixels[j + i * resolution] >> 24 & 255));
+                int a = (int) (double) (pixels[j + i * resolution] >> 24 & 255);
+
                 assert d.getPixels() != null;
                 d.getPixels().setPixelRGBA(i, j, new Color(r, g, b, a).getRGB());
             }
         }
-        ResourceLocation resourcelocation = Minecraft.getInstance().getTextureManager().register("map/" + AA, d);
+
+        ResourceLocation resourcelocation = Minecraft.getInstance().getTextureManager().register("map/" + TextureIndex, d);
         Matrix4f matrix4f = poseStack.last().pose();
-        var vertexconsumer = bufferSource.getBuffer(RenderType.text(resourcelocation));
-        vertexconsumer.addVertex(matrix4f, 0.0f, 128.0f, -0.01f).setColor(255, 255, 255, 255).setUv(0.0f, 1.0f).setLight(packedLight);
-        vertexconsumer.addVertex(matrix4f, 128.0f, 128.0f, -0.01f).setColor(255, 255, 255, 255).setUv(1.0f, 1.0f).setLight(packedLight);
-        vertexconsumer.addVertex(matrix4f, 128.0f, 0.0f, -0.01f).setColor(255, 255, 255, 255).setUv(1.0f, 0.0f).setLight(packedLight);
-        vertexconsumer.addVertex(matrix4f, 0.0f, 0.0f, -0.01f).setColor(255, 255, 255, 255).setUv(0.0f, 0.0f).setLight(packedLight);
-        AA++;
+        var addVertexconsumer = bufferSource.getBuffer(RenderType.entitySolid(resourcelocation));
+        addVertexconsumer.addVertex(matrix4f, 0.0f, 128.0f, -0.01f).setColor(255, 255, 255, 255).setUv(0.0f, 1.0f).setLight(packedLight).setOverlay(packedOverlay);
+        addVertexconsumer.addVertex(matrix4f, 128.0f, 128.0f, -0.01f).setColor(255, 255, 255, 255).setUv(1.0f, 1.0f).setLight(packedLight).setOverlay(packedOverlay);
+        addVertexconsumer.addVertex(matrix4f, 128.0f, 0.0f, -0.01f).setColor(255, 255, 255, 255).setUv(1.0f, 0.0f).setLight(packedLight).setOverlay(packedOverlay);
+        addVertexconsumer.addVertex(matrix4f, 0.0f, 0.0f, -0.01f).setColor(255, 255, 255, 255).setUv(0.0f, 0.0f).setLight(packedLight).setOverlay(packedOverlay);
+        TextureIndex++;
     }
 
     @Override
@@ -94,43 +118,68 @@ public record PaperRenderer(
             return;
         }
 
+        //region <RenderRoot()>
         pose.pushPose();
         {
-            pose.translate(blockEntity.getBlockPos().getX(), blockEntity.getBlockPos().getY(), blockEntity.getBlockPos().getZ());
+
+            //region <RenderMain()>
+            pose.pushPose();
+            Vector3f vector3f = new Vector3f(0.5f, 0f, 0.5f);
+            Quaternionf quat = (switch (state.getValue(PaperBlock.FACING)) {
+                case DOWN -> new Quaternionf().rotationX((float) Math.PI);
+                case UP -> new Quaternionf();
+                case NORTH -> new Quaternionf().rotateXYZ(0, 0.0F, 0);
+                case SOUTH -> new Quaternionf().rotateXYZ(0, (float) (Math.PI), 0);
+                case WEST -> new Quaternionf().rotateXYZ(0, (float) (Math.PI / 2), 0);
+                case EAST -> new Quaternionf().rotateXYZ(0, (float) -(Math.PI / 2), 0);
+            });
+            vector3f.set(-1, -1, -1).rotate(quat);
             pose.translate(0.5, 0.5, 0.5);
-            pose.mulPose(state.getValue(PaperBlock.FACING).getRotation());
-            pose.mulPose(new Quaternionf(0, 0, 1, -blockEntity.getRotation()));
+            pose.mulPose(quat);
             pose.translate(-0.5, -0.5, -0.5);
+
+            float scale = 32768f;
+            pose.scale(1 / scale, 1 / scale, 1 / scale);
 
             IPrint print = blockEntity.getPrint();
             if (print != null) {
                 CompoundTag data = print.toTag();
                 if (data.contains("pixels", Tag.TAG_INT_ARRAY) && data.contains("resolution", Tag.TAG_INT)) {
                     RenderSystem.setShaderTexture(0, PrinterRenderer.PaperModel.TEXTURE);
-                    if (DeviceConfig.RENDER_PRINTED_3D.get() && !data.getBoolean("cut")) {
-                       // drawCuboid(0, 0, 0, 16, 16, 1, bufferSource);
-                    }
+
+                    // TODO: Fix in either 0.9 or 0.10
+//                    if (DeviceConfig.RENDER_PRINTED_3D.get() && !data.getBoolean("cut")) {
+//                        drawCuboid(0, 0, 0, 16, 16, 1, bufferSource);
+//                    }
 
                     pose.translate(0, 0, DeviceConfig.RENDER_PRINTED_3D.get() ? 0.0625 : 0.001);
 
+                    //region <RenderPrint()>
                     pose.pushPose();
                     {
                         IPrint.Renderer renderer = PrintingManager.getRenderer(print);
-                        renderer.render(pose, data);
+                        VertexConsumer buffer = bufferSource.getBuffer(RenderType.entitySolid(PrinterRenderer.PaperModel.TEXTURE));
+                        renderer.render(pose, data, packedLight, NO_OVERLAY, blockEntity.getBlockState().getValue(PaperBlock.FACING));
                     }
                     pose.popPose();
+                    //endregion
 
+                    //region <RenderPrint3D()>
                     pose.pushPose();
                     {
                         if (DeviceConfig.RENDER_PRINTED_3D.get() && data.getBoolean("cut")) {
                             CompoundTag tag = print.toTag();
-                            drawPixels(pose, tag.getIntArray("pixels"), tag.getInt("resolution"), tag.getBoolean("cut"), packedLight, bufferSource);
+                            drawPixels(pose, tag.getIntArray("pixels"), tag.getInt("resolution"), tag.getBoolean("cut"), packedLight, packedOverlay, bufferSource);
                         }
                     }
                     pose.popPose();
+                    //endregion
                 }
             }
+            pose.popPose();
+            //endregion
         }
         pose.popPose();
+        //endregion
     }
 }

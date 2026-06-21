@@ -3,7 +3,7 @@
   "id": "devices",
   "version": "${version}",
   "name": "Devices Mod",
-  "description": "Adds working electronic devices into Minecraft!\nCurseForge: https://curseforge.com/minecraft/mc-mods/devices-mod\nModrinth: https://modrinth.com/mod/devices-mod\nSource Code: https://github.com/Ultreon/devices-mod\n\nOriginal mod made by MrCrayfish called \"MrCrayfish's Device Mod\".\nAvailable at: https://mrcrayfish.com/mods/cdm\nSource Code: https://github.com/MrCrayfish/MrCrayfishDeviceMod",
+  "description": "Adds working electronic devices into Minecraft!\nCurseForge: https://curseforge.com/minecraft/mc-mods/devices-mod\nModrinth: https://modrinth.com/mod/devices-mod\nSource Code: https://github.com/omnixerio/devices-mod\n\nOriginal mod made by MrCrayfish called \"MrCrayfish's Device Mod\".\nAvailable at: https://mrcrayfish.com/mods/cdm\nSource Code: https://github.com/MrCrayfish/MrCrayfishDeviceMod",
   "authors": [
     "Ultreon Team"
   ],
@@ -27,9 +27,9 @@
   ],
   "contact": {
     "website": "https://ultreon.github.io",
-    "repo": "https://github.com/Ultreon/devices-mod",
-    "issues": "https://github.com/Ultreon/devices-mod/issues",
-    "sources": "https://github.com/Ultreon/devices-mod"
+    "repo": "https://github.com/omnixerio/devices-mod",
+    "issues": "https://github.com/omnixerio/devices-mod/issues",
+    "sources": "https://github.com/omnixerio/devices-mod"
   },
   "license": "GPL-3.0",
   "icon": "devices_mod.png",
