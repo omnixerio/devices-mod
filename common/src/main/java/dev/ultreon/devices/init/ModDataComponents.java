@@ -17,6 +17,7 @@ public class ModDataComponents {
     public static final RegistrySupplier<DataComponentType<EthernetConnection>> ETHERNET_CONNECTION = register("ethernet_connection", () -> DataComponentType.<EthernetConnection>builder().persistent(EthernetConnection.CODEC).build());
     public static final RegistrySupplier<DataComponentType<MotherboardComponents>> MOTHERBOARD_COMPONENTS = register("motherboard_components", () -> DataComponentType.<MotherboardComponents>builder().persistent(MotherboardComponents.CODEC).build());
     public static final RegistrySupplier<DataComponentType<Print>> PRINT = register("print", () -> DataComponentType.<Print>builder().persistent(Print.CODEC).build());
+    public static final RegistrySupplier<DataComponentType<Battery>> BATTERY = register("battery", () -> DataComponentType.<Battery>builder().persistent(Battery.CODEC).build());
 
     private static <T extends DataComponentType<?>> RegistrySupplier<T> register(String id, Supplier<T> supplier) {
         return REGISTER.register(OmnixerioDevicesMod.id(id), supplier);

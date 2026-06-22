@@ -12,5 +12,6 @@ public class OmnixerioDevicesModNeoForgeClient {
 
     private static void onClientSetup(FMLClientSetupEvent evt) {
         ClientModEvents.registerRenderers();
+        ClientModEvents.registerItemProperties();
     }
 }

@@ -145,6 +145,7 @@ public class ModItems {
     public static final RegistrySupplier<ComponentItem> COMPONENT_CONTROLLER_UNIT = register("controller_unit", new Item.Properties(), ComponentItem::new);
     public static final RegistrySupplier<ComponentItem> COMPONENT_SMALL_ELECTRIC_MOTOR = register("small_electric_motor", new Item.Properties(), ComponentItem::new);
     public static final RegistrySupplier<ComponentItem> COMPONENT_CARRIAGE = register("carriage", new Item.Properties(), ComponentItem::new);
+    public static final RegistrySupplier<BatteryCellItem> BATTERY_CELL = register("battery_cell", new Item.Properties(), BatteryCellItem::new);
 
     public static final RegistrySupplier<EthernetCableItem> ETHERNET_CABLE = register("ethernet_cable", new Item.Properties(), EthernetCableItem::new);
     

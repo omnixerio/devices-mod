@@ -42,6 +42,14 @@ allprojects {
         // for more information about repositories.
 
         maven {
+            url = uri('https://mcef-download.cinemamod.com/repositories/releases')
+        }
+        // Optional for snapshot versions
+        maven {
+            url = uri('https://mcef-download.cinemamod.com/repositories/snapshots')
+        }
+
+        maven {
             name = "Fuzs Mod Resources"
             url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
         }

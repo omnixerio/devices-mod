@@ -1,0 +1,14 @@
+apps/desktop.ms
+apps/oobe.ms
+desktop.ms
+lanapixel_cc_by_license.txt
+lanapixel_open_font_license.txt
+lanapixel_standard.fnt
+lanapixel_standard.png
+libgdx.png
+mine_os.png
+oobe.ms
+usr/share/applications/oobe.json
+wm/close.png
+wm/close_hover.png
+wm/window.png

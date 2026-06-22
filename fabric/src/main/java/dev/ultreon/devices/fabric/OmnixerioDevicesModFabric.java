@@ -35,6 +35,7 @@ public class OmnixerioDevicesModFabric extends OmnixerioDevicesMod implements Mo
         if (Platform.getEnvironment() == Env.CLIENT) {
             ClientModEvents.clientSetup();
             ClientModEvents.registerRenderers();
+            ClientModEvents.registerItemProperties();
         }
     }
 

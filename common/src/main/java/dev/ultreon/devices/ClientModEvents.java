@@ -12,11 +12,15 @@ import dev.ultreon.devices.core.Laptop;
 import dev.ultreon.devices.debug.DebugFlags;
 import dev.ultreon.devices.debug.DebugUtils;
 import dev.ultreon.devices.debug.DumpType;
+import dev.ultreon.devices.init.Battery;
 import dev.ultreon.devices.init.ModBlockEntities;
+import dev.ultreon.devices.init.ModDataComponents;
+import dev.ultreon.devices.init.ModItems;
 import dev.ultreon.devices.object.AppInfo;
 import dev.ultreon.devices.programs.system.object.ColorSchemePresets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -24,6 +28,7 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -256,6 +261,55 @@ public class ClientModEvents {
         BlockEntityRendererRegistry.register(ModBlockEntities.ROUTER.get(), RouterRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.SEAT.get(), OfficeChairRenderer::new);
         BlockEntityRendererRegistry.register(ModBlockEntities.CLOCK.get(), ClockRenderer::new);
+    }
+
+    public static void registerItemProperties() {
+        LOGGER.info("Registering item properties.");
+
+        // Register the item properties.
+        ItemProperties.register(
+                ModItems.BATTERY_CELL.get(),
+                OmnixerioDevicesMod.id("charge"),
+                (stack, level, livingEntity, i) -> {
+                    float chargeRatio = getChargeRatio(stack);
+                    if (chargeRatio <= 0) {
+                        return -1.0f;
+                    }
+                    return chargeRatio;
+                });
+        ItemProperties.register(
+                ModItems.BATTERY_CELL.get(),
+                OmnixerioDevicesMod.id("overcharged"),
+                (stack, level, livingEntity, i) -> {
+                    if (getChargeRatio(stack) > 1f) {
+                        return 1f;
+                    }
+                    return 0f;
+                });
+        ItemProperties.register(
+                ModItems.BATTERY_CELL.get(),
+                OmnixerioDevicesMod.id("empty"),
+                (stack, level, livingEntity, i) -> {
+                    if (getChargeRatio(stack) == 0f) {
+                        return 1f;
+                    }
+                    return 0f;
+                });
+        ItemProperties.register(
+                ModItems.BATTERY_CELL.get(),
+                OmnixerioDevicesMod.id("broken"),
+                (stack, level, livingEntity, i) -> {
+                    if (getChargeRatio(stack) < 0f) {
+                        return 1f;
+                    }
+                    return 0f;
+                });
+    }
+
+    private static float getChargeRatio(ItemStack stack) {
+        Battery battery = stack.get(ModDataComponents.BATTERY.get());
+        if (battery == null) return 0f;
+        return battery.getChargeRatio();
     }
 
     public static void registerLayerDefinitions() {

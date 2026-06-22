@@ -1,0 +1,48 @@
+{
+  "parent": "minecraft:item/generated",
+  "overrides": [
+    {
+      "model": "devices:item/battery_cell_empty",
+      "predicate": {
+        "devices:charge": 0.0,
+        "devices:empty": 1.0,
+        "devices:overcharged": 0.0
+      }
+    },
+    {
+      "model": "devices:item/battery_cell_low",
+      "predicate": {
+        "devices:charge": 0.000000000000000000000000000000000000011754944,
+        "devices:empty": 0.0,
+        "devices:overcharged": 0.0
+      }
+    },
+    {
+      "model": "devices:item/battery_cell_warn",
+      "predicate": {
+        "devices:charge": 0.25,
+        "devices:empty": 0.0,
+        "devices:overcharged": 0.0
+      }
+    },
+    {
+      "model": "devices:item/battery_cell_normal",
+      "predicate": {
+        "devices:charge": 0.5,
+        "devices:empty": 0.0,
+        "devices:overcharged": 0.0
+      }
+    },
+    {
+      "model": "devices:item/battery_cell_overcharged",
+      "predicate": {
+        "devices:charge": 1.0,
+        "devices:empty": 0.0,
+        "devices:overcharged": 1.0
+      }
+    }
+  ],
+  "textures": {
+    "layer0": "devices:item/battery_cell_empty"
+  }
+}

@@ -19,6 +19,7 @@ import dev.ultreon.devices.api.print.IPrint;
 import dev.ultreon.devices.api.print.PrintingManager;
 import dev.ultreon.devices.api.task.TaskManager;
 import dev.ultreon.devices.api.utils.OnlineRequest;
+import dev.ultreon.devices.client.OmnixerioDevicesClient;
 import dev.ultreon.devices.core.client.ClientNotification;
 import dev.ultreon.devices.core.io.task.*;
 import dev.ultreon.devices.core.network.task.TaskConnect;
@@ -116,7 +117,6 @@ public abstract class OmnixerioDevicesMod {
             preInit();
             serverSetup();
         }
-//        BlockEntityUtil.sendUpdate(null, null, null);
 
         WorldDataHandler.init();
 
@@ -142,8 +142,12 @@ public abstract class OmnixerioDevicesMod {
 
         setupEvents();
 
-        EnvExecutor.runInEnv(Env.CLIENT, () -> OmnixerioDevicesMod::setupClientEvents); //todo
-        if (!ArchitecturyTarget.getCurrentTarget().equals("forge")) {
+        EnvExecutor.runInEnv(Env.CLIENT, () -> () -> {
+            OmnixerioDevicesClient.init();
+            setupClientEvents();
+        });
+
+        if (!Platform.isForgeLike()) {
             loadComplete();
         }
     }
@@ -197,6 +201,7 @@ public abstract class OmnixerioDevicesMod {
         TaskManager.registerTask(TaskGetFiles::new);
         TaskManager.registerTask(TaskGetStructure::new);
         TaskManager.registerTask(TaskGetMainDrive::new);
+        TaskManager.registerTask(TaskVefiFileOperation::new);
 
         // App Store
         TaskManager.registerTask(TaskInstallApp::new);

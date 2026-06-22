@@ -4,6 +4,8 @@ import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.registries.Registrar;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.ultreon.devices.OmnixerioDevicesMod;
+import dev.ultreon.devices.item.BatteryCellItem;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -53,6 +55,15 @@ public class ModCreativeTabs {
             output.accept(ModItems.COMPONENT_CARRIAGE.get());
             output.accept(ModItems.COMPONENT_SMALL_ELECTRIC_MOTOR.get());
             output.accept(ModItems.COMPONENT_CONTROLLER_UNIT.get());
+            output.accept(ModItems.BATTERY_CELL.get());
+
+            ItemStack fullBattery = new ItemStack(ModItems.BATTERY_CELL.get(), 1);
+            fullBattery.set(ModDataComponents.BATTERY.get(), new Battery(BatteryCellItem.BATTERY_CAPACITY, BatteryCellItem.BATTERY_CAPACITY));
+            output.accept(fullBattery);
+
+            ItemStack overchargedBattery = new ItemStack(ModItems.BATTERY_CELL.get(), 1);
+            overchargedBattery.set(ModDataComponents.BATTERY.get(), new Battery(BatteryCellItem.BATTERY_CAPACITY, BatteryCellItem.BATTERY_CAPACITY * 2));
+            output.accept(overchargedBattery);
         });
     }));
     public static final RegistrySupplier<CreativeModeTab> TAB_INGREDIENTS = register("ingredients", () -> CreativeTabRegistry.create(builder -> {
