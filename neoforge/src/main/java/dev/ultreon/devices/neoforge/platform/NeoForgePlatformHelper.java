@@ -193,6 +193,11 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
         return FMLPaths.CONFIGDIR.get();
     }
 
+    @Override
+    public Path getGameDir() {
+        return FMLPaths.GAMEDIR.get();
+    }
+
     @SubscribeEvent
     public static void registerNetwork(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(IPlatformHelper.NETWORK_VERSION);

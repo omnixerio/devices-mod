@@ -5,6 +5,8 @@ import dev.ultreon.devices.block.entity.renderer.*;
 import dev.ultreon.devices.client.entity.renderer.SeatEntityRenderer;
 import dev.ultreon.devices.core.Laptop;
 import dev.ultreon.devices.debug.DebugFlags;
+import dev.ultreon.devices.debug.DebugUtils;
+import dev.ultreon.devices.debug.DumpType;
 import dev.ultreon.devices.init.DeviceBlockEntities;
 import dev.ultreon.devices.init.DeviceEntities;
 import dev.ultreon.devices.object.AppInfo;
@@ -174,8 +176,9 @@ public class ClientModEvents {
 
                 if (DebugFlags.DUMP_APP_ICON_ATLAS) {
                     try {
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
+                        DebugUtils.dump(DumpType.ATLAS, OmnixerioDevicesCommon.id("textures/atlas/app_icons.png"), stream -> ImageIO.write(atlas, "png", stream));
+                    } catch (IOException e) {
+                        OmnixerioDevicesCommon.LOGGER.warn("Failed to dump app icon atlas debug texture.", e);
                     }
                 }
 

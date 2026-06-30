@@ -1,21 +1,24 @@
 package dev.ultreon.devices.debug;
 
+import dev.ultreon.devices.platform.Services;
 import net.minecraft.resources.Identifier;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class DebugUtils {
     public static void dump(DumpType type, Identifier resource, DumpWriter dumpFunc) throws IOException {
-        File namespaceFile = new File("debug/dump/" + type.name().toLowerCase(), resource.getNamespace());
-        File outputFile = new File(namespaceFile, resource.getPath());
-        File outputDir = outputFile.getParentFile();
-        if (!outputDir.exists() && !outputDir.mkdirs()) {
-            throw new IOException("Creating output directory failed for: " + outputFile.getPath());
-        }
-        try (FileOutputStream stream = new FileOutputStream(outputFile)) {
+        Path outputFile = Services.PLATFORM.getGameDir()
+                .resolve("debug")
+                .resolve("dump")
+                .resolve(type.name().toLowerCase())
+                .resolve(resource.getNamespace())
+                .resolve(resource.getPath());
+
+        Files.createDirectories(outputFile.getParent());
+        try (OutputStream stream = Files.newOutputStream(outputFile)) {
             dumpFunc.dump(stream);
         }
     }

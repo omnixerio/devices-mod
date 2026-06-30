@@ -86,4 +86,6 @@ public interface IPlatformHelper {
     String getModVersion();
 
     Path getConfigDir();
+
+    Path getGameDir();
 }
